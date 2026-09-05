@@ -1,0 +1,1124 @@
+[
+  {
+    "id": "nh3-001",
+    "node": "N1",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "벙커링선 매니폴드"
+      ],
+      "safeguards": []
+    },
+    "guideword": "No",
+    "parameter": "유량",
+    "deviation": "이송 개시 후 유량 전무",
+    "causes": [
+      "펌프 기동 실패·토출밸브 미개방"
+    ],
+    "consequences": [
+      "데드헤드 과압 → 씰·개스킷 응력"
+    ],
+    "safeguards_before": [
+      "압력계 감시"
+    ],
+    "S": 2,
+    "F": 3,
+    "risk_score": 6,
+    "recommendations": [
+      "PB-04 압력·유량 감시 및 서지 방지"
+    ],
+    "scenario": "기타"
+  },
+  {
+    "id": "nh3-002",
+    "node": "N1",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "벙커링선 매니폴드"
+      ],
+      "safeguards": []
+    },
+    "guideword": "More",
+    "parameter": "압력",
+    "deviation": "토출압 과다",
+    "causes": [
+      "하류 밸브 폐쇄 상태 기동·펌프 제어 실패"
+    ],
+    "consequences": [
+      "플랜지 개스킷 밀림 → 누출"
+    ],
+    "safeguards_before": [
+      "수동 ESD(MB-02)"
+    ],
+    "S": 3,
+    "F": 3,
+    "risk_score": 9,
+    "recommendations": [
+      "PB-04, MB-01 가스감지-ESD 자동연동 강화"
+    ],
+    "scenario": "S2"
+  },
+  {
+    "id": "nh3-003",
+    "node": "N1",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "벙커링선 매니폴드"
+      ],
+      "safeguards": []
+    },
+    "guideword": "More",
+    "parameter": "유량",
+    "deviation": "유량 과대",
+    "causes": [
+      "펌프 제어 오류"
+    ],
+    "consequences": [
+      "서지·호스/플랜지 응력 증가"
+    ],
+    "safeguards_before": [
+      "유량계"
+    ],
+    "S": 3,
+    "F": 2,
+    "risk_score": 6,
+    "recommendations": [
+      "PB-04"
+    ],
+    "scenario": "S2"
+  },
+  {
+    "id": "nh3-004",
+    "node": "N1",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "벙커링선 매니폴드"
+      ],
+      "safeguards": []
+    },
+    "guideword": "Less",
+    "parameter": "온도",
+    "deviation": "과냉 (−33 °C 미만)",
+    "causes": [
+      "냉동계 제어 이상"
+    ],
+    "consequences": [
+      "재질 저온취성 → 미세균열"
+    ],
+    "safeguards_before": [
+      "온도계"
+    ],
+    "S": 3,
+    "F": 2,
+    "risk_score": 6,
+    "recommendations": [
+      "저온 트립 설정 (PB-04 확장)"
+    ],
+    "scenario": "S3"
+  },
+  {
+    "id": "nh3-005",
+    "node": "N1",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "벙커링선 매니폴드"
+      ],
+      "safeguards": []
+    },
+    "guideword": "More",
+    "parameter": "온도",
+    "deviation": "예냉 불충분·라인 온도 상승",
+    "causes": [
+      "예냉 절차 생략·장시간 대기"
+    ],
+    "consequences": [
+      "플래싱·서지 → 씰 누출"
+    ],
+    "safeguards_before": [
+      "절차서"
+    ],
+    "S": 3,
+    "F": 3,
+    "risk_score": 9,
+    "recommendations": [
+      "PB-03 체크리스트(예냉 확인 항목)"
+    ],
+    "scenario": "S2"
+  },
+  {
+    "id": "nh3-006",
+    "node": "N1",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "벙커링선 매니폴드"
+      ],
+      "safeguards": []
+    },
+    "guideword": "Reverse",
+    "parameter": "유량",
+    "deviation": "역류",
+    "causes": [
+      "체크밸브 고장 + 수급선 탱크압 역전"
+    ],
+    "consequences": [
+      "인벤토리 역이동·상류 과압"
+    ],
+    "safeguards_before": [
+      "체크밸브"
+    ],
+    "S": 3,
+    "F": 2,
+    "risk_score": 6,
+    "recommendations": [
+      "PB-01 확장(체크밸브 정기 점검)"
+    ],
+    "scenario": "기타"
+  },
+  {
+    "id": "nh3-007",
+    "node": "N1",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "벙커링선 매니폴드"
+      ],
+      "safeguards": []
+    },
+    "guideword": "Other than",
+    "parameter": "조성",
+    "deviation": "수분·공기 혼입",
+    "causes": [
+      "퍼징 불충분"
+    ],
+    "consequences": [
+      "부식(SCC)·아이스 플러그 → 핀홀"
+    ],
+    "safeguards_before": [
+      "퍼징 절차"
+    ],
+    "S": 3,
+    "F": 2,
+    "risk_score": 6,
+    "recommendations": [
+      "PB-03(퍼징 확인·이슬점 측정)"
+    ],
+    "scenario": "S3"
+  },
+  {
+    "id": "nh3-008",
+    "node": "N1",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "벙커링선 매니폴드"
+      ],
+      "safeguards": []
+    },
+    "guideword": "Other than",
+    "parameter": "계측",
+    "deviation": "가스감지 기능 상실",
+    "causes": [
+      "센서 미교정·우회(bypass) 방치"
+    ],
+    "consequences": [
+      "누출 미감지 → 방출 지속시간 확대"
+    ],
+    "safeguards_before": [
+      "분기 교정(명목)"
+    ],
+    "S": 4,
+    "F": 2,
+    "risk_score": 8,
+    "recommendations": [
+      "MB-01 4속성 관리(교정·우회 통제)"
+    ],
+    "scenario": "S1"
+  },
+  {
+    "id": "nh3-009",
+    "node": "N2",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "이송 호스"
+      ],
+      "safeguards": []
+    },
+    "guideword": "More",
+    "parameter": "장력",
+    "deviation": "호스 과인장",
+    "causes": [
+      "계류 이탈·선체 상대운동"
+    ],
+    "consequences": [
+      "파단 → 대량 누출"
+    ],
+    "safeguards_before": [
+      "계류 감시(육안)"
+    ],
+    "S": 5,
+    "F": 2,
+    "risk_score": 10,
+    "recommendations": [
+      "PB-02 상대운동 모니터링, MB-03 ERC"
+    ],
+    "scenario": "S1"
+  },
+  {
+    "id": "nh3-010",
+    "node": "N2",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "이송 호스"
+      ],
+      "safeguards": []
+    },
+    "guideword": "More",
+    "parameter": "압력",
+    "deviation": "서지(수격)",
+    "causes": [
+      "ESD 급폐쇄·밸브 급개폐"
+    ],
+    "consequences": [
+      "호스 파열·플랜지 누출"
+    ],
+    "safeguards_before": [
+      "없음"
+    ],
+    "S": 5,
+    "F": 2,
+    "risk_score": 10,
+    "recommendations": [
+      "PB-04 서지 방지(완폐쇄 로직), MB-03 ERC"
+    ],
+    "scenario": "S1"
+  },
+  {
+    "id": "nh3-011",
+    "node": "N2",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "이송 호스"
+      ],
+      "safeguards": []
+    },
+    "guideword": "Less",
+    "parameter": "곡률반경",
+    "deviation": "최소 곡률반경 미달",
+    "causes": [
+      "배치 불량·조류에 의한 선체 이동"
+    ],
+    "consequences": [
+      "킹크 → 내층 손상 → 누출"
+    ],
+    "safeguards_before": [
+      "육안 확인"
+    ],
+    "S": 3,
+    "F": 3,
+    "risk_score": 9,
+    "recommendations": [
+      "PB-03(배치 점검 항목), 호스 새들"
+    ],
+    "scenario": "S3"
+  },
+  {
+    "id": "nh3-012",
+    "node": "N2",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "이송 호스"
+      ],
+      "safeguards": []
+    },
+    "guideword": "Other than",
+    "parameter": "재질",
+    "deviation": "제조 결함·경년 열화",
+    "causes": [
+      "수압시험 미검출"
+    ],
+    "consequences": [
+      "사용 중 파단"
+    ],
+    "safeguards_before": [
+      "연 1회 수압시험(명목)"
+    ],
+    "S": 5,
+    "F": 2,
+    "risk_score": 10,
+    "recommendations": [
+      "PB-01 호스 인증·정기 수압시험 강화"
+    ],
+    "scenario": "S1"
+  },
+  {
+    "id": "nh3-013",
+    "node": "N2",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "이송 호스"
+      ],
+      "safeguards": []
+    },
+    "guideword": "Other than",
+    "parameter": "외부 충격",
+    "deviation": "타 선박 접촉·낙하물",
+    "causes": [
+      "경계구역 통제 실패"
+    ],
+    "consequences": [
+      "호스 절단 → 대량 누출"
+    ],
+    "safeguards_before": [
+      "항만 VTS(간접)"
+    ],
+    "S": 5,
+    "F": 1,
+    "risk_score": 5,
+    "recommendations": [
+      "PB-06 경계구역 선박 접근 통제"
+    ],
+    "scenario": "S1"
+  },
+  {
+    "id": "nh3-014",
+    "node": "N2",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "이송 호스"
+      ],
+      "safeguards": []
+    },
+    "guideword": "More",
+    "parameter": "운동 반복",
+    "deviation": "파랑에 의한 반복 하중",
+    "causes": [
+      "장주기 파랑·기상 악화 중 지속 작업"
+    ],
+    "consequences": [
+      "피로 균열 → 누출·파단 진행"
+    ],
+    "safeguards_before": [
+      "없음"
+    ],
+    "S": 4,
+    "F": 3,
+    "risk_score": 12,
+    "recommendations": [
+      "PB-05 기상 작업제한, PB-02"
+    ],
+    "scenario": "S1"
+  },
+  {
+    "id": "nh3-015",
+    "node": "N2",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "이송 호스"
+      ],
+      "safeguards": []
+    },
+    "guideword": "Less",
+    "parameter": "온도",
+    "deviation": "호스 저온 한계 초과",
+    "causes": [
+      "급속 예냉"
+    ],
+    "consequences": [
+      "취성 균열"
+    ],
+    "safeguards_before": [
+      "예냉 절차"
+    ],
+    "S": 3,
+    "F": 2,
+    "risk_score": 6,
+    "recommendations": [
+      "PB-03(예냉 속도 규정)"
+    ],
+    "scenario": "S3"
+  },
+  {
+    "id": "nh3-016",
+    "node": "N2",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "이송 호스"
+      ],
+      "safeguards": []
+    },
+    "guideword": "No",
+    "parameter": "지지",
+    "deviation": "호스 지지 상실",
+    "causes": [
+      "새들 미설치·이탈"
+    ],
+    "consequences": [
+      "자중 처짐 응력 집중 → 손상"
+    ],
+    "safeguards_before": [
+      "육안 확인"
+    ],
+    "S": 3,
+    "F": 3,
+    "risk_score": 9,
+    "recommendations": [
+      "호스 새들·보호커버(PB-01 확장)"
+    ],
+    "scenario": "S3"
+  },
+  {
+    "id": "nh3-017",
+    "node": "N2",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "이송 호스"
+      ],
+      "safeguards": []
+    },
+    "guideword": "More",
+    "parameter": "마모",
+    "deviation": "갑판 모서리 찰과(chafing)",
+    "causes": [
+      "보호커버 없음·반복 마찰"
+    ],
+    "consequences": [
+      "외피 → 내층 손상 → 핀홀"
+    ],
+    "safeguards_before": [
+      "육안 확인"
+    ],
+    "S": 2,
+    "F": 3,
+    "risk_score": 6,
+    "recommendations": [
+      "보호커버, PB-03 점검 항목"
+    ],
+    "scenario": "S3"
+  },
+  {
+    "id": "nh3-018",
+    "node": "N3",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "수급선 매니폴드"
+      ],
+      "safeguards": []
+    },
+    "guideword": "More",
+    "parameter": "액위",
+    "deviation": "연료탱크 과충전",
+    "causes": [
+      "액위계 오류·정지 신호 실패"
+    ],
+    "consequences": [
+      "릴리프 벤트 개방 → NH₃ 방출"
+    ],
+    "safeguards_before": [
+      "고액위 경보"
+    ],
+    "S": 4,
+    "F": 2,
+    "risk_score": 8,
+    "recommendations": [
+      "고고액위 트립-ESD 연동(MB-02 확장)"
+    ],
+    "scenario": "기타"
+  },
+  {
+    "id": "nh3-019",
+    "node": "N3",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "수급선 매니폴드"
+      ],
+      "safeguards": []
+    },
+    "guideword": "More",
+    "parameter": "압력",
+    "deviation": "탱크압 상승",
+    "causes": [
+      "BOG 처리 실패"
+    ],
+    "consequences": [
+      "이송 정체·역압 → 플랜지 누출"
+    ],
+    "safeguards_before": [
+      "탱크 압력계"
+    ],
+    "S": 3,
+    "F": 3,
+    "risk_score": 9,
+    "recommendations": [
+      "PB-04(양선 압력 상호 감시)"
+    ],
+    "scenario": "S2"
+  },
+  {
+    "id": "nh3-020",
+    "node": "N3",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "수급선 매니폴드"
+      ],
+      "safeguards": []
+    },
+    "guideword": "No",
+    "parameter": "밀봉",
+    "deviation": "플랜지 체결 불량",
+    "causes": [
+      "토크 미달·개스킷 재사용"
+    ],
+    "consequences": [
+      "개스킷 누출(25 mm 등가)"
+    ],
+    "safeguards_before": [
+      "이송 전 기밀시험(명목)"
+    ],
+    "S": 3,
+    "F": 3,
+    "risk_score": 9,
+    "recommendations": [
+      "PB-03(토크·기밀시험 서명 항목)"
+    ],
+    "scenario": "S2"
+  },
+  {
+    "id": "nh3-021",
+    "node": "N3",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "수급선 매니폴드"
+      ],
+      "safeguards": []
+    },
+    "guideword": "Less",
+    "parameter": "예냉",
+    "deviation": "수급측 예냉 불충분",
+    "causes": [
+      "절차 생략"
+    ],
+    "consequences": [
+      "열충격 → 씰 손상 누출"
+    ],
+    "safeguards_before": [
+      "절차서"
+    ],
+    "S": 3,
+    "F": 3,
+    "risk_score": 9,
+    "recommendations": [
+      "PB-03"
+    ],
+    "scenario": "S2"
+  },
+  {
+    "id": "nh3-022",
+    "node": "N3",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "수급선 매니폴드"
+      ],
+      "safeguards": []
+    },
+    "guideword": "Other than",
+    "parameter": "개스킷 사양",
+    "deviation": "비호환 개스킷 사용",
+    "causes": [
+      "자재 관리 오류(동합금 등 NH₃ 비호환재)"
+    ],
+    "consequences": [
+      "부식 → 누출"
+    ],
+    "safeguards_before": [
+      "자재 검수(명목)"
+    ],
+    "S": 3,
+    "F": 2,
+    "risk_score": 6,
+    "recommendations": [
+      "PB-01(자재 인증)"
+    ],
+    "scenario": "S3"
+  },
+  {
+    "id": "nh3-023",
+    "node": "N3",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "수급선 매니폴드"
+      ],
+      "safeguards": []
+    },
+    "guideword": "Reverse",
+    "parameter": "유량",
+    "deviation": "수급선 측 역송",
+    "causes": [
+      "오조작·압력 역전"
+    ],
+    "consequences": [
+      "벙커링선 측 과압·누출"
+    ],
+    "safeguards_before": [
+      "체크밸브"
+    ],
+    "S": 3,
+    "F": 2,
+    "risk_score": 6,
+    "recommendations": [
+      "PB-03(라인업 상호 확인)"
+    ],
+    "scenario": "기타"
+  },
+  {
+    "id": "nh3-024",
+    "node": "N3",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "수급선 매니폴드"
+      ],
+      "safeguards": []
+    },
+    "guideword": "No",
+    "parameter": "본딩",
+    "deviation": "정전기 본딩 미실시",
+    "causes": [
+      "절차 생략"
+    ],
+    "consequences": [
+      "(저확률) 점화 → 화재"
+    ],
+    "safeguards_before": [
+      "본딩 케이블(명목)"
+    ],
+    "S": 2,
+    "F": 2,
+    "risk_score": 4,
+    "recommendations": [
+      "PB-03(본딩 확인) — Bow-Tie 화재 가지 유지"
+    ],
+    "scenario": "기타"
+  },
+  {
+    "id": "nh3-025",
+    "node": "N4",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "이송 운전 절차"
+      ],
+      "safeguards": []
+    },
+    "guideword": "Too early",
+    "parameter": "개시",
+    "deviation": "예냉·라인업 확인 전 펌프 기동",
+    "causes": [
+      "시간 압박·확인 생략"
+    ],
+    "consequences": [
+      "열충격·서지 → 누출"
+    ],
+    "safeguards_before": [
+      "절차서"
+    ],
+    "S": 3,
+    "F": 3,
+    "risk_score": 9,
+    "recommendations": [
+      "PB-03 양선 상호 체크리스트(서명)"
+    ],
+    "scenario": "S2"
+  },
+  {
+    "id": "nh3-026",
+    "node": "N4",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "이송 운전 절차"
+      ],
+      "safeguards": []
+    },
+    "guideword": "Too late",
+    "parameter": "ESD",
+    "deviation": "ESD 작동 지연",
+    "causes": [
+      "수동 의존·판단 지연"
+    ],
+    "consequences": [
+      "방출 지속 600 s (ESD-F 경로)"
+    ],
+    "safeguards_before": [
+      "수동 ESD(MB-02)"
+    ],
+    "S": 5,
+    "F": 2,
+    "risk_score": 10,
+    "recommendations": [
+      "MB-01 자동연동(총응답 ≤30 s), SIF SIL 산정(LOPA)"
+    ],
+    "scenario": "S1"
+  },
+  {
+    "id": "nh3-027",
+    "node": "N4",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "이송 운전 절차"
+      ],
+      "safeguards": []
+    },
+    "guideword": "Wrong action",
+    "parameter": "밸브 순서",
+    "deviation": "밸브 개폐 순서 오류",
+    "causes": [
+      "체크리스트 미이행"
+    ],
+    "consequences": [
+      "서지 → 플랜지 누출"
+    ],
+    "safeguards_before": [
+      "없음"
+    ],
+    "S": 3,
+    "F": 3,
+    "risk_score": 9,
+    "recommendations": [
+      "PB-03"
+    ],
+    "scenario": "S2"
+  },
+  {
+    "id": "nh3-028",
+    "node": "N4",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "이송 운전 절차"
+      ],
+      "safeguards": []
+    },
+    "guideword": "Too early",
+    "parameter": "분리",
+    "deviation": "이송 완료 전 호스 분리",
+    "causes": [
+      "통신 오류·잔압 미확인"
+    ],
+    "consequences": [
+      "잔류 249 kg 방출(A-11)"
+    ],
+    "safeguards_before": [
+      "절차서"
+    ],
+    "S": 4,
+    "F": 2,
+    "risk_score": 8,
+    "recommendations": [
+      "PB-03(퍼징·잔압 확인 후 분리)"
+    ],
+    "scenario": "기타"
+  },
+  {
+    "id": "nh3-029",
+    "node": "N4",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "이송 운전 절차"
+      ],
+      "safeguards": []
+    },
+    "guideword": "Wrong action",
+    "parameter": "퍼징 생략",
+    "deviation": "분리 전 퍼징 미실시",
+    "causes": [
+      "절차 위반"
+    ],
+    "consequences": [
+      "분리 시 액 비산·작업자 국소 노출"
+    ],
+    "safeguards_before": [
+      "절차서"
+    ],
+    "S": 4,
+    "F": 3,
+    "risk_score": 12,
+    "recommendations": [
+      "PB-03, MB-06 PPE(양압식 호흡보호구)"
+    ],
+    "scenario": "기타"
+  },
+  {
+    "id": "nh3-030",
+    "node": "N4",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "이송 운전 절차"
+      ],
+      "safeguards": []
+    },
+    "guideword": "Too late",
+    "parameter": "기상 중단",
+    "deviation": "기상 한계 초과에도 이송 지속",
+    "causes": [
+      "작업제한 기준 부재(Before)"
+    ],
+    "consequences": [
+      "상대운동 증가 → 과인장 파단"
+    ],
+    "safeguards_before": [
+      "없음"
+    ],
+    "S": 5,
+    "F": 2,
+    "risk_score": 10,
+    "recommendations": [
+      "PB-05 기상 작업제한(풍속·파고 한계)"
+    ],
+    "scenario": "S1"
+  },
+  {
+    "id": "nh3-031",
+    "node": "N4",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "이송 운전 절차"
+      ],
+      "safeguards": []
+    },
+    "guideword": "Wrong action",
+    "parameter": "통신",
+    "deviation": "양선 간 신호 혼선",
+    "causes": [
+      "공용 채널 혼잡·언어 문제"
+    ],
+    "consequences": [
+      "일방 펌프 지속 → 과압"
+    ],
+    "safeguards_before": [
+      "VHF 교신(명목)"
+    ],
+    "S": 4,
+    "F": 2,
+    "risk_score": 8,
+    "recommendations": [
+      "PB-03(전용 채널·표준 신호)"
+    ],
+    "scenario": "S2"
+  },
+  {
+    "id": "nh3-032",
+    "node": "N4",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "이송 운전 절차"
+      ],
+      "safeguards": []
+    },
+    "guideword": "Too early",
+    "parameter": "접근 허용",
+    "deviation": "경계구역 해제 전 타선 접근",
+    "causes": [
+      "통제 실패·공지 누락"
+    ],
+    "consequences": [
+      "충돌 → 호스 손상"
+    ],
+    "safeguards_before": [
+      "항무 통제(간접)"
+    ],
+    "S": 4,
+    "F": 2,
+    "risk_score": 8,
+    "recommendations": [
+      "PB-06"
+    ],
+    "scenario": "S1"
+  },
+  {
+    "id": "nh3-033",
+    "node": "N4",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "이송 운전 절차"
+      ],
+      "safeguards": []
+    },
+    "guideword": "Too late",
+    "parameter": "대피 방송",
+    "deviation": "누출 후 방송·대피 지연",
+    "causes": [
+      "비상절차 미숙"
+    ],
+    "consequences": [
+      "승조원·작업자 노출 확대"
+    ],
+    "safeguards_before": [
+      "비상훈련(명목)"
+    ],
+    "S": 4,
+    "F": 2,
+    "risk_score": 8,
+    "recommendations": [
+      "MB-05 비상방송, MB-06 합동훈련"
+    ],
+    "scenario": "기타"
+  },
+  {
+    "id": "nh3-034",
+    "node": "N4",
+    "node_meta": {
+      "substance": "NH3",
+      "phase": "unknown",
+      "P_kPag": null,
+      "T_degC": null,
+      "equipment": [
+        "이송 운전 절차"
+      ],
+      "safeguards": []
+    },
+    "guideword": "No",
+    "parameter": "수분사",
+    "deviation": "수분사 커튼 미작동",
+    "causes": [
+      "미설치(Before)·노즐 동결"
+    ],
+    "consequences": [
+      "확산 완화 실패 → 영향거리 증가"
+    ],
+    "safeguards_before": [
+      "없음"
+    ],
+    "S": 4,
+    "F": 2,
+    "risk_score": 8,
+    "recommendations": [
+      "MB-04 수분사 커튼 설치·동파 방지"
+    ],
+    "scenario": "기타"
+  }
+]
