@@ -1,4 +1,4 @@
-.PHONY: setup test test-live build-gold
+.PHONY: setup test test-live build-gold test-gold
 
 PY ?= python
 VENV := .venv
@@ -20,6 +20,13 @@ test:
 test-live:
 	$(VENV_PY) -m pytest -m live
 
-# 골드셋 빌드: data/raw/*.xlsx -> data/gold/*.json (spec:gold-dataset)
+# 골드셋 빌드: data/raw/*.xlsx -> data/gold/*.json (spec:gold-dataset T-13)
 build-gold:
-	$(VENV_PY) tools/build_gold.py
+	$(VENV_PY) tools/build_gold.py \
+		--input data/raw/D1_HAZOP_워크시트.xlsx \
+		--sheet HAZOP워크시트 \
+		--split node --tune-nodes N1
+
+# 골드셋 단위 테스트만 실행 (전체는 make test)
+test-gold:
+	$(VENV_PY) -m pytest tests/test_gold.py -v

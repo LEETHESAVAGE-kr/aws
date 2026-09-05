@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GoldRecord",
+  "type": "object",
+  "required": [
+    "id", "node", "node_meta",
+    "guideword", "parameter", "deviation",
+    "causes", "consequences", "safeguards_before",
+    "S", "F", "risk_score",
+    "recommendations", "scenario"
+  ],
+  "properties": {
+    "id":              { "type": "string", "pattern": "^[a-z0-9]+-\\d{3}$" },
+    "node":            { "type": "string", "minLength": 1 },
+    "node_meta": {
+      "type": "object",
+      "required": ["substance", "phase", "P_kPag", "T_degC", "equipment", "safeguards"],
+      "properties": {
+        "substance":  { "type": "string" },
+        "phase":      { "type": "string", "enum": ["liquid", "gas", "liquid/gas", "unknown"] },
+        "P_kPag":     { "type": ["number", "null"] },
+        "T_degC":     { "type": ["number", "null"] },
+        "equipment":  { "type": "array", "items": { "type": "string" } },
+        "safeguards": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "guideword":       { "type": "string", "minLength": 1 },
+    "parameter":       { "type": "string" },
+    "deviation":       { "type": "string", "minLength": 1 },
+    "causes":          { "type": "array", "items": { "type": "string" } },
+    "consequences":    { "type": "array", "items": { "type": "string" } },
+    "safeguards_before": { "type": "array", "items": { "type": "string" } },
+    "S":               { "type": ["integer", "null"], "minimum": 1, "maximum": 5 },
+    "F":               { "type": ["integer", "null"], "minimum": 1, "maximum": 5 },
+    "risk_score":      { "type": ["integer", "null"], "minimum": 1, "maximum": 25 },
+    "recommendations": { "type": "array", "items": { "type": "string" } },
+    "scenario":        { "type": ["string", "null"] }
+  },
+  "additionalProperties": false
+}

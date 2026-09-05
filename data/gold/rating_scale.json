@@ -1,0 +1,67 @@
+{
+  "source_sheet": "평가기준",
+  "severity": [
+    {
+      "grade": 1,
+      "definition": "아차사고 — 부상 없음"
+    },
+    {
+      "grade": 2,
+      "definition": "경상 — 응급처치 수준"
+    },
+    {
+      "grade": 3,
+      "definition": "중상·입원 — 영향 선내 국한"
+    },
+    {
+      "grade": 4,
+      "definition": "사망 1인 또는 다수 중상 — 선외 영향 경미"
+    },
+    {
+      "grade": 5,
+      "definition": "다수 사망 또는 항만·인접선 영향(대량 독성 확산)"
+    }
+  ],
+  "frequency": [
+    {
+      "grade": 1,
+      "definition": "매우 희박 — 업계 전체에서도 드묾"
+    },
+    {
+      "grade": 2,
+      "definition": "희박 — 유사 설비 수명 중 1회 미만"
+    },
+    {
+      "grade": 3,
+      "definition": "가능 — 설비 수명 중 1회 정도"
+    },
+    {
+      "grade": 4,
+      "definition": "빈발 가능 — 수년 내 1회"
+    },
+    {
+      "grade": 5,
+      "definition": "빈번 — 연 1회 이상"
+    }
+  ],
+  "risk_bands": [
+    {
+      "range": "15~25",
+      "judgement": "높음",
+      "action": "허용 불가 — 즉시 개선"
+    },
+    {
+      "range": "8~14",
+      "judgement": "중간(ALARP)",
+      "action": "정량평가(QRA) 대상 — 본 과업의 S1~S3 선정 풀"
+    },
+    {
+      "range": "1~7",
+      "judgement": "낮음",
+      "action": "절차·점검으로 관리"
+    }
+  ],
+  "notes": [
+    "주: 스크리닝용 정성 등급임. 정량 빈도·확률은 Phase 2 FTA·ETA에서 문헌치로 산정한다(스크리닝 F등급과 혼용 금지)."
+  ]
+}
