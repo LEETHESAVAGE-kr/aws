@@ -419,37 +419,25 @@ validate_and_retry 흐름:
 
 ## 10. `CostCalculator` (`core/llm/cost.py`)
 
+가격표는 `config/prices.yaml` 에서 로드한다. 코드에 하드코딩하지 않으며, 모델 교체 시
+`prices.yaml` 만 수정하면 된다 (steering `aws.md` §2).
+
 ```python
 from __future__ import annotations
-from .types import TokenUsage
+import logging
+from pathlib import Path
+import yaml
 
-# USD per 1,000 tokens — Claude 3.5 Sonnet on Bedrock
-# 업데이트 필요 시 이 상수만 수정
-PRICE_TABLE: dict[str, dict[str, float]] = {
-    # 크로스리전 추론 프로파일 ID
-    "us.anthropic.claude-3-5-sonnet-20241022-v2:0": {
-        "input": 0.003,
-        "output": 0.015,
-        "cache_read": 0.0003,
-        "cache_write": 0.00375,
-    },
-    "us.anthropic.claude-3-haiku-20240307-v1:0": {
-        "input": 0.00025,
-        "output": 0.00125,
-        "cache_read": 0.000025,
-        "cache_write": 0.0003,
-    },
-    # 임베딩 — Titan
-    "amazon.titan-embed-text-v2:0": {
-        "input": 0.00002,
-        "output": 0.0,
-        "cache_read": 0.0,
-        "cache_write": 0.0,
-    },
-}
+logger = logging.getLogger(__name__)
 
-class UnknownModelError(KeyError):
-    pass
+_PRICES_PATH = Path(__file__).parent.parent.parent / "config" / "prices.yaml"
+
+def _load_price_table(path: Path = _PRICES_PATH) -> dict[str, dict[str, float]]:
+    """config/prices.yaml 을 로드하여 가격표 dict 반환. 모듈 임포트 시 1회 실행."""
+    return yaml.safe_load(path.read_text(encoding="utf-8"))
+
+# 모듈 로드 시 1회 읽어 캐시 (테스트에서 monkeypatch로 경로 교체 가능)
+PRICE_TABLE: dict[str, dict[str, float]] = _load_price_table()
 
 def calculate_cost(
     model_id: str,
@@ -458,15 +446,40 @@ def calculate_cost(
     cache_read_tokens: int = 0,
     cache_write_tokens: int = 0,
 ) -> float:
+    """USD 단위 비용 반환. 미등록 모델은 0.0 반환 + WARNING 1회 로깅."""
     if model_id not in PRICE_TABLE:
-        raise UnknownModelError(f"no price entry for model: {model_id}")
+        logger.warning("no price entry for model: %s — cost set to 0.0", model_id)
+        return 0.0
     p = PRICE_TABLE[model_id]
     return (
-        input_tokens      / 1000 * p["input"]
+        input_tokens       / 1000 * p["input"]
         + output_tokens    / 1000 * p["output"]
-        + cache_read_tokens / 1000 * p["cache_read"]
+        + cache_read_tokens  / 1000 * p["cache_read"]
         + cache_write_tokens / 1000 * p["cache_write"]
     )
+```
+
+`config/prices.yaml` 형식 (업데이트 필요 시 이 파일만 수정):
+
+```yaml
+# USD per 1,000 tokens
+us.anthropic.claude-3-5-sonnet-20241022-v2:0:
+  input: 0.003
+  output: 0.015
+  cache_read: 0.0003
+  cache_write: 0.00375
+
+us.anthropic.claude-3-haiku-20240307-v1:0:
+  input: 0.00025
+  output: 0.00125
+  cache_read: 0.000025
+  cache_write: 0.0003
+
+amazon.titan-embed-text-v2:0:
+  input: 0.00002
+  output: 0.0
+  cache_read: 0.0
+  cache_write: 0.0
 ```
 
 ---
