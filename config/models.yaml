@@ -1,0 +1,31 @@
+# config/models.yaml — 모델 ID·리전의 단일 소스 (steering aws.md §2, REQ-01)
+# 이 파일만 수정하면 전체 모델 교체가 적용된다. 코드에 하드코딩 금지.
+#
+# ⚠ G0 미완료 (2026-09-06): model_id 3개가 비어 있다.
+#   docs/G0_bedrock_access_20260905.md — 자격증명이 없어 list_foundation_models 실패,
+#   실제 호출 가능한 모델 ID 목록을 얻지 못했다. 추측해서 채우지 않는다.
+#   비어 있는 동안 load_model_config() 는 ConfigValidationError 로 즉시 실패하고,
+#   HAZOP_USE_MOCK=true 의 모의 클라이언트 경로만 동작한다.
+#   PRD R9: steering aws.md·design.md 에 적힌 ID 는 2024년 레거시이므로 그대로 쓰면 안 된다.
+
+region: ap-northeast-2 # docs/G0 확인 스크립트가 사용한 리전. 대회 계정 확정 후 재확인 필요.
+
+generation:
+  model_id: null # ← G0에서 확보한 실제 ID 기입
+  temperature: 0.2
+  max_tokens: 4096
+  prompt_caching: true
+
+verifier:
+  model_id: null # ← 하위(저비용) 모델 ID 기입
+  temperature: 0.0
+  max_tokens: 1024
+  prompt_caching: false
+
+embedding:
+  model_id: null # ← 임베딩 모델 ID 기입
+
+guardrails:
+  id: null # Bedrock Guardrails 생성 후 ID 입력 (NFR-05)
+
+cost_limit_usd: 0.30 # 노드 1건 소프트 상한 (WARNING 로그 기준, REQ-07)

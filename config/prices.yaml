@@ -1,0 +1,25 @@
+# config/prices.yaml — 모델별 USD / 1,000 tokens (REQ-09)
+#
+# 출처: .kiro/specs/bedrock-client/requirements.md §REQ-09 표(생성 모델) 및
+#       design.md §10 PRICE_TABLE. **AWS 공식 가격 페이지로 직접 확인한 값이 아니며,
+#       대회 계정에서 실제로 호출 가능한 모델도 아직 미확정이다(G0 미완료).**
+# 가격표에 없는 모델 ID 는 예외 대신 비용 0 + WARNING 1회로 처리한다
+# (CLAUDE.md 범위 규율 — 모델 ID 는 대회 계정 확인 후 바뀔 예정).
+# G0 통과 후 실제 사용 모델의 공식 가격으로 이 파일을 갱신할 것.
+
+models:
+  us.anthropic.claude-3-5-sonnet-20241022-v2:0:
+    input: 0.003
+    output: 0.015
+    cache_read: 0.0003
+    cache_write: 0.00375
+  us.anthropic.claude-3-haiku-20240307-v1:0:
+    input: 0.00025
+    output: 0.00125
+    cache_read: 0.000025
+    cache_write: 0.0003
+  amazon.titan-embed-text-v2:0:
+    input: 0.00002
+    output: 0.0
+    cache_read: 0.0
+    cache_write: 0.0
