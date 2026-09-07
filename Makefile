@@ -1,4 +1,4 @@
-.PHONY: setup test test-live build-gold test-gold
+.PHONY: setup test test-live build-gold test-gold test-llm smoke
 
 PY ?= python
 VENV := .venv
@@ -14,11 +14,20 @@ setup:
 # 오프라인 테스트 — 외부 API 호출 없이 통과해야 한다 (CLAUDE.md 불변규칙 7)
 test:
 	$(VENV_PY) -m ruff check .
-	$(VENV_PY) -m pytest -m "not live"
+	HAZOP_USE_MOCK=true $(VENV_PY) -m pytest -m "not live"
 
 # 실 AWS 호출 테스트 — 비용 발생. 자격증명 필요.
 test-live:
 	$(VENV_PY) -m pytest -m live
+
+# Bedrock 래퍼 단위 테스트만 실행 (전체는 make test)
+test-llm:
+	HAZOP_USE_MOCK=true $(VENV_PY) -m pytest tests/test_llm.py -v
+
+# G0 킬체크 스모크 — 자격증명 + config/models.yaml 모델 ID 필요. 로그를 results/g0/ 에 남긴다.
+smoke:
+	@mkdir -p results/g0
+	$(VENV_PY) -m pytest tests/test_llm_live.py -m live -v 2>&1 | tee results/g0/smoke_$(shell date +%Y%m%d_%H%M%S).log
 
 # 골드셋 빌드: data/raw/*.xlsx -> data/gold/*.json (spec:gold-dataset T-13)
 build-gold:
