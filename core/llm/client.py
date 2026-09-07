@@ -104,11 +104,12 @@ def load_price_table(path: Path = _PRICES_PATH) -> dict[str, dict[str, float]]:
     if not path.is_file():
         logger.warning("가격표 없음: %s — 모든 비용을 0 으로 기록한다", path)
         return {}
+    # design.md §10: 최상위가 곧 `<model_id>: {input, output, cache_read, cache_write}` 매핑이다.
     raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-    models = raw.get("models", {})
     return {
         str(model_id): {str(k): float(v) for k, v in entry.items()}
-        for model_id, entry in models.items()
+        for model_id, entry in raw.items()
+        if isinstance(entry, dict)
     }
 
 

@@ -196,9 +196,11 @@ def calculate_cost(
 | 캐시 쓰기 (cache_write) | 0.00375 |
 
 **수용 기준 (AC-09)**
-- `calculate_cost("us.anthropic.claude-3-5-sonnet-20241022-v2:0", 1000, 500)` == `0.003 * 1 + 0.015 * 0.5` = `0.0105` (`pytest tests/test_bedrock_client.py::test_cost_calculation`).
-- 가격표에 없는 모델 ID 입력 시 `UnknownModelError` 를 raise한다.
-- `cache_read_tokens > 0` 이면 비용 절감이 반영된다 (`pytest tests/test_bedrock_client.py::test_cost_cache_discount`).
+- `calculate_cost("<가격표 등록 모델 ID>", 1000, 500)` == `0.003 * 1 + 0.015 * 0.5` = `0.0105`.
+- 가격표에 없는 모델 ID 는 **예외를 던지지 않고 비용 0.0 을 반환하며 WARNING 을 1회 로깅한다**
+  (CLAUDE.md 범위 규율 — 대회 계정 확정 전까지 모델 ID 가 바뀐다).
+- `cache_read_tokens > 0` 이면 비용 절감이 반영된다.
+- 가격표는 `config/prices.yaml` 에 두고 코드에서 하드코딩하지 않는다.
 
 ---
 
