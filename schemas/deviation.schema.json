@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DeviationRecordArray",
+  "$comment": "R-02 (spec:hazop-generation). gold_record.schema.json 과의 호환성: 필드 전체를 물려받고 evidence[]·confidence 2개를 더한다. 차이점 3가지 — (1) id 패턴은 gold 와 동일한 ^[a-z0-9]+-\\d{3}$ 를 쓰므로 코드가 조립하는 id 는 소문자다(node 'N1' → 'n1-001'). design.md §2.2 의 예시 '{node}-{seq:03d}' 를 그대로 쓰면 대문자라 이 패턴을 위반한다. (2) S·F·risk_score 는 gold 와 달리 null 을 허용하지 않는다 — 생성 결과는 항상 등급을 가진다. (3) 호출 단위 스키마(DeviationBatch)는 산출물이 아니라 프롬프트 계약이므로 이 파일이 아니라 core/agent/generate.py 의 상수로 둔다(design.md §6 마지막 문단이 '최종 출력 레코드 배열의 스키마는 deviation.schema.json 으로 별도 정의한다' 고 한 것을 따른다).",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": [
+      "id", "node", "node_meta",
+      "guideword", "parameter", "deviation",
+      "causes", "consequences", "safeguards_before",
+      "S", "F", "risk_score",
+      "recommendations", "scenario",
+      "evidence", "confidence"
+    ],
+    "properties": {
+      "id": { "type": "string", "pattern": "^[a-z0-9]+-\\d{3}$" },
+      "node": { "type": "string", "minLength": 1 },
+      "node_meta": {
+        "type": "object",
+        "required": ["substance", "phase", "P_kPag", "T_degC", "equipment", "safeguards"],
+        "properties": {
+          "node": {
+            "$comment": "R-01 이 NodeMeta 에 node 를 포함하라고 요구하므로 골드셋 node_meta 에 없는 이 필드를 선택 속성으로 허용한다. required 에는 넣지 않는다 — 골드 레코드의 node_meta 를 그대로 검증할 수 있어야 하기 때문이다.",
+            "type": "string"
+          },
+          "substance": { "type": "string" },
+          "phase": { "type": "string", "enum": ["liquid", "gas", "liquid/gas", "unknown"] },
+          "P_kPag": { "type": ["number", "null"] },
+          "T_degC": { "type": ["number", "null"] },
+          "equipment": { "type": "array", "items": { "type": "string" } },
+          "safeguards": { "type": "array", "items": { "type": "string" } }
+        },
+        "additionalProperties": false
+      },
+      "guideword": { "type": "string", "minLength": 1 },
+      "parameter": { "type": "string", "minLength": 1 },
+      "deviation": { "type": "string", "minLength": 1 },
+      "causes": { "type": "array", "items": { "type": "string" } },
+      "consequences": { "type": "array", "items": { "type": "string" } },
+      "safeguards_before": { "type": "array", "items": { "type": "string" } },
+      "S": { "type": "integer", "minimum": 1, "maximum": 5 },
+      "F": { "type": "integer", "minimum": 1, "maximum": 5 },
+      "risk_score": { "type": "integer", "minimum": 1, "maximum": 25 },
+      "recommendations": { "type": "array", "items": { "type": "string" } },
+      "scenario": { "type": "string" },
+      "evidence": {
+        "$comment": "이 spec 에서는 항상 빈 배열. 근거 인용은 FR-04(evidence-citation) 소관이다.",
+        "type": "array",
+        "items": {},
+        "maxItems": 0
+      },
+      "confidence": {
+        "$comment": "이 spec 은 'inferred' 만 산출한다. 'review' 는 스키마 검증 2회 실패 행에 대해 core/llm 이 격하시킨 경우이며 그 행은 레코드를 만들지 않는다. grounded 는 FR-06 소관.",
+        "type": "string",
+        "enum": ["inferred", "review"]
+      }
+    },
+    "additionalProperties": false
+  }
+}
