@@ -110,7 +110,7 @@ PYTHONIOENCODING=utf-8 .venv/Scripts/python.exe -m pytest -m "not live" -q
 
 ### 완료 보고 (4줄 + 표)
 
-변경 파일 / pytest 결과 / T-07·T-08 완료 조건 충족 여부 / **실측 숫자**: 실호출 총 횟수, N1 3회 recall 평균·최소·최대, 노드당 비용(USD)·지연(초)·토큰. recall ≥ 0.5 이면 "G1 통과(9/16, Anthropic API 경로)" 라고 `docs/진행로그.md` 에 적고, 미달이면 대조표와 함께 "G1 미달 — 재판정 9/18" 로 적는다. 커밋: `spec:hazop-generation T-07~T-08 — 실호출 스모크 + N1 recall 실측`.
+변경 파일 / pytest 결과 / T-07·T-08 완료 조건 충족 여부 / **실측 숫자**: 실호출 총 횟수, N1 3회 recall 평균·최소·최대, 노드당 비용(USD)·지연(초)·토큰. recall ≥ 0.5 이면 "G1 통과(9/23, Anthropic API 경로)" 라고 `docs/진행로그.md` 에 적고, 미달이면 대조표와 함께 "G1 미달 — 대조표 보고 후 정지. 프롬프트 수정 1회는 같은 날 별도 지시문(PRD v2.0 §8 9/23 행·R4)" 로 적는다. **이 세션에서 프롬프트를 고치지 마라**(2단계와 동일 — PRD 의 "미달 시 프롬프트 1회 수정·재측정"은 9/23 안에 하라는 뜻이지 E-2 세션 안에서 하라는 뜻이 아니다). 커밋: `spec:hazop-generation T-07~T-08 — 실호출 스모크 + N1 recall 실측`.
 
 ## 붙여넣기 끝 (E-2)
 
@@ -118,9 +118,13 @@ PYTHONIOENCODING=utf-8 .venv/Scripts/python.exe -m pytest -m "not live" -q
 
 ## 이후 (참고 — 사람용)
 
+> **일정은 PRD v2.0 §8 이 정본이다.** 아래 표는 9/15 작성 당시 계획(9/16 실행 전제)을
+> PRD v2.0 기준으로 옮긴 것. 9/15~9/22 공백(R11)으로 전체가 1주일 밀렸다.
+
 | 시점 | 할 일 |
 |---|---|
-| 9/16 | E-1 → 키 설정 → E-2. G1 판정 |
-| 9/17~18 | recall 미달 시 프롬프트 튜닝 지시문(F). 통과 시 FR-08 하네스 spec 손 작성 |
-| 9/22~24 | 개인 AWS 계정 생성 → Bedrock 모델 액세스(us-east-1 또는 us-west-2, Claude 계열) → `check_bedrock_access.py` → `models.yaml` `provider: bedrock` 으로 전환 → 홀드아웃 5회 반복 최종 지표 |
-| README 비용 절 | "개발 기간(9/16~9/23) Anthropic API 사용 $X, 최종 평가·데모 Bedrock $Y" 로 공개 |
+| 9/22 | E-1(어댑터·오프라인) — **완료**, 커밋 `0c9298f` |
+| 9/23 | 키 설정 → E-2. G1 판정. 미달 시 프롬프트 1회 수정·같은 날 재측정 |
+| 9/24 | evaluation-harness spec 손 작성 → 지시문 F(FR-08 하네스) → 홀드아웃 26건 실측 |
+| 9/27 | 개인 AWS 계정 Bedrock 모델 액세스(us-east-1 또는 us-west-2, Claude 계열) → `check_bedrock_access.py` → `models.yaml` `provider: bedrock` 전환 → 하네스 3회 반복 최종 지표 |
+| README 비용 절 | "개발 기간(9/22~9/27) Anthropic API 사용 $X, 최종 평가·데모 Bedrock $Y" 로 공개 |
