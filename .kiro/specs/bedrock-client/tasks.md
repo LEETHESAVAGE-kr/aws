@@ -1,7 +1,7 @@
 # Tasks — bedrock-client
 
 spec: `bedrock-client`  
-버전: 1.0 · 작성 2026-09-04  
+버전: 1.1 · 작성 2026-09-04 · 개정 2026-09-22 (T-15 손 추가)  
 상위 문서: `requirements.md`, `design.md`  
 구현 담당: Claude Code (`CLAUDE.md` 및 steering 준수)  
 커밋 접두어: `spec:bedrock-client T-xx`  
@@ -344,6 +344,31 @@ G0 킬체크 마감: 2026-09-07
 
 ---
 
+## T-15 · Anthropic 공급자 어댑터 (REQ-12) ☐
+
+**목적**: `provider=anthropic` 일 때 Anthropic Messages API 로 동일한 `converse()` 계약을 수행한다. 대회 계정에 Bedrock 권한이 없어(9/15 확인) 개발·측정 경로를 확보하기 위함. 지시문 E-1 세션에서 구현.
+
+작업 (파일 6개로 제한 — 압축 구현 원칙):
+1. `core/llm/anthropic_client.py` 신규 — `class AnthropicClient(AbstractBedrockClient)`. `_do_converse()` 만 구현하고, `anthropic` SDK 의 `messages.create` 호출 지점은 `_call_messages()` 단 한 곳(NFR-B04 와 같은 원칙).
+   - 매핑: `system` → `[{"type":"text","text":system, (+"cache_control":{"type":"ephemeral"} if prompt_caching)}]`; `Message`/`ContentBlock` → Anthropic 형식(`tool_use`·`tool_result` 블록 포함); `ToolDefinition` → `{"name","description","input_schema"}`; `response_schema` 가 있으면 `structured_output` tool 추가 + `tool_choice={"type":"tool","name":STRUCTURED_OUTPUT_TOOL}` (BedrockClient 와 동일한 승격 규칙 — tool input 을 `content` JSON 으로).
+   - 사용량: `usage.input_tokens`·`output_tokens`·`cache_read_input_tokens`·`cache_creation_input_tokens` → `TokenUsage(input, output, cache_read, cache_write)`.
+   - `stop_reason` 은 Anthropic 값 그대로(`end_turn`·`tool_use`·`max_tokens`) — 기존 테스트가 `end_turn` 을 기대하므로 매핑 불필요.
+   - 비용: `calculate_cost()` 재사용. 가격표는 `config/prices.yaml`(또는 `core/llm/cost.py` `PRICE_TABLE`)에 사용 모델 항목 추가, 출처 주석 필수.
+   - 재시도: `is_throttling_error()` 를 확장해 `anthropic.RateLimitError`·`anthropic.InternalServerError`·`APIStatusError(status 529)` 포함. 로그 형식 `재시도 attempt=<n>/3 reason=<code>` 유지. `anthropic` 미설치 환경에서도 `client.py` 가 import 되도록 `anthropic` import 는 `anthropic_client.py` 안에서만, 예외 판정은 클래스 이름 문자열 또는 지연 import.
+2. `core/llm/config.py` — `ModelConfig` 에 `provider: Literal["bedrock","anthropic"]` 추가(기본 `bedrock`). `provider: anthropic` 이면 `region`·`embedding.model_id`·`guardrails` 가 비어 있어도 통과. `provider: bedrock` 검증 규칙은 현행 유지.
+3. `core/llm/__init__.py` — `get_bedrock_client()`: `HAZOP_USE_MOCK=true` → Mock, 아니면 `load_model_config().provider` 로 분기. `AnthropicClient` export 추가.
+4. `tests/test_llm.py` — `test_repo_config_is_pending_g0` 삭제 후 `test_repo_config_provider_declared` 로 교체(삭제 사유를 docstring 에: "G0 대체 경로 확정, 2026-09-15"). `AnthropicClient` 오프라인 테스트 ≥ 6건.
+5. `config/models.yaml` — 상단 G0 경고 블록 교체 + `provider: anthropic` 추가. **모델 ID 는 추측 금지** — 목록 확인 후 사람이 기입할 때까지 `null` 유지.
+6. `pyproject.toml` — `anthropic` 의존성 버전 고정 + 이유 한 줄. `.env.example` 에 `ANTHROPIC_API_KEY=<your-key>` 추가. `.gitignore` 에 `.env` 확인.
+
+검증:
+- `_call_messages` 를 monkeypatch 한 가짜 응답으로 (a) 텍스트 응답 파싱 (b) structured_output tool → `content` 승격 + 스키마 통과 (c) `tool_use` 블록 파싱 (d) usage 4필드 매핑 (e) `prompt_caching` 에 따른 `cache_control` 유무 (f) 429 재시도 후 성공 / 3회 소진 시 `BedrockCallError`. **네트워크 호출 0회.**
+- 결함 재삽입: (e)·(f)·structured 승격 3곳에 결함을 넣어 시험이 깨지는지 확인 후 원복, 결과를 보고에 기록.
+- `pytest -m "not live"` 전부 통과(기존 142 + 신규). `models.yaml` 의 `model_id` 가 `null` 인 동안 `test_repo_config_provider_declared` 는 xfail(strict=False) 로 두고 보고에 명시.
+- `ruff check core/llm/` 경고 0.
+
+---
+
 ## 태스크 의존 관계
 
 ```
@@ -361,6 +386,8 @@ T-01 (스캐폴딩 · types)
                  └─ T-12 (live 스모크)
                       └─ T-13 (lint · type · coverage)
                            └─ T-14 (Makefile · G0 확인)
+
+T-15 (AnthropicClient · REQ-12)  ← T-07 + T-02~T-06 (T-10 과 형제, 병렬 가능)
 ```
 
 병렬 가능: T-02, T-03, T-04, T-05, T-06 은 T-01 완료 후 동시 진행 가능.  
@@ -383,6 +410,7 @@ T-08 과 T-10 은 T-07 완료 후 동시 진행 가능.
 | REQ-09 | T-03 | `test_cost_calculation`, `test_cost_cache_discount`, `test_cost_unknown_model`, `test_cost_zero_tokens` |
 | REQ-10 | T-08, T-09, T-11 | `test_mock_implements_interface`, `test_mock_records_calls`, `test_mock_exhausted`, `test_factory_mock_env`, `test_factory_real_env` |
 | REQ-11 | T-12 | `test_smoke_live_converse` |
+| REQ-12 | T-15 | `test_repo_config_provider_declared`, `AnthropicClient` 오프라인 6건(텍스트 파싱·structured 승격·tool_use·usage 매핑·cache_control·429 재시도) |
 | NFR-B01 | T-13 | `ruff check core/llm/` |
 | NFR-B02 | T-13 | `mypy --strict core/llm/` |
 | NFR-B03 | T-11, T-13 | `pytest --cov=core/llm` ≥ 70% |

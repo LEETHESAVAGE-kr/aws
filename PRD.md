@@ -1,278 +1,237 @@
 # PRD — 위험성평가 코파일럿 (고려대 × AWS AI Innovators Challenge 2026)
 
-버전 v1.2 · 작성 2026-09-04 · 개정 2026-09-05 19:10 (구현 착수 — Claude Code 세션 운용 절 추가) · 예선 제출 2026-09-29 · 팀 1인 · 정본 위치: 프로젝트 루트 `PRD.md`
-상위 문서: `AI_Innovators_수상전략서_v1.md` (왜 이 아이템인가 · 심사 구조 · 확률). 이 문서는 "무엇을 만들고 어떤 기준으로 완료 판정하는가"만 다룬다.
+버전 **v2.0 (예선 축소판)** · 작성 2026-09-04 · 개정 **2026-09-22 (D-7 범위 재정의)** · 예선 제출 2026-09-29(화) · 팀 1인 · 정본 위치: 프로젝트 루트 `PRD.md`
+이전 판(v1.2, 9/11)은 `docs/PRD_v1.2_archive_20260911.md`에 보존. 상위 문서: `AI_Innovators_수상전략서_v1.md`.
 
-> **작업 도구 규칙 (가장 먼저 읽을 것)**
-> 이 프로젝트는 **Kiro가 설계 정본, Claude Code가 구현 엔진**이다. 요구사항·설계·태스크는 반드시 Kiro spec(`.kiro/specs/`)으로 먼저 만들고, Claude Code는 그 `tasks.md`의 항목을 구현한다. Kiro를 거치지 않은 기능은 존재하지 않는 것으로 취급한다. 이유는 §7 NFR-01 — 제출 코드 10점과 기술 30점의 일부가 `.kiro/` 디렉토리에서 나온다.
-
----
-
-## 0. 한 문장 정의
-
-공정 노드 설명(물질·상태·운전조건·설비)을 입력하면, Amazon Bedrock 에이전트가 HAZOP 이탈 시나리오를 생성하고 각 항목에 KOSHA 기술지침·MSDS·문헌 고장률 **근거를 인용으로 붙이고**, 자기 출력의 신뢰도를 항목별로 채점한 뒤, PSM 제출 양식의 HAZOP 워크시트(xlsx)와 LOPA 초안(md)으로 내보내는 서비스. 골드셋(전문가 HAZOP 34 이탈) 대비 성능을 README에 숫자로 공개한다.
-
-성공의 정의(예선): **새 환경에서 README만 보고 5분 안에 실행 → 노드 1개 입력 → 근거가 달린 워크시트 xlsx 다운로드**가 되고, 평가표에 recall·근거정확도·환각률·비용이 적혀 있다.
+> **v2.0 개정 이유 (가장 먼저 읽을 것)**
+> 9/15 진행보고서 이후 일주일간 작업이 멈췄다(폴더 최종 수정 9/15 13:01). 남은 시간은 **7일, 1인**이며 LLM 실호출은 아직 0회다. v1.2의 FR-01~11 전체는 실행 불가능하므로, 이 판은 **"심사표에서 점수가 나오는 최소 패키지"** 만 남기고 나머지를 본선 로드맵으로 넘긴다. 이 문서에 P0로 표시되지 않은 것은 만들지 않는다.
+>
+> 작업 도구 규칙은 유지한다: Kiro spec이 설계 정본, Claude Code가 구현 엔진. 다만 Kiro 크레딧이 없으므로 신규 spec·requirement는 **손으로 작성**한다(9/11 export-formats 선례, NFR-01 추적성 유지).
 
 ---
 
-## 1. 배경 (전략서에서 확정된 사실)
+## 0. 한 문장 정의 (변경 없음)
 
-- 배점: 기획 20 / 개발 70(기술 30·활용성·완성도 30·코드 10) / 본선 10. 예선 온라인 심사(9/30~10/2)에서 90점 결정.
-- 심사자 추정: 정보대학 교수진(문제정의·평가방법) + AWS SA(Bedrock 활용 깊이·Kiro 흔적).
-- 승리 공식: 좁은 실무 도메인 × AWS 네이티브 구현 × **측정된 신뢰성** × 3분 데모 임팩트.
-- 킬 체크(전략서 §2): 9/7 Bedrock 호출 성공 · 9/10 프롬프트만으로 recall ≥ 0.5 · 텍스트 입력만으로 데모 성립.
+공정 노드 설명(물질·상태·운전조건·설비)을 입력하면 LLM 에이전트가 HAZOP 이탈 시나리오를 가이드워드×파라미터 매트릭스로 빠짐없이 생성하고, 항목별 신뢰도를 채점한 뒤, PSM 제출 양식의 HAZOP 워크시트(xlsx)와 LOPA 초안(md)으로 내보내는 서비스. 골드셋(전문가 HAZOP 34 이탈) 대비 성능을 README에 숫자로 공개한다.
+
+**성공의 정의(예선, v2.0)**: 새 환경에서 README만 보고 5분 안에 실행 → NH3 프리셋 1클릭 → 워크시트 xlsx 다운로드가 되고, README 평가표에 **실측 recall·S/F MAE·비용·지연**이 (불리하더라도) 적혀 있다.
 
 ---
 
-## 2. 사용자와 시나리오
+## 1. 현재 상태 (2026-09-22 실측)
 
-| 사용자 | 상황 | 이 서비스가 하는 일 |
+| 항목 | 상태 | 근거 |
 |---|---|---|
-| PSM 컨설턴트(1차 페르소나, 본인) | 신규 사업장 HAZOP 워크시트 초안을 팀 회의 전에 만들어야 함 | 노드별 이탈 초안 + 근거 + 신뢰도 배지 → 회의에서 검토·수정 |
-| 중소 화학사업장 안전관리자 | 자기규율 예방체계로 위험성평가를 자체 수행해야 하지만 HAZOP 경험 없음 | 가이드워드 누락 없이 초안 확보, KOSHA 지침 문단으로 학습 |
-| 심사위원(온라인) | README 보고 직접 실행 | 데모 노드 프리셋 1클릭 → 결과·평가표 확인 |
+| 코드 | FR-01 ✅ · FR-02 mock ✅ · FR-03 mock ✅ · FR-07 ✅ (미커밋) | 142 passed(9/11, 샌드박스 Py3.11) |
+| git | 마지막 커밋 9/8(`26575ee`), 9/11 작업 미커밋, `.git/index.lock` 잔존 | 9/11 세션 중단 흔적 |
+| LLM 실호출 | **0회** | 대회 IAM Identity Center 포털에 AWS 계정 없음(9/15 확인). Anthropic API 키 미발급(`.env` 없음) |
+| spec | 4/7 (gold-dataset, bedrock-client, hazop-generation, export-formats). REQ-12·T-15 미추가 | `.kiro/specs/` |
+| 게이트 | G0·G1 판정 불능, G2 1/3, **G3(9/21) 미달**, G4(9/26) D-4 | 9/15 보고서 기준 유지 |
+| 외부 일정 | 휴먼테크 초록 9/22 | R6 |
 
-핵심 사용 흐름(예선 범위):
-1. 노드 입력(폼 또는 JSON): 노드명, 물질(CAS 또는 명칭), 상(액/기), 운전 압력·온도, 설비 목록, 기존 안전장치.
-2. "생성" → 에이전트 루프 실행(20~60초).
-3. 결과 표: 이탈 행마다 원인·결과·기존 안전장치·S·F·권고 + **근거 인용(문서명·문단)** + **신뢰도 배지(근거 있음/추정/검토 필요)**.
-4. xlsx(HAZOP 워크시트 양식) · LOPA 초안 md 다운로드.
-5. (선택) "평가 실행" → 골드셋 대비 지표 재계산.
+**결정(9/15, 유지)**: 개발·측정은 Anthropic Messages API 어댑터로 즉시 진행하고, 제출 직전 개인 AWS Bedrock 계정으로 `models.yaml`의 `provider`만 바꿔 최종 지표를 다시 찍는다. 사무국 문의는 하지 않는다. README 비용 절에 공개한다.
 
 ---
 
-## 3. 데이터 명세
+## 2. 범위 재정의 — 우선순위 등급
 
-### 3.1 골드셋 (보유)
-- 원본: `공모전/위험성평가경진대회/NH3-STS-QRA/04_hazop/D1_HAZOP_워크시트.xlsx`, 시트 `HAZOP워크시트` 36행×12열.
-- 컬럼: `No, 노드, 가이드워드, 이탈, 원인, 결과, 기존 안전장치(Before), S(1-5), F(1-5), 위험도, 권고, 시나리오 연계`.
-- 노드: N1 벙커링선 매니폴드 외(S1·S2·S3 시나리오 연계). 변환 후 `data/gold/hazop_nh3.json` (이탈 단위 레코드, 노드 메타 포함).
-- 분할: **노드 단위 홀드아웃**. 프롬프트 튜닝은 N1 계열만, 평가는 나머지 노드. 노드 수가 적으면 이탈 단위 stratified 70/30으로 대체하고 README에 명시.
-- 시트 `평가기준`(S·F 등급 정의)은 그대로 프롬프트 컨텍스트와 xlsx 출력 양식에 재사용.
+| 등급 | 뜻 | 규칙 |
+|---|---|---|
+| **P0** | 없으면 제출물이 성립하지 않음 | 9/27까지 반드시 완료. 다른 모든 작업에 우선 |
+| **P1** | 심사 점수(기술 30·완성도 30·코드 10)를 직접 올림 | P0 완료 후 9/28까지 |
+| **P2** | 여력 시 | 9/28 이후에만. 미완이면 README "본선 로드맵"에 서술 |
+| **삭제** | 예선에서 만들지 않음 | README "한계와 본선 로드맵"에 1~2줄 |
 
-### 3.2 지식 베이스 (수집, 전부 공개 자료)
-- KOSHA Guide P-시리즈 중 HAZOP·LOPA·PSM 위험성평가 관련 5~8종 PDF → `data/kb/kosha/`. 문서별 메타(코드·제목·개정연도) `data/kb/manifest.csv`.
-- 문헌대장 L-01~27·가정대장 A-01~22(NH3 QRA `01_registers/`) → 고장률·가정 근거 tool의 시드 `data/kb/registers.json`.
-- 화학물질 속성: KOSHA 화학물질정보 또는 화학물질안전원 공개 MSDS 항목(비점·인화점·독성 등) → 데모용 물질 20종 캐시 `data/kb/substances.json`. 실시간 API는 비목표.
+### 2-1. FR별 판정
 
-### 3.3 금지
-- **KECC 고객사 실데이터 사용 금지.** 데이터 출처·라이선스 표를 `data/README.md`에 두고 README에서 링크.
-- 개인정보 없는 데이터만. Guardrails에 PII 차단을 켠다(NFR-05).
+| FR | v1.2 | **v2.0** | 등급 | 비고 |
+|---|---|---|---|---|
+| FR-01 골드셋 | 완료 | 유지 | — | 34건, tune=N1(8) / holdout=26 |
+| FR-02 LLM 클라이언트 | Bedrock 전용 | **공급자 추상화 + Anthropic 어댑터(REQ-12)** | **P0** | 지시문 E-1/E-2 |
+| FR-03 이탈 생성 | mock까지 | **실호출 + N1 recall 측정** | **P0** | T-07·T-08 |
+| FR-04 근거 검색(Bedrock KB) | KB 구축 | **삭제 → 축소판 FR-04′(로컬 인용)** | P2 | §5 FR-04′ |
+| FR-05 물질·고장률 tool | 20종·10종 | **축소: 물질 5종 + 고장률 시드(L-대장)** | P1 | 순수 데이터 작업 |
+| FR-06 verifier | LLM 2차 호출 | **규칙 기반 1단만** | P1 | 근거 없는 규격번호·수치 정규식 플래그 |
+| FR-07 내보내기 | 완료 | 유지(커밋) | **P0** | `index.lock` 정리 후 커밋 |
+| FR-08 평가 하네스 | 임베딩 매칭·5회 반복 | **축소: 정확일치+문자열 유사도, 3회 반복** | **P0** | 실측 숫자가 README에 들어가는 유일한 경로 |
+| FR-09 FastAPI | 있음 | **삭제** | 삭제 | Streamlit이 `core/` 직접 호출 |
+| FR-10 Streamlit UI | 프리셋 3개 | **프리셋 1개(NH3) + 결과표 + 다운로드** | **P0** | 프리셋 2·3은 P2 |
+| FR-11 README·영상 | 9절 구성 | 유지(축약 허용) | **P0** | 제3자 실행 확인 9/28 |
+| Guardrails PII | 설정 | **README 서술만** | 삭제 | Anthropic 경로에선 적용 불가, Bedrock 전환 시 설정 1개 |
+| Docker | 유지 | Dockerfile 1개 + `make demo` | P1 | `make demo`가 더 중요 |
 
 ---
 
-## 4. 시스템 설계 (요약 — 상세는 Kiro `design.md`)
+## 3. 데이터 명세 (변경분만)
+
+- 골드셋: v1.2 §3.1 그대로. 정본 34건(R10 종결).
+- **KB(§3.2) 축소**: KOSHA Guide PDF 수집·청킹·벡터스토어는 예선 비목표. 대신 `data/kb/registers.json`(문헌대장 L-01~27·가정대장 A-01~22 시드)과 `data/kb/substances.json`(NH3 포함 5종, 출처 필드 필수)만 만든다. FR-04′를 하는 경우에만 KOSHA 지침 **2~3종의 발췌 텍스트**(`data/kb/kosha_excerpts.json`, 문서명·문단번호·원문 인용)를 손으로 정리한다.
+- 금지 사항(§3.3)은 변경 없음. KECC 고객사 실데이터 사용 금지.
+
+---
+
+## 4. 시스템 설계 (v2.0)
 
 ```
-apps/web (Streamlit)  ──HTTP──▶  services/api (FastAPI)
-                                     │
-                                     ▼
-                           core/agent  (Bedrock Converse API, tool use 루프)
-                             ├─ tool: kb_search      → Bedrock Knowledge Base (S3 + 벡터 스토어)
-                             ├─ tool: substance_lookup → data/kb/substances.json
-                             ├─ tool: failure_rate    → data/kb/registers.json
-                             └─ verifier (2차 호출)   → 근거 없는 주장 플래그, 누락 가이드워드 점검
-                                     │
-                                     ▼
-                           core/export  (xlsx 워크시트 · LOPA md · 신뢰도 리포트 json)
-eval/  (골드셋 하네스: recall·precision·근거정확도·환각률·지연·비용, 시드 고정 5회)
-.kiro/ (specs · steering · hooks · mcp 설정)  ← 심사 대상 산출물
+apps/web (Streamlit)  ── 직접 import ──▶  core/agent/generate.py  (매트릭스 열거 → 이탈 판정, 스키마 강제)
+                                              │  core/llm/  AbstractBedrockClient
+                                              │    ├─ BedrockClient    (provider: bedrock,   제출 시)
+                                              │    ├─ AnthropicClient  (provider: anthropic, 개발·측정 시)  ← REQ-12
+                                              │    └─ MockBedrockClient (오프라인 테스트)
+                                              ├─ tools: substance_lookup · failure_rate   (P1, 로컬 json)
+                                              ├─ verify.py  규칙 기반 플래그 → confidence   (P1)
+                                              ▼
+                                        core/export  (xlsx 5시트 · lopa_draft.md · confidence_report.json)  ✅
+eval/run.py   (골드셋 하네스: recall·precision·S/F MAE·지연·비용, 시드 고정 3회)   ← P0
+.kiro/        (specs · steering)   ← 심사 대상 산출물
 ```
 
-- 모델: Bedrock Claude 계열(크로스리전 추론 프로파일 허용). 모델 ID·리전은 `config/models.yaml` 한 곳에서만 정의(교체 비용 0).
-- 라우팅: 생성은 상위 모델, verifier·요약은 하위 모델(비용). 프롬프트 캐싱 적용 지점: 시스템 프롬프트 + 평가기준 + 가이드워드 정의.
-- 구조화 출력: 이탈 레코드 JSON 스키마(`schemas/deviation.schema.json`)를 tool 결과·최종 출력 모두에 강제. 스키마 검증 실패 시 1회 재시도 후 "검토 필요"로 격하.
-- Guardrails: PII 차단, 금칙(허위 규격 번호 생성 방지 — 근거 tool 결과에 없는 KOSHA 코드 인용 시 verifier가 플래그).
-- 배포: 예선은 단일 컨테이너(Docker) + 로컬 실행 지침. 여력 있으면 App Runner/ECS 1개 URL. Lambda 전환은 본선.
+- `config/models.yaml`에 `provider: anthropic | bedrock` 키 추가. 호출부(`core/agent`, `core/export`, `tests`)는 `AbstractBedrockClient`만 본다(AC-12-1).
+- 프롬프트 캐싱: Anthropic 경로는 시스템 블록 `cache_control: ephemeral`, Bedrock 경로는 기존 캐싱 마커.
+- 삭제된 것: FastAPI, Bedrock Knowledge Base, LLM verifier 2차 호출, Guardrails 설정, App Runner.
 
 ---
 
-## 5. 기능 요구사항 (FR)
+## 5. 기능 요구사항 (v2.0 유효분)
 
-각 FR은 Kiro spec 1개 또는 spec 내 requirement 묶음에 대응한다. 완료 조건은 전부 자동 테스트 또는 산출 파일로 확인 가능해야 한다. 상태는 이 문서에서 갱신한다.
+### FR-02 LLM 클라이언트 — spec `bedrock-client` + **REQ-12 (손 추가)** · P0
+- REQ-12: `provider=anthropic`이면 Anthropic Messages API로 동일한 `converse()` 계약(시스템·메시지·tool·JSON 스키마 강제·재시도·토큰/비용/지연 로깅) 수행. `provider=bedrock`이면 기존 경로.
+- AC-12-1 호출부 무변경 · AC-12-2 오프라인 테스트 네트워크 0회 · AC-12-3 키는 `ANTHROPIC_API_KEY` 환경변수만 · AC-12-4 캐싱 대응 · AC-12-5 429/529/5xx 재시도(3회, 1→2→4s).
+- 완료: `pytest -m "not live"` 통과(기존 142 + 어댑터 테스트), `pytest -m live` 스모크 1회 성공 로그(`results/smoke_*/`).
 
-### FR-01 골드셋 변환 (`tools/build_gold.py`) — spec: `gold-dataset`
-- xlsx → `data/gold/hazop_nh3.json`. 레코드: `{id, node, node_meta{substance, phase, P, T, equipment, safeguards}, guideword, parameter, deviation, causes[], consequences[], safeguards_before[], S, F, recommendations[], scenario}`.
-- 가이드워드 문자열 `"More (압력)"`을 `guideword="More", parameter="압력"`으로 분해.
-- 완료: 레코드 수 = 원본 행 수, 필수 필드 결측 0, 테스트 `tests/test_gold.py` 통과.
+### FR-03 이탈 생성 — spec `hazop-generation` T-07·T-08 · P0
+- T-07: N1 노드 실호출 1회 → 스키마 검증 100%, 60초 내 결과, 비용·지연 로그.
+- T-08: N1 tune 8건 대비 recall 측정. **G1 기준 recall ≥ 0.5**. 미달 시 프롬프트 1회 수정 후 재측정(총 실호출 상한: 세션당 5회).
+- 실호출 횟수는 지시문에 명시하고 Claude Code가 임의 반복하지 않는다.
 
-### FR-02 Bedrock 클라이언트와 설정 (`core/llm/`) — spec: `bedrock-client`
-- Converse API 래퍼: 시스템 프롬프트·메시지·tool 정의·JSON 스키마 강제·재시도·토큰/지연/비용 로깅.
-- `config/models.yaml`: 리전, 생성 모델 ID, verifier 모델 ID, 온도, 최대 토큰, 캐싱 on/off.
-- 완료: 스모크 테스트(실호출 1회, 마커 `@pytest.mark.live`) 통과 · 모의 클라이언트로 오프라인 테스트 가능.
-- **킬 체크 9/7 대상.**
+### FR-05 물질·고장률 tool — spec `evidence-citation`(손 작성, ≤5 태스크) · P1
+- `substance_lookup(name|CAS)` → NH3·프로판·염소·수소·메탄올 5종, 각 항목에 `source` 필드. `failure_rate(equipment, mode)` → `registers.json`에서 L-번호·값 반환. 미존재 시 `{"status": "not_found"}`.
+- 완료: 5종·설비 5종 조회 테스트, `not_found` 테스트 통과. 생성 루프에 tool 결과를 컨텍스트로 주입(선택, 시간 있을 때).
 
-### FR-03 이탈 생성 루프 (`core/agent/generate.py`) — spec: `hazop-generation` ★핵심
-- 입력: 노드 메타 JSON. 출력: 이탈 레코드 배열(FR-01과 동일 스키마 + `evidence[]`, `confidence`).
-- 가이드워드 × 파라미터 매트릭스(No/More/Less/Reverse/Other than/Part of/As well as × 유량·압력·온도·조성·준위 등)를 **먼저 열거**하고, 각 셀에 대해 적용 여부·이탈을 생성(누락 방지 구조).
-- S·F는 `평가기준` 시트 정의를 컨텍스트로 주고 정수 1~5로 산출, 위험도 = S×F.
-- 완료: N1 노드 입력 시 60초 내 결과, 스키마 검증 100%, 골드셋 N1 대비 recall ≥ 0.5(9/10 킬 체크). 최종 목표 recall ≥ 0.7(홀드아웃 노드).
+### FR-06 규칙 기반 verifier — spec `self-verification`(손 작성, ≤4 태스크) · P1
+- LLM 호출 없음. 각 이탈에 대해 (a) 규격 번호 패턴(`KOSHA GUIDE P-\d+`, `KS B \d+`, `API \d+` 등)이 tool/발췌에 없으면 플래그 (b) 근거 없는 수치 주장(단위 붙은 숫자) 플래그 (c) 매트릭스 누락 셀 보고.
+- `confidence`: 플래그 없음 → `inferred`(근거 tool 없이 생성됐으므로 `grounded` 불가), 플래그 있음 → `review`. FR-04′를 한 경우에만 `grounded` 부여.
+- 완료: 의도 삽입 10건 중 ≥ 9건 플래그(기존 결함 재삽입 테스트 방식 재사용).
 
-### FR-04 근거 검색 tool과 인용 (`core/agent/tools/kb_search.py`) — spec: `evidence-citation`
-- Bedrock Knowledge Base 구축 스크립트(`infra/kb_setup.py`: S3 업로드 → KB 생성 → 동기화) + 검색 tool(질의 → top-k 문단, 문서명·페이지·문단 텍스트 반환).
-- 이탈 레코드의 `evidence[]`에 `{source_id, doc_title, locator, quote}` 첨부. 인용은 **tool이 반환한 텍스트에서만** 가능 — 모델이 스스로 쓴 규격 번호는 verifier가 제거.
-- 완료: 데모 노드 결과의 이탈 중 근거 첨부율 ≥ 80%, 수작업 채점 30건에서 근거정확도(인용 문단이 주장을 지지) ≥ 0.8.
+### FR-04′ 로컬 인용(축소판) — spec `evidence-citation` 내 requirement · P2
+- `kosha_excerpts.json`의 발췌를 키워드 검색(BM25 또는 단순 토큰 일치)해 상위 2개를 `evidence[]`에 `{source_id, doc_title, locator, quote}`로 첨부. 인용은 발췌 텍스트에서만.
+- 완료: 데모 노드 결과 근거 첨부율 ≥ 50%(v1.2의 80%에서 하향, README에 명시).
+- **9/28 이전에 P0·P1이 끝났을 때만** 착수.
 
-### FR-05 물질 속성·고장률 tool (`core/agent/tools/substance.py`, `failure_rate.py`) — spec: `evidence-citation` 내 포함
-- `substance_lookup(name|CAS)` → 비점·인화점·독성·증기압 등, 출처 필드 포함. S 등급 산정 근거로 사용.
-- `failure_rate(equipment, mode)` → registers.json에서 문헌 고장률·L-번호 반환. F 등급 근거.
-- 완료: 데모 물질 20종·설비 10종 조회 성공, 미존재 시 명시적 `not_found` 반환(환각 방지).
+### FR-07 내보내기 — spec `export-formats` · P0(커밋만)
+- 구현 완료. `index.lock` 삭제 → 로컬 3.12 `make test` → 커밋 `spec:export-formats T-01~T-06`.
 
-### FR-06 자기 검증(verifier) 와 신뢰도 배지 (`core/agent/verify.py`) — spec: `self-verification`
-- 2차 호출: 각 이탈에 대해 (a) evidence가 주장을 지지하는가 (b) 수치·규격 주장 중 근거 없는 것 (c) 매트릭스 누락 셀. 출력 `confidence ∈ {grounded, inferred, review}` + 사유.
-- 규칙: evidence 없음 → 최고 `inferred`; 근거 없는 수치 주장 존재 → `review`.
-- 완료: 의도적으로 근거 없는 규격 번호를 삽입한 테스트 케이스 10건 중 ≥ 9건 플래그.
+### FR-08 평가 하네스 — spec `evaluation-harness`(손 작성, ≤6 태스크) · P0
+- 명령 1개: `python -m eval.run --split holdout --repeats 3 --seed 42 --provider anthropic|bedrock`.
+- 매칭: (가이드워드, 파라미터) 정확 일치 **AND** 이탈 텍스트 유사도(`difflib.SequenceMatcher` 또는 문자 2-gram Jaccard ≥ τ, τ=0.5 시작, README 명시). 임베딩 매칭은 본선.
+- 지표: 이탈 recall·precision, S·F MAE, `review` 비율, 노드당 지연(초)·입출력 토큰·비용(USD). 근거정확도 수작업 채점은 FR-04′를 한 경우에만.
+- 출력: `results/{run_id}/metrics.json` + `config.yaml` 사본 + README용 마크다운 표.
+- 완료: holdout 26건 × 3회 평균±표준편차 표가 README §평가에 있고, **불리한 지표도 포함**. 오프라인 테스트는 mock 결과로 지표 계산 로직 검증.
 
-### FR-07 내보내기 (`core/export/`) — spec: `export-formats`
-- xlsx: 골드셋 원본과 **동일한 12열 양식** + 추가 시트 `근거`(이탈 No ↔ 인용) + `신뢰도`. 위험도 셀은 수식 `=H*I` 유지.
-- LOPA 초안 md: 위험도 상위 N개 이탈에 대해 IE·IPL 후보·필요 PFD 서술(형식은 NH3 `08_bowtie_lopa/LOPA_S1_C1.md` 준용).
-- 신뢰도 리포트 json.
-- 완료: 생성 xlsx를 openpyxl로 재로딩 시 스키마 일치, 골든 파일 스냅샷 테스트 통과.
+### FR-10 Streamlit UI — spec 없음(steering `docs.md`·PRD가 정본) · P0
+- 한 화면: 상단 60초 HAZOP 설명 + NH3 확산 지도 이미지 1장 / 좌 "NH3 매니폴드 프리셋" 버튼 + JSON 편집 가능 / 우 결과표(신뢰도 배지 색상) + xlsx·LOPA md 다운로드.
+- `core/agent`·`core/export` 직접 호출. 예외 시 사유 표시. 진행 표시(스피너).
+- 완료: 프리셋 1클릭 → xlsx 다운로드 3분 내 완주. `make demo` 한 줄로 실행.
 
-### FR-08 평가 하네스 (`eval/`) — spec: `evaluation-harness` ★차별화
-- 명령 1개(`python -m eval.run --split holdout --repeats 5 --seed 42`)로 실행.
-- 매칭: 골드 이탈 ↔ 생성 이탈을 (가이드워드, 파라미터) 정확 일치 + 이탈 텍스트 의미 유사도(임베딩 코사인 ≥ τ, τ는 README에 명시)로 매칭. 매칭 방식의 한계도 서술.
-- 지표: 이탈 recall·precision, S·F 등급 MAE, 근거 첨부율, 근거정확도(수작업 30건 표 포함), 환각률(verifier `review` 비율 및 수작업 확인), 노드당 지연(초)·토큰·비용(USD).
-- 출력: `results/{run_id}/metrics.json` + `results/{run_id}/config.yaml` + README용 마크다운 표 자동 생성.
-- 완료: 5회 반복 평균±표준편차 표가 README §평가에 들어가 있고, **불리한 지표도 포함**돼 있다.
-
-### FR-09 API (`services/api/`) — spec: `service-api`
-- FastAPI: `POST /generate`(노드 메타 → 결과 json), `GET /export/{run_id}.xlsx`, `GET /health`. 요청·응답 스키마는 `schemas/`와 공유.
-- 완료: OpenAPI 문서 자동 생성, 통합 테스트(모의 LLM) 통과.
-
-### FR-10 웹 UI (`apps/web/`, Streamlit) — spec: `web-ui` (W3에만 작업)
-- 좌: 노드 입력 폼 + **데모 프리셋 버튼 3개**(NH3 매니폴드, 프로판 저장탱크, 염소 배관 — 프리셋 2·3은 데모용, 골드셋 없음을 UI에 표기). 우: 결과 표(신뢰도 배지 색상), 근거 펼치기, 다운로드 버튼.
-- 첫 화면 상단: 60초 HAZOP 설명 + 전략서 §6-1의 시각 장치(NH3 확산 지도 이미지 1장).
-- 완료: 심사위원 시나리오(프리셋 1클릭 → xlsx 다운로드) 3분 내 완주, 예외 시 사용자에게 사유 표시.
-
-### FR-11 README·제출 패키지 — spec 없음(steering 규칙 `docs.md`로 관리)
-- 구성 고정: ①문제(60초 HAZOP + 사고 사례 1건) ②왜 LLM인가 ③데이터·라이선스 ④아키텍처 다이어그램 ⑤Kiro 개발 방식과 추적 매트릭스 ⑥**평가 결과 표** ⑦한계와 본선 로드맵 ⑧실행 방법(5분) ⑨비용.
-- 추적 매트릭스: `R-xx(requirements.md) → 코드 모듈 → T-xx(테스트) → 지표`.
-- 3분 데모 영상 링크.
-- 완료: 제3자(새 머신)가 README만으로 실행 성공 기록 1건.
+### FR-11 README·제출 패키지 · P0
+- 구성: ①문제(60초 HAZOP + 사고 사례 1건) ②왜 LLM인가 ③데이터·라이선스 ④아키텍처(v2.0 그림) ⑤Kiro 개발 방식과 추적 매트릭스(spec → 코드 → 테스트 → 지표) ⑥**평가 결과 표(실측)** ⑦한계와 본선 로드맵(삭제 항목 전부 여기) ⑧실행 방법 5분 ⑨비용(개발 중 Anthropic API 사용·제출 시 Bedrock 전환 명시, 개발 도구 비용 포함).
+- 3분 데모 영상: 프리셋 클릭 → 결과 → verifier 플래그 장면 → xlsx 열기 → README 평가표.
+- 완료: 제3자(새 머신 또는 새 venv)가 README만으로 `make setup && make demo` 성공 기록 1건(9/28).
 
 ---
 
-## 6. Kiro 운용 규칙 (도구 분담)
+## 6. Kiro 운용 규칙 (v2.0 보정)
 
-| 산출물 | 만드는 도구 | 정본 위치 | 비고 |
+- 신규 spec 3개(evidence-citation, self-verification, evaluation-harness)는 **손 작성**. 형식은 기존 spec과 동일(EARS requirements + design + tasks 체크박스), 태스크 상한 evaluation-harness ≤ 6, evidence-citation ≤ 5, self-verification ≤ 4.
+- 기존 spec에 requirement를 추가할 때도 손으로(REQ-12 → `bedrock-client/requirements.md`, T-15 → `tasks.md`).
+- README ⑤에 "Kiro 크레딧 소진 후 spec 3종·REQ-12는 동일 형식으로 수작업 유지"를 명시(정직성 + NFR-01).
+- Claude Code 세션 운용(§6-1)은 변경 없음: 한 세션 = 한 지시문, 완료 보고 4줄을 `docs/진행로그.md`에, 커밋 `spec:<name> T-xx`.
+
+---
+
+## 7. 비기능 요구사항 (v2.0 보정)
+
+- NFR-01 추적성: 유지. 손 작성 spec도 requirement ID를 갖는다.
+- NFR-02 재현성: `make setup && make demo`, `python -m eval.run` 단일 명령, mock 경로 오프라인 통과. **변경**: `--provider` 인자로 Anthropic/Bedrock 동일 하네스.
+- NFR-03 신뢰성 공개: 유지. recall이 0.5 미만이어도 표에 적는다.
+- NFR-04 비용: 노드 1건 ≤ USD 0.30 목표, Anthropic·Bedrock 각각 실측 기록. 개발 기간 총 API 비용 README에 공개.
+- NFR-05 안전: 실데이터 금지·시크릿은 환경변수. Guardrails는 서술만.
+- NFR-06 지연: 노드 1건 ≤ 60초(P90). 초과 시 UI 진행 표시.
+- NFR-07 코드 품질: ruff clean, `pytest -m "not live"` 전부 통과. 커버리지 수치 요구는 삭제.
+
+---
+
+## 8. 마일스톤 (9/22 → 9/29, 일 단위)
+
+| 날짜 | 게이트 | 할 일 | 통과 조건 |
 |---|---|---|---|
-| requirements.md(EARS) / design.md / tasks.md | **Kiro spec** | `.kiro/specs/<spec>/` | spec 7개 상한: gold-dataset, bedrock-client, hazop-generation, **export-formats**(9/11 추가 — FR-07 결합도가 낮아 흡수 시 추적성이 흐려짐, 손 작성), evidence-citation, self-verification, evaluation-harness. api/ui는 evaluation 안에 requirement로 흡수하거나 W3에 spec 없이 구현 |
-| steering | **Kiro** | `.kiro/steering/` | `domain.md`(가이드워드·PSM 용어·KOSHA 문서 체계·S/F 정의), `engineering.md`(Python 3.12, 타입힌트, pytest, ruff, 로깅, 시크릿 금지), `aws.md`(리전·모델 ID는 config에서만, 비용 상한, 태깅), `docs.md`(README 구성·추적 매트릭스 규칙) |
-| hooks | **Kiro** | `.kiro/hooks/` | 저장 시 `ruff + pytest -m "not live"`, spec 변경 시 README 추적 매트릭스 재생성, 커밋 전 시크릿 스캔 |
-| MCP | Kiro 설정 | `.kiro/settings/mcp.json` | AWS Documentation MCP(Bedrock API 최신 사양), 파일시스템 |
-| 구현·리팩터·테스트 작성·대량 편집 | **Claude Code** | 코드 트리 | `tasks.md` 항목 단위로 지시. 완료 시 Kiro에서 해당 task 체크 |
-| 실험 반복·평가 실행·결과 표 생성 | Claude Code | `eval/`, `results/` | |
+| **9/22(화)** | G0′ 정리 | ① `index.lock` 삭제 → `make test`(로컬 3.12) → 9/11 작업 커밋 ② REQ-12·T-15 손 추가 ③ Anthropic API 키 발급 → `.env` ④ **지시문 E-1** 세션(어댑터, 오프라인 테스트) | 커밋 2개(export-formats, T-15), `pytest -m "not live"` 통과 |
+| **9/23(수)** | **G1** | **지시문 E-2** 세션: T-07 스모크 1회 → T-08 N1 recall. 미달 시 프롬프트 1회 수정·재측정 | **실호출 성공 + recall 숫자 1개**(≥0.5 목표, 미달도 기록) |
+| **9/24(목)** | G3′-a | evaluation-harness spec 손 작성 → 지시문 F(FR-08 하네스, mock 검증) → holdout 26건 × 1회 실측 | `results/*/metrics.json` 생성, README용 표 자동 출력 |
+| **9/25(금)** | **판단점** + G3′-b | 오전: FR-05 데이터(registers·substances) + evidence-citation·self-verification spec 손 작성. 오후: 지시문 G(FR-06 규칙 verifier). **판단**: 실호출·하네스가 안 돌면 §9 Plan B(mock replay) 확정 | verifier 10/10 테스트, tool `not_found` 테스트 |
+| **9/26(토)** | **G4′** | 지시문 H(FR-10 Streamlit 최소 UI) + Dockerfile + `make demo` | 프리셋 1클릭 → xlsx 다운로드 완주 |
+| **9/27(일)** | G4′-b | 개인 AWS 계정 Bedrock 모델 액세스 → `provider: bedrock`으로 하네스 3회 반복 실측 → README 평가표 확정. Bedrock 실패 시 Anthropic 실측을 표에 쓰고 사유 명시 | 최종 지표 표 |
+| **9/28(월)** | G5-a | README 9절 완성, 3분 영상 녹화, 제3자 실행 확인, 리포 정리(`.kiro/`·`docs/`·`results/`) | 새 venv `make setup && make demo` 성공 |
+| **9/29(화)** | **G5 제출** | 오전 최종 점검·제출. (여력 시 FR-04′·프리셋 2 — 제출 후에는 손대지 않음) | 제출 완료 |
 
-운용 절차(한 기능당):
-1. Kiro에서 spec 생성 → requirements.md 검토·수정(EARS 문장에 수용 기준 포함) → design.md → tasks.md.
-2. Claude Code에 "`.kiro/specs/<spec>/tasks.md`의 T-03을 구현하라, `CLAUDE.md`와 steering 준수" 형태로 위임.
-3. 테스트 통과 → Kiro에서 task 완료 표시 → 커밋 메시지에 `spec:<name> T-03`.
-4. 요구사항이 바뀌면 코드가 아니라 **requirements.md를 먼저** 고친다.
-
-**spec 범위 상한 (2026-09-04 추가, gold-dataset 13태스크·bedrock-client 14태스크 검토 후)**: 이후 spec은 태스크 ≤ 8개, 신규 클래스 ≤ 3개. Kiro 요청 프롬프트 끝에 이 상한을 명시한다. PRD에 없는 도구·의존성(mypy --strict, scikit-learn 등)이 spec에 들어오면 requirements에서 삭제하거나 구현 시 제외한다. 이미 생성된 spec은 재생성하지 않고 **압축 구현**한다 — 태스크 번호·클래스명은 추적성을 위해 유지하되 파일 1~2개, 얇은 함수 수준으로.
-
-크레딧 절약: spec 빌드는 기능당 1회. 반복 수정은 Claude Code. 크레딧 소진 시에도 `.kiro/` 구조는 손으로 유지(README에 소비 로그 공개 — 비용 절에 "개발 도구 비용"으로 서술).
+하루 예산: 각 날짜의 P0 항목이 끝나지 않으면 다음 날 P1을 밀어낸다. 9/26까지 P0(FR-02·03·07·08·10)가 끝나지 않으면 9/27은 P1을 전부 버리고 P0에 쓴다.
 
 ---
 
-### 6-1. Claude Code 세션 운용 (2026-09-05 추가)
+## 9. Plan B — mock replay 데모 (9/25 판단점에서 발동)
 
-- 세션은 항상 프로젝트 루트(`hazop-copilot/`)에서 `claude`로 시작한다. CLAUDE.md가 자동 로드된다.
-- 지시는 `docs/지시문_*.md`를 그대로 붙여 넣는다. 지시문은 사람이 검토·수정한 뒤 붙이며, 세션 안에서 즉흥으로 범위를 넓히지 않는다.
-- 한 세션 = 한 지시문. 끝나면 완료 보고 4줄을 `docs/진행로그.md`에 붙이고 커밋한다. 다음 지시문은 새 세션에서.
-- Claude Code가 "requirements에 없다"고 되돌리면, Kiro에서 requirements.md를 고친 뒤 재지시한다. 코드로 우회하지 않는다.
-- 실호출(`pytest -m live`, 체크 스크립트)은 비용이 드는 작업이므로 Claude Code가 임의로 반복하지 않게 지시문에 횟수를 적는다.
-
-## 7. 비기능 요구사항 (NFR)
-
-- **NFR-01 Kiro 추적성**: 모든 FR은 `.kiro/specs`의 requirement ID로 역추적 가능. 커밋 이력이 spec 순서와 일치.
-- **NFR-02 재현성**: 단일 명령 설치·실행(`make setup && make demo`), 시드 고정, config 사본 저장. 실 LLM 없는 오프라인 테스트 경로 제공(모의 클라이언트).
-- **NFR-03 신뢰성 공개**: 평가표에 불리한 지표 포함. 매칭 임계값·수작업 채점 절차 문서화.
-- **NFR-04 비용**: 노드 1건 생성+검증 ≤ USD 0.30(목표), 로그로 실측. 대회 크레딧 잔량 주 1회 기록.
-- **NFR-05 안전·프라이버시**: Guardrails PII 차단, 실데이터 금지, 시크릿은 환경변수·`.env.example`만 커밋.
-- **NFR-06 지연**: 노드 1건 ≤ 60초(P90). 초과 시 UI 진행 표시.
-- **NFR-07 코드 품질**: ruff clean, 타입힌트, 테스트 커버리지 핵심 모듈 ≥ 70%, 한글 출력은 `PYTHONIOENCODING=utf-8` 명시.
+발동 조건: 9/25 18:00까지 **실호출 성공 로그가 없거나** 하네스가 실측 지표를 내지 못함.
+내용: `MockBedrockClient`를 골드셋 기반 재생(replay) 모드로 확장해 UI·xlsx·하네스·영상을 완성. README 평가표에는 "실호출 미실시 — mock 재생 결과, 지표 아님"을 명시하고 이유(자격증명)를 쓴다. 기술 30점의 상당 부분을 포기하는 경로이므로 Plan A(Anthropic 실호출)가 조금이라도 가능하면 택하지 않는다.
 
 ---
 
-## 8. 마일스톤 (예선 9/29 역산)
-
-| 게이트 | 날짜 | 통과 조건 | 대응 FR |
-|---|---|---|---|
-| G0 킬체크① | 9/7(일) | Bedrock 실호출 성공 · 골드셋 JSON · spec `gold-dataset`·`bedrock-client` 완성 · steering 4종 초안 | FR-01, FR-02 |
-| ↳ 9/4 현황 | 12:50 | steering 4종 ✅ · spec 2종 ✅(과잉 분해, 압축 구현 예정) · git 미초기화 ❌ · data/raw 원본 미복사 ❌ · Bedrock 호출 ❌ · 골드셋 JSON ❌ | — |
-| ↳ 9/5 현황 | 19:10 | data/raw 원본 ✅ · 지시문 A/B·체크 스크립트 ✅ · **코드 0줄, git 없음, Bedrock 미확인** → 오늘 밤~9/6에 지시문 0→A→B 순으로 Claude Code 실행. G0 마감까지 약 29시간 | FR-01, FR-02 |
-| G1 킬체크② | 9/10(수) | 프롬프트만으로 N1 recall ≥ 0.5. 미달 시 매트릭스 열거 방식 강화 후 9/12 재판정, 재미달 시 B안(MSDS 어시스턴트) 전환 | FR-03 |
-| G2 핵심루프 | 9/14(일) | 입력 → 근거 첨부 이탈 → xlsx. KB 구축 완료 | FR-03, FR-04, FR-07 |
-| G3 저부하주(휴먼테크 9/22) | 9/21(일) | verifier · 물질/고장률 tool · 하네스 자동화 1차 지표 | FR-05, FR-06, FR-08 |
-| G4 서비스 | 9/26(금) | API + Streamlit 데모 · 프리셋 3개 · 비용/지연 실측 · Docker 실행 | FR-09, FR-10 |
-| G5 제출 | 9/29(화) | README 완성 · 영상 · 제3자 실행 확인(9/28) · 리포 정리(.kiro 포함) | FR-11 |
-| 본선(진출 시) | 10/3~10/18 | React UI · Lambda/App Runner 배포 · 실무자 피드백 2~3인 · 발표자료·QA 30문 | — |
-
----
-
-## 9. 리스크 레지스터
+## 10. 리스크 레지스터 (v2.0)
 
 | # | 리스크 | 확률 | 영향 | 대응 |
 |---|---|---|---|---|
-| R1 | 대회 계정에서 목표 모델 리전 제한 | 중 | 상 | 크로스리전 추론 프로파일 → Nova 계열 라우팅. `models.yaml`만 수정 |
-| R2 | Kiro 크레딧 조기 소진 | 중 | 중 | spec 6개 상한, 반복은 Claude Code, `.kiro/` 수동 유지 |
-| R3 | 솔로 범위 초과 | 상 | 상 | G2까지 FR-10 금지. 새 기능은 requirements.md 변경 승인 후에만 |
-| R4 | recall 저조(골드셋 표현과 모델 표현 불일치) | 중 | 상 | 매칭에 의미 유사도 도입 + 매트릭스 열거 강제. 그래도 낮으면 한계로 공개 |
-| R5 | KB 인용 정확도 낮음(PDF 파싱 품질) | 중 | 중 | 문서 5~8종으로 제한, 청킹 파라미터 실험 1회, 수작업 채점 공개 |
-| R6 | 휴먼테크 초록(9/22) 충돌 | 확정 | 중 | G3 주간 저부하 설계 |
-| R7 | 데모 중 환각 노출 | 중 | 중 | verifier가 잡는 장면을 데모 시나리오에 포함 |
-| R8 | Kiro spec 과잉 분해(9/4 실제 발생: 27태스크) | 확정 | 상 | §6 범위 상한 + 압축 구현. 다음 spec부터 프롬프트에 상한 명시 |
-| R9 | steering/aws.md·design.md의 모델 ID가 2024년 레거시(claude-3-5-sonnet-20241022, claude-3-haiku-20240307, titan-embed-v2, us-east-1) | 상 | 중 | G0에서 `list_foundation_models`로 실제 접근 가능 목록 확보 → `models.yaml`·aws.md 갱신. `CostCalculator`는 미등록 모델에 예외 대신 비용 0 + WARNING |
-| R10 | 골드셋 이탈 수 불일치(전략서 34 vs 원본 시트 36 데이터행) | **종결(9/11)** | — | 실측: 36행 = 데이터 34 + 빈 행 1 + 범례 1. 정본은 34건(spec export-formats 실측표) |
+| R1 | 개인 Bedrock 계정 모델 액세스 승인 지연 | 중 | 중 | 9/27에 안 되면 Anthropic 실측을 최종 표로. README에 "동일 Claude 계열, 제출 후 Bedrock 전환" 명시 |
+| R3 | 솔로 범위 초과(재발) | **상** | 상 | §2 등급표 외 작업 금지. "있으면 좋을" 항목은 `docs/backlog.md` 한 줄 |
+| R4 | recall 저조 | 중 | 상 | 프롬프트 수정 1회만. 그래도 낮으면 한계로 공개 + 매트릭스 누락률 등 보조 지표 병기 |
+| R6 | 휴먼테크 초록(9/22) 충돌 | 확정 | 중 | 9/22 P0는 30분 정리 작업 + E-1(무인 세션)만 |
+| R7 | 데모 중 환각 노출 | 중 | 중 | 규칙 verifier가 플래그하는 장면을 영상에 포함 |
+| R11 | **작업 공백 재발**(9/15~9/22 실제 발생) | 상 | 치명 | 매일 저녁 `docs/진행로그.md` 1줄. 이틀 연속 공백이면 Plan B 즉시 |
+| R12 | 9/11 미커밋 작업 유실(`index.lock`) | 중 | 상 | 9/22 첫 작업으로 커밋. 커밋 전 코드 수정 금지 |
+| R13 | Anthropic API 비용 초과 | 하 | 하 | 크레딧 $10 상한, 실호출 횟수 지시문 명시 |
+| R2·R5·R8·R9·R10 | 종결 또는 v2.0에서 무관(KB·Kiro 크레딧·레거시 모델 ID는 `models.yaml` 한 곳) | — | — | 아카이브 참조 |
 
 ---
 
-## 10. 오픈 퀘스천 (해결 시 갱신)
+## 11. 오픈 퀘스천 (v2.0)
 
-- OQ-1 대회 제공 AWS 계정/크레딧의 형태(개인 계정 크레딧? 워크샵 계정?) — 9/5 사무국 확인 → Bedrock 모델 액세스 권한 여부.
-- OQ-2 예선 제출 형식(리포 링크? 영상? 문서?) — 홈페이지 FAQ/킥오프 자료 확인. 확인 전까지 README+영상+리포 3종 모두 준비.
-- OQ-3 Knowledge Base 벡터 스토어 선택(OpenSearch Serverless 비용 vs S3 Vectors 등 저가 옵션) — 9/8 KB 구축 시 결정, 비용 절에 기록.
-- OQ-4 골드셋 노드 수가 홀드아웃에 충분한가 — FR-01 완료 후 판단.
-- OQ-5 대회 계정에서 실제 호출 가능한 모델 ID 목록(생성용·verifier용·임베딩용) — G0 첫 작업. 확정 전까지 `models.yaml` 값은 자리표시자로 간주.
-
----
-
-## 11. 비목표 (Out of Scope — 예선)
-
-- P&ID 도면 이미지 인식, CAD 연동.
-- 실시간 MSDS API·법령 API 연동(캐시로 대체).
-- 정량 QRA(확산·빈도 계산) — 데모 지도는 NH3 QRA 기존 결과 이미지 1장만 사용.
-- 사용자 계정·과금·다중 테넌트.
-- React 프런트(본선).
-- 파인튜닝.
+- OQ-2 예선 제출 형식(리포 링크·영상·문서) — **9/24까지 대회 홈페이지/Slack에서 확인**. 확인 전까지 3종 모두 준비.
+- OQ-6 개인 AWS 계정에서 Claude 모델 액세스 리전(us-west-2 우선) — 9/27 실측 시 결정, `models.yaml`만 수정.
+- OQ-7 FR-08 유사도 임계값 τ — 9/24 mock 결과로 0.4~0.6 중 선택, README 명시.
+- (종결) OQ-1·OQ-5: 대회 계정에 Bedrock 없음(9/15). OQ-3: KB 삭제. OQ-4: holdout 26건으로 진행.
 
 ---
 
-## 12. 저장소 구조 (초기)
+## 12. 비목표 (예선, v2.0 추가분)
+
+v1.2 §11 전부 + FastAPI · Bedrock Knowledge Base(S3·벡터스토어) · LLM verifier 2차 호출 · Guardrails 설정 · 임베딩 매칭 · 프리셋 2·3(P2) · App Runner/Lambda · 5회 반복(3회로) · 커버리지 수치.
+
+---
+
+## 13. 저장소 구조 (v2.0 목표)
 
 ```
 hazop-copilot/
-├─ PRD.md                 ← 이 문서
-├─ CLAUDE.md              ← Claude Code 작업 규칙
-├─ README.md
-├─ .kiro/
-│  ├─ specs/{gold-dataset,bedrock-client,hazop-generation,evidence-citation,self-verification,evaluation-harness}/
-│  ├─ steering/{domain.md,engineering.md,aws.md,docs.md}
-│  ├─ hooks/
-│  └─ settings/mcp.json
-├─ config/models.yaml
+├─ PRD.md (v2.0) · CLAUDE.md · README.md · Makefile · Dockerfile · pyproject.toml · .env.example
+├─ .kiro/specs/{gold-dataset,bedrock-client(+REQ-12),hazop-generation,export-formats,
+│              evidence-citation*,self-verification*,evaluation-harness*}/     * = 손 작성
+├─ .kiro/steering/{domain,engineering,aws,docs}.md
+├─ config/models.yaml            (provider · 모델 ID · 리전)
 ├─ schemas/deviation.schema.json
-├─ core/{llm,agent/tools,export}/
-├─ services/api/
-├─ apps/web/
-├─ eval/
-├─ tools/build_gold.py
-├─ infra/kb_setup.py
-├─ data/{gold,kb}/ + data/README.md
-├─ results/
-├─ tests/
-├─ Makefile · pyproject.toml · Dockerfile · .env.example
+├─ core/llm/{client,anthropic,mock,config,types}.py
+├─ core/agent/{generate,verify}.py · core/agent/tools/{substance,failure_rate}.py
+├─ core/export/{xlsx,lopa,report,rows}.py
+├─ eval/run.py · results/{run_id}/
+├─ apps/web/app.py               (Streamlit)
+├─ data/gold/ · data/kb/{registers,substances}.json · data/README.md
+├─ tools/{build_gold,check_bedrock_access}.py
+├─ tests/ · docs/{지시문_*,진행로그,진행보고서_*}.md
 ```
