@@ -17,6 +17,7 @@ from .types import ModelConfig, ModelProfile
 
 _CONFIG_PATH = Path(__file__).parent.parent.parent / "config" / "models.yaml"
 _G0_HINT = "config/models.yaml 미완성 — docs/G0_bedrock_access_*.md 참조(모델 ID 확정 후 기입)"
+_PROVIDERS = frozenset({"bedrock", "anthropic"})
 
 
 class ConfigValidationError(ValueError):
@@ -35,16 +36,30 @@ def load_model_config(path: Path = _CONFIG_PATH) -> ModelConfig:
     return _parse(raw)
 
 
+def _read_provider(raw: dict[str, Any]) -> str:
+    """REQ-12. 누락 시 기본값 `bedrock` — 기존 models.yaml 은 그대로 동작한다."""
+    provider = str(raw.get("provider") or "bedrock").strip().lower()
+    if provider not in _PROVIDERS:
+        raise ConfigValidationError(f"provider must be one of {sorted(_PROVIDERS)}: {provider!r}")
+    return provider
+
+
 def _validate_raw(raw: dict[str, Any]) -> None:
-    required_top = {"region", "generation", "verifier", "embedding"}
+    provider = _read_provider(raw)
+    # region·embedding·guardrails 는 Bedrock 전용 필드다. provider=anthropic 이면
+    # 비어 있어도 통과시킨다(REQ-12). provider=bedrock 검증 규칙은 현행 유지.
+    bedrock_only = provider == "bedrock"
+
+    required_top = {"generation", "verifier"} | ({"region", "embedding"} if bedrock_only else set())
     missing = sorted(required_top - raw.keys())
     if missing:
         raise ConfigValidationError(f"missing fields: {missing}")
 
     empty: list[str] = []
-    if not str(raw.get("region") or "").strip():
+    required_ids = ["generation", "verifier"] + (["embedding"] if bedrock_only else [])
+    if bedrock_only and not str(raw.get("region") or "").strip():
         empty.append("region")
-    for key in ("generation", "verifier", "embedding"):
+    for key in required_ids:
         section = raw[key]
         if not isinstance(section, dict):
             raise ConfigValidationError(f"missing fields: ['{key}.model_id']")
@@ -61,12 +76,13 @@ def _validate_raw(raw: dict[str, Any]) -> None:
 
 def _parse(raw: dict[str, Any]) -> ModelConfig:
     return ModelConfig(
-        region=str(raw["region"]),
+        region=str(raw.get("region") or ""),
         generation=_profile(raw["generation"]),
         verifier=_profile(raw["verifier"]),
-        embedding_model_id=str(raw["embedding"]["model_id"]),
+        embedding_model_id=str((raw.get("embedding") or {}).get("model_id") or ""),
         guardrails_id=(raw.get("guardrails") or {}).get("id"),
         cost_limit_usd=float(raw.get("cost_limit_usd", 0.30)),
+        provider=_read_provider(raw),  # type: ignore[arg-type]
     )
 
 
