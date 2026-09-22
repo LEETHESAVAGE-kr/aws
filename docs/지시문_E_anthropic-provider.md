@@ -46,7 +46,13 @@ PYTHONIOENCODING=utf-8 .venv/Scripts/python.exe -m ruff check .
 PYTHONIOENCODING=utf-8 .venv/Scripts/python.exe -m pytest -m "not live" -q
 ```
 
-기대: 최신 커밋이 `spec:export-formats T-01~T-06`, 작업 트리 깨끗, ruff clean, **142 passed, 1 deselected**. 다르면 멈추고 차이를 보고하라. `requirements.md` 에 REQ-12 가 없으면 코드를 쓰지 말고 멈춰라.
+기대(**2026-09-22 갱신** — 9/22 정리 세션에서 커밋이 2개가 됐다):
+최신 2개 커밋이 `0da8139 docs: PRD v2.0 … REQ-12·T-15 손 추가` / `bc02f1d spec:export-formats T-01~T-06`,
+작업 트리 깨끗, ruff clean, **142 passed, 1 deselected**. 다르면 멈추고 차이를 보고하라.
+`requirements.md` 에 REQ-12 가 없으면 코드를 쓰지 말고 멈춰라(9/22 추가 완료 — 있어야 정상).
+
+`anthropic` 패키지는 아직 설치돼 있지 않다(9/22 확인). PyPI 접근은 가능하며 최신은 1.7.0.
+`.env` 는 존재하지 않는다 — **2단계(모델 목록 조회)는 "미실행(키 없음)" 으로 건너뛰고 보고에 적어라.**
 
 ### 1단계 · 구현 — spec:bedrock-client T-15 (REQ-12)
 
