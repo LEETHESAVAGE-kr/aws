@@ -158,7 +158,7 @@ eval/  (골드셋 하네스: recall·precision·근거정확도·환각률·지�
 
 | 산출물 | 만드는 도구 | 정본 위치 | 비고 |
 |---|---|---|---|
-| requirements.md(EARS) / design.md / tasks.md | **Kiro spec** | `.kiro/specs/<spec>/` | spec 6개 상한: gold-dataset, bedrock-client, hazop-generation, evidence-citation, self-verification, evaluation-harness. export/api/ui는 hazop-generation·evaluation 안에 requirement로 흡수하거나 W3에 spec 없이 구현 |
+| requirements.md(EARS) / design.md / tasks.md | **Kiro spec** | `.kiro/specs/<spec>/` | spec 7개 상한: gold-dataset, bedrock-client, hazop-generation, **export-formats**(9/11 추가 — FR-07 결합도가 낮아 흡수 시 추적성이 흐려짐, 손 작성), evidence-citation, self-verification, evaluation-harness. api/ui는 evaluation 안에 requirement로 흡수하거나 W3에 spec 없이 구현 |
 | steering | **Kiro** | `.kiro/steering/` | `domain.md`(가이드워드·PSM 용어·KOSHA 문서 체계·S/F 정의), `engineering.md`(Python 3.12, 타입힌트, pytest, ruff, 로깅, 시크릿 금지), `aws.md`(리전·모델 ID는 config에서만, 비용 상한, 태깅), `docs.md`(README 구성·추적 매트릭스 규칙) |
 | hooks | **Kiro** | `.kiro/hooks/` | 저장 시 `ruff + pytest -m "not live"`, spec 변경 시 README 추적 매트릭스 재생성, 커밋 전 시크릿 스캔 |
 | MCP | Kiro 설정 | `.kiro/settings/mcp.json` | AWS Documentation MCP(Bedrock API 최신 사양), 파일시스템 |
@@ -226,7 +226,7 @@ eval/  (골드셋 하네스: recall·precision·근거정확도·환각률·지�
 | R7 | 데모 중 환각 노출 | 중 | 중 | verifier가 잡는 장면을 데모 시나리오에 포함 |
 | R8 | Kiro spec 과잉 분해(9/4 실제 발생: 27태스크) | 확정 | 상 | §6 범위 상한 + 압축 구현. 다음 spec부터 프롬프트에 상한 명시 |
 | R9 | steering/aws.md·design.md의 모델 ID가 2024년 레거시(claude-3-5-sonnet-20241022, claude-3-haiku-20240307, titan-embed-v2, us-east-1) | 상 | 중 | G0에서 `list_foundation_models`로 실제 접근 가능 목록 확보 → `models.yaml`·aws.md 갱신. `CostCalculator`는 미등록 모델에 예외 대신 비용 0 + WARNING |
-| R10 | 골드셋 이탈 수 불일치(전략서 34 vs 원본 시트 36 데이터행) | 중 | 하 | FR-01 완료 시 실측값을 정본으로 전 문서 통일 |
+| R10 | 골드셋 이탈 수 불일치(전략서 34 vs 원본 시트 36 데이터행) | **종결(9/11)** | — | 실측: 36행 = 데이터 34 + 빈 행 1 + 범례 1. 정본은 34건(spec export-formats 실측표) |
 
 ---
 

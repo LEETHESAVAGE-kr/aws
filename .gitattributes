@@ -1,0 +1,4 @@
+# 줄바꿈 정규화 — Windows(Kiro·에디터)와 Linux 세션이 섞여 CRLF 차이가 diff 로 뜨는 것을 막는다
+* text=auto eol=lf
+*.xlsx binary
+*.png binary
