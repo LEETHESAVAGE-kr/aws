@@ -2,7 +2,7 @@
 
 spec: `bedrock-client`  
 대응 FR: PRD §5 FR-02  
-버전: 1.0 · 작성 2026-09-04  
+버전: 1.1 · 작성 2026-09-04 · 개정 2026-09-22 (REQ-12 손 추가)  
 상위 문서: `PRD.md` §5 FR-02, steering `aws.md`, steering `engineering.md`  
 G0 킬체크 대상: 2026-09-07
 
@@ -234,6 +234,25 @@ def calculate_cost(
 - 응답 `cost_usd > 0` 이고 `latency_s > 0` 이다.
 - AWS 자격증명 환경변수(`AWS_ACCESS_KEY_ID` 등) 또는 IAM 역할이 없으면 `pytest.skip("AWS credentials not set")` 으로 건너뛴다.
 - `pytest -m "not live"` 실행 시 이 테스트는 실행되지 않는다.
+
+---
+
+### REQ-12 · LLM 공급자 교체 (2026-09-15 추가, 손 작성)
+
+**WHEN** `config/models.yaml` 의 `provider` 가 `anthropic` 이면,
+**THE SYSTEM SHALL** Anthropic Messages API 로 동일한 `converse()` 계약(시스템 프롬프트·메시지·tool·JSON 스키마 강제·재시도·토큰/비용/지연 로깅)을 수행한다.
+
+**WHEN** `provider` 가 `bedrock` 이면,
+**THE SYSTEM SHALL** 기존 `BedrockClient` 경로를 그대로 쓴다.
+
+**수용 기준 (AC-12)**
+- AC-12-1: `core/agent`·`core/export`·`tests` 의 기존 코드는 한 줄도 바뀌지 않는다(호출부는 `AbstractBedrockClient` 만 본다).
+- AC-12-2: 오프라인 테스트(`pytest -m "not live"`)는 `anthropic` 패키지의 네트워크 호출 없이 통과한다.
+- AC-12-3: API 키는 환경변수 `ANTHROPIC_API_KEY` 로만 읽고, 코드·yaml·로그에 나타나지 않는다.
+- AC-12-4: 프롬프트 캐싱은 `prompt_caching: true` 일 때 시스템 블록에 `cache_control: {"type": "ephemeral"}` 을 붙이는 것으로 대응한다.
+- AC-12-5: 429(rate limit)·529(overloaded)·5xx 는 기존 재시도 규칙(3회, 1→2→4s, 최대 10s)과 같은 로그 형식으로 재시도한다.
+
+**근거**: 대회 제공 계정에 Bedrock 권한이 없어(`docs/G0_bedrock_access_20260905.md`, 2026-09-15 포털 확인) 개발 기간 중 Anthropic API 로 측정하고 제출 전 Bedrock 으로 전환한다. README 비용 절에 공개한다. 상위 문서: `PRD.md` v2.0 §5 FR-02.
 
 ---
 
