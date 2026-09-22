@@ -49,6 +49,12 @@ _RETRY_WAIT_MAX_S: Final[float] = 10.0
 _THROTTLING_CODES: Final[frozenset[str]] = frozenset(
     {"ThrottlingException", "ServiceUnavailableException"}
 )
+# anthropic SDK 의 HTTP 예외(REQ-12 / AC-12-5). `anthropic` 을 import 하지 않고 판정해야
+# 한다 — 패키지가 없는 환경에서도 이 모듈이 import 돼야 하기 때문이다. `RateLimitError`·
+# `InternalServerError` 는 둘 다 `APIStatusError` 의 하위 클래스라 MRO 이름으로 잡힌다.
+_ANTHROPIC_HTTP_ERROR_NAMES: Final[frozenset[str]] = frozenset(
+    {"APIStatusError", "RateLimitError", "InternalServerError"}
+)
 
 
 class BedrockCallError(RuntimeError):
@@ -58,12 +64,33 @@ class BedrockCallError(RuntimeError):
 # ────────────────────────────────────────────────────────────────────────────
 # RetryHandler (REQ-05) — design.md §7
 # ────────────────────────────────────────────────────────────────────────────
-def is_throttling_error(exc: BaseException) -> bool:
-    """`ThrottlingException`·`ServiceUnavailableException` 만 백오프 재시도 대상."""
+def _anthropic_status(exc: BaseException) -> int | None:
+    """anthropic SDK 의 HTTP 예외이면 상태코드, 아니면 `None` (클래스 이름 문자열로 판정)."""
+    names = {cls.__name__ for cls in type(exc).__mro__}
+    if not names & _ANTHROPIC_HTTP_ERROR_NAMES:
+        return None
+    status = getattr(exc, "status_code", None)
+    return status if isinstance(status, int) else None
+
+
+def retry_reason(exc: BaseException) -> str | None:
+    """재시도 대상이면 로그에 찍을 reason 문자열, 아니면 `None`.
+
+    - Bedrock: `ThrottlingException`·`ServiceUnavailableException` (REQ-05)
+    - Anthropic: 429(rate limit)·529(overloaded)·5xx → reason 은 HTTP 상태코드 문자열 (AC-12-5)
+    """
     if isinstance(exc, ClientError):
         code = str(exc.response.get("Error", {}).get("Code", ""))
-        return code in _THROTTLING_CODES
-    return False
+        return code if code in _THROTTLING_CODES else None
+    status = _anthropic_status(exc)
+    if status is not None and (status == 429 or 500 <= status <= 599):
+        return str(status)
+    return None
+
+
+def is_throttling_error(exc: BaseException) -> bool:
+    """백오프 재시도 대상인가. Bedrock throttling + anthropic 429/5xx/529."""
+    return retry_reason(exc) is not None
 
 
 _sleep = time.sleep  # 테스트에서 monkeypatch 하여 대기 없이 재시도를 검증한다
@@ -84,10 +111,10 @@ def bedrock_retry[T](func: Callable[..., T]) -> Callable[..., T]:
             try:
                 return func(*args, **kwargs)
             except Exception as exc:  # noqa: BLE001 — 판정 후 재raise
-                if not is_throttling_error(exc):
+                reason = retry_reason(exc)
+                if reason is None:
                     raise
                 last = exc
-                reason = str(exc.response["Error"]["Code"])  # type: ignore[attr-defined]
                 logger.warning("재시도 attempt=%d/%d reason=%s", attempt, _RETRY_MAX_ATTEMPTS, reason)
                 if attempt < _RETRY_MAX_ATTEMPTS:
                     _sleep(min(_RETRY_WAIT_MIN_S * 2 ** (attempt - 1), _RETRY_WAIT_MAX_S))

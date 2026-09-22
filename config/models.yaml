@@ -1,14 +1,13 @@
 # config/models.yaml — 모델 ID·리전의 단일 소스 (steering aws.md §2, REQ-01)
 # 이 파일만 수정하면 전체 모델 교체가 적용된다. 코드에 하드코딩 금지.
 #
-# ⚠ G0 미완료 (2026-09-06): model_id 3개가 비어 있다.
-#   docs/G0_bedrock_access_20260905.md — 자격증명이 없어 list_foundation_models 실패,
-#   실제 호출 가능한 모델 ID 목록을 얻지 못했다. 추측해서 채우지 않는다.
-#   비어 있는 동안 load_model_config() 는 ConfigValidationError 로 즉시 실패하고,
-#   HAZOP_USE_MOCK=true 의 모의 클라이언트 경로만 동작한다.
-#   PRD R9: steering aws.md·design.md 에 적힌 ID 는 2024년 레거시이므로 그대로 쓰면 안 된다.
+# ⚠ 2026-09-15: 대회 계정에 Bedrock 권한 없음 확인 → provider=anthropic 으로 개발, 제출 전 bedrock 전환.
+#   model_id 는 여전히 null 이다 — 추측 금지. 모델 목록을 받아 사람이 고른 뒤 기입한다(지시문 E-1 2단계).
+#   provider=anthropic 인 동안 region·embedding.model_id·guardrails 는 비어 있어도 검증을 통과한다(REQ-12).
 
-region: ap-northeast-2 # docs/G0 확인 스크립트가 사용한 리전. 대회 계정 확정 후 재확인 필요.
+provider: anthropic # bedrock | anthropic (REQ-12). 제출 전 bedrock 으로 되돌린다 — docs/backlog.md
+
+region: ap-northeast-2 # Bedrock 전용. provider=anthropic 동안에는 쓰이지 않는다.
 
 generation:
   model_id: null # ← G0에서 확보한 실제 ID 기입

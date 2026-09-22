@@ -84,3 +84,5 @@ class ModelConfig:
     embedding_model_id: str
     guardrails_id: str | None
     cost_limit_usd: float = 0.30
+    # REQ-12: LLM 공급자. `anthropic` 이면 region·embedding·guardrails 는 쓰이지 않는다.
+    provider: Literal["bedrock", "anthropic"] = "bedrock"

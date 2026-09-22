@@ -24,3 +24,29 @@ amazon.titan-embed-text-v2:0:
   output: 0.0
   cache_read: 0.0
   cache_write: 0.0
+
+# ── provider=anthropic 후보 모델 (REQ-12 / T-15, 2026-09-22 추가) ──────────────
+# 출처: claude-api 스킬 번들(2.1.215) 의 "Current Models" 표 — input/output $ per 1M tokens,
+#       캐시 기준일 2026-06-24. 캐시 배수는 같은 번들 shared/prompt-caching.md:
+#       "Cache reads cost ~0.1x base input price. Cache writes cost 1.25x for 5-minute TTL."
+#       → cache_read = input x 0.1, cache_write = input x 1.25 (기본 5분 TTL 기준).
+# ⚠ 공식 pricing 페이지를 직접 조회한 값이 아니라 스킬 번들에 캐시된 표를 옮긴 값이다.
+#   claude-sonnet-5 의 도입가($2/$10)는 2026-08-31 종료되어 정상가를 적었다.
+#   실제 사용 모델은 2단계에서 확정되며, 표에 없는 ID 는 비용 0 + WARNING 으로 처리된다(AC-09).
+claude-opus-4-8: # $5.00 / $25.00 per 1M
+  input: 0.005
+  output: 0.025
+  cache_read: 0.0005
+  cache_write: 0.00625
+
+claude-sonnet-5: # $3.00 / $15.00 per 1M
+  input: 0.003
+  output: 0.015
+  cache_read: 0.0003
+  cache_write: 0.00375
+
+claude-haiku-4-5: # $1.00 / $5.00 per 1M
+  input: 0.001
+  output: 0.005
+  cache_read: 0.0001
+  cache_write: 0.00125

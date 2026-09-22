@@ -21,6 +21,7 @@ if str(REPO_ROOT) not in sys.path:
 
 from core.llm import (  # noqa: E402  (위 sys.path 보정 이후여야 한다)
     AbstractBedrockClient,
+    AnthropicClient,
     BedrockCallError,
     BedrockClient,
     CachingBuilder,
@@ -102,6 +103,21 @@ guardrails:
 cost_limit_usd: 0.25
 """
 
+# REQ-12: region·embedding·guardrails 가 통째로 없는 provider=anthropic 설정.
+ANTHROPIC_YAML = """
+provider: anthropic
+generation:
+  model_id: model-a
+  temperature: 0.2
+  max_tokens: 4096
+  prompt_caching: true
+verifier:
+  model_id: model-b
+  temperature: 0.0
+  max_tokens: 1024
+  prompt_caching: false
+"""
+
 
 # ── T-02 ConfigLoader (REQ-01) ──────────────────────────────────────────────
 def test_config_load_path_independent(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -137,10 +153,50 @@ def test_config_null_model_id_is_missing(tmp_path: Path) -> None:
         load_model_config(path)
 
 
-def test_repo_config_is_pending_g0() -> None:
-    """저장소의 config/models.yaml 은 아직 모델 ID 가 비어 있어야 한다(값을 지어내지 않았다는 증거)."""
-    with pytest.raises(ConfigValidationError, match="G0"):
-        load_model_config(REPO_ROOT / "config" / "models.yaml")
+@pytest.mark.xfail(
+    strict=False,
+    reason="지시문 E-1 2단계(모델 목록 확인) 전까지 models.yaml 의 model_id 는 null 이다 — 추측 금지",
+)
+def test_repo_config_provider_declared() -> None:
+    """저장소 models.yaml 이 provider 를 선언하고 모델 ID 가 채워져 있는지 확인한다 (REQ-12).
+
+    `test_repo_config_is_pending_g0`("models.yaml 이 G0 오류로 실패해야 한다")을 대체한다.
+    삭제 사유: G0 대체 경로 확정, 2026-09-15 — 대회 계정에 Bedrock 권한이 없음이 확인돼
+    provider=anthropic 으로 개발하기로 했으므로, "비어 있어야 정상"이라는 단언 자체가
+    더 이상 목표 상태가 아니다. 2단계에서 사람이 모델 ID 를 기입하면 xfail 을 걷어낸다.
+    """
+    config = load_model_config(REPO_ROOT / "config" / "models.yaml")
+    assert config.provider in {"bedrock", "anthropic"}
+    assert config.generation.model_id
+    assert config.verifier.model_id
+
+
+def test_config_provider_defaults_to_bedrock(tmp_path: Path) -> None:
+    """`provider` 가 없는 기존 yaml 은 bedrock 으로 읽힌다(하위 호환)."""
+    assert load_model_config(_write_yaml(tmp_path / "p.yaml", VALID_YAML)).provider == "bedrock"
+
+
+def test_config_anthropic_allows_empty_bedrock_fields(tmp_path: Path) -> None:
+    """provider=anthropic 이면 region·embedding·guardrails 가 비어도 통과한다 (REQ-12)."""
+    config = load_model_config(_write_yaml(tmp_path / "a.yaml", ANTHROPIC_YAML))
+    assert config.provider == "anthropic"
+    assert config.region == ""
+    assert config.embedding_model_id == ""
+    assert config.guardrails_id is None
+    assert config.generation.model_id == "model-a"
+
+
+def test_config_bedrock_still_requires_region(tmp_path: Path) -> None:
+    """provider=bedrock 검증 규칙은 현행 유지 — anthropic 완화가 새지 않았다."""
+    body = VALID_YAML.replace("region: ap-northeast-2", "region: ''")
+    with pytest.raises(ConfigValidationError, match="region"):
+        load_model_config(_write_yaml(tmp_path / "b.yaml", body))
+
+
+def test_config_unknown_provider_rejected(tmp_path: Path) -> None:
+    body = "provider: openai\n" + VALID_YAML
+    with pytest.raises(ConfigValidationError, match="provider must be one of"):
+        load_model_config(_write_yaml(tmp_path / "u.yaml", body))
 
 
 # ── T-03 CostCalculator (REQ-09) ────────────────────────────────────────────
@@ -553,3 +609,286 @@ def test_mock_end_to_end_offline(monkeypatch: pytest.MonkeyPatch, caplog: pytest
     assert result.confidence_override is None
     assert result.cost_usd == 0.05
     assert any("node=N1" in m for m in caplog.messages)
+
+
+# ── T-15 AnthropicClient (REQ-12) — SDK 경계는 stub, 네트워크 호출 0회 ──────────
+class _Obj:
+    """속성 접근만 하는 가짜 SDK 응답 노드(pydantic 모델 대역)."""
+
+    def __init__(self, **fields: Any) -> None:
+        self.__dict__.update(fields)
+
+
+def _usage(**overrides: int) -> _Obj:
+    base = {
+        "input_tokens": 10,
+        "output_tokens": 5,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0,
+    }
+    return _Obj(**(base | overrides))
+
+
+def _message(
+    blocks: list[_Obj] | None = None, stop_reason: str = "end_turn", usage: _Obj | None = None
+) -> _Obj:
+    return _Obj(
+        content=blocks if blocks is not None else [_Obj(type="text", text="안녕하세요")],
+        stop_reason=stop_reason,
+        usage=usage or _usage(),
+    )
+
+
+def _anthropic_config(**overrides: Any) -> ModelConfig:
+    base: dict[str, Any] = {
+        "provider": "anthropic",
+        "region": "",
+        "generation": ModelProfile("model-a", temperature=0.2, max_tokens=4096, prompt_caching=True),
+        "verifier": ModelProfile("model-b", temperature=0.0, max_tokens=1024, prompt_caching=False),
+        "embedding_model_id": "",
+        "guardrails_id": None,
+        "cost_limit_usd": 0.30,
+    }
+    return ModelConfig(**(base | overrides))
+
+
+def _anthropic_client(
+    monkeypatch: pytest.MonkeyPatch,
+    message: _Obj | None = None,
+    profile: str = "generation",
+    **config_overrides: Any,
+) -> tuple[AnthropicClient, list[dict[str, Any]]]:
+    """`_call_messages` 를 가짜 응답으로 대체한다 — SDK 객체는 만들어지지도 않는다."""
+    client = AnthropicClient(config=_anthropic_config(**config_overrides), profile=profile)
+    calls: list[dict[str, Any]] = []
+    reply = message if message is not None else _message()
+
+    def fake_call(**kwargs: Any) -> _Obj:
+        calls.append(kwargs)
+        return reply
+
+    monkeypatch.setattr(client, "_call_messages", fake_call)
+    return client, calls
+
+
+def test_anthropic_implements_interface() -> None:
+    client = AnthropicClient(config=_anthropic_config())
+    assert isinstance(client, AbstractBedrockClient)
+    assert client.model_short == "model-a"  # 로그 가독성용 축약 id
+    assert client.cost_limit_usd == 0.30
+
+
+# (a) 텍스트 응답 파싱
+def test_anthropic_text_response(monkeypatch: pytest.MonkeyPatch) -> None:
+    client, calls = _anthropic_client(monkeypatch)
+    result = client.converse(system="S", messages=_messages())
+    assert result.content == "안녕하세요"
+    assert result.stop_reason == "end_turn"  # Anthropic 값을 그대로 둔다
+    assert result.call_id
+    assert result.latency_s > 0
+    assert calls[0]["model"] == "model-a"
+    assert calls[0]["max_tokens"] == 4096
+    assert calls[0]["messages"] == [
+        {"role": "user", "content": [{"type": "text", "text": "N1 노드의 이탈을 도출하라"}]}
+    ]
+    assert "tools" not in calls[0] and "tool_choice" not in calls[0]
+
+
+# (b) structured_output tool → content 승격 + 스키마 통과
+def test_anthropic_structured_output_promoted(monkeypatch: pytest.MonkeyPatch) -> None:
+    block = _Obj(type="tool_use", id="tu-9", name="structured_output", input={"deviation": "과압"})
+    client, calls = _anthropic_client(monkeypatch, _message([block], stop_reason="tool_use"))
+    result = client.converse(system="S", messages=_messages(), response_schema=SCHEMA)
+    assert calls[0]["tool_choice"] == {"type": "tool", "name": "structured_output"}
+    assert calls[0]["tools"][-1]["name"] == "structured_output"
+    assert calls[0]["tools"][-1]["input_schema"] == SCHEMA
+    assert result.content is not None
+    assert json.loads(result.content) == {"deviation": "과압"}
+    assert result.confidence_override is None  # 스키마 검증 통과
+    assert result.tool_use_blocks == []  # 승격한 블록은 tool_use 로 남기지 않는다
+    assert len(calls) == 1  # 재시도 없음
+
+
+# (c) tool_use 블록 파싱
+def test_anthropic_tool_use_blocks(monkeypatch: pytest.MonkeyPatch) -> None:
+    block = _Obj(type="tool_use", id="tu-1", name="kb", input={"q": "NH3"})
+    client, calls = _anthropic_client(monkeypatch, _message([block], stop_reason="tool_use"))
+    result = client.converse(
+        system="S", messages=_messages(), tools=[ToolDefinition("kb", "검색", {"type": "object"})]
+    )
+    assert result.stop_reason == "tool_use"
+    assert result.tool_use_blocks == [ToolUseBlock(id="tu-1", name="kb", input={"q": "NH3"})]
+    assert result.content is None
+    assert calls[0]["tools"] == [
+        {"name": "kb", "description": "검색", "input_schema": {"type": "object"}}
+    ]
+
+
+# (d) usage 4필드 매핑
+def test_anthropic_usage_mapping(monkeypatch: pytest.MonkeyPatch) -> None:
+    usage = _usage(
+        input_tokens=1000,
+        output_tokens=500,
+        cache_read_input_tokens=300,
+        cache_creation_input_tokens=200,
+    )
+    client, _ = _anthropic_client(monkeypatch, _message(usage=usage))
+    result = client.converse(system="S", messages=_messages())
+    assert result.usage == TokenUsage(input=1000, output=500, cache_read=300, cache_write=200)
+
+
+def test_anthropic_usage_none_fields_are_zero(monkeypatch: pytest.MonkeyPatch) -> None:
+    """캐시 미사용 시 SDK 가 None 을 주는 경우가 있다 — 0 으로 떨어져야 한다."""
+    usage = _Obj(input_tokens=7, output_tokens=3)  # cache_* 필드 자체가 없음
+    client, _ = _anthropic_client(monkeypatch, _message(usage=usage))
+    result = client.converse(system="S", messages=_messages())
+    assert result.usage == TokenUsage(input=7, output=3, cache_read=0, cache_write=0)
+
+
+def test_anthropic_cost_uses_price_table(monkeypatch: pytest.MonkeyPatch) -> None:
+    """config/prices.yaml 의 anthropic 항목이 실제로 적용된다 (1000 in / 500 out)."""
+    profile = ModelProfile("claude-opus-4-8", temperature=0.0, max_tokens=64, prompt_caching=False)
+    usage = _usage(input_tokens=1000, output_tokens=500)
+    client, _ = _anthropic_client(monkeypatch, _message(usage=usage), generation=profile)
+    result = client.converse(system="S", messages=_messages())
+    assert result.cost_usd == pytest.approx(0.0175)  # 0.005 + 0.0125
+
+
+# (e) prompt_caching 에 따른 cache_control 유무
+def test_anthropic_cache_control_present(monkeypatch: pytest.MonkeyPatch) -> None:
+    client, calls = _anthropic_client(monkeypatch)  # generation.prompt_caching=True
+    client.converse(system="시스템 프롬프트", messages=_messages())
+    assert calls[0]["system"] == [
+        {
+            "type": "text",
+            "text": "시스템 프롬프트",
+            "cache_control": {"type": "ephemeral"},
+        }
+    ]
+
+
+def test_anthropic_cache_control_absent_for_verifier(monkeypatch: pytest.MonkeyPatch) -> None:
+    client, calls = _anthropic_client(monkeypatch, profile="verifier")  # prompt_caching=False
+    client.converse(system="시스템 프롬프트", messages=_messages())
+    assert calls[0]["system"] == [{"type": "text", "text": "시스템 프롬프트"}]
+    assert "cache_control" not in calls[0]["system"][0]
+
+
+def test_anthropic_content_blocks_serialized(monkeypatch: pytest.MonkeyPatch) -> None:
+    from core.llm import ContentBlock
+
+    client, calls = _anthropic_client(monkeypatch)
+    client.converse(
+        system="S",
+        messages=[
+            Message(
+                role="assistant",
+                content=[
+                    ContentBlock(type="text", text="첫 블록"),
+                    ContentBlock(
+                        type="tool_use", tool_use_id="tu-1", tool_use_name="kb", tool_input={"q": "x"}
+                    ),
+                    ContentBlock(type="tool_result", tool_use_id="tu-1", tool_result_content="결과"),
+                ],
+            )
+        ],
+    )
+    assert calls[0]["messages"][0]["content"] == [
+        {"type": "text", "text": "첫 블록"},
+        {"type": "tool_use", "id": "tu-1", "name": "kb", "input": {"q": "x"}},
+        {"type": "tool_result", "tool_use_id": "tu-1", "content": [{"type": "text", "text": "결과"}]},
+    ]
+
+
+# (f) 429 재시도 후 성공 / 3회 소진 시 BedrockCallError
+def _anthropic_error(status: int, class_name: str = "APIStatusError") -> Exception:
+    """실제 anthropic 예외 클래스로 만든다 — 클래스 이름 판정이 진짜로 맞는지 보려고."""
+    import anthropic
+    import httpx2  # anthropic 1.7.0 은 httpx 가 아니라 httpx2 를 쓴다
+
+    request = httpx2.Request("POST", "https://api.anthropic.com/v1/messages")
+    response = httpx2.Response(status, request=request)
+    error_class = getattr(anthropic, class_name)
+    return error_class("boom", response=response, body=None)  # type: ignore[no-any-return]
+
+
+def _anthropic_with_sdk_stub(
+    monkeypatch: pytest.MonkeyPatch, outcomes: list[Any]
+) -> tuple[AnthropicClient, dict[str, int]]:
+    """`_sdk()` 만 대체한다 — 데코레이터가 붙은 실제 `_call_messages` 가 그대로 돈다."""
+    counter = {"n": 0}
+    queue = list(outcomes)
+
+    class _Messages:
+        def create(self, **_: Any) -> _Obj:
+            counter["n"] += 1
+            item = queue.pop(0) if queue else outcomes[-1]
+            if isinstance(item, BaseException):
+                raise item
+            return item  # type: ignore[no-any-return]
+
+    client = AnthropicClient(config=_anthropic_config())
+    monkeypatch.setattr(client, "_sdk", lambda: _Obj(messages=_Messages()))
+    return client, counter
+
+
+def test_anthropic_retry_then_success(monkeypatch: pytest.MonkeyPatch, no_sleep: None) -> None:
+    client, counter = _anthropic_with_sdk_stub(
+        monkeypatch,
+        [_anthropic_error(429, "RateLimitError"), _anthropic_error(529), _message()],
+    )
+    assert client.converse(system="S", messages=_messages()).content == "안녕하세요"
+    assert counter["n"] == 3
+
+
+def test_anthropic_retry_exhausted_raises(monkeypatch: pytest.MonkeyPatch, no_sleep: None) -> None:
+    client, counter = _anthropic_with_sdk_stub(
+        monkeypatch, [_anthropic_error(429, "RateLimitError")]
+    )
+    with pytest.raises(BedrockCallError):
+        client.converse(system="S", messages=_messages())
+    assert counter["n"] == 3
+
+
+def test_anthropic_retry_reason_is_status_code(
+    monkeypatch: pytest.MonkeyPatch, no_sleep: None, caplog: pytest.LogCaptureFixture
+) -> None:
+    """로그 형식 `재시도 attempt=<n>/3 reason=<code>` 유지, reason 은 HTTP 상태코드."""
+    client, _ = _anthropic_with_sdk_stub(monkeypatch, [_anthropic_error(429, "RateLimitError")])
+    with caplog.at_level(logging.WARNING, logger="core.llm.client"), pytest.raises(BedrockCallError):
+        client.converse(system="S", messages=_messages())
+    assert any("재시도 attempt=1/3 reason=429" in m for m in caplog.messages)
+
+
+def test_anthropic_no_retry_for_bad_request(
+    monkeypatch: pytest.MonkeyPatch, no_sleep: None
+) -> None:
+    """400 은 재시도 대상이 아니다 — 원 예외가 그대로 올라온다."""
+    import anthropic
+
+    client, counter = _anthropic_with_sdk_stub(
+        monkeypatch, [_anthropic_error(400, "BadRequestError")]
+    )
+    with pytest.raises(anthropic.BadRequestError):
+        client.converse(system="S", messages=_messages())
+    assert counter["n"] == 1
+
+
+def test_is_throttling_error_accepts_anthropic_statuses() -> None:
+    """AC-12-5: 429·529·5xx 만 재시도 대상, 4xx 는 아니다."""
+    assert is_throttling_error(_anthropic_error(429, "RateLimitError"))
+    assert is_throttling_error(_anthropic_error(500, "InternalServerError"))
+    assert is_throttling_error(_anthropic_error(529))
+    assert not is_throttling_error(_anthropic_error(400, "BadRequestError"))
+    assert not is_throttling_error(_anthropic_error(404, "NotFoundError"))
+
+
+def test_anthropic_factory_dispatch(monkeypatch: pytest.MonkeyPatch) -> None:
+    """provider=anthropic 이면 팩토리가 AnthropicClient 를 준다 (REQ-12)."""
+    monkeypatch.setenv("HAZOP_USE_MOCK", "false")
+    monkeypatch.setattr(
+        client_mod, "load_model_config", lambda *a, **k: _anthropic_config()
+    )
+    client = get_bedrock_client()
+    assert isinstance(client, AnthropicClient)
+    assert not isinstance(client, BedrockClient)
