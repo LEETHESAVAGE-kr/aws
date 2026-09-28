@@ -1,0 +1,241 @@
+"""데모 UI 의 시험 가능한 로직 — FR-10 H-02 (PRD v2.0 §5 FR-10, 지시문 H).
+
+모드 판정·실호출 상한·실행·결과표·내보내기. `app.py` 는 위젯 배선만 하고 여기를 부른다.
+`core/` 는 호출만 한다(PRD §4).
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import shutil
+import tempfile
+import threading
+import time
+from datetime import date
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, Final
+
+from core.agent import HazopGenerator, NodeMeta
+from core.agent.generate import (
+    PROCEDURAL_GUIDEWORDS,
+    STANDARD_GUIDEWORDS,
+    load_generator_config,
+)
+from core.export import export_all, normalize_rows
+from core.export.rows import HEADERS
+from core.export.xlsx import confidence_label
+from core.llm import ConverseResponse, MockBedrockClient, get_bedrock_client
+
+from .replay import Result
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Mapping, MutableMapping
+
+    from core.llm import AbstractBedrockClient, Message
+
+LIVE_NOTE: Final[str] = "약 10분 · 약 $0.8 소요(9/28 실측)"
+SESSION_LIMIT: Final[int] = 1
+DAILY_LIMIT: Final[int] = 5
+SECRET_KEYS: Final[tuple[str, ...]] = ("HAZOP_ALLOW_LIVE", "ANTHROPIC_API_KEY")
+BADGES: Final[dict[str | None, str]] = {"grounded": "🟢", "inferred": "🟡", "review": "🔴"}
+CONFIDENCE_COLUMN: Final[str] = "신뢰도"
+
+# 프로세스 전역 일일 카운터 — Streamlit 은 세션마다 스크립트를 다시 돌리지만 import 된 모듈은 공유한다.
+# ponytail: 단일 프로세스 메모리 카운터. 재시작하면 0 으로 돌아간다 — 다중 인스턴스면 외부 저장소로.
+_daily_runs: dict[date, int] = {}
+_daily_lock = threading.Lock()
+
+
+def _is_true(value: object) -> bool:
+    return str(value).strip().lower() == "true"
+
+
+# ── 모드 판정 (H-02 ⑥) ───────────────────────────────────────────────────────
+def sync_secrets(secrets: Mapping[str, object], environ: MutableMapping[str, str] = os.environ) -> None:
+    """`st.secrets` 값을 `os.environ` 으로 복사한다 — `core/llm` 은 환경변수만 본다(AC-12-3).
+
+    이미 환경변수에 있는 값은 덮어쓰지 않는다.
+    """
+    for key in SECRET_KEYS:
+        if key in secrets and not environ.get(key):
+            environ[key] = str(secrets[key])
+
+
+def is_mock(environ: Mapping[str, str] = os.environ) -> bool:
+    return _is_true(environ.get("HAZOP_USE_MOCK", "false"))
+
+
+def live_block_reason(environ: Mapping[str, str] = os.environ) -> str | None:
+    """실호출 모드를 켤 수 없는 사유. `None` 이면 활성.
+
+    `HAZOP_ALLOW_LIVE=true` 와 `ANTHROPIC_API_KEY` 가 **모두** 있어야 한다. mock 모드
+    (`HAZOP_USE_MOCK=true`)는 네트워크를 쓰지 않으므로 키 없이 허용한다(오프라인 시험용).
+    """
+    if not _is_true(environ.get("HAZOP_ALLOW_LIVE", "false")):
+        return "실호출 비활성 — 공개 데모는 재생 모드만 제공합니다(HAZOP_ALLOW_LIVE 미설정)."
+    if not environ.get("ANTHROPIC_API_KEY", "").strip() and not is_mock(environ):
+        return "실호출 비활성 — ANTHROPIC_API_KEY 가 없습니다."
+    return None
+
+
+# ── 상한 (H-02 ⑥) ────────────────────────────────────────────────────────────
+def quota_block_reason(session_runs: int, today: date | None = None) -> str | None:
+    """세션 1회·일 5회 상한. 초과면 사유 문자열."""
+    if session_runs >= SESSION_LIMIT:
+        return f"이 세션의 실호출 {SESSION_LIMIT}회를 이미 썼습니다."
+    used = _daily_runs.get(today or date.today(), 0)
+    if used >= DAILY_LIMIT:
+        return f"오늘 실호출 상한 {DAILY_LIMIT}회에 도달했습니다({used}/{DAILY_LIMIT})."
+    return None
+
+
+def reserve_live_run(session_runs: int, today: date | None = None) -> str | None:
+    """상한을 확인하고 통과하면 일일 카운터를 1 올린다. 거부되면 사유를 돌려준다."""
+    day = today or date.today()
+    with _daily_lock:
+        reason = quota_block_reason(session_runs, day)
+        if reason is None:
+            _daily_runs[day] = _daily_runs.get(day, 0) + 1
+        return reason
+
+
+# ── 실행 ─────────────────────────────────────────────────────────────────────
+def _mock_factory(replay: Result) -> Callable[..., ConverseResponse]:
+    """재생 레코드를 되돌려주는 모의 응답 — `tests/test_generate.py::_factory` 와 같은 방식.
+
+    열거 호출이면 재생 레코드의 파라미터 축을(스키마 minItems 6 을 채우도록 보충),
+    가이드워드 호출이면 그 가이드워드의 재생 레코드를 셀로 돌려준다.
+    """
+    by_key = {(r.guideword, r.parameter): r for r in replay.records}
+    parameters = list(dict.fromkeys(r.parameter for r in replay.records))
+    for filler in ("유량", "압력", "온도", "준위", "조성", "상"):
+        if len(parameters) >= 6:
+            break
+        if filler not in parameters:
+            parameters.append(filler)
+    parameters = parameters[:12]
+
+    def make(system: str, messages: list[Message], **_: Any) -> ConverseResponse:
+        if "파라미터 축" in system:
+            payload: dict[str, Any] = {
+                "parameters": [{"name": p, "rationale": "mock 재생"} for p in parameters]
+            }
+            return ConverseResponse(content=json.dumps(payload, ensure_ascii=False))
+        user = str(messages[0].content)
+        guideword = next(
+            (g for g in STANDARD_GUIDEWORDS + PROCEDURAL_GUIDEWORDS if f"\n{g} —" in user), ""
+        )
+        cells: list[dict[str, Any]] = []
+        for parameter in parameters:
+            record = by_key.get((guideword, parameter))
+            if record is None:
+                cells.append(
+                    {"parameter": parameter, "applicable": False, "skip_reason": "mock: 재생 데이터에 없음"}
+                )
+                continue
+            cells.append(
+                {
+                    "parameter": parameter,
+                    "applicable": True,
+                    "deviation": record.deviation,
+                    "causes": record.causes,
+                    "consequences": record.consequences,
+                    "safeguards_before": record.safeguards_before,
+                    "S": record.S,
+                    "F": record.F,
+                    "recommendations": record.recommendations,
+                    "evidence": [],
+                    "confidence": "inferred",
+                }
+            )
+        body = {"guideword": guideword, "cells": cells}
+        return ConverseResponse(content=json.dumps(body, ensure_ascii=False))
+
+    return make
+
+
+def run_live(node_meta_json: str, replay: Result, environ: Mapping[str, str] = os.environ) -> Result:
+    """노드 1건 생성. mock 모드면 재생 레코드를 돌려주는 모의 클라이언트로 끝까지 돈다(H-02 ⑦)."""
+    node_meta = NodeMeta.model_validate_json(node_meta_json)
+    mock = is_mock(environ)
+    client: AbstractBedrockClient = (
+        MockBedrockClient(response_factory=_mock_factory(replay)) if mock else get_bedrock_client()
+    )
+    generator = HazopGenerator(client, load_generator_config())
+    started = time.perf_counter()
+    records = generator.generate(node_meta)
+    latency = time.perf_counter() - started
+    meta = {
+        "source": "mock" if mock else "live-run",
+        "captured_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+        "node": node_meta.node,
+        "node_meta": node_meta.model_dump(),
+        "latency_s": round(latency, 1),
+        "cost_usd": round(generator.total_cost_usd, 4),
+        "expected_cells": generator.expected_cells,
+        "judged_cells": generator.judged_cells,
+        "review_guidewords": list(generator.review_guidewords),
+        "recall_n1": None,
+    }
+    return Result(meta=meta, records=records)
+
+
+# ── 표시 ─────────────────────────────────────────────────────────────────────
+def _display_records(result: Result) -> list[dict[str, Any]]:
+    """골드 재생이면 confidence 를 지운다 — 사람 작성 레코드에 '모델 추론' 을 붙이지 않기 위해서다.
+
+    `DeviationRecord` 기본값이 `inferred` 이고 스키마가 null 을 허용하지 않아 파일에는 inferred 로
+    저장돼 있다. 화면·내보내기에서는 `export/xlsx.py` 의 '미부여(사람 작성)' 표기로 바꾼다.
+    """
+    dumps = [r.model_dump() for r in result.records]
+    if result.is_gold:
+        for d in dumps:
+            d["confidence"] = None
+    return dumps
+
+
+def worksheet_table(result: Result) -> list[dict[str, object]]:
+    """워크시트 12열(`core/export/rows.py::HEADERS` 순서) + 신뢰도 배지 열."""
+    table: list[dict[str, object]] = []
+    for row in normalize_rows(_display_records(result)):
+        values = row.cells()
+        values[HEADERS.index("위험도")] = row.risk_score  # 파일은 수식, 화면은 값
+        label, _ = confidence_label(row.confidence)
+        entry: dict[str, object] = dict(zip(HEADERS, values, strict=True))
+        entry[CONFIDENCE_COLUMN] = f"{BADGES.get(row.confidence, '⚪')} {label}"
+        table.append(entry)
+    return table
+
+
+def summary_line(result: Result) -> str:
+    """요약 줄. 불리한 숫자도 그대로(NFR-03) — 값이 없으면 없다고 적는다."""
+    m = result.meta
+    parts = [f"레코드 {len(result.records)}건"]
+    if m.get("expected_cells") is not None:
+        parts.append(f"판정 셀 {m.get('judged_cells')}/{m['expected_cells']}")
+    review = m.get("review_guidewords") or []
+    parts.append(f"review 가이드워드 {', '.join(review) if review else '없음'}")
+    latency = m.get("latency_s")
+    parts.append(f"지연 {latency:.0f}초" if latency is not None else "지연 해당 없음")
+    cost = m.get("cost_usd")
+    parts.append(f"비용 ${cost:.3f}" if cost is not None else "비용 해당 없음")
+    recall = m.get("recall_n1")
+    if recall:
+        parts.append(f"N1 recall {recall['recall']:.3f} ({recall['matched']}/{recall['total']})")
+    return " · ".join(parts)
+
+
+def export_files(result: Result) -> dict[str, tuple[str, bytes]]:
+    """`export_all` 을 임시 디렉터리에 쓰고 바이트로 돌려준다(`results/` 에 쓰지 않는다)."""
+    meta = result.meta
+    expected, judged = meta.get("expected_cells"), meta.get("judged_cells")
+    coverage = (expected, judged) if expected is not None and judged is not None else None
+    tmp = Path(tempfile.mkdtemp(prefix="hazop_demo_"))
+    try:
+        paths = export_all(
+            _display_records(result), tmp, generated_at=meta.get("captured_at"), coverage=coverage
+        )
+        return {key: (path.name, path.read_bytes()) for key, path in paths.items()}
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
