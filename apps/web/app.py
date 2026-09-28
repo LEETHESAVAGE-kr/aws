@@ -26,7 +26,7 @@ with contextlib.suppress(Exception):  # secrets.toml 이 없으면 Streamlit 이
     service.sync_secrets(dict(st.secrets))
 
 replay = st.cache_resource(load_replay)()
-MODE_REPLAY = "재생 (전문가 골드셋 — 생성 결과 아님)" if replay.is_gold else "재생 (9/28 실측 결과)"
+MODE_REPLAY = "재생 (전문가 골드셋 — 생성 결과 아님)" if replay.is_gold else "재생 (N1 실호출 결과)"
 live_reason = service.live_block_reason()
 state = st.session_state
 state.setdefault("live_runs", 0)
