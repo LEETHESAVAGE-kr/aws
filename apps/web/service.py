@@ -16,7 +16,7 @@ from datetime import date
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final
 
-from core.agent import HazopGenerator, NodeMeta
+from core.agent import HazopGenerator, NodeMeta, VerifySummary, verify
 from core.agent.generate import (
     PROCEDURAL_GUIDEWORDS,
     STANDARD_GUIDEWORDS,
@@ -32,6 +32,7 @@ from .replay import Result
 if TYPE_CHECKING:
     from collections.abc import Callable, Mapping, MutableMapping
 
+    from core.agent import DeviationRecord
     from core.llm import AbstractBedrockClient, Message
 
 LIVE_NOTE: Final[str] = "약 10분 · 약 $0.8 소요(9/28 실측)"
@@ -40,6 +41,7 @@ DAILY_LIMIT: Final[int] = 5
 SECRET_KEYS: Final[tuple[str, ...]] = ("HAZOP_ALLOW_LIVE", "ANTHROPIC_API_KEY")
 BADGES: Final[dict[str | None, str]] = {"grounded": "🟢", "inferred": "🟡", "review": "🔴"}
 CONFIDENCE_COLUMN: Final[str] = "신뢰도"
+FLAG_COLUMN: Final[str] = "검증 플래그"
 #: 프리셋 4개(H-06). 설비명은 data/gold 각 노드의 node_meta.equipment 와 같다.
 PRESETS: Final[dict[str, str]] = {
     "N1": "벙커링선 매니폴드",
@@ -194,13 +196,30 @@ def run_live(node_meta_json: str, replay: Result, environ: Mapping[str, str] = o
 
 
 # ── 표시 ─────────────────────────────────────────────────────────────────────
+def verified(result: Result) -> tuple[list[DeviationRecord], VerifySummary]:
+    """규칙 verifier(FR-06) 결과를 `result.verified` 에 1회 계산해 둔다. 재생 파일은 바꾸지 않는다.
+
+    골드 재생은 사람 작성 레코드라 모델 주장 검증 대상이 아니다 — 원본 그대로, 플래그 0.
+    """
+    if result.verified is None:
+        m = result.meta
+        if result.is_gold:
+            result.verified = (list(result.records), verify([])[1])
+        else:
+            result.verified = verify(
+                result.records, expected_cells=m.get("expected_cells"), judged_cells=m.get("judged_cells")
+            )
+    return result.verified
+
+
 def _display_records(result: Result) -> list[dict[str, Any]]:
-    """골드 재생이면 confidence 를 지운다 — 사람 작성 레코드에 '모델 추론' 을 붙이지 않기 위해서다.
+    """verifier 가 격하한 레코드. 골드 재생이면 confidence 를 지운다 — 사람 작성 레코드에 '모델 추론' 을
+    붙이지 않기 위해서다.
 
     `DeviationRecord` 기본값이 `inferred` 이고 스키마가 null 을 허용하지 않아 파일에는 inferred 로
     저장돼 있다. 화면·내보내기에서는 `export/xlsx.py` 의 '미부여(사람 작성)' 표기로 바꾼다.
     """
-    dumps = [r.model_dump() for r in result.records]
+    dumps = [r.model_dump() for r in verified(result)[0]]
     if result.is_gold:
         for d in dumps:
             d["confidence"] = None
@@ -208,14 +227,19 @@ def _display_records(result: Result) -> list[dict[str, Any]]:
 
 
 def worksheet_table(result: Result) -> list[dict[str, object]]:
-    """워크시트 12열(`core/export/rows.py::HEADERS` 순서) + 신뢰도 배지 열."""
+    """워크시트 12열(`core/export/rows.py::HEADERS` 순서) + 신뢰도 배지 열 + 검증 플래그 열."""
+    records, summary = verified(result)
+    flags: dict[str, list[str]] = {}
+    for f in summary.flags:
+        flags.setdefault(f.record_id, []).append(f"{f.rule}: {f.matched}")
     table: list[dict[str, object]] = []
-    for row in normalize_rows(_display_records(result)):
+    for record, row in zip(records, normalize_rows(_display_records(result)), strict=True):
         values = row.cells()
         values[HEADERS.index("위험도")] = row.risk_score  # 파일은 수식, 화면은 값
         label, _ = confidence_label(row.confidence)
         entry: dict[str, object] = dict(zip(HEADERS, values, strict=True))
         entry[CONFIDENCE_COLUMN] = f"{BADGES.get(row.confidence, '⚪')} {label}"
+        entry[FLAG_COLUMN] = "; ".join(flags.get(record.id, []))
         table.append(entry)
     return table
 
@@ -228,6 +252,14 @@ def summary_line(result: Result) -> str:
         parts.append(f"판정 셀 {m.get('judged_cells')}/{m['expected_cells']}")
     review = m.get("review_guidewords") or []
     parts.append(f"review 가이드워드 {', '.join(review) if review else '없음'}")
+    if result.is_gold:
+        parts.append("검증 해당 없음(골드 재생)")
+    else:
+        by_rule = verified(result)[1].by_rule
+        n_review = sum(r.confidence == "review" for r in verified(result)[0])
+        parts.append(
+            f"review {n_review}건 (규격 {by_rule['unverified_standard']}·수치 {by_rule['unsupported_number']})"
+        )
     latency = m.get("latency_s")
     parts.append(f"지연 {latency:.0f}초" if latency is not None else "지연 해당 없음")
     cost = m.get("cost_usd")
