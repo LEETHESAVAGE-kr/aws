@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Final
 
-from core.agent import DeviationRecord
+from core.agent import DeviationRecord, VerifySummary
 
 REPLAY_DIR: Final[Path] = Path(__file__).resolve().parents[2] / "data" / "replay"
 _SOURCE_PRIORITY: Final[dict[str, int]] = {"live": 0, "gold": 1}
@@ -23,6 +23,8 @@ class Result:
 
     meta: dict[str, Any]
     records: list[DeviationRecord] = field(default_factory=list)
+    #: `service.verified()` 캐시 — 표·내보내기가 같은 검증 결과를 쓴다(self-verification T-03). 파일엔 쓰지 않는다.
+    verified: tuple[list[DeviationRecord], VerifySummary] | None = field(default=None, repr=False, compare=False)
 
     @property
     def is_gold(self) -> bool:

@@ -239,3 +239,26 @@ def test_app_switches_between_four_presets(monkeypatch: pytest.MonkeyPatch) -> N
         assert len(at.dataframe) == 1
         assert len(at.dataframe[0].value) == len(replays[node].records)
         assert any(f"{node}(" in m.value for m in at.markdown)
+
+
+# ── self-verification T-03 ──────────────────────────────────────────────────
+# 결함 1건 삽입 → 화면 표와 xlsx 신뢰도 시트가 모두 review, 요약 줄에 건수, 파일 원본은 불변.
+def test_verifier_flag_reaches_table_and_xlsx() -> None:
+    replay = load_replays()["N2"]
+    records = list(replay.records)
+    records[2] = records[2].model_copy(update={"causes": [*records[2].causes, "API 520 기준 릴리프 용량 부족"]})
+    result = service.Result(meta=dict(replay.meta), records=records)
+
+    table = service.worksheet_table(result)
+    reviewed = [i for i, row in enumerate(table) if "🔴" in str(row[service.CONFIDENCE_COLUMN])]
+    assert reviewed == [2]
+    assert table[2][service.FLAG_COLUMN] == "unverified_standard: API 520"
+    assert all(row[service.FLAG_COLUMN] == "" for i, row in enumerate(table) if i != 2)
+    assert "review 1건 (규격 1·수치 0)" in service.summary_line(result)
+
+    ws = openpyxl.load_workbook(io.BytesIO(service.export_files(result)["xlsx"][1]))["신뢰도"]
+    labels = [r[1] for r in ws.iter_rows(min_row=2, values_only=True)]
+    review_label, _ = service.confidence_label("review")
+    assert [i for i, v in enumerate(labels) if v == review_label] == [2]
+    assert records[2].confidence == "inferred"  # 원본 레코드는 격하되지 않는다
+    assert result.verified is not None  # 표·내보내기가 같은 캐시를 썼다

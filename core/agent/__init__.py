@@ -13,6 +13,7 @@ from .generate import (
     NodeMeta,
     load_generator_config,
 )
+from .verify import Flag, VerifySummary, verify
 
 __all__ = [
     "DEVIATION_BATCH_SCHEMA",
@@ -20,8 +21,11 @@ __all__ = [
     "PROCEDURAL_GUIDEWORDS",
     "STANDARD_GUIDEWORDS",
     "DeviationRecord",
+    "Flag",
     "GeneratorConfig",
     "HazopGenerator",
     "NodeMeta",
+    "VerifySummary",
     "load_generator_config",
+    "verify",
 ]
