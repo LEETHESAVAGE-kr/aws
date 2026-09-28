@@ -16,7 +16,7 @@ import json  # noqa: E402
 import streamlit as st  # noqa: E402
 
 from apps.web import service  # noqa: E402
-from apps.web.replay import load_replay  # noqa: E402
+from apps.web.replay import load_replays  # noqa: E402
 
 MODE_LIVE = "실호출"
 
@@ -25,13 +25,14 @@ st.set_page_config(page_title="HAZOP 코파일럿", layout="wide")
 with contextlib.suppress(Exception):  # secrets.toml 이 없으면 Streamlit 이 예외를 던진다
     service.sync_secrets(dict(st.secrets))
 
-replay = st.cache_resource(load_replay)()
-MODE_REPLAY = "재생 (전문가 골드셋 — 생성 결과 아님)" if replay.is_gold else "재생 (N1 실호출 결과)"
+replays = st.cache_resource(load_replays)()
+MODE_REPLAY = "재생 (캡처 결과)"
 live_reason = service.live_block_reason()
 state = st.session_state
 state.setdefault("live_runs", 0)
 state.setdefault("result", None)
 state.setdefault("node_json", "")
+state.setdefault("preset", "N1")
 
 # ── 상단 ─────────────────────────────────────────────────────────────────────
 st.title("HAZOP 위험성평가 코파일럿")
@@ -45,9 +46,6 @@ st.markdown(
 st.caption(
     "데이터 출처: NH3 벙커링 QRA 전문가 HAZOP 34건 골드셋(팀 보유). 고객사 실데이터는 쓰지 않았습니다."
 )
-if replay.is_gold:
-    st.warning("전문가 골드셋 재생 — LLM 생성 결과 아님")
-
 left, right = st.columns([1, 2])
 
 # ── 좌측: 모드·프리셋·입력 ───────────────────────────────────────────────────
@@ -55,10 +53,22 @@ with left:
     mode = st.radio("모드", [MODE_REPLAY, MODE_LIVE], disabled=live_reason is not None)
     if live_reason:
         st.caption(live_reason)
-    if st.button("NH3 벙커링 매니폴드 프리셋", type="primary"):
-        state.node_json = json.dumps(replay.meta["node_meta"], ensure_ascii=False, indent=2)
-        if mode == MODE_REPLAY:
-            state.result = replay
+    st.markdown("**NH3 벙커링 프리셋**")
+    for node, equipment in service.PRESETS.items():
+        captured = replays.get(node)
+        clicked_preset = st.button(
+            f"{node} {equipment}" + ("" if captured else " (미캡처)"),
+            key=f"preset_{node}",
+            disabled=captured is None,
+            type="primary" if state.preset == node else "secondary",
+        )
+        if clicked_preset and captured is not None:
+            state.preset = node
+            state.node_json = json.dumps(captured.meta["node_meta"], ensure_ascii=False, indent=2)
+            if mode == MODE_REPLAY:
+                state.result = captured
+            st.rerun()  # 선택 강조(primary)를 새 프리셋으로 다시 그린다
+    replay = replays.get(state.preset) or replays["N1"]  # 실호출 mock 모드의 재생 원천
     st.text_area("NodeMeta (JSON)", key="node_json", height=220, disabled=mode == MODE_REPLAY)
 
     if mode == MODE_LIVE:
@@ -90,6 +100,8 @@ with right:
         st.info("왼쪽의 프리셋 버튼을 누르면 결과표가 나타납니다.")
     else:
         source = result.meta.get("source")
+        if result.is_gold:
+            st.warning("전문가 골드셋 재생 — LLM 생성 결과 아님")
         st.caption(f"source={source} · captured_at={result.meta.get('captured_at')}")
         st.markdown(f"**{service.summary_line(result)}**")
         st.dataframe(service.worksheet_table(result), hide_index=True)
@@ -102,3 +114,6 @@ with right:
         for column, key in zip(st.columns(3), ("xlsx", "lopa", "report"), strict=True):
             name, data = files[key]
             column.download_button(f"⬇ {name}", data, file_name=name, mime=mimes[key])
+
+    st.markdown("**평가 요약** — 하네스 미구현, `tools/capture_replay.py` 로 노드별 1회 실측(n=1)")
+    st.table(service.evaluation_table(replays))

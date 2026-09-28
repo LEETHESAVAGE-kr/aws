@@ -40,6 +40,18 @@ DAILY_LIMIT: Final[int] = 5
 SECRET_KEYS: Final[tuple[str, ...]] = ("HAZOP_ALLOW_LIVE", "ANTHROPIC_API_KEY")
 BADGES: Final[dict[str | None, str]] = {"grounded": "🟢", "inferred": "🟡", "review": "🔴"}
 CONFIDENCE_COLUMN: Final[str] = "신뢰도"
+#: 프리셋 4개(H-06). 설비명은 data/gold 각 노드의 node_meta.equipment 와 같다.
+PRESETS: Final[dict[str, str]] = {
+    "N1": "벙커링선 매니폴드",
+    "N2": "이송 호스",
+    "N3": "수급선 매니폴드",
+    "N4": "이송 운전 절차",
+}
+#: data/gold/split_node.json 의 holdout_count.
+HOLDOUT_GOLD_TOTAL: Final[int] = 26
+EVAL_HEADERS: Final[tuple[str, ...]] = (
+    "노드", "split", "레코드", "judged/expected", "절단", "지연(s)", "비용($)", "recall(m/n)",
+)
 
 # 프로세스 전역 일일 카운터 — Streamlit 은 세션마다 스크립트를 다시 돌리지만 import 된 모듈은 공유한다.
 # ponytail: 단일 프로세스 메모리 카운터. 재시작하면 0 으로 돌아간다 — 다중 인스턴스면 외부 저장소로.
@@ -176,7 +188,7 @@ def run_live(node_meta_json: str, replay: Result, environ: Mapping[str, str] = o
         "expected_cells": generator.expected_cells,
         "judged_cells": generator.judged_cells,
         "review_guidewords": list(generator.review_guidewords),
-        "recall_n1": None,
+        "recall": None,
     }
     return Result(meta=meta, records=records)
 
@@ -220,10 +232,88 @@ def summary_line(result: Result) -> str:
     parts.append(f"지연 {latency:.0f}초" if latency is not None else "지연 해당 없음")
     cost = m.get("cost_usd")
     parts.append(f"비용 ${cost:.3f}" if cost is not None else "비용 해당 없음")
-    recall = m.get("recall_n1")
+    recall = m.get("recall")
+    node, split = m.get("node", "N1"), m.get("split", "—")
     if recall:
-        parts.append(f"N1 recall {recall['recall']:.3f} ({recall['matched']}/{recall['total']})")
+        parts.append(
+            f"{node}({split}) recall {recall['recall']:.3f} ({recall['matched']}/{recall['total']})"
+        )
+    else:
+        parts.append(f"{node}({split}) recall 해당 없음")
     return " · ".join(parts)
+
+
+# ── 평가 요약 표 (H-06 / FR-08 축소 실행) ─────────────────────────────────────
+def _fmt(value: object, spec: str = "") -> str:
+    return "—" if value is None else format(value, spec)
+
+
+def evaluation_table(results: Mapping[str, Result]) -> list[dict[str, str]]:
+    """노드별 1행 + 홀드아웃 합계 1행. 골드 재생 노드는 recall 을 내지 않고 합계에서도 뺀다.
+
+    합계 recall = Σmatched / Σ(측정된 노드의 골드 수). 세 노드가 다 측정됐으면 분모는 26 이고,
+    일부만이면 실제 분모와 어느 노드인지를 표기한다 — 26 으로 나눠 낮추지도, 빠진 노드를 채우지도 않는다.
+    """
+    rows: list[dict[str, str]] = []
+    matched = gold = records = truncated = judged_sum = expected_sum = 0
+    cost = latency = 0.0
+    measured: list[str] = []
+    for node in sorted(results, key=lambda n: (n not in PRESETS, n)):
+        m = results[node].meta
+        recall = m.get("recall")
+        expected, judged = m.get("expected_cells"), m.get("judged_cells")
+        rows.append(
+            {
+                "노드": f"{node} {PRESETS.get(node, '')}".strip(),
+                "split": str(m.get("split", "—")),
+                "레코드": str(len(results[node].records)),
+                "judged/expected": "—" if expected is None else f"{judged}/{expected}",
+                "절단": _fmt(m.get("truncated_calls")),
+                "지연(s)": _fmt(m.get("latency_s"), ".1f"),
+                "비용($)": _fmt(m.get("cost_usd"), ".3f"),
+                "recall(m/n)": (
+                    f"{recall['recall']:.3f} ({recall['matched']}/{recall['total']})"
+                    if recall
+                    else ("골드 재생 — 해당 없음" if results[node].is_gold else "—")
+                ),
+            }
+        )
+        if m.get("split") == "holdout" and recall:
+            measured.append(node)
+            matched += recall["matched"]
+            gold += recall["total"]
+            records += len(results[node].records)
+            truncated += m.get("truncated_calls") or 0
+            judged_sum += judged or 0
+            expected_sum += expected or 0
+            cost += m.get("cost_usd") or 0.0
+            latency += m.get("latency_s") or 0.0
+    if gold == HOLDOUT_GOLD_TOTAL:
+        label = "홀드아웃 합계"
+    else:
+        scope = f"{'·'.join(measured)} 만" if measured else "측정 노드 없음"
+        label = f"홀드아웃 합계 ({scope} — 골드 {gold}/{HOLDOUT_GOLD_TOTAL}건)"
+    rows.append(
+        {
+            "노드": label,
+            "split": "holdout",
+            "레코드": str(records) if measured else "—",
+            "judged/expected": f"{judged_sum}/{expected_sum}" if measured else "—",
+            "절단": str(truncated) if measured else "—",
+            "지연(s)": f"{latency:.1f}" if measured else "—",
+            "비용($)": f"{cost:.3f}" if measured else "—",
+            "recall(m/n)": f"{matched / gold:.3f} ({matched}/{gold})" if gold else "—",
+        }
+    )
+    return rows
+
+
+def evaluation_markdown(results: Mapping[str, Result]) -> str:
+    """`evaluation_table` 을 README §6 에 그대로 붙일 마크다운 표로."""
+    lines = ["| " + " | ".join(EVAL_HEADERS) + " |", "|" + "---|" * len(EVAL_HEADERS)]
+    for row in evaluation_table(results):
+        lines.append("| " + " | ".join(row[h] for h in EVAL_HEADERS) + " |")
+    return "\n".join(lines) + "\n"
 
 
 def export_files(result: Result) -> dict[str, tuple[str, bytes]]:
