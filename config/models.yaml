@@ -16,7 +16,7 @@ region: ap-northeast-2 # Bedrock 전용. provider=anthropic 동안에는 쓰이�
 generation:
   model_id: claude-opus-4-8 # 상위. $5/$25 per 1M — config/prices.yaml 에 등재됨
   temperature: 0.2
-  max_tokens: 4096
+  max_tokens: 16384 # 9/28 예선 데모용 4096→16384 — 절단 방지(E-2 갈래 ①). 지연은 못 줄임, 본선 지시문 G 에서 재검토
   prompt_caching: true
 
 verifier:

@@ -1,0 +1,315 @@
+{
+  "schema_version": 1,
+  "source": "gold",
+  "captured_at": "2026-09-28T15:45:19+00:00",
+  "node": "N1",
+  "provider": null,
+  "model_id": null,
+  "node_meta": {
+    "node": "N1",
+    "substance": "NH3",
+    "phase": "unknown",
+    "P_kPag": null,
+    "T_degC": null,
+    "equipment": [
+      "벙커링선 매니폴드"
+    ],
+    "safeguards": []
+  },
+  "latency_s": null,
+  "cost_usd": null,
+  "expected_cells": null,
+  "judged_cells": null,
+  "review_guidewords": [],
+  "recall_n1": null,
+  "records": [
+    {
+      "id": "nh3-001",
+      "node": "N1",
+      "node_meta": {
+        "node": "",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "유량",
+      "deviation": "이송 개시 후 유량 전무",
+      "causes": [
+        "펌프 기동 실패·토출밸브 미개방"
+      ],
+      "consequences": [
+        "데드헤드 과압 → 씰·개스킷 응력"
+      ],
+      "safeguards_before": [
+        "압력계 감시"
+      ],
+      "S": 2,
+      "F": 3,
+      "risk_score": 6,
+      "recommendations": [
+        "PB-04 압력·유량 감시 및 서지 방지"
+      ],
+      "scenario": "기타",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "nh3-002",
+      "node": "N1",
+      "node_meta": {
+        "node": "",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "압력",
+      "deviation": "토출압 과다",
+      "causes": [
+        "하류 밸브 폐쇄 상태 기동·펌프 제어 실패"
+      ],
+      "consequences": [
+        "플랜지 개스킷 밀림 → 누출"
+      ],
+      "safeguards_before": [
+        "수동 ESD(MB-02)"
+      ],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "PB-04, MB-01 가스감지-ESD 자동연동 강화"
+      ],
+      "scenario": "S2",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "nh3-003",
+      "node": "N1",
+      "node_meta": {
+        "node": "",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "유량",
+      "deviation": "유량 과대",
+      "causes": [
+        "펌프 제어 오류"
+      ],
+      "consequences": [
+        "서지·호스/플랜지 응력 증가"
+      ],
+      "safeguards_before": [
+        "유량계"
+      ],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "PB-04"
+      ],
+      "scenario": "S2",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "nh3-004",
+      "node": "N1",
+      "node_meta": {
+        "node": "",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "온도",
+      "deviation": "과냉 (−33 °C 미만)",
+      "causes": [
+        "냉동계 제어 이상"
+      ],
+      "consequences": [
+        "재질 저온취성 → 미세균열"
+      ],
+      "safeguards_before": [
+        "온도계"
+      ],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "저온 트립 설정 (PB-04 확장)"
+      ],
+      "scenario": "S3",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "nh3-005",
+      "node": "N1",
+      "node_meta": {
+        "node": "",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "온도",
+      "deviation": "예냉 불충분·라인 온도 상승",
+      "causes": [
+        "예냉 절차 생략·장시간 대기"
+      ],
+      "consequences": [
+        "플래싱·서지 → 씰 누출"
+      ],
+      "safeguards_before": [
+        "절차서"
+      ],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "PB-03 체크리스트(예냉 확인 항목)"
+      ],
+      "scenario": "S2",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "nh3-006",
+      "node": "N1",
+      "node_meta": {
+        "node": "",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "유량",
+      "deviation": "역류",
+      "causes": [
+        "체크밸브 고장 + 수급선 탱크압 역전"
+      ],
+      "consequences": [
+        "인벤토리 역이동·상류 과압"
+      ],
+      "safeguards_before": [
+        "체크밸브"
+      ],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "PB-01 확장(체크밸브 정기 점검)"
+      ],
+      "scenario": "기타",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "nh3-007",
+      "node": "N1",
+      "node_meta": {
+        "node": "",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "조성",
+      "deviation": "수분·공기 혼입",
+      "causes": [
+        "퍼징 불충분"
+      ],
+      "consequences": [
+        "부식(SCC)·아이스 플러그 → 핀홀"
+      ],
+      "safeguards_before": [
+        "퍼징 절차"
+      ],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "PB-03(퍼징 확인·이슬점 측정)"
+      ],
+      "scenario": "S3",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "nh3-008",
+      "node": "N1",
+      "node_meta": {
+        "node": "",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "계측",
+      "deviation": "가스감지 기능 상실",
+      "causes": [
+        "센서 미교정·우회(bypass) 방치"
+      ],
+      "consequences": [
+        "누출 미감지 → 방출 지속시간 확대"
+      ],
+      "safeguards_before": [
+        "분기 교정(명목)"
+      ],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "MB-01 4속성 관리(교정·우회 통제)"
+      ],
+      "scenario": "S1",
+      "evidence": [],
+      "confidence": "inferred"
+    }
+  ]
+}
