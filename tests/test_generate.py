@@ -36,6 +36,7 @@ from core.llm import (
     get_bedrock_client,
     load_model_config,
 )
+from tools._replay import recall_n1
 
 _LOG = logging.getLogger(__name__)
 
@@ -340,46 +341,8 @@ def test_fabricated_safeguards_pass_through() -> None:
 _G1_RECALL_THRESHOLD = 0.5
 _T07_LATENCY_BUDGET_S = 60.0
 
-#: 파라미터 정규화에서 떼는 조사 (T-08 문면: "공백·조사 제거"). 긴 것부터 떼야 "으로"가 "로"로 잘리지 않는다.
-_PARTICLES = ("으로", "에서", "이나", "과", "와", "은", "는", "이", "가", "을", "를", "의", "에", "로")
-
-
-def _normalize_parameter(text: str) -> str:
-    """공백 제거 후 말미 조사 1개 제거. T-08 이 정한 매칭 규칙 그대로 — 여기서 넓히지 않는다."""
-    compact = "".join(text.split())
-    for particle in _PARTICLES:
-        if len(compact) > len(particle) + 1 and compact.endswith(particle):
-            return compact[: -len(particle)]
-    return compact
-
-
-def _recall_n1(generated: list[DeviationRecord], gold: list[dict[str, Any]]) -> dict[str, Any]:
-    """가이드워드 정확 일치 + 파라미터 정규화 일치로 recall 을 잰다.
-
-    recall = 매칭된 골드 레코드 수 / 전체 골드 레코드 수(N1 8건). 생성물이 골드보다 많아도
-    분모는 골드다 — precision 은 T-08 의 판정 대상이 아니다.
-    """
-    produced = {(r.guideword, _normalize_parameter(r.parameter)) for r in generated}
-    rows = [
-        {
-            "guideword": g["guideword"],
-            "parameter": g["parameter"],
-            "key": (g["guideword"], _normalize_parameter(g["parameter"])),
-        }
-        for g in gold
-    ]
-    for row in rows:
-        row["matched"] = row["key"] in produced
-        row["guideword_seen"] = any(gw == row["guideword"] for gw, _ in produced)
-        row["parameter_seen"] = any(pm == row["key"][1] for _, pm in produced)
-    matched = sum(1 for row in rows if row["matched"])
-    return {
-        "recall": matched / len(rows),
-        "matched": matched,
-        "total": len(rows),
-        "rows": rows,
-        "produced": sorted(produced),
-    }
+# recall 규칙은 tools/_replay.py 가 정본이다(FR-10 H-01 — 캡처 도구와 같은 함수를 쓴다).
+_recall_n1 = recall_n1
 
 
 def _live_generator() -> HazopGenerator:
