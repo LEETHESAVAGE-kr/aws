@@ -2,21 +2,27 @@
 # 이 파일만 수정하면 전체 모델 교체가 적용된다. 코드에 하드코딩 금지.
 #
 # ⚠ 2026-09-15: 대회 계정에 Bedrock 권한 없음 확인 → provider=anthropic 으로 개발, 제출 전 bedrock 전환.
-#   model_id 는 여전히 null 이다 — 추측 금지. 모델 목록을 받아 사람이 고른 뒤 기입한다(지시문 E-1 2단계).
+#   2026-09-28: models.list() 결과(12개)를 보고 사람이 아래 2개를 선택했다 — 추측 기입 아님.
 #   provider=anthropic 인 동안 region·embedding.model_id·guardrails 는 비어 있어도 검증을 통과한다(REQ-12).
+#
+# ⚠ temperature 는 요청에 실리지 않는다. core/llm/anthropic_client.py 가 최신 모델(Opus 4.7+·Sonnet 5·
+#   Fable 5)에서 sampling 파라미터가 400 을 돌려주는 것을 피해 일부러 생략한다. 아래 값은 provider=bedrock
+#   전환 시점에 되살아난다 — provider=anthropic 동안의 재현성은 temperature 가 아니라 프롬프트·스키마가 담보한다.
 
 provider: anthropic # bedrock | anthropic (REQ-12). 제출 전 bedrock 으로 되돌린다 — docs/backlog.md
 
 region: ap-northeast-2 # Bedrock 전용. provider=anthropic 동안에는 쓰이지 않는다.
 
 generation:
-  model_id: null # ← G0에서 확보한 실제 ID 기입
+  model_id: claude-opus-4-8 # 상위. $5/$25 per 1M — config/prices.yaml 에 등재됨
   temperature: 0.2
   max_tokens: 4096
   prompt_caching: true
 
 verifier:
-  model_id: null # ← 하위(저비용) 모델 ID 기입
+  # 하위(저비용). $1/$5 per 1M. 목록은 claude-haiku-4-5-20251001 로 오지만 **별칭을 쓴다** —
+  # prices.yaml 키가 claude-haiku-4-5 라서, 날짜 붙은 ID 를 넣으면 가격표 조회가 빗나가 비용이 0 으로 기록된다.
+  model_id: claude-haiku-4-5
   temperature: 0.0
   max_tokens: 1024
   prompt_caching: false
