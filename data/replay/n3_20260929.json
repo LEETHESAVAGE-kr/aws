@@ -1,0 +1,2521 @@
+{
+  "schema_version": 1,
+  "source": "live",
+  "captured_at": "2026-09-28T16:43:20+00:00",
+  "node": "N3",
+  "split": "holdout",
+  "provider": "anthropic",
+  "model_id": "claude-opus-4-8",
+  "node_meta": {
+    "node": "N3",
+    "substance": "NH3",
+    "phase": "unknown",
+    "P_kPag": null,
+    "T_degC": null,
+    "equipment": [
+      "수급선 매니폴드"
+    ],
+    "safeguards": []
+  },
+  "latency_s": 444.5,
+  "cost_usd": 0.7666,
+  "expected_cells": 70,
+  "judged_cells": 70,
+  "review_guidewords": [],
+  "recall": {
+    "recall": 0.2857142857142857,
+    "matched": 2,
+    "total": 7
+  },
+  "max_tokens": 16384,
+  "raw_calls": [
+    {
+      "tokens_out": 747,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3146,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3740,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 4521,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3735,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3630,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 4749,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 4467,
+      "stop_reason": "tool_use"
+    }
+  ],
+  "truncated_calls": 0,
+  "records": [
+    {
+      "id": "n3-001",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "유량",
+      "deviation": "이송 개시 후에도 매니폴드를 통한 NH3 유량이 전혀 형성되지 않아 이송이 진행되지 않음",
+      "causes": [
+        "매니폴드 격리밸브 미개방 또는 오조작",
+        "수급선측 펌프 미기동 또는 트립",
+        "연결 호스/암 내 폐색·이물 막힘",
+        "긴급차단밸브(ESD) 예기치 않은 작동으로 라인 차단"
+      ],
+      "consequences": [
+        "이송 지연으로 인한 반복 조작·재기동 유발",
+        "펌프 데드헤드 운전 시 밸브 하류 무유동 구간 과압 및 배관 완결성 위협",
+        "무유동 구간 정체 NH3의 기화·압력 상승으로 연결부 누출 가능성",
+        "펌프 과열·손상"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 개시 전 밸브 정렬 체크리스트 및 라인업 확인 절차 수립",
+        "펌프 데드헤드 방지를 위한 최소유량 회수라인 또는 저유량 트립 설정",
+        "매니폴드 유량 지시·저유량 경보 설치",
+        "무유동 구간 압력 감시 및 릴리프 경로 확보"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-002",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "압력",
+      "deviation": "매니폴드에 이송 압력이 전혀 형성되지 않아 이송 추진력이 없는 상태",
+      "causes": [
+        "수급선측 이송펌프 미기동 또는 트립",
+        "상류 대형 누출로 인한 압력 상실",
+        "밸브 오정렬로 압력이 다른 경로로 배출"
+      ],
+      "consequences": [
+        "이송 불가로 조업 중단 및 재기동 반복",
+        "펌프 캐비테이션·손상",
+        "상류 대량 누출이 원인일 경우 독성·가연성 NH3의 외부 방출과 인명 피해"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "압력 지시계 및 저압 경보 설치",
+        "이송라인 압력 저하 시 ESD 연동",
+        "펌프 흡입측 압력 감시로 캐비테이션 보호"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-003",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "누출·격납",
+      "deviation": "격납이 전혀 이루어지지 않아 매니폴드 연결부·플랜지에서 NH3가 외부로 대량 방출됨",
+      "causes": [
+        "플랜지·연결부 개스킷 파손 또는 체결 불량",
+        "호스/암 파단",
+        "재질 취성·과압으로 인한 배관 파열",
+        "연결부 완전 미체결 상태에서 이송 개시"
+      ],
+      "consequences": [
+        "독성 NH3 대량 확산으로 작업자 급성 흡입·사망",
+        "가연성 증기운 형성 및 점화 시 화재·폭발",
+        "항만·인접 선박으로의 독성 확산",
+        "선내외 다수 인명 피해"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "매니폴드 구역 가스 검지기 및 고농도 경보 설치",
+        "ESD 및 자동 격리밸브 연동",
+        "누출 확산 억제용 살수(워터커튼) 설비 검토",
+        "연결부 체결 확인 및 압력 시험 절차 의무화",
+        "개인보호구·대피 절차 정비"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-004",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "연결·분리 작업",
+      "deviation": "연결이 전혀 완결되지 않은 상태(미체결)에서 이송이 시도됨",
+      "causes": [
+        "호스/암 커플링 미체결 또는 부분 체결",
+        "체결 확인 절차 누락",
+        "연결 순서 오류로 개방 상태 잔존"
+      ],
+      "consequences": [
+        "이송 개시 즉시 접속부에서 NH3 대량 분출",
+        "작업자 직접 피폭 및 사망",
+        "증기운 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "연결 완결 인터록(체결 확인 전 이송 밸브 개방 불가) 설치",
+        "연결부 누설·기밀 시험 후 이송 승인 절차",
+        "체결 상태 이중 확인(투맨룰) 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-005",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "기동정지",
+      "deviation": "기동 시 요구되는 퍼지·충압 등 준비 순서가 전혀 수행되지 않고 이송이 시작됨",
+      "causes": [
+        "기동 절차 미준수",
+        "퍼지 단계 생략",
+        "라인업 확인 누락"
+      ],
+      "consequences": [
+        "라인 내 공기·이물 잔존 상태에서 NH3 유입으로 조성 오염 및 반응",
+        "미배출 가스로 인한 압력 서지 및 연결부 손상·누출",
+        "이송 실패 및 재작업"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "기동 전 퍼지·충압 순서를 포함한 표준 운전절차(SOP) 수립 및 체크리스트화",
+        "퍼지 완료 확인 전 이송 밸브 개방 방지 인터록",
+        "기동 단계별 감시 및 승인 게이트 운영"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-006",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "유틸리티",
+      "deviation": "퍼지용 불활성가스·계장공기·전원 등 지원 유틸리티가 전혀 공급되지 않음",
+      "causes": [
+        "불활성가스 공급원 고갈 또는 밸브 차단",
+        "계장공기 압축기 정지",
+        "전원 상실"
+      ],
+      "consequences": [
+        "퍼지 불가로 라인 내 공기/NH3 혼합 및 격리 불량",
+        "계장공기 상실 시 작동밸브·ESD 기능 상실로 이송 통제 불능",
+        "전원 상실 시 감시·경보 기능 정지로 누출 미탐지"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "계장공기 상실 시 밸브 페일세이프(안전측 폐쇄) 설계 확인",
+        "불활성가스·계장공기 공급 압력 감시 및 저압 경보",
+        "비상전원(UPS/발전기) 확보 및 정전 시 ESD 자동 작동",
+        "유틸리티 상실 시 이송 중단 인터록"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-007",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "선박-육상 정렬",
+      "deviation": "선박-육상 간 기계적 정렬이 전혀 유지되지 않아 접속부에 과도 변위가 발생",
+      "causes": [
+        "계류 실패 또는 선박 표류·이동",
+        "조류·풍하중에 의한 상대 변위 초과",
+        "정렬 감시 미흡"
+      ],
+      "consequences": [
+        "호스/암 인장·굽힘으로 접속부 파단 및 NH3 대량 누출",
+        "독성 확산과 인명 피해",
+        "이송 설비 기계적 손상"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "선박 변위 감시 및 허용 범위 초과 시 경보",
+        "긴급분리커플링(ERC)과 ESD 연동 설치",
+        "계류 상태 상시 점검 및 이송 중 위치 모니터링",
+        "허용 이동 범위를 반영한 호스/암 설계 검증"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-008",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "유량",
+      "deviation": "매니폴드를 통과하는 NH3 이송 유량이 설계값을 초과하여 과다 유입된다",
+      "causes": [
+        "육상 이송펌프 과속 운전 또는 토출압 과다",
+        "유량제어 밸브 개도 과다 또는 제어 오류",
+        "수급선 탱크와 육상 간 압력차 과대"
+      ],
+      "consequences": [
+        "매니폴드 배관·호스 내 유속 과다로 압력강하 증가 및 서징 발생",
+        "수용측 탱크 과충전으로 이어져 릴리프 작동·액 넘침",
+        "과유속에 의한 배관 진동·연결부 피로로 NH3 누출 및 독성 확산"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "매니폴드 유량계 및 고유량 경보 설정",
+        "수용탱크 고레벨 연동에 의한 이송 자동 정지",
+        "이송 개시 전 최대 이송률 합의 및 램프업 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-009",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "압력",
+      "deviation": "매니폴드 및 접속 배관에 설계압을 초과하는 과압이 형성된다",
+      "causes": [
+        "밸브 폐쇄 상태에서 이송 지속에 의한 데드헤드 승압",
+        "액 봉입 구간의 열팽창(thermal expansion)",
+        "이송 종료 시 밸브 순서 오류로 인한 압력 갇힘"
+      ],
+      "consequences": [
+        "매니폴드 플랜지·호스·밸브 손상 및 파열",
+        "대량 NH3 순간 방출로 독성 가스운 형성 및 인접 항만 영향",
+        "연결부 개스킷 파손에 의한 누출"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "매니폴드 릴리프밸브 및 열팽창 방출밸브 설치",
+        "고압 경보 및 고고압 연동 이송 정지",
+        "액 봉입 구간 식별 및 배액 절차 명문화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-010",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "온도",
+      "deviation": "이송 NH3 온도가 설계 상한을 초과하여 상승한다",
+      "causes": [
+        "가압식 NH3 이송 중 외기 흡열 또는 펌프 마찰열",
+        "냉동식 이송 라인의 단열 손상으로 입열 증가",
+        "재순환 없는 정체 구간의 온도 상승"
+      ],
+      "consequences": [
+        "액 온도 상승에 따른 증기압 증가로 매니폴드 내 과압 유발",
+        "플래싱 증가로 이송 불안정 및 릴리프 작동",
+        "NH3 증기 방출로 독성 노출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "매니폴드 온도 감시 및 고온 경보",
+        "라인 단열 상태 점검 절차 수립",
+        "정체 구간 최소화 및 순환 확보 설계 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-011",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "조성",
+      "deviation": "NH3 내 수분 또는 이물질 함량이 설계 허용치를 초과한다",
+      "causes": [
+        "연결·분리 시 대기 중 수분·공기 유입",
+        "퍼지 불충분으로 잔류 이물 혼입",
+        "호스/암 내부 오염"
+      ],
+      "consequences": [
+        "수분 증가에 따른 응력부식균열 촉진으로 매니폴드 배관 열화",
+        "장기적 연결부 부식·누출 진전",
+        "수용탱크 제품 품질 저하"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "연결부 불활성가스 퍼지 및 수분 함량 확인 절차",
+        "이송 전 라인 건조·불활성화 확인",
+        "정기 배관 부식 검사"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-012",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "상",
+      "deviation": "매니폴드 내에서 액상 NH3의 기화(플래싱)가 과다 발생하여 기상 비율이 증가한다",
+      "causes": [
+        "이송 중 압력강하로 인한 플래싱",
+        "온도 상승 또는 라인 입열 증가",
+        "액 유입 전 라인 예냉·충압 불충분"
+      ],
+      "consequences": [
+        "기액 이상유동에 의한 유량계측 오류 및 이송 불안정",
+        "기화 팽창에 의한 국부 과압 및 진동",
+        "릴리프 통한 NH3 증기 방출로 독성 확산"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 전 라인 예냉·충압 절차 수립",
+        "매니폴드 압력·온도 감시로 플래싱 여유 확보",
+        "기상 복귀(vapour return) 라인 확보 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-013",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "누출·격납",
+      "deviation": "매니폴드 연결부·플랜지에서 NH3 외부 누출량이 증가한다",
+      "causes": [
+        "다수 플랜지·연결부 개스킷 열화 또는 체결 불량",
+        "과압·진동에 의한 접합부 이완",
+        "부식에 의한 배관 관통"
+      ],
+      "consequences": [
+        "독성·가연성 NH3 대량 외부 방출로 작업자 급성 노출",
+        "가스운 형성 및 인접 선박·항만으로 확산",
+        "발화원 접촉 시 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "매니폴드 구역 가스검지기 및 경보 설치",
+        "물분무·살수 커튼에 의한 가스운 억제 설비 검토",
+        "연결부 정기 누설 점검 및 개스킷 관리 프로그램"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-014",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "연결·분리 작업",
+      "deviation": "연결부에 과도한 체결 토크 또는 과다한 접속 응력이 가해진다",
+      "causes": [
+        "호스/암 체결 시 과토크 적용",
+        "정렬 불량 상태에서 무리한 접속 강행",
+        "커플러 규격 부적합"
+      ],
+      "consequences": [
+        "플랜지·커플러 변형·손상으로 밀봉 실패",
+        "접속 직후 이송 개시 시 NH3 누출",
+        "작업자 근접 노출에 의한 급성 중독"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "규정 토크·체결 절차 및 커플러 호환성 확인",
+        "접속 후 기밀 시험(leak test) 의무화",
+        "작업자 보호구 및 접속 구역 접근 통제"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-015",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "기동정지",
+      "deviation": "이송 개시 시 라인 충압 속도가 과도하여 급격한 압력 상승이 발생한다",
+      "causes": [
+        "밸브 급개방에 의한 서지(surge)",
+        "예냉 없이 급속 액 유입",
+        "충압 순서 미준수"
+      ],
+      "consequences": [
+        "수격·서지에 의한 매니폴드·호스 손상",
+        "순간 과압으로 연결부 파손 및 NH3 누출",
+        "이송 초기 불안정으로 비상정지 반복"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "단계적 밸브 개방 및 서서한 충압 절차 수립",
+        "충압 중 압력 감시 및 서지 방지 설계 검토",
+        "기동 체크리스트 및 순서 인터록"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-016",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "선박-육상 정렬",
+      "deviation": "선박 이동·표류로 접속부에 허용치를 초과하는 상대 변위·인장력이 가해진다",
+      "causes": [
+        "계류 이완 또는 파랑·조류에 의한 선박 이동 과다",
+        "이송암 작동범위(envelope) 초과",
+        "표류에 의한 급격한 상대 변위"
+      ],
+      "consequences": [
+        "이송암/호스 과인장에 의한 파단 및 대량 NH3 누출",
+        "커플러 강제 분리로 인한 급성 독성 방출",
+        "인접 선박·항만으로의 가스운 확산"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "이송암 작동범위 감시 및 한계 초과 경보",
+        "긴급분리커플러(ERC) 설치 검토",
+        "계류 상태 및 선박 위치 상시 감시 절차"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-017",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "유량",
+      "deviation": "매니폴드를 통한 NH3 이송 유량이 설계치보다 감소하여 규정 시간 내 하역이 완료되지 않고 라인 내 정체가 발생함",
+      "causes": [
+        "이송펌프 성능 저하 또는 부분 고장",
+        "매니폴드 밸브 부분 개방 또는 개방 실패",
+        "필터·스트레이너 부분 폐색",
+        "호스/암 내경 부분 폐색 또는 NH3 부분 기화에 의한 이상유동"
+      ],
+      "consequences": [
+        "하역 시간 지연으로 접속부 노출 시간 증가",
+        "라인 내 NH3 정체·기화로 국부 압력 변동 발생",
+        "펌프 데드헤드 운전 시 과열·기밀 손상 및 NH3 누출 경로 형성"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "매니폴드 유량계 및 저유량 경보 설치",
+        "이송펌프 최소유량 보호(리서큘레이션) 로직 적용",
+        "필터·스트레이너 차압 감시 및 정기 점검 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-018",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "압력",
+      "deviation": "매니폴드 이송 압력이 설계 하한 이하로 저하되어 부압 또는 이송 구동력 부족 상태가 발생함",
+      "causes": [
+        "이송펌프 토출압 저하 또는 상류 공급 부족",
+        "밸브 개도 오류로 인한 압력 손실 증가",
+        "NH3 기화에 따른 펌프 흡입측 캐비테이션"
+      ],
+      "consequences": [
+        "부압 발생 시 플랜지·씰을 통한 공기 유입으로 라인 내 조건 교란",
+        "캐비테이션에 의한 펌프 손상 및 진동으로 접속부 이완",
+        "이송 불안정으로 인한 재기동 반복 및 접속부 피로 누출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "매니폴드 압력지시계 및 저압 경보 설치",
+        "펌프 흡입측 압력 감시로 캐비테이션 방지",
+        "저압 시 자동 이송 정지 인터록 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-019",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "온도",
+      "deviation": "냉동 NH3 이송 시 매니폴드 온도가 설계 하한 이하로 과도하게 저하되어 배관·플랜지 재질이 취성 영역에 노출됨",
+      "causes": [
+        "냉동 액화 NH3의 자유팽창·플래싱에 의한 급격한 온도 강하",
+        "예냉(쿨다운) 절차 미흡 상태에서의 저온 유체 유입",
+        "부분 유량 정체 구간에서의 국부 냉각"
+      ],
+      "consequences": [
+        "탄소강 배관·플랜지의 저온 취성 파단",
+        "취성 파단으로 인한 대량 NH3 누출 및 독성 확산",
+        "씰·개스킷 수축에 의한 접속부 기밀 저하"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "매니폴드 온도지시 및 저온 경보 설치",
+        "단계적 예냉 절차 수립 및 저온 재질(적정 재질) 적용 확인",
+        "저온 감지 시 이송 차단 인터록 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-020",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "조성",
+      "deviation": "이송 NH3 중 유효 순도가 저하되어(수분·이물 상대 농도 상승) 부식성이 증가한 유체가 매니폴드를 통과함",
+      "causes": [
+        "상류 저장·배관의 수분 혼입으로 NH3 순도 저하",
+        "퍼지 불충분으로 잔류 불순물 존재",
+        "이물 유입에 의한 실질 NH3 농도 감소"
+      ],
+      "consequences": [
+        "수분+NH3에 의한 응력부식균열 및 국부 부식 진행",
+        "부식 진전에 따른 배관·플랜지 완결성 저하 및 누출",
+        "부식 생성물에 의한 밸브·필터 폐색 유발"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "이송 전·중 NH3 순도(수분 함량) 분석 절차 수립",
+        "수분 관리 기준 및 부식 취약부 정기 검사",
+        "적정 재질 및 부식 여유 두께 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-021",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "상",
+      "deviation": "매니폴드 내 액상 NH3의 비율이 감소하고 기상(플래시 가스) 비율이 증가하여 이상유동 상태로 이송됨",
+      "causes": [
+        "압력 저하 또는 온도 상승에 의한 액상 NH3의 플래싱",
+        "예냉 부족으로 고온 배관 접촉 시 부분 기화",
+        "저유량 정체 구간에서의 국부 기화"
+      ],
+      "consequences": [
+        "슬러그/이상유동에 의한 압력 서지 및 배관 진동",
+        "진동으로 인한 플랜지 이완 및 누출",
+        "펌프 기상 유입에 의한 캐비테이션·손상"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 조건을 액상 유지 범위로 관리하는 압력·온도 운전기준 수립",
+        "베이퍼 리턴 라인 구성 및 예냉 절차 강화",
+        "이상유동 감지를 위한 압력 변동 감시"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-022",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "누출·격납",
+      "deviation": "매니폴드 플랜지·연결부에서 소량의 NH3가 지속적으로 미세 누출되는 격납 부분 상실 상태가 발생함",
+      "causes": [
+        "개스킷 열화·체결 토크 부족에 의한 미세 누설",
+        "온도 사이클에 의한 씰 이완",
+        "저온·진동에 의한 접속부 미세 균열"
+      ],
+      "consequences": [
+        "독성 NH3 미량 누출로 작업자 흡입·눈 자극",
+        "누출 지속 시 접속부 확대 파손 및 대량 방출로 진전",
+        "가연성 NH3 축적 시 국부 발화 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "매니폴드 구역 NH3 가스 검지기 및 경보 설치",
+        "플랜지 체결 관리 및 정기 누설 점검 절차 수립",
+        "누출 확산 저감을 위한 워터커튼·스프레이 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-023",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "연결·분리 작업",
+      "deviation": "호스/암 체결이 규정보다 덜 조여진(체결력 부족) 상태로 이송이 개시됨",
+      "causes": [
+        "커플러 체결 토크 부족 또는 잠금 미완료",
+        "개스킷 오정렬 상태에서의 불완전 체결",
+        "작업자 절차 미준수 또는 확인 누락"
+      ],
+      "consequences": [
+        "이송 압력 인가 시 접속부에서 NH3 누출",
+        "체결 이탈 확대 시 호스 분리 및 대량 방출",
+        "작업자 근접 위치 노출로 독성 흡입 부상"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "연결 완료 확인 체크리스트 및 이중 확인 절차 수립",
+        "이송 전 저압 누설시험(리크테스트) 의무화",
+        "커플러 잠금 상태 인터록 또는 시각적 표시 적용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-024",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "기동정지",
+      "deviation": "이송 개시 시 라인 충압 속도가 부족하거나 예냉·퍼지가 불충분한 상태에서 하역이 진행됨",
+      "causes": [
+        "충압 단계 생략 또는 과소 시간 적용",
+        "퍼지 불활성가스 유량 부족으로 잔류 공기/수분 미제거",
+        "배액 미완료 상태에서의 재기동"
+      ],
+      "consequences": [
+        "잔류 공기·수분과 NH3 접촉에 의한 부식·이상유동",
+        "불충분 예냉으로 인한 급격 기화·서지 및 접속부 손상",
+        "누출로 진전 시 독성 확산"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "단계별 충압·퍼지·예냉 순서를 명시한 기동 절차 수립",
+        "퍼지 완료 판정 기준(산소/수분 농도) 설정",
+        "각 단계 완료 확인 후 다음 단계 진행 인터록 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-025",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "유틸리티",
+      "deviation": "퍼지용 불활성가스·계장공기 등 지원 유틸리티 공급량이 부족하여 안전 이송 지원 기능이 저하됨",
+      "causes": [
+        "불활성가스 공급압 저하 또는 잔량 부족",
+        "계장공기 공급 저하로 제어밸브 구동력 부족",
+        "전원 저전압으로 계장·감시 기능 부분 저하"
+      ],
+      "consequences": [
+        "퍼지 불충분으로 잔류 불순물에 의한 부식·조성 이탈",
+        "제어밸브 응답 저하로 유량·압력 제어 상실 및 이상 이송",
+        "감시 기능 저하로 이탈 조기 감지 실패"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "불활성가스·계장공기 공급압 저압 경보 설치",
+        "유틸리티 상실 시 안전측(밸브 폐) 페일세이프 설계 확인",
+        "비상 전원·백업 공급 계획 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-026",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "선박-육상 정렬",
+      "deviation": "선박 표류·이동에 대한 정렬 여유(허용 변위 범위)가 부족한 상태로 접속부가 유지되어 기계적 여유가 감소함",
+      "causes": [
+        "계류 장력 관리 미흡으로 상대 변위 증가",
+        "호스/암 여유 길이·작동 범위 부족",
+        "조위·파랑에 의한 선박 상하·수평 이동"
+      ],
+      "consequences": [
+        "접속부에 과도한 기계적 응력 인가로 씰 손상·누출",
+        "허용 범위 초과 시 커플러 강제 분리 및 대량 NH3 방출",
+        "독성·가연성 NH3 확산으로 인접 구역·항만 영향"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 2,
+      "risk_score": 10,
+      "recommendations": [
+        "선박 위치·변위 감시 및 허용 범위 초과 경보 설치",
+        "긴급분리커플러(ERC) 설치 및 작동 절차 수립",
+        "계류 상태 점검 및 여유 길이 확보 기준 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-027",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "유량",
+      "deviation": "매니폴드에서 NH3가 정상 이송방향과 반대로 흘러 수급선 측 또는 저장 측으로 역류한다",
+      "causes": [
+        "이송 종료·정지 시 하류측이 상류측보다 높은 압력을 형성",
+        "펌프 정지 후 정수두 차에 의한 액 역류",
+        "수급선과 육상 저장 간 압력역전(밸브 조작 순서 오류)",
+        "역류방지 수단 미작동 또는 고착"
+      ],
+      "consequences": [
+        "의도하지 않은 방향으로 NH3가 충전되어 수용 측 과충전·과압",
+        "펌프 역회전에 의한 임펠러·씰 손상",
+        "역류로 인한 배관 수격 및 플랜지 이완 후 독성 NH3 누출",
+        "잘못된 탱크로 이송되어 조성·재고 관리 혼란"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 라인에 역류방지밸브(체크밸브) 설치 및 정기 작동시험",
+        "펌프 트립 시 자동 차단밸브 연동 로직 구성",
+        "선박-육상 간 압력 차 감시 및 경보 설정",
+        "밸브 조작 순서를 명문화한 이송 절차서 운영"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-028",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "압력",
+      "deviation": "역류에 의해 상류 저압측에 역방향 압력이 걸려 국부 과압이 발생한다",
+      "causes": [
+        "하류측 고압이 정지 밸브 폐쇄 없이 상류로 전달",
+        "역류 발생 시 수격에 의한 순간 압력 상승",
+        "펌프 역회전 시 예상치 못한 압력 형성"
+      ],
+      "consequences": [
+        "저압 설계 구간 과압으로 플랜지·씰 파손",
+        "배관 완결성 상실 후 NH3 대량 누출",
+        "압력계·이송라인 부속 손상"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "역류 구간에 압력방출 경로 및 안전밸브 검토",
+        "고-저압 경계에 이중 차단 설치",
+        "수격 저감을 위한 밸브 폐쇄속도 관리"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-029",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "조성",
+      "deviation": "역류로 수급선 또는 수용 측의 타 물질·오염물이 NH3 라인으로 역혼입된다",
+      "causes": [
+        "역류 시 하류측 잔류물·이물이 상류로 유입",
+        "공용 매니폴드에서 타 라인 물질이 역방향으로 진입",
+        "역류로 수분·불활성가스가 NH3 계통에 혼입"
+      ],
+      "consequences": [
+        "NH3 순도 저하 및 규격 미달",
+        "수분 혼입에 의한 부식 촉진 및 배관 열화",
+        "이물 혼입으로 밸브·계장 고착 및 오작동"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "라인별 전용 매니폴드 분리 또는 확실한 격리 밸브 운용",
+        "역류방지밸브로 오염물 역진입 차단",
+        "이송 전후 라인 순도·수분 확인 절차 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-030",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "상",
+      "deviation": "역류로 기상 NH3가 액상 라인으로, 또는 액상이 기상 라인으로 역방향 유입되어 상 혼입이 발생한다",
+      "causes": [
+        "베이퍼 리턴 라인 압력역전으로 액상이 기상 경로로 역류",
+        "이송 정지 시 액상 라인으로 기상 역류",
+        "밸브 조작 순서 오류로 기·액 경로 교차"
+      ],
+      "consequences": [
+        "기상 라인으로 액 유입 시 액충격(수격) 및 부속 손상",
+        "기화·플래싱으로 이송 불안정 및 압력 변동",
+        "손상부에서 NH3 누출로 독성 확산"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "베이퍼 리턴 라인에 역류방지 및 녹아웃 드럼 검토",
+        "기·액 경로별 체크밸브 설치",
+        "이송 개시·종료 시 상 상태 확인 절차 운영"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-031",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "누출·격납",
+      "deviation": "역류·수격으로 매니폴드 연결부·플랜지가 이완되어 NH3가 외부로 누출된다",
+      "causes": [
+        "역류 시 수격 하중으로 플랜지·개스킷 이완",
+        "예상치 못한 역방향 압력으로 연결부 응력 초과",
+        "펌프 역회전에 의한 씰 파손"
+      ],
+      "consequences": [
+        "독성·가연성 NH3의 다수 연결부에서 외부 누출",
+        "작업자 흡입·화학 화상 및 광범위 독성 확산",
+        "인접 선박·항만으로 영향 확대 가능"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "매니폴드 구역 가스 검지기 및 살수/차폐 설비 검토",
+        "역류·수격 저감 설계로 연결부 하중 관리",
+        "긴급차단밸브(ESD) 연동으로 누출 시 신속 격리"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-032",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "연결·분리 작업",
+      "deviation": "역류로 라인 내 잔류 NH3가 역압되어 있는 상태에서 호스/암을 분리해 잔류물이 분출된다",
+      "causes": [
+        "역류로 분리 지점에 잔압·잔액이 남은 채 분리 시도",
+        "역류방지·배액 미완료 상태에서 조기 분리",
+        "분리 전 압력 확인 절차 누락"
+      ],
+      "consequences": [
+        "분리 순간 잔류 NH3 분출로 작업자 직접 노출",
+        "화학 화상·흡입 상해",
+        "국부 독성 확산"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "분리 전 역류방지 확인 및 배액·퍼지 완료 인터록",
+        "긴급분리커플링(ERC)의 잔압 차단 기능 확인",
+        "분리 전 압력·잔액 확인을 절차서에 명문화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-033",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "기동정지",
+      "deviation": "이송 종료 시 밸브 폐쇄·배액 순서 오류로 하류측에서 상류측으로 역류가 발생한다",
+      "causes": [
+        "정지 시 하류 차단 전에 펌프 정지되어 정수두 역류",
+        "종료 배액·퍼지 순서 미준수",
+        "충압·배액 절차 순서 뒤바뀜"
+      ],
+      "consequences": [
+        "역류로 상류 설비 과충전·과압",
+        "라인 수격 및 연결부 손상 후 누출",
+        "잔류 NH3 관리 불량으로 후속 작업 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "정지 시 하류 차단→펌프 정지 순서 인터록",
+        "종료 절차에 역류 방지 단계 포함",
+        "배액·퍼지 완료 확인 체크리스트 운영"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-034",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "유틸리티",
+      "deviation": "불활성 퍼지가스가 NH3 압력역전으로 NH3 계통으로부터 역류하여 유틸리티 라인이 오염된다",
+      "causes": [
+        "퍼지가스 압력이 NH3 압력보다 낮은 상태에서 연결",
+        "퍼지 라인 역류방지 미설치·고착",
+        "이송 압력이 유틸리티 헤더로 역전"
+      ],
+      "consequences": [
+        "불활성가스·계장공기 헤더로 NH3 역류 오염",
+        "타 사용처로 독성 NH3 확산",
+        "유틸리티 계통 부식 및 오작동"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "유틸리티-공정 경계에 역류방지밸브 설치",
+        "퍼지가스 공급 압력을 공정 압력 이상으로 유지·감시",
+        "유틸리티 라인 역류 검지 및 경보 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-035",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "유량",
+      "deviation": "설계된 NH3 대신 다른 유체(세정수·불활성가스·타 화물)가 매니폴드로 흐르거나, 잘못된 라인으로 유체가 분배됨",
+      "causes": [
+        "밸브 오조작으로 인접 라인/타 화물 라인과 교차 연결",
+        "수급선-육상 간 이송 대상 물질 확인 누락",
+        "퍼지/세정 매체가 이송 라인에 잔류한 채 이송 개시"
+      ],
+      "consequences": [
+        "NH3와 비적합 물질 혼합으로 발열·격렬반응 가능",
+        "잘못된 물질 이송으로 하류 설비 오염 및 손상",
+        "라인 완결성 저하 및 누출로 독성 NH3 외부 확산"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "이송 전 라인업 체크리스트 및 물질 동정(identification) 확인 절차 수립",
+        "교차 연결 방지용 물리적 블라인드/스풀 관리",
+        "밸브 위치 상호잠금(interlock) 도입 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-036",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "조성",
+      "deviation": "NH3에 수분·공기·타 화물 잔류물 등 설계 외 성분이 혼입되어 조성이 규격을 벗어남",
+      "causes": [
+        "연결부 개방 중 대기 유입 및 수분 응축",
+        "이전 화물/세정 매체 잔류물이 라인에 남음",
+        "퍼지 불완전으로 산소·수분 존재"
+      ],
+      "consequences": [
+        "수분+NH3에 의한 응력부식균열 및 배관·플랜지 재질 열화",
+        "산소 혼입 시 가연성 혼합기 형성 가능",
+        "미세 누출 경로 확대로 독성 NH3 누출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 전 불활성가스 퍼지 및 산소/수분 농도 확인 절차 수립",
+        "정기 조성 샘플링 및 수분 관리 기준 설정",
+        "라인 잔류물 배액·퍼지 완결 확인 체크리스트"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-037",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "상",
+      "deviation": "설계상 액상 이송이어야 할 매니폴드에 예상치 못한 기상(플래싱/기화)이 존재하거나 이상(two-phase) 상태로 유체가 존재함",
+      "causes": [
+        "이송 개시 시 라인 예냉 미흡으로 액 NH3 플래싱",
+        "압력 저하 구간에서 기화 발생",
+        "배액/퍼지 불완전으로 기액 혼재"
+      ],
+      "consequences": [
+        "이상유동에 의한 수격·진동으로 연결부 손상",
+        "기화로 인한 이송 불안정 및 계량 오류",
+        "손상 연결부에서 독성 NH3 누출·확산"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 전 라인 예냉/충압 순서 절차화",
+        "매니폴드 상태 모니터링(온도·압력) 지점 확보",
+        "플래싱 최소화를 위한 이송 초기 유량 램프업 절차"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-038",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "누출·격납",
+      "deviation": "NH3가 아닌 설계 외 유체(퍼지가스·세정액 등)가 격납 경계를 넘어 방출되거나, 격납 대상과 다른 물질이 배출계로 유입됨",
+      "causes": [
+        "잘못된 라인업으로 타 물질이 벤트/드레인 경로로 방출",
+        "격납 시스템에 예상 외 물질 유입으로 처리 부적합",
+        "연결부 오체결로 비의도 유체 방출"
+      ],
+      "consequences": [
+        "배출/처리 설비가 예상 외 물질에 부적합해 처리 실패",
+        "NH3 혼입 방출 시 독성 확산 및 인근 인원 노출",
+        "격납 신뢰성 저하로 후속 대량 누출 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "벤트/드레인 라인업 확인 및 잠금 절차 수립",
+        "격납·배출계 유입 물질 동정 확인 절차",
+        "NH3 가스 검지기 배치 및 경보 연동 점검"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-039",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "연결·분리 작업",
+      "deviation": "설계된 NH3 호스/암이 아닌 부적합·비호환 커플러나 다른 서비스용 접속구에 연결되어 잘못된 물질 경로가 형성됨",
+      "causes": [
+        "커플러 규격 불일치 또는 어댑터 임의 사용",
+        "NH3용과 타 서비스용 접속구 혼동",
+        "연결 전 물질/라인 확인 절차 누락"
+      ],
+      "consequences": [
+        "비호환 접속으로 체결 불량 및 이송 중 누출",
+        "타 물질 라인과 오접속 시 혼합 반응 위험",
+        "독성 NH3 대량 누출로 선내·인근 인원 노출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "NH3 전용 커플러 규격 지정 및 오접속 방지 구조(고유형상) 적용",
+        "연결 전 상호확인(더블체크) 및 태그 관리 절차",
+        "연결부 누설시험(leak test) 후 이송 개시 규정화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-040",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "기동정지",
+      "deviation": "기동·정지 시 설계된 매체가 아닌 다른 매체(예: 퍼지가스 대신 공기, 배액 대신 제품)가 라인에 도입되는 순서 오류가 발생함",
+      "causes": [
+        "퍼지 매체 선택 오류로 불활성가스 대신 공기 도입",
+        "배액/퍼지 순서 착오로 잔류 NH3와 공기 접촉",
+        "기동정지 절차서 미준수"
+      ],
+      "consequences": [
+        "라인 내 산소-NH3 혼합기 형성으로 가연 위험",
+        "부적합 매체 잔류로 후속 이송 조성 이탈",
+        "연결부 손상 및 독성 누출로 인원 노출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "기동/정지 시 매체별 순서 절차서 명문화 및 확인 서명",
+        "퍼지 매체 라인 오접속 방지 조치",
+        "산소/가연성 농도 확인 후 다음 단계 진행 규정"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-041",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "유틸리티",
+      "deviation": "퍼지에 설계된 불활성가스가 아닌 다른 유틸리티(공기 등)가 공급되거나, 잘못된 유틸리티 매체가 이송 라인에 연결됨",
+      "causes": [
+        "불활성가스 헤더와 계장공기 헤더 오접속",
+        "유틸리티 공급원 라벨링 오류",
+        "퍼지 매체 확인 절차 누락"
+      ],
+      "consequences": [
+        "공기(산소) 도입으로 NH3와 가연성 혼합기 형성",
+        "부적합 매체로 조성 오염 및 부식 촉진",
+        "라인 완결성 저하로 독성 누출 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "불활성가스 라인 전용화 및 오접속 방지 구조 적용",
+        "유틸리티 헤더 명확한 식별표시 및 확인 절차",
+        "퍼지 후 산소 농도 측정 규정화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-042",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "유량",
+      "deviation": "매니폴드의 다중 이송 경로 중 일부 분기만 NH3가 흐르고 나머지 분기는 흐르지 않아 설계 분배량이 부분적으로만 달성됨",
+      "causes": [
+        "일부 분기 밸브 미개방 또는 부분 개방",
+        "특정 분기 라인 부분 폐색(스트레이너 막힘, 잔류 고형물)",
+        "다중 연결부 중 일부만 정상 체결되어 해당 경로만 통류"
+      ],
+      "consequences": [
+        "정상 통류 경로에 유량 집중되어 국부 유속 상승·침식 및 압력 상승",
+        "미통류 분기에 NH3 정체·데드레그 형성으로 국부 열교환·기화 및 정체 부식 진행",
+        "이송 시간 지연으로 작업 장기화 및 이송 중 노출 기회 증가"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 개시 전 각 분기 밸브 개도 확인 체크리스트 운용",
+        "분기별 유량 지시계 설치 및 경로별 유량 균형 확인",
+        "데드레그 최소화 배관 설계 및 정체 구간 주기 점검"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-043",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "압력",
+      "deviation": "매니폴드 일부 구간에만 정상 이송압이 형성되고 나머지 구간은 저압/정체 상태로 남아 압력이 부분적으로만 도달함",
+      "causes": [
+        "일부 분기 밸브 부분 개방으로 하류 승압 불완전",
+        "특정 경로 부분 폐색에 따른 구간별 압력 편차",
+        "다중 연결부 일부 미체결로 해당 구간 가압 실패"
+      ],
+      "consequences": [
+        "통류 경로 국부 과압으로 플랜지·연결부 응력 집중 및 미세누출 유발",
+        "저압 구간 NH3 부분 기화·플래싱으로 이상 유동 및 수격 위험",
+        "압력 불균형으로 인한 이송 제어 곤란"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "구간별 압력계 설치 및 승압 균형 모니터링",
+        "과압 방지용 릴리프 장치 설치 및 세팅 검증",
+        "이송 개시 시 단계적 승압 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-044",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "온도",
+      "deviation": "매니폴드 일부 구간만 설계 이송온도에 도달하고 나머지 구간은 다른 온도로 남아 온도 균일화가 부분적으로만 달성됨",
+      "causes": [
+        "냉각/예냉 시 일부 분기만 순환되어 구간별 온도 편차 발생",
+        "일부 경로 정체로 외기 흡열에 따른 국부 승온",
+        "부분 통류로 냉매/냉각 NH3가 전 구간에 미도달"
+      ],
+      "consequences": [
+        "예냉 부족 구간 저온 NH3 유입 시 급냉으로 재질 취성·열충격 균열",
+        "국부 승온 구간 기화 증대로 압력 상승 및 이송 불안정",
+        "온도 편차로 인한 접속부 열응력 및 밀봉 열화"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 전 전 구간 예냉 완료 확인 온도 모니터링",
+        "구간별 온도계 설치 및 급냉 방지 승온/강온 속도 관리",
+        "저온 취성 대응 재질 검증"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-045",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "조성",
+      "deviation": "이송 물질이 순수 NH3가 아니라 설계 조성의 일부만 만족하고 수분·불활성가스·타물질이 섞여 순도가 부분적으로만 달성됨",
+      "causes": [
+        "퍼지 불완전으로 잔류 불활성가스/공기가 NH3와 혼입",
+        "라인 내 잔류 수분 존재로 부분 함수",
+        "이전 이송물 잔류 또는 이물 혼입"
+      ],
+      "consequences": [
+        "수분 혼입 시 NH3 부식성 증대로 배관·연결부 부식 및 균열",
+        "불활성가스 혼입으로 이송 효율 저하 및 기포 유동",
+        "수급 대상 순도 규격 미달로 재이송·품질 문제"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 전 수분·산소 함량 분석 및 규격 확인",
+        "충분한 퍼지·건조 절차 수립 및 검증",
+        "샘플링 포인트 설치로 이송 조성 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-046",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "상",
+      "deviation": "매니폴드 내 유체가 전량 액상이 아니라 액상과 기상이 혼재하는 이상류 상태로 단일상 이송 의도가 부분적으로만 달성됨",
+      "causes": [
+        "예냉 부족 및 국부 승온에 따른 부분 기화",
+        "저압 구간에서의 플래싱 발생",
+        "라인 내 잔류 증기 미배출"
+      ],
+      "consequences": [
+        "기액 이상류로 인한 수격·진동 발생 및 배관 지지부 손상",
+        "기포 유동으로 이송 계량 오차 및 유량 불안정",
+        "국부 증기 축적에 따른 압력 서지 및 연결부 누출 유발"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "충분한 예냉 및 라인 벤팅으로 증기 배출 절차 수립",
+        "저압 플래싱 방지 위한 배압 관리",
+        "이상류 감지용 유동/압력 모니터링"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-047",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "누출·격납",
+      "deviation": "다수 연결부·플랜지 중 일부만 완전 밀봉되고 특정 지점에서 미세누출이 발생하여 격납 무결성이 부분적으로만 달성됨",
+      "causes": [
+        "일부 플랜지 볼트 체결 토크 부족 또는 가스켓 부분 손상",
+        "특정 연결부 정렬 불량에 따른 부분 밀봉 불량",
+        "국부 열응력·진동으로 일부 접속부 밀봉 열화"
+      ],
+      "consequences": [
+        "독성 NH3 국부 누출로 작업자 흡입·화학화상 등 인체 피해",
+        "가연성 증기운 형성 시 점화 위험",
+        "누출 확대로 매니폴드 주변 대기 오염 및 대피 상황"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 전 전 연결부 밀봉 확인 및 토크 관리",
+        "매니폴드 구역 가스감지기 및 살수/차단 시스템 설치",
+        "누출 조기 감지 위한 순회 점검 및 개인보호구 착용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-048",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "연결·분리 작업",
+      "deviation": "호스/암 다중 접속점 중 일부만 정상 체결되고 나머지는 미완결 상태로 접속 작업이 부분적으로만 완료됨",
+      "causes": [
+        "다중 커플링 중 일부 체결 누락 또는 부분 체결",
+        "체결 순서 오류로 일부 접속점 미완결",
+        "확인 절차 미흡으로 미완결 상태 인지 실패"
+      ],
+      "consequences": [
+        "미완결 접속점에서 이송 개시 시 NH3 분출 및 대량 누출",
+        "부분 체결부 조기 이탈로 호스/암 탈락 및 인체 노출",
+        "긴급차단 지연 시 누출 확대"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "전 접속점 체결 완료 이중 확인 체크리스트 및 상호 확인",
+        "체결 완료 인터록으로 미완결 시 이송 개시 차단",
+        "긴급분리커플링 및 접속점 누설 시험 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-049",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "기동정지",
+      "deviation": "이송 개시/종료 시 충압·퍼지·배액 순서 중 일부 단계만 수행되고 나머지 단계가 생략되어 절차가 부분적으로만 완료됨",
+      "causes": [
+        "퍼지 단계 일부 생략 또는 불충분",
+        "종료 시 배액·감압 단계 일부 누락",
+        "단계별 순서 관리 미흡으로 특정 스텝 건너뜀"
+      ],
+      "consequences": [
+        "배액 미완료로 라인 내 NH3 잔류 후 분리 시 누출·노출",
+        "퍼지 미완료로 공기/NH3 혼합에 따른 부식 및 가연 위험",
+        "감압 미완료 상태 분리로 잔압 분출 및 인체 피해"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "기동·정지 순서 절차서 단계 확인 체크리스트 운용",
+        "배액·감압 완료 확인 인터록 도입",
+        "잔류 압력/액 확인 계장 설치 후 분리 허가"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-050",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "유틸리티",
+      "deviation": "지원 유틸리티 중 일부만 정상 공급되고 불활성가스·계장공기·전원 중 일부가 상실되어 유틸리티 지원이 부분적으로만 달성됨",
+      "causes": [
+        "퍼지용 불활성가스 공급 부족 또는 압력 저하",
+        "계장공기 부분 상실로 일부 제어밸브 동작 불량",
+        "부분 정전으로 일부 계장·모니터링 기능 상실"
+      ],
+      "consequences": [
+        "퍼지 불완전으로 라인 내 공기/NH3 잔류 및 부식·가연 위험",
+        "제어밸브 오동작으로 유량·압력 제어 상실 및 이송 이상",
+        "모니터링 상실로 이탈 조기 감지 실패"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "유틸리티 공급 압력/전원 감시 및 저압 경보 설치",
+        "계장공기 상실 시 밸브 페일세이프 위치 설계",
+        "핵심 계장 비상전원 백업 및 유틸리티 상실 시 이송 중단 절차"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-051",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "선박-육상 정렬",
+      "deviation": "선박 이동·표류로 매니폴드 접속부가 정렬 허용 범위 내에 부분적으로만 유지되어 정렬 요건이 온전히 달성되지 못함",
+      "causes": [
+        "계류 이완·조류·풍하중에 의한 선박 상대 변위",
+        "일부 접속점만 정렬 범위 내에 있고 나머지는 편심",
+        "이송 중 흘수 변화에 따른 수직 변위"
+      ],
+      "consequences": [
+        "편심 접속부에 굽힘·인장 하중 집중으로 연결부 파손·누출",
+        "정렬 이탈 확대 시 호스/암 과변위로 탈락 및 NH3 분출",
+        "접속부 밀봉 편하중으로 미세누출 진행"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "접속부 변위/장력 모니터링 및 한계 경보 설치",
+        "허용 변위 초과 시 긴급분리 인터록 연동",
+        "계류 상태 및 흘수 변화 주기 감시 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-052",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "유량",
+      "deviation": "설계된 NH3 이송 유량에 더해 의도치 않은 부가 흐름(예: 비운전 지관으로의 분기 흐름, 병렬 라인 동시 개방)이 매니폴드에서 함께 발생",
+      "causes": [
+        "밸브 정렬 오류로 의도치 않은 지관이 동시에 개방됨",
+        "복수 수급선 동시 접속 시 유로 격리 미흡",
+        "블리드/배액 라인이 이송 중 열린 상태로 방치"
+      ],
+      "consequences": [
+        "격리되어야 할 라인으로 NH3가 유입되어 국부 과압·누출 발생",
+        "비운전 구간으로의 독성·가연성 NH3 흐름으로 외부 방출 경로 형성",
+        "이송 유량 분산으로 목표 이송량 미달 및 과도 조작 유발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 전 밸브 라인업 체크리스트 및 상호잠금 도입",
+        "비운전 지관에 대한 이중 격리(더블 블록 앤 블리드) 적용",
+        "지관 흐름 감지용 유량/압력 지시 설치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-053",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "압력",
+      "deviation": "정상 이송 압력에 더해 추가적 압력 성분(펌프 맥동·수격·증기압 상승)이 중첩되어 매니폴드에 예상외 부가 압력이 실림",
+      "causes": [
+        "밸브 급폐로 인한 수격이 이송 압력에 중첩",
+        "펌프 맥동·서지가 정상 운전압에 더해짐",
+        "라인 갇힘 상태에서 온도 상승에 따른 증기압 추가 상승"
+      ],
+      "consequences": [
+        "플랜지·연결부 정격 초과로 실링 파손 및 NH3 누출",
+        "배관·호스 완결성 손상으로 대량 방출",
+        "반복 압력 충격에 의한 피로 균열 진전"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "수격 완화를 위한 밸브 서서히 개폐 절차 및 서지 완화기 검토",
+        "갇힘 가능 구간에 열팽창 릴리프 설치",
+        "매니폴드 압력 지시 및 고압 경보 추가"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-054",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "온도",
+      "deviation": "설계 이송 온도 조건에 더해 외부 열 유입 또는 상이한 온도의 유체가 함께 유입되어 매니폴드에 부가적 온도 성분이 발생",
+      "causes": [
+        "냉동 NH3 라인에 상온 유체·퍼지가스가 함께 유입되어 국부 온도 변동",
+        "가압 NH3와 저온 NH3의 혼합 이송으로 예상외 온도 분포",
+        "외부 직사·주변 화기로 인한 부가 열 유입"
+      ],
+      "consequences": [
+        "급격한 온도 변화로 재질 열응력 및 취성 손상",
+        "국부 기화로 인한 압력 급증 및 이송 불안정",
+        "실링재 열화로 연결부 누출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "저온 서비스용 재질 적합성 확인 및 온도 모니터링",
+        "냉동/가압 서비스 혼용 방지 절차 수립",
+        "매니폴드 온도 지시 설치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-055",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "조성",
+      "deviation": "NH3 외에 수분·공기·타 화물 잔류물 등 추가 물질이 이송 유체에 함께 섞여 매니폴드를 통과",
+      "causes": [
+        "이전 화물/유체 잔류물이 공용 라인·호스에 남아 혼입",
+        "퍼지 불량으로 공기·수분이 NH3에 혼입",
+        "연결부 이물 유입"
+      ],
+      "consequences": [
+        "수분 혼입으로 부식성 증가 및 배관·연결부 부식 손상",
+        "공기 혼입으로 NH3 가연성 혼합기 형성 위험",
+        "화물 오염으로 품질 저하 및 반응성 부산물 생성"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 전 라인·호스 퍼지 및 건조 확인 절차",
+        "산소·수분 함량 측정 및 허용 기준 설정",
+        "전용 호스·라인 관리 또는 세정 검증"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-056",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "상",
+      "deviation": "액상 NH3 이송에 더해 기상(플래시 증기)이 함께 존재하는 이상(二相) 흐름이 매니폴드에서 발생",
+      "causes": [
+        "압력 강하 지점에서 액상 NH3의 부분 플래싱",
+        "라인 예냉 부족으로 초기 이송 시 기화 발생",
+        "저압 구간 유입으로 이상류 형성"
+      ],
+      "consequences": [
+        "이상류에 의한 유량계측 오류 및 이송 불안정",
+        "기상-액상 슬러그로 인한 수격 및 진동 손상",
+        "기화 팽창에 의한 국부 압력 변동과 누출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 전 라인 예냉 및 초기 저유량 개시 절차",
+        "매니폴드 압력을 증기압 이상으로 유지 관리",
+        "베이퍼 리턴 라인 활용 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-057",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "누출·격납",
+      "deviation": "정상 이송에 더해 다수 연결부·플랜지에서 소규모 부가 누출이 동시에 발생하여 격납 경계 외로 NH3가 방출",
+      "causes": [
+        "다수 플랜지·연결부 집중으로 개소별 실링 열화 중첩",
+        "체결 토크 불균일·개스킷 노후",
+        "진동·상대 변위로 인한 연결부 미세 이완"
+      ],
+      "consequences": [
+        "독성 NH3 증기운 형성으로 작업자 흡입·질식 위험",
+        "가연성 혼합기 형성 시 화재·폭발 가능성",
+        "누출 확산에 따른 항만·인접선 영향"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "매니폴드 구역 가스검지기 및 살수/드렌치 설비 설치",
+        "연결부 정기 누출점검 및 체결 관리",
+        "긴급차단밸브(ESD) 연동 및 대피 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-058",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "연결·분리 작업",
+      "deviation": "정상 접속 작업에 더해 잘못 체결된 연결부나 미처 격리되지 않은 추가 접속점이 함께 존재한 채로 이송이 진행됨",
+      "causes": [
+        "다수 호스/암 접속 시 일부 연결부 체결 확인 누락",
+        "미사용 접속 포트가 개방된 채 방치",
+        "커플링 규격 불일치로 불완전 체결"
+      ],
+      "consequences": [
+        "불완전 체결부에서 이송 중 NH3 분출",
+        "미격리 포트를 통한 독성 방출",
+        "작업자 직접 노출로 화학 화상·흡입"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "접속 완료 확인 체크리스트 및 이중 점검",
+        "미사용 포트 블라인드 플랜지 설치 의무화",
+        "건식 분리 커플링(DBC)·ERS 적용 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-059",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "기동정지",
+      "deviation": "이송 개시·종료 순서에 더해 배액·퍼지 등 부가 작업이 이송과 겹쳐 동시에 진행됨",
+      "causes": [
+        "충압과 배액이 동시에 진행되어 유로 간섭",
+        "퍼지 작업과 이송 개시가 중첩",
+        "종료 배액 미완료 상태에서 다음 작업 착수"
+      ],
+      "consequences": [
+        "잔류 액 NH3가 배액 중 외부로 분출",
+        "작업 중첩에 따른 오조작 및 국부 과압",
+        "미배액 잔류로 후속 작업 시 누출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "기동·정지 단계별 순서 잠금 및 승인 절차",
+        "배액·퍼지 완료 확인 후 다음 단계 진행",
+        "폐쇄형 배액·회수 시스템 적용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-060",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "유틸리티",
+      "deviation": "정상 이송에 더해 유틸리티 계통에서 유입된 유체(불활성가스·계장공기)가 공정 라인으로 함께 넘어와 NH3와 혼입",
+      "causes": [
+        "퍼지 불활성가스 라인 격리 불량으로 이송 중 지속 유입",
+        "계장공기 라인 역류로 공정측 유입",
+        "유틸리티-공정 연결부 체크밸브 고장"
+      ],
+      "consequences": [
+        "공기 혼입 시 NH3 가연성 혼합기 형성",
+        "불활성가스 혼입으로 이송 유량·압력 교란",
+        "역류로 유틸리티 계통 NH3 오염 및 부가 누출 경로"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "유틸리티-공정 경계에 역류 방지 및 확실한 격리 적용",
+        "퍼지 완료 후 유틸리티 라인 물리적 분리",
+        "산소 농도 감시로 공기 혼입 조기 검출"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n3-061",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "선박-육상 정렬",
+      "deviation": "정상 정렬 상태에 더해 선박 이동·표류에 의한 추가적 상대 변위가 접속부에 함께 작용",
+      "causes": [
+        "조류·바람·계류 이완으로 선박 표류 변위 증가",
+        "적하·양하에 따른 흘수 변화로 상대 높이 변동",
+        "정렬 감시 미흡으로 허용 범위 초과 변위 누적"
+      ],
+      "consequences": [
+        "접속 호스/암에 과도 인장 하중 작용으로 파단·누출",
+        "커플링 이탈로 대량 NH3 분출",
+        "구조 손상에 따른 독성 확산 및 인접선 영향"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "선박 위치·변위 모니터링 및 허용 범위 경보",
+        "긴급분리시스템(ERS/PERC) 설치 및 연동",
+        "계류 상태 점검 및 기상 한계 운항 기준 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    }
+  ]
+}

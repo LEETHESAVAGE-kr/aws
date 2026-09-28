@@ -1,0 +1,2492 @@
+{
+  "schema_version": 1,
+  "source": "live",
+  "captured_at": "2026-09-28T16:35:17+00:00",
+  "node": "N2",
+  "split": "holdout",
+  "provider": "anthropic",
+  "model_id": "claude-opus-4-8",
+  "node_meta": {
+    "node": "N2",
+    "substance": "NH3",
+    "phase": "unknown",
+    "P_kPag": null,
+    "T_degC": null,
+    "equipment": [
+      "이송 호스"
+    ],
+    "safeguards": []
+  },
+  "latency_s": 422.7,
+  "cost_usd": 0.7445,
+  "expected_cells": 70,
+  "judged_cells": 70,
+  "review_guidewords": [],
+  "recall": {
+    "recall": 0.2222222222222222,
+    "matched": 2,
+    "total": 9
+  },
+  "max_tokens": 16384,
+  "raw_calls": [
+    {
+      "tokens_out": 819,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 2621,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 4103,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 4149,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3266,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 4464,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3556,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 4272,
+      "stop_reason": "tool_use"
+    }
+  ],
+  "truncated_calls": 0,
+  "records": [
+    {
+      "id": "n2-001",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "유량",
+      "deviation": "이송 호스 내 NH3 흐름이 전혀 발생하지 않음(무유량)",
+      "causes": [
+        "송출측 펌프 정지 또는 미기동",
+        "호스 양단 밸브 미개방 또는 폐쇄",
+        "커플링 미체결로 유로 미형성",
+        "호스 내 폐색(동결·이물)"
+      ],
+      "consequences": [
+        "이송 목표 미달로 배치 중단",
+        "무유량 상태에서 펌프 데드헤드 운전 시 국부 발열·과압 유발 가능",
+        "작업자가 폐색 해소를 위해 무리하게 조작 시 잔압 분출·NH3 노출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 개시 전 유로 개방 및 커플링 체결 확인 체크리스트 적용",
+        "송출측 유량 확인 수단(간이 유량 지시) 도입",
+        "펌프 데드헤드 방지용 저유량 정지 로직 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-002",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "압력",
+      "deviation": "호스 내부에 이송 압력이 전혀 형성되지 않음(무압)",
+      "causes": [
+        "송출 정지·밸브 폐쇄로 압력 미인가",
+        "호스 상류측 대량 누출로 압력 소실",
+        "커플링 완전 이탈"
+      ],
+      "consequences": [
+        "이송 실패로 목표 미달",
+        "상류 대량 누출이 무압 원인인 경우 NH3 대량 방출·독성 확산",
+        "무압 확인 없이 재기동 시 갑작스러운 가압으로 커플링 이탈·분출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 라인 압력 지시계 설치로 무압/가압 상태 상시 확인",
+        "무압 원인 진단 절차(누출 여부 우선 확인) 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-003",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "커플링 연결 완결성",
+      "deviation": "커플링이 전혀 체결되지 않은 상태로 이송이 시도됨(미체결)",
+      "causes": [
+        "작업자 체결 누락 또는 오연결",
+        "커플링 손상·이물로 체결 불가",
+        "절차서·확인 단계 부재"
+      ],
+      "consequences": [
+        "가압 즉시 연결부에서 NH3 대량 분출",
+        "작업자 근접 위치 노출로 흡입·화학화상",
+        "비산 NH3의 주변 확산으로 인접 인원 영향"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "체결 완료 확인(락 표시·2인 확인) 절차 도입",
+        "오연결 방지 전용 커플링(키형) 채택 검토",
+        "가압 전 저압 리크테스트 단계 신설"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-004",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "호스 물리적 손상",
+      "deviation": "호스 관벽이 완전 파단되어 유로 완결성이 전혀 유지되지 않음",
+      "causes": [
+        "경년열화·마모 한계 초과",
+        "킹킹·과굴곡 반복으로 관벽 균열 진전",
+        "차량·중량물 밟힘 등 외부 충격"
+      ],
+      "consequences": [
+        "파단부에서 NH3 순간 대량 방출",
+        "독성 증기운 형성 및 확산으로 다수 인원 노출",
+        "저온 액상 접촉 시 동상·화학화상"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "사용 전 육안점검 및 정기 압력시험 의무화",
+        "호스 통행·밟힘 방지 보호 슬리브·거치대 설치",
+        "교체 주기·이력 관리 대장 운영"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-005",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "기동정지",
+      "deviation": "개시·종료 절차가 전혀 수행되지 않은 채 이송이 이루어짐",
+      "causes": [
+        "퍼지·잔압 배출 단계 생략",
+        "연결/해제 순서 미준수",
+        "절차서·확인 수단 부재"
+      ],
+      "consequences": [
+        "해제 시 잔압에 의한 NH3 분출로 작업자 노출",
+        "퍼지 미실시로 잔류 NH3가 대기 방출",
+        "비정상 개시로 서지·과압 발생"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 4,
+      "risk_score": 16,
+      "recommendations": [
+        "개시·종료 표준절차(퍼지·잔압 배출 포함) 수립",
+        "해제 전 잔압 확인 수단 도입",
+        "비상 시 즉시 정지 방법 교육"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-006",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "유지보수",
+      "deviation": "호스에 대한 검사·교체 정비가 전혀 이루어지지 않음",
+      "causes": [
+        "교체 주기 관리 체계 부재",
+        "점검 이력·소모품 수명 추적 미실시",
+        "정비 자원·책임 미지정"
+      ],
+      "consequences": [
+        "열화 호스 계속 사용으로 파단 위험 누적",
+        "미검출 결함이 이송 중 대량 누출로 발현",
+        "독성 NH3 방출로 인명 피해"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "호스 정기검사·수명기반 교체 프로그램 도입",
+        "점검 이력·사용 시간 기록 관리",
+        "합격/불합격 판정 기준 명문화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-007",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "누출 격리",
+      "deviation": "누출 발생 시 차단·격리 수단이 전혀 없어 방출이 지속됨",
+      "causes": [
+        "긴급차단밸브·역지장치 등 격리 설비 부재",
+        "비상 대응 절차·감지 수단 미비",
+        "원격 차단 불가 배치"
+      ],
+      "consequences": [
+        "누출이 소진될 때까지 NH3 방출 지속",
+        "독성 증기운의 광범위 확산으로 인접 구역·인원 영향",
+        "대응 지연으로 피해 규모 확대"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "양단 긴급차단밸브 및 원격 차단 수단 설치",
+        "NH3 가스감지기·경보 도입",
+        "비상 격리·대피 절차 수립 및 훈련"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-008",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "유량",
+      "deviation": "이송 호스를 통과하는 NH3 유량이 설계 의도보다 과도하게 증가한 상태",
+      "causes": [
+        "공급측 펌프·가압원의 과도 토출 또는 압력 상승",
+        "하류 밸브 급개방으로 인한 급격한 유량 증가",
+        "이송 라인 구경 대비 과대 유속 운전"
+      ],
+      "consequences": [
+        "호스 내 과유속으로 인한 진동·수격 발생 및 커플링 이완",
+        "관벽 마찰·침식 가속으로 국부 감육 후 NH3 누출",
+        "누출된 NH3 독성 증기 확산으로 작업자 흡입 중독"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 유량계 및 유량 상한 경보 설치",
+        "공급측 유량 제한 오리피스 또는 유속 제한 절차 수립",
+        "과유량 시 자동 차단이 가능한 긴급차단밸브 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-009",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "압력",
+      "deviation": "호스 내부 압력이 이송 설계압을 초과하는 과압 상태",
+      "causes": [
+        "하류 밸브 폐쇄 상태에서의 계속 가압(데드헤드)",
+        "일사·외기온 상승에 의한 NH3 증기압 상승과 폐입",
+        "공급측 가압원 압력 제어 실패"
+      ],
+      "consequences": [
+        "가요성 호스 허용압 초과로 호스 파열 또는 커플링 이탈",
+        "대량 NH3 순간 방출 및 독성 증기운 형성",
+        "인근 작업자 및 항만 방향 독성 확산으로 다수 피해"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "호스 이송 계통에 릴리프밸브 또는 안전밸브 설치",
+        "압력 지시계 및 고압 경보 설치",
+        "폐입 방지를 위한 이송 전 밸브 정렬 확인 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-010",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "온도",
+      "deviation": "NH3 및 호스 온도가 설계 허용 상한을 초과하여 상승한 상태",
+      "causes": [
+        "직사일광·고온 외기 노출로 인한 호스 및 NH3 가열",
+        "인접 열원 근접 배치",
+        "고온 유체 이송에 따른 호스 표면 온도 상승"
+      ],
+      "consequences": [
+        "NH3 증기압 상승으로 내부 압력 동반 증가",
+        "호스 재질 연화·열화로 관벽 강도 저하 및 파열",
+        "누출 시 독성 NH3 증기 확산"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "호스 온도 및 직사광 차폐 대책 마련",
+        "재질 허용온도 범위 명시 및 고온 시 이송 중단 기준 수립",
+        "온도 상승 시 증기압 대비 릴리프 경로 확보"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-011",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "조성",
+      "deviation": "이송 NH3에 수분 등 이물이 설계보다 많이 혼입된 상태",
+      "causes": [
+        "퍼지 불완전으로 잔류 수분·공기 혼입",
+        "공급원 품질 변동으로 수분 함량 증가",
+        "커플링 착탈 시 외기·습기 유입"
+      ],
+      "consequences": [
+        "수분 혼입으로 커플링·금속부 부식 촉진 및 완결성 저하",
+        "부식에 의한 미세 누출 발생 및 NH3 방출",
+        "국부 부식 진전으로 호스 접속부 파손"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 전 질소 퍼지 및 수분 관리 절차 수립",
+        "공급 NH3 순도·수분 함량 주기 확인",
+        "내식 재질 커플링 적용 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-012",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "상",
+      "deviation": "액상 이송 중 기포·플래싱이 증가하여 이상유동이 심화된 상태",
+      "causes": [
+        "온도 상승 또는 압력 저하로 인한 NH3 부분 기화",
+        "이송 유속 과다로 인한 캐비테이션",
+        "잔압·불완전 액충전 상태에서의 이송 개시"
+      ],
+      "consequences": [
+        "기포·이상유동에 의한 수격·진동으로 커플링 이완",
+        "반복 충격 하중으로 호스 접속부 피로 손상 및 누출",
+        "누출 NH3 증기 확산으로 흡입 위해"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 전 충분한 액충전 및 압력 유지 절차 수립",
+        "플래싱 방지를 위한 온도·압력 관리",
+        "이상유동 저감을 위한 유속 제한"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-013",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "커플링 연결 완결성",
+      "deviation": "커플링에 설계 이상의 과도한 체결·응력 또는 과압 하중이 걸린 상태",
+      "causes": [
+        "과도한 체결력으로 인한 씰·나사부 손상",
+        "이송 압력·유량 증가로 커플링에 과대 하중 작용",
+        "호스 자중·인장에 의한 접속부 과부하"
+      ],
+      "consequences": [
+        "커플링 씰 손상 또는 이탈로 NH3 누출",
+        "접속부 갑작스런 분리 시 대량 방출",
+        "고농도 NH3 증기 노출로 작업자 중독"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "규정 체결 토크 및 커플링 점검 절차 수립",
+        "브레이크어웨이 커플링(과하중 시 안전 분리) 설치 검토",
+        "이송 전 커플링 체결 및 누설 확인 절차 의무화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-014",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "호스 물리적 손상",
+      "deviation": "호스에 가해지는 굽힘·인장 등 물리적 하중이 허용치를 초과한 상태",
+      "causes": [
+        "허용 굽힘반경 이하 과도 절곡(킹킹)",
+        "차량·장비 통행에 의한 압착 하중",
+        "과도한 인장으로 인한 접속부 응력 집중"
+      ],
+      "consequences": [
+        "관벽 국부 파손·킹킹부 균열로 NH3 누출",
+        "손상부 진전에 따른 호스 파단 및 대량 방출",
+        "독성 NH3 확산으로 인명 피해"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "호스 배치 경로 보호 및 통행 구간 방호 조치",
+        "최소 굽힘반경·인장 한계 준수 절차 수립",
+        "이송 전 육안 손상 점검 절차 의무화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-015",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "기동정지",
+      "deviation": "이송 개시 시 밸브 급개방 등으로 급격한 압력·유량 상승이 발생한 상태",
+      "causes": [
+        "이송 개시 시 밸브 급속 개방",
+        "잔압 미배출 상태에서의 재가압",
+        "정지 시 라인 폐입에 의한 압력 상승"
+      ],
+      "consequences": [
+        "급격한 수격으로 커플링·호스 접속부 손상",
+        "과도 압력 상승으로 호스 파열 및 NH3 방출",
+        "개시·종료 시점 누출로 작업자 근접 노출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 4,
+      "risk_score": 16,
+      "recommendations": [
+        "밸브 서서히 개방 등 단계적 기동·정지 절차 수립",
+        "정지 시 잔압 배출·퍼지 절차 마련",
+        "개시·종료 시 작업자 안전거리 및 보호구 규정"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-016",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "유지보수",
+      "deviation": "호스 사용 이력이 교체 주기를 초과하여 경년열화가 누적된 상태",
+      "causes": [
+        "검사·교체 주기 관리 미흡으로 노후 호스 계속 사용",
+        "이력 관리 부재로 사용 횟수 초과",
+        "정비 기록 누락에 따른 열화 미인지"
+      ],
+      "consequences": [
+        "경년열화로 관벽·씰 강도 저하 후 누출",
+        "노후 호스 파단으로 대량 NH3 방출",
+        "독성 증기 확산으로 인명 피해"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "호스 개별 식별번호 및 사용이력·교체주기 관리 체계 수립",
+        "정기 압력시험·육안검사 절차 수립",
+        "교체 기준 초과 호스 강제 폐기 절차 마련"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-017",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "누출 격리",
+      "deviation": "누출 발생 시 차단·격리 지연으로 NH3 방출량이 과도하게 증가한 상태",
+      "causes": [
+        "긴급차단 수단 부재로 누출 지속",
+        "격리 밸브 위치 부적절 또는 접근 불가",
+        "누출 감지 지연으로 대응 개시 지연"
+      ],
+      "consequences": [
+        "차단 지연으로 NH3 방출량 급증 및 광범위 독성 확산",
+        "고농도 증기운 형성으로 다수 인명 및 항만 영향",
+        "대응 작업자 접근 시 추가 노출 피해"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "이송 계통 양단 긴급차단밸브 및 원격 차단 설치",
+        "NH3 가스 검지기 및 누출 경보 설치",
+        "누출 시 격리·대피 비상대응 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-018",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "유량",
+      "deviation": "이송 호스를 통한 NH3 유량이 의도보다 감소하여 이송이 지연되거나 부분적으로만 진행됨",
+      "causes": [
+        "호스 내부 킹킹(꺾임)으로 유로 부분 폐색",
+        "커플링 개도 부족 또는 밸브 부분 개방",
+        "저온으로 NH3 점도 상승 및 부분 응축",
+        "이물·수분 혼입에 의한 유로 협착"
+      ],
+      "consequences": [
+        "이송 시간 연장으로 작업자 NH3 근접 노출 시간 증가",
+        "유량 저하 구간에서 국부 압력 변동 및 호스 응력 반복",
+        "이송 미완결로 재작업 중 연결·해제 반복에 따른 누출 기회 증가"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 라인 유량 지시계 설치로 유량 저하 조기 감지",
+        "이송 전 호스 배치 점검 및 킹킹 방지 지지구 사용",
+        "커플링 완전 개방 여부 확인 체크리스트 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-019",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "압력",
+      "deviation": "호스 내부 이송 압력이 설계 의도보다 낮아져 유효 이송이 이뤄지지 않고 외부 대비 부압이 발생함",
+      "causes": [
+        "이송원 공급압 저하 또는 펌프 성능 부족",
+        "이송 종료 시 잔압 배출 후 폐색 상태에서 냉각에 의한 내부 부압",
+        "액상 NH3 온도 저하로 증기압 감소"
+      ],
+      "consequences": [
+        "가요성 호스 내부 부압으로 관벽 흡입 붕괴(collapse) 및 유로 변형",
+        "붕괴 부위 반복 시 내벽 손상·박리로 이후 누출 경로 형성",
+        "부압 구간을 통한 외부 공기·수분 유입으로 조성 오염"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "부압에 견디는 보강(와이어 브레이드) 호스 사양 적용",
+        "이송 압력 감시 및 하한 경보 설정",
+        "종료 절차에 부압 방지 밸런싱 단계 포함"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-020",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "온도",
+      "deviation": "이송 중 NH3 온도가 의도보다 낮아져 증기압 저하 및 저온 취성 조건이 형성됨",
+      "causes": [
+        "저온 저장 NH3의 이송으로 호스가 설계 하한 온도 이하로 냉각",
+        "플래싱·자기냉각에 의한 국부 급냉",
+        "주위 저온 환경 노출"
+      ],
+      "consequences": [
+        "호스 재질 저온 취성으로 유연성 상실 및 균열 발생",
+        "커플링 씰 경화로 밀봉 성능 저하 및 누출",
+        "저온 균열 부위를 통한 NH3 독성 누출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "저온 이송 대응 재질·온도등급 호스 선정",
+        "이송 유체 온도 하한 관리 및 감시",
+        "저온 노출 이력 호스의 교체 기준 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-021",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "조성",
+      "deviation": "이송 NH3 중 유효 NH3 농도가 낮아지고 수분·이물 함량이 상대적으로 증가함",
+      "causes": [
+        "부압 구간 통한 공기·수분 유입",
+        "이전 이송 잔류물 혼입",
+        "저장측 관리 불량으로 수분 농도 상승"
+      ],
+      "consequences": [
+        "수분 존재 하 NH3의 부식성 증가로 커플링·금속부 부식",
+        "부식 진행 부위 관벽 약화 및 누출 경로 형성",
+        "이송 품질 저하로 재작업 및 취급 빈도 증가"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "이송 전후 라인 퍼지 및 수분 유입 방지 절차",
+        "주기적 조성·수분 분석",
+        "내식성 커플링·씰 재질 적용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-022",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "상",
+      "deviation": "액상 이송 의도와 달리 기상 비율이 증가하여 이상유동(기포 혼입)이 발생함",
+      "causes": [
+        "압력 저하로 액상 NH3 플래싱 발생",
+        "온도 상승에 의한 부분 증발",
+        "이송 초기 라인 내 기상 잔류"
+      ],
+      "consequences": [
+        "기포 혼입으로 유량 계측 오차 및 이송 효율 저하",
+        "기·액 혼상 유동에 의한 압력 맥동 및 호스 진동·피로",
+        "맥동 반복으로 커플링 풀림 및 누출 유발"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 전 라인 프라이밍 및 기상 배출 절차",
+        "적정 이송 압력 유지로 플래싱 억제",
+        "진동 저감 지지 및 커플링 체결 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-023",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "커플링 연결 완결성",
+      "deviation": "양단 커플링이 완전 체결되지 못하고 부분 체결 상태로 이송이 개시됨",
+      "causes": [
+        "체결 토크 부족 또는 수동 체결 오류",
+        "씰 마모·이물 개재로 밀착 불량",
+        "커플링 규격 부적합으로 불완전 결합"
+      ],
+      "consequences": [
+        "부분 체결부에서 이송 압력 하 NH3 누출",
+        "이송 중 커플링 분리로 다량 순간 누출 및 독성 확산",
+        "작업자 근접 위치 피폭으로 중상·사망"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "체결 완료 확인 절차 및 이중 확인 도입",
+        "규격 일치 커플링만 사용하도록 관리",
+        "드라이브레이크(누출 최소) 커플링 도입 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-024",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "호스 물리적 손상",
+      "deviation": "마모·경년열화로 호스 관벽 두께·강도가 설계치 이하로 감소함",
+      "causes": [
+        "반복 굴곡·마모에 의한 관벽 마모",
+        "경년열화로 재질 강도 저하",
+        "킹킹 반복에 의한 국부 두께 감소"
+      ],
+      "consequences": [
+        "약화된 관벽이 이송 압력을 견디지 못하고 파열",
+        "파열 시 NH3 다량 누출 및 독성 확산",
+        "인접 작업자 피폭 및 광범위 대피 필요"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "정기 육안·압력 시험 검사 주기 수립",
+        "사용 이력 기반 교체 주기 관리",
+        "마모 방지 슬리브·굴곡 반경 관리"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-025",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "기동정지",
+      "deviation": "이송 종료 시 잔압 배출·퍼지가 불충분하여 호스 내부에 NH3가 잔류한 채 해제됨",
+      "causes": [
+        "종료 절차 누락 또는 잔압 배출 단계 생략",
+        "퍼지 수단 부재로 잔류 NH3 제거 불가",
+        "급한 작업으로 절차 단축"
+      ],
+      "consequences": [
+        "커플링 해제 순간 잔류 NH3 분출로 작업자 피폭",
+        "잔압 하 해제로 호스 채찍질(whip) 및 2차 손상",
+        "국부 독성 노출로 중상"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "잔압 배출·퍼지를 포함한 표준 종료 절차 수립",
+        "해제 전 압력 무압 확인 지시계 활용",
+        "개인보호구 착용 및 풍상 위치 작업 규정"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-026",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "유지보수",
+      "deviation": "호스 검사·교체 주기 관리가 미흡하여 열화 상태 파악 없이 사용이 지속됨",
+      "causes": [
+        "정비 이력·교체 주기 관리 체계 부재",
+        "검사 누락 및 상태 기록 미비",
+        "소모성 부품 재고 부족으로 교체 지연"
+      ],
+      "consequences": [
+        "열화 진행 미인지 상태로 사용 중 파열·누출",
+        "노후 씰·커플링 사용으로 밀봉 실패",
+        "누적 결함에 의한 NH3 독성 누출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "호스별 식별번호 및 검사·교체 이력 관리",
+        "정기 압력·기밀 시험 주기 수립",
+        "사용 한계 초과 호스 강제 폐기 기준"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-027",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "누출 격리",
+      "deviation": "누출 발생 시 신속 차단·격리 수단이 부재하여 누출량이 감소되지 않고 지속됨",
+      "causes": [
+        "긴급차단밸브·원격 차단 수단 부재",
+        "누출 감지 수단 부재로 대응 지연",
+        "격리 절차 미수립"
+      ],
+      "consequences": [
+        "누출 지속에 따른 NH3 대량 독성 확산",
+        "작업자 및 인접 구역 광범위 피폭",
+        "선외·항만 영향으로 다수 인명 피해 가능"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "이송 라인 양단 긴급차단밸브 설치",
+        "NH3 가스 감지기 및 경보 연동",
+        "누출 시 격리·비상 대응 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-028",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "유량",
+      "deviation": "이송 호스 내 NH3가 설계된 이송 방향과 반대로 수취측에서 공급측으로 역류함",
+      "causes": [
+        "수취측 탱크 압력이 공급측보다 높아진 배압 발생",
+        "공급측 펌프 정지 또는 트립 후 수두차에 의한 역류",
+        "커플링 오연결로 공급·수취 경로가 뒤바뀜"
+      ],
+      "consequences": [
+        "공급측 설비로 오염 물질 또는 예상외 유체 역류 유입",
+        "역류로 인한 공급측 과충전 및 압력 상승, NH3 누출 시 독성 확산",
+        "펌프 역회전에 의한 손상"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 라인에 역류 방지용 체크밸브 설치",
+        "공급·수취측 압력 모니터링 및 역류 감지 인터록 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-029",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "압력",
+      "deviation": "역류에 따라 수취측의 높은 압력이 호스와 공급측으로 역방향 전파되어 공급측이 과압 상태가 됨",
+      "causes": [
+        "수취측 탱크 증기압이 공급측보다 높은 상태에서 역류 성립",
+        "역류 시 공급측 저압 설비로 고압 전달",
+        "체크밸브 부재로 역압 차단 불가"
+      ],
+      "consequences": [
+        "공급측 저압 설비 또는 호스의 설계압 초과로 파열",
+        "NH3 대량 누출로 독성 가스 확산 및 인명 피해",
+        "역압에 의한 실링·커플링 이탈"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "역류 방지 체크밸브 및 공급측 과압 방출장치 설치",
+        "이송 전후 양단 압력 균형 확인 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-030",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "조성",
+      "deviation": "역류로 인해 수취측 계통의 이물·타 물질이 조성이 다른 상태로 공급측 NH3 계통에 혼입됨",
+      "causes": [
+        "역류 시 수취측 탱크 내 잔류물·수분이 공급측으로 유입",
+        "커플링 오연결로 다른 물질 계통과 역방향 연결",
+        "체크밸브 부재로 역방향 물질 이동 차단 불가"
+      ],
+      "consequences": [
+        "공급측 NH3에 수분 혼입으로 부식성 증가 및 호스 재질 열화",
+        "반응성 물질 역혼입 시 발열·압력 상승",
+        "오염된 NH3의 후속 공정 품질 이상"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "역류 방지 체크밸브 설치",
+        "커플링 물질별 전용화(오연결 방지 커플링) 적용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-031",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "상",
+      "deviation": "역류 시 수취측 기상 NH3가 공급측 액상 계통으로 역방향 유입되어 예상과 다른 상이 호스로 들어옴",
+      "causes": [
+        "수취측 기상부 증기압이 공급측보다 높아 기상 역류",
+        "액이송 종료 후 잔압 상태에서 기상 역류 발생",
+        "체크밸브 부재로 역방향 상 이동 허용"
+      ],
+      "consequences": [
+        "공급측 액계통에 기포 유입으로 이상유동·수격 발생",
+        "수격에 의한 호스·커플링 순간 압력 충격 및 손상",
+        "누출 발생 시 NH3 독성 확산"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "역류 방지 체크밸브 설치",
+        "이송 종료 시 잔압 관리 및 기상 역류 차단 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-032",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "커플링 연결 완결성",
+      "deviation": "공급측과 수취측 커플링이 뒤바뀌게 연결되어 이송 방향이 반대로 설정됨",
+      "causes": [
+        "양단 커플링 규격 동일로 방향 구분 없이 역방향 체결",
+        "작업자 오연결(공급-수취 혼동)",
+        "방향 표시·키잉 부재"
+      ],
+      "consequences": [
+        "이송 개시 시 의도와 반대 방향 흐름 형성",
+        "역방향 과충전·과압으로 설비 파열 및 NH3 누출",
+        "독성 확산 및 인명 피해"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "방향성 키잉 커플링 또는 비대칭 커플링 적용으로 오연결 물리적 차단",
+        "연결 방향 표시 및 이송 전 방향 확인 체크리스트 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-033",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "기동정지",
+      "deviation": "이송 종료·정지 시 잔압 배출이나 정지 순서 오류로 흐름이 역방향으로 형성됨",
+      "causes": [
+        "펌프 정지 시 수취측 배압에 의한 역류 개시",
+        "정지 절차상 밸브 폐쇄 순서 오류",
+        "잔압 배출 방향 관리 미흡"
+      ],
+      "consequences": [
+        "정지 중 역류로 공급측 과충전 및 누출",
+        "커플링 해제 시점에 잔류 역압으로 NH3 분출",
+        "작업자 NH3 노출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "정지 순서 명문화(펌프 정지 전 수취측 차단) 및 역류 방지 체크밸브 설치",
+        "해제 전 잔압 배출·확인 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-034",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "누출 격리",
+      "deviation": "역류로 누출이 발생했을 때 차단·격리 수단이 없어 역방향 누출 경로를 봉쇄하지 못함",
+      "causes": [
+        "긴급차단밸브 등 격리 안전장치 부재",
+        "역류 감지 수단 부재로 대응 지연",
+        "체크밸브 미설치로 역방향 유로 개방 유지"
+      ],
+      "consequences": [
+        "역류 누출 시 NH3가 지속 방출되어 대량 독성 확산",
+        "선내·인접 구역으로 독성 가스 확산 및 다수 인명 피해",
+        "격리 불가로 사고 규모 확대"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "양단 긴급차단밸브(ESD) 및 역류 방지 체크밸브 설치",
+        "NH3 가스 감지기 및 자동 격리 인터록 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-035",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "조성",
+      "deviation": "이송 유체 내에 NH3 순물질이 아닌 수분·이물·비상용 물질이 혼입되어 설계 의도와 다른 조성으로 호스를 통과한다.",
+      "causes": [
+        "이송원(공급 탱크/용기)의 사전 오염 또는 규격 미달 NH3 반입",
+        "커플링 착탈 과정에서 대기 중 수분·이물이 유로로 유입",
+        "이전 이송 잔류물이 퍼지되지 않고 남아 신규 물질과 혼합",
+        "다른 물질을 다루던 호스를 세척·구분 없이 NH3 이송에 전용"
+      ],
+      "consequences": [
+        "NH3와 수분 반응으로 부식성 환경 형성, 호스 내벽·커플링 금속부 부식 진행",
+        "부식으로 인한 관벽 약화 및 국부 천공으로 NH3 누출",
+        "누출된 NH3의 독성 확산으로 작업자 흡입 중독 및 인접 지역 영향",
+        "이물에 의한 유로 국부 폐색 및 국부 응력 집중으로 손상 가속"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 전 공급원 NH3 규격·순도 확인 절차 수립",
+        "커플링 착탈 시 개방부 수분·이물 침입 방지 캡·퍼지 절차 도입",
+        "이송 전후 불활성 가스 퍼지로 잔류물·수분 제거",
+        "호스 전용화(NH3 전용 표시·이력 관리)로 타 물질 교차 사용 금지"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-036",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "상",
+      "deviation": "설계 의도(예: 액상 NH3 이송)와 다른 상, 즉 기상 또는 액/기 이상유동 상태로 호스를 통과한다.",
+      "causes": [
+        "이송 개시 시 잔압·잔열로 액상 NH3가 플래싱하여 기상 혼입",
+        "이송 라인 온도 상승에 따른 국부 기화로 기포 발생",
+        "탱크 저액위 등으로 기상이 함께 흡입되어 이상유동 형성"
+      ],
+      "consequences": [
+        "이상유동에 의한 수격·맥동으로 호스·커플링에 반복 충격 하중 작용",
+        "플래싱에 따른 급격한 압력·온도 변동으로 호스 재질 허용범위 이탈 및 손상",
+        "커플링 이완·손상으로 NH3 누출, 독성 확산 및 작업자 노출",
+        "기상 혼입으로 이송 불안정 및 계획 외 비말 배출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 개시 전 라인·호스 예냉·안정화 절차 수립으로 플래싱 억제",
+        "적정 액위 유지 및 저액위 시 이송 중단 기준 마련",
+        "이상유동·맥동을 견디는 호스 사양 선정 및 지지·고정 강화",
+        "이송 속도 제한으로 급격한 상변화 억제"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-037",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "커플링 연결 완결성",
+      "deviation": "커플링이 설계 의도와 다른 방식으로 연결된다 — 오연결·미체결·부분 체결 상태로 이송이 개시된다.",
+      "causes": [
+        "호환되지 않는 규격의 커플링을 강제 결합하거나 잘못된 포트에 연결",
+        "체결 확인 절차 없이 부분 체결 상태에서 이송 개시",
+        "가스켓·시일 누락 또는 손상 상태로 체결",
+        "진동·취급으로 체결부가 서서히 풀림"
+      ],
+      "consequences": [
+        "체결부 틈으로 NH3 대량 누출 및 독성 증기 확산",
+        "이송 압력 하에서 커플링 분리(탈락)로 순간 대량 방출",
+        "작업자 근접 위치 특성상 직접 흡입·동상성 접촉 피해",
+        "인접 지역·항만으로의 독성 확산 가능"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 4,
+      "risk_score": 20,
+      "recommendations": [
+        "물질·용도별 비호환 커플링(전용 규격) 도입으로 오연결 원천 차단",
+        "이송 개시 전 체결 확인 및 저압 리크 테스트 절차 의무화",
+        "가스켓·시일 상태 점검 체크리스트 운용",
+        "체결 풀림 방지 잠금장치 및 탈락 시 자동 차단(브레이크어웨이) 커플링 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-038",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "호스 물리적 손상",
+      "deviation": "가요성 호스가 설계 의도와 다른 손상 상태(마모·꼬임·킹킹·경년열화)로 관벽 완결성이 훼손된 채 사용된다.",
+      "causes": [
+        "취급·보관 중 꺾임·킹킹으로 국부 응력 집중",
+        "바닥·구조물과의 반복 마찰에 의한 외피 마모",
+        "경년열화·자외선·화학적 열화로 재질 취성화",
+        "허용 굽힘 반경 초과 및 과도한 굽힘 반복"
+      ],
+      "consequences": [
+        "관벽 파손·천공으로 NH3 누출 및 독성 확산",
+        "킹킹부 취약화 후 이송 압력에서 파열",
+        "손상 진행으로 이송 중 급작 파단 및 대량 방출",
+        "작업자 흡입 중독 및 저온 액체 접촉 상해"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 4,
+      "risk_score": 20,
+      "recommendations": [
+        "사용 전 육안·촉수 점검(마모·꼬임·경화) 체크리스트 도입",
+        "호스 사용·교체 이력 및 수명 관리 대장 운용",
+        "허용 굽힘 반경 준수를 위한 취급 기준·보관 지그 마련",
+        "정기 압력·완결성 검사 주기 설정 및 열화 호스 조기 교체"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-039",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "기동정지",
+      "deviation": "연결·해제 및 개시·종료 절차가 설계 의도와 다른 순서·상태로 수행되어(예: 잔압·잔액 미배출 상태에서 해제) 이송 개시·종료 시점에 위험 상태가 조성된다.",
+      "causes": [
+        "종료 시 잔압 배출·퍼지 없이 커플링 해제",
+        "개시 시 급격한 밸브 개방으로 서지 발생",
+        "잔류 액상 NH3가 남은 상태에서 라인 분리",
+        "절차 미준수·숙련도 부족에 의한 순서 오류"
+      ],
+      "consequences": [
+        "해제 순간 잔압·잔액 방출로 NH3 분출 및 작업자 직접 노출",
+        "개시 서지에 의한 호스·커플링 충격 손상 및 누출",
+        "저온 액상 접촉에 의한 동상 및 흡입 중독",
+        "국소 독성 증기 체류로 인접 작업자 영향"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 4,
+      "risk_score": 16,
+      "recommendations": [
+        "이송 개시·종료 표준 작업 절차서 수립(밸브 순차 조작·서지 방지)",
+        "종료 시 잔압 배출·불활성 퍼지 후 해제 절차 의무화",
+        "해제 전 잔액 확인 및 안전 배출 경로 마련",
+        "작업자 교육·자격 인증 및 2인 1조 확인 운용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-040",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "유지보수",
+      "deviation": "소모성 호스의 검사·교체가 설계 의도된 주기와 다르게 이루어져(주기 초과 사용·미검사 호스 투입) 완결성이 관리되지 않는다.",
+      "causes": [
+        "호스 검사·교체 주기 미설정 또는 미준수",
+        "교체 이력·수명 추적 부재로 노후 호스 계속 사용",
+        "정비 후 잔류 NH3·이물 미제거 상태로 재투입",
+        "부적합·미인증 대체 호스 사용"
+      ],
+      "consequences": [
+        "열화 진행 호스의 사용 중 파단·누출",
+        "누출된 NH3 독성 확산 및 작업자 노출",
+        "정비 잔류물에 의한 부식·조성 오염 유발",
+        "부적합 호스 사용으로 압력·온도 허용범위 이탈"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "호스 정기 검사·수압시험·교체 주기 프로그램 수립",
+        "호스별 식별번호·사용이력·수명 관리 체계 도입",
+        "정비 후 퍼지·세정 및 완결성 확인 절차 마련",
+        "인증·규격 적합 호스만 반입하는 자재 관리 통제"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-041",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "누출 격리",
+      "deviation": "누출 발생 시 설계 의도된 차단·격리가 이루어지지 못하는 상태 — 격리 수단이 없어 누출이 지속·확산된다.",
+      "causes": [
+        "호스 양단 또는 근접부 긴급 차단 밸브 부재",
+        "누출 감지·경보 수단 부재로 대응 지연",
+        "수동 차단만 가능하여 근접 접근 불가 시 격리 실패",
+        "브레이크어웨이 등 자동 분리 차단 장치 미설치"
+      ],
+      "consequences": [
+        "누출 지속으로 NH3 대량 방출 및 광범위 독성 확산",
+        "확산 증기로 다수 작업자·인접 선박·항만 영향",
+        "차단 지연에 따른 사상 피해 확대",
+        "고농도 증기운 형성으로 대피·진입 곤란"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 4,
+      "risk_score": 20,
+      "recommendations": [
+        "호스 양단 원격/긴급 차단 밸브(ESD) 설치",
+        "NH3 가스 감지기·경보 및 자동 차단 연동 도입",
+        "브레이크어웨이 커플링 등 과대 인장 시 자동 분리·차단 장치 적용",
+        "누출 시 대피·격리·중화(살수) 비상대응 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-042",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "유량",
+      "deviation": "이송 호스로 흐르는 NH3의 일부만 목적지에 도달하고 나머지가 다른 경로로 빠져 실제 이송 유량이 설계값에 못 미침",
+      "causes": [
+        "커플링 미체결부·연결부에서 NH3 일부가 누출되어 유효 이송량 감소",
+        "호스 관벽 미세손상·핀홀로 유체 일부가 대기로 유출"
+      ],
+      "consequences": [
+        "이송량 부족으로 배출측 재고 계산 오류·과충전 유발",
+        "누출된 NH3 독성 증기가 작업자 노출 및 주변 확산으로 이어짐"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 전후 수불량 대조로 누출성 유량 손실 조기 감지",
+        "커플링·호스 연결부 육안·발포액 누출 점검 절차 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-043",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "압력",
+      "deviation": "호스 유로 중 일부 구간만 정상 압력을 유지하고 손상부·연결부에서 압력이 국부적으로 손실되어 계통 압력이 부분적으로만 성립",
+      "causes": [
+        "커플링 풀림·경미한 누출로 하류측 압력만 부분 저하",
+        "호스 관벽 부분 열화로 특정 구간 내압 지지력 상실"
+      ],
+      "consequences": [
+        "부분 압력 손실부에서 NH3 누출 지속 및 분사형 방출",
+        "압력 불균형으로 잔여 유로 취약부 응력 집중·파열 진전"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 압력 상시 감시 및 압력 저하 시 자동 경보 도입",
+        "연결부·손상 취약부 우선 압력 유지 확인 점검"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-044",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "온도",
+      "deviation": "이송되는 NH3 중 일부만 설계 온도범위에 있고 국부적으로 저온화된 구간이 발생하여 온도장이 부분적으로만 유지됨",
+      "causes": [
+        "일부 누출·플래싱 지점에서 국부 자기냉각으로 국소 저온 발생",
+        "부분 정체 구간이 외기와 열교환하여 나머지와 온도 편차 발생"
+      ],
+      "consequences": [
+        "국부 저온부에서 호스 재질 취성화·유연성 상실로 균열",
+        "온도 편차에 따른 증기압 불균형으로 부분 플래싱·거동 불안정"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "저온 취성 허용범위를 만족하는 호스 재질 선정 확인",
+        "이송 중 국부 착상·저온 발생부 육안 점검"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-045",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "조성",
+      "deviation": "이송 유체가 NH3 순물질이 아니라 수분·이물이 일부 혼입된 상태로 흐름",
+      "causes": [
+        "연결·해제 시 호스 내부로 수분·공기 유입",
+        "이전 이송 잔류물·오염물이 호스 내부에 잔존하여 혼입"
+      ],
+      "consequences": [
+        "수분 혼입으로 커플링 금속부 부식 촉진·완결성 저하",
+        "부식으로 인한 관벽 약화가 누출로 진전되어 NH3 방출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 전 불활성 가스 퍼지로 수분·공기 제거 절차 수립",
+        "호스 내부 잔류물 점검 및 건조 상태 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-046",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "상",
+      "deviation": "액상 NH3 이송 중 일부가 기화하여 액상과 기상이 혼재하는 이상유동 상태로 흐름",
+      "causes": [
+        "압력 저하·국부 온도 상승으로 호스 내 부분 플래싱 발생",
+        "이송 개시 시 호스 내 잔류 기상과 액상이 혼합 유동"
+      ],
+      "consequences": [
+        "이상유동에 따른 수격·맥동으로 커플링 연결부 반복 하중·풀림",
+        "기포 붕괴·압력 변동이 호스 손상 및 누출로 진전"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 개시 시 충분한 배압 유지로 플래싱 억제 절차 수립",
+        "이송 라인 상태 안정화 후 유량 증대 운전 절차 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-047",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "커플링 연결 완결성",
+      "deviation": "양단 커플링이 완전 체결되지 않고 일부만 결합되어 부분 체결 상태로 이송이 진행됨",
+      "causes": [
+        "체결 확인 절차 부재로 커플링 미완전 잠금",
+        "이종·부적합 커플링 조합으로 완전 결합이 불가한 부분 연결"
+      ],
+      "consequences": [
+        "부분 체결부에서 NH3 대량 누출·이탈 및 호스 튐(whip)",
+        "누출 NH3 독성 증기가 작업자 직접 노출 및 광범위 확산"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 4,
+      "risk_score": 16,
+      "recommendations": [
+        "체결 완료 확인 및 이중 점검(2인 확인) 절차 도입",
+        "오연결 방지 규격·키형 커플링 적용 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-048",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "호스 물리적 손상",
+      "deviation": "호스 관벽 일부 층만 손상되어 외피는 남아 있으나 내압 지지 기능이 부분적으로만 유지됨",
+      "causes": [
+        "마모·꼬임·킹킹으로 보강층 일부 파손",
+        "경년열화로 관벽 강도가 부분적으로 저하"
+      ],
+      "consequences": [
+        "부분 손상부가 이송 압력으로 진전·파열되어 NH3 누출",
+        "손상 진전 시 호스 파단으로 대량 방출 및 독성 확산"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "사용 전·후 호스 육안 및 굽힘 상태 점검 절차 수립",
+        "정기 내압시험 및 교체주기 기반 소모품 관리 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-049",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "기동정지",
+      "deviation": "이송 개시·종료 절차 중 일부 단계(퍼지·잔압 배출)만 수행되고 나머지가 생략된 상태로 진행됨",
+      "causes": [
+        "잔압 배출 없이 커플링 해제 시도",
+        "퍼지 단계 누락 등 절차 일부만 이행"
+      ],
+      "consequences": [
+        "잔압 남은 상태에서 해제 시 NH3 분출·작업자 피폭",
+        "생략된 절차로 인한 누출 및 독성 노출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "개시·종료 체크리스트 기반 단계별 완료 확인 절차 수립",
+        "잔압 배출 확인 후에만 해제 가능하도록 작업허가 통제"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-050",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "유지보수",
+      "deviation": "호스 검사·교체 항목 중 일부만 수행되고 나머지 점검이 누락된 채 계속 사용됨",
+      "causes": [
+        "교체주기 관리 미흡으로 일부 호스만 갱신",
+        "검사 항목 중 내부·연결부 점검 누락"
+      ],
+      "consequences": [
+        "미점검 열화 호스 사용으로 이송 중 파열·누출",
+        "누출 NH3 독성 확산 및 작업자 노출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "호스 이력·교체주기 대장 관리로 전수 점검 보장",
+        "검사 항목 표준화 및 미완료 시 사용 금지 통제"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-051",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "누출 격리",
+      "deviation": "누출 발생 시 계통 일부만 차단 가능하고 호스 구간을 완전 격리하지 못해 방출이 지속됨",
+      "causes": [
+        "호스 양단 긴급차단 수단 부재로 부분 차단만 가능",
+        "누출 감지·차단 연동 미비로 격리 지연"
+      ],
+      "consequences": [
+        "격리 지연으로 NH3 대량 누출 지속 및 광역 독성 확산",
+        "선외·인접 구역까지 독성 증기 영향 확대"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "호스 양단 긴급차단밸브(ESD) 설치로 완전 격리 확보",
+        "가스감지기 연동 자동 차단 및 비상대응 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-052",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "유량",
+      "deviation": "의도한 NH3 이송 유량에 더해 잔류 N2 퍼지가스나 다른 라인 유체가 함께 유입되어 이상(二相) 혼입 유동이 발생",
+      "causes": [
+        "N2 퍼지 밸브가 이송 중에도 열려 있어 퍼지가스가 이송 흐름에 합류",
+        "공용 매니폴드에서 다른 이송 배치의 유체가 크로스오버로 유입",
+        "커플링 오연결로 무관한 라인이 병렬로 흐름에 추가"
+      ],
+      "consequences": [
+        "NH3에 비응축 가스가 섞여 호스 내 유량 맥동·수격 발생",
+        "이송 계량 오차로 과충전 유발 가능",
+        "혼입 가스로 인한 이상유동이 커플링·호스 진동을 키워 피로 손상 및 누출로 진전"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 개시 전 N2 퍼지 밸브 완전 차단 확인 절차 수립",
+        "공용 매니폴드에 이송 라인별 명확한 격리 밸브와 라인업 체크리스트 도입",
+        "이송 흐름에 이상 맥동 감지 시 중단하는 운전 지침 마련"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-053",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "압력",
+      "deviation": "이송 압력에 더해 외부 N2 가압이나 잔압 중첩으로 호스 설계 압력을 초과하는 추가 압력이 가해짐",
+      "causes": [
+        "이송 압력 위에 N2 가압 퍼지가 중첩되어 합산 압력 상승",
+        "이전 배치 잔압이 배출되지 않은 상태에서 신규 이송 압력이 추가",
+        "폐색 구간에 갇힌 NH3의 열팽창 증기압이 이송압에 중첩"
+      ],
+      "consequences": [
+        "호스 및 커플링 정격 초과로 파열",
+        "대량 NH3 급성 방출로 독성 증기운 형성 및 인접 작업자 노출",
+        "커플링 이탈에 의한 고압 분출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 압력원과 N2 가압원의 동시 인가 방지 인터록 검토",
+        "호스 계통에 릴리프 또는 과압 방지 수단 설치 검토",
+        "이송 개시 전 잔압 배출 및 압력 확인 절차 의무화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-054",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "온도",
+      "deviation": "이송 유체에 더해 외부 열원(직사광·인접 고온설비)의 추가 입열로 NH3 증기압과 호스 온도가 동반 상승",
+      "causes": [
+        "옥외 노출 호스에 직사광 추가 입열",
+        "인접 고온 설비·증기 배관 근접으로 복사·전도 입열 추가",
+        "폐색 구간 NH3의 액봉 후 외부 가열"
+      ],
+      "consequences": [
+        "NH3 증기압 상승으로 호스 내압 증가 및 재질 허용온도 초과",
+        "액봉 팽창에 의한 국부 과압 파열",
+        "누출 시 독성 증기 확산"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "호스 차광·단열 및 고온설비 이격 배치 검토",
+        "옥외 이송 시 온도 상승 감시 및 최대 노출시간 제한",
+        "액봉 방지를 위한 압력 릴리프 경로 확보"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-055",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "조성",
+      "deviation": "NH3에 더해 수분·공기·오일 등 이물질이 추가로 혼입되어 조성이 오염됨",
+      "causes": [
+        "연결 전 호스 내부 잔류 수분·습기 미제거",
+        "커플링 개방 중 공기·습기 유입",
+        "N2 퍼지가스에 포함된 수분 또는 배관 잔류 오일 유입"
+      ],
+      "consequences": [
+        "수분과 NH3 반응으로 부식성 증가 및 일부 금속 커플링 응력부식 진전",
+        "공기 혼입 시 국부 연소·인화 위험 조건 형성",
+        "부식·열화로 호스·커플링 완결성 저하 후 누출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "연결 전 N2 건조 퍼지로 수분·공기 제거 절차 수립",
+        "퍼지가스 수분 관리 및 건조 상태 확인",
+        "커플링 개방 최소화 및 개방부 보호캡 사용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-056",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "상",
+      "deviation": "의도한 단일 상 이송에 더해 플래싱 증기 또는 기포가 추가로 발생하여 이상유동이 형성됨",
+      "causes": [
+        "입열·감압으로 액상 NH3가 부분 플래싱하여 기상이 추가 생성",
+        "이송 중 N2 가스 혼입으로 기상 포켓 형성",
+        "저지점 액봉 구간에서 증기 발생"
+      ],
+      "consequences": [
+        "이상유동 수격으로 호스·커플링에 충격 하중 반복",
+        "유량 불안정 및 계량 오차",
+        "충격 하중 누적에 의한 커플링 풀림·누출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 압력을 증기압 이상으로 유지하는 운전 조건 관리",
+        "이송 라인 배기·벤트로 기상 포켓 제거 절차 수립",
+        "수격 저감을 위한 서서한 밸브 조작 지침 마련"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-057",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "커플링 연결 완결성",
+      "deviation": "정상 이송에 더해 오연결·이중연결 등 의도치 않은 추가 연결 상태가 발생",
+      "causes": [
+        "규격이 유사한 타 유체 커플링에 NH3 호스를 오연결",
+        "미체결·부분 체결 상태에서 이송 개시",
+        "체결 확인 절차 부재로 풀림 미인지"
+      ],
+      "consequences": [
+        "오연결로 NH3가 부적합 계통으로 유입되어 반응·과압",
+        "미체결 커플링 이탈로 대량 NH3 분출 및 작업자 독성 노출",
+        "선내 국한을 넘는 증기운 확산 가능"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 4,
+      "risk_score": 16,
+      "recommendations": [
+        "NH3 전용 비호환 커플링(구조적 오연결 방지형) 채택",
+        "이송 개시 전 커플링 체결·정합성 이중 확인 절차 의무화",
+        "누출 시 자동 분리·차단되는 브레이크어웨이 커플링 도입 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-058",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "호스 물리적 손상",
+      "deviation": "정상 이송에 더해 마모·꼬임·킹킹 등 외부 기계적 손상이 추가로 진행되어 관벽 완결성이 저하됨",
+      "causes": [
+        "차량·중량물 밟힘 또는 예리한 모서리 마찰로 외피 마모",
+        "과도한 굽힘·비틀림에 의한 킹킹",
+        "경년열화·자외선 노화로 재질 취화"
+      ],
+      "consequences": [
+        "관벽 파괴로 NH3 누출 및 독성 증기 확산",
+        "킹킹 부위 국부 응력집중으로 급성 파열",
+        "손상 미인지 시 이송 중 파단으로 대량 방출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 전 육안 점검 체크리스트 및 손상 판정 기준 수립",
+        "호스 보호 슬리브·거치대로 마모·킹킹 방지",
+        "사용 이력·경과년수 기반 교체 주기 관리"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-059",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "기동정지",
+      "deviation": "이송 개시·종료 시 정규 절차에 더해 잔압·잔액이 남은 상태에서 커플링 해제가 이루어짐",
+      "causes": [
+        "종료 시 잔압 배출·퍼지 절차 누락",
+        "이송 개시 전 라인업 미확인으로 추가 누출 시점 발생",
+        "안전장치 부재로 절차 의존도가 높아 단계 생략"
+      ],
+      "consequences": [
+        "잔압·잔액 상태 커플링 해제 시 NH3 분출로 작업자 안면·호흡기 노출",
+        "반복적 소량 누출 누적 및 급성 노출",
+        "선내 국한 중상 이상"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 4,
+      "risk_score": 12,
+      "recommendations": [
+        "종료 시 잔압 배출·N2 퍼지 후 해제하는 표준 절차 수립",
+        "개시·종료 단계별 확인 체크리스트 도입",
+        "해제 작업자 개인보호구 및 비상세척 설비 배치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-060",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "유지보수",
+      "deviation": "정상 사용에 더해 검사·교체 주기 초과 호스의 계속 사용이 이루어짐",
+      "causes": [
+        "소모성 호스의 교체 주기 관리 부재",
+        "검사 기록 미비로 열화 상태 미파악",
+        "여분 부족으로 노후 호스 연장 사용"
+      ],
+      "consequences": [
+        "열화 누적 호스의 이송 중 파단으로 대량 NH3 누출",
+        "은폐된 내부 손상 미검출로 급성 방출",
+        "독성 증기 확산에 의한 다수 노출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "호스 개별 식별·사용 이력 및 교체 주기 관리 체계 수립",
+        "주기적 압력·육안 검사 및 합격 기준 문서화",
+        "충분한 예비 호스 확보로 노후품 연장 사용 방지"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n2-061",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "누출 격리",
+      "deviation": "이송 중 누출 발생 시 정상 흐름에 더해 차단·격리 수단 부재로 누출이 지속·확대됨",
+      "causes": [
+        "호스 양단 긴급차단 밸브 부재",
+        "누출 감지 수단 부재로 조기 인지 실패",
+        "원격 차단 불가로 접근 지연"
+      ],
+      "consequences": [
+        "누출 NH3가 격리 전까지 계속 방출되어 대량 독성 증기운 형성",
+        "인접 선박·항만 영역까지 확산",
+        "다수 인원 급성 노출 및 사망 가능"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "호스 양단 긴급차단 밸브(ESD) 및 원격 조작 설비 설치",
+        "NH3 가스 검지기 및 경보 연동 자동 차단 도입",
+        "누출 대응·격리 비상절차 및 훈련 정례화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    }
+  ]
+}

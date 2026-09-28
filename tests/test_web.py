@@ -1,4 +1,4 @@
-"""오프라인 시험 — FR-10 H-04 (PRD v2.0 §5 FR-10, 지시문 H (a)~(g)). 네트워크 0회."""
+"""오프라인 시험 — FR-10 H-04 (지시문 H (a)~(g)) + H-06 (지시문 I-1 (a)~(d)). 네트워크 0회."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ import pytest
 from jsonschema import Draft7Validator
 
 from apps.web import service
-from apps.web.replay import REPLAY_DIR, load_replay
+from apps.web.replay import REPLAY_DIR, load_replay, load_replays
 from core.agent.generate import STANDARD_GUIDEWORDS
 
 if TYPE_CHECKING:
@@ -127,3 +127,115 @@ def test_app_preset_click_shows_table(monkeypatch: pytest.MonkeyPatch) -> None:
     assert not at.exception
     assert len(at.dataframe) == 1
     assert len(at.dataframe[0].value) == len(load_replay().records)
+
+
+# ── H-06 (지시문 I-1) ─────────────────────────────────────────────────────────
+def _write_node(
+    path: Path,
+    node: str,
+    source: str,
+    captured_at: str,
+    *,
+    recall: tuple[int, int] | None = None,
+    recall_key: str = "recall",
+) -> None:
+    payload = json.loads((REPLAY_DIR / "n1_20260929.json").read_text(encoding="utf-8"))
+    payload.pop("recall_n1", None)
+    payload.update(
+        node=node,
+        source=source,
+        captured_at=captured_at,
+        split="tune" if node == "N1" else "holdout",
+        records=payload["records"][:3],
+    )
+    payload[recall_key] = (
+        None if recall is None else {"recall": recall[0] / recall[1], "matched": recall[0], "total": recall[1]}
+    )
+    path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+
+
+# (a) 노드별 우선순위 — 노드마다 따로 live > gold, 같은 source 는 captured_at 최신.
+def test_load_replays_priority_is_per_node(tmp_path: Path) -> None:
+    _write_node(tmp_path / "a.json", "N1", "live", "2026-09-01T00:00:00+00:00", recall=(7, 8))
+    _write_node(tmp_path / "b.json", "N1", "gold", "2026-09-28T00:00:00+00:00")
+    _write_node(tmp_path / "c.json", "N2", "gold", "2026-09-30T00:00:00+00:00")
+    _write_node(tmp_path / "d.json", "N2", "live", "2026-09-02T00:00:00+00:00", recall=(1, 9))
+    _write_node(tmp_path / "e.json", "N2", "live", "2026-09-29T00:00:00+00:00", recall=(5, 9))
+    _write_node(tmp_path / "f.json", "N3", "gold", "2026-09-29T00:00:00+00:00")
+    replays = load_replays(tmp_path)
+    assert set(replays) == {"N1", "N2", "N3"}
+    assert replays["N1"].meta["source"] == "live"
+    assert (replays["N2"].meta["source"], replays["N2"].meta["captured_at"]) == (
+        "live", "2026-09-29T00:00:00+00:00"
+    )
+    assert replays["N3"].is_gold
+    assert load_replay(tmp_path).meta["node"] == "N1"  # 기존 API = load_replays()["N1"]
+
+
+# (b) 미캡처 노드 — 결과에 없고, 표에 행이 없고, 합계는 "측정 노드 없음".
+def test_uncaptured_nodes_are_absent_and_not_counted(tmp_path: Path) -> None:
+    _write_node(tmp_path / "n1.json", "N1", "live", "2026-09-29T00:00:00+00:00", recall=(7, 8))
+    _write_node(tmp_path / "n3.json", "N3", "gold", "2026-09-29T00:00:00+00:00")
+    replays = load_replays(tmp_path)
+    assert "N2" not in replays and "N4" not in replays
+    table = service.evaluation_table(replays)
+    assert [r["노드"].split()[0] for r in table[:-1]] == ["N1", "N3"]
+    assert table[1]["recall(m/n)"] == "골드 재생 — 해당 없음"  # 골드 재생은 측정이 아니다
+    assert "측정 노드 없음" in table[-1]["노드"] and table[-1]["recall(m/n)"] == "—"
+    (tmp_path / "n1.json").unlink()
+    with pytest.raises(FileNotFoundError):
+        load_replay(tmp_path)  # N1 이 없으면 기존 API 는 명시적으로 실패한다
+
+
+# (c) 홀드아웃 합계 recall = Σmatched / Σgold — 세 노드면 분모 26, 일부면 실제 분모와 노드 표기.
+def test_holdout_total_recall_denominator(tmp_path: Path) -> None:
+    _write_node(tmp_path / "n1.json", "N1", "live", "2026-09-29T00:00:00+00:00", recall=(7, 8))
+    _write_node(tmp_path / "n2.json", "N2", "live", "2026-09-29T00:00:00+00:00", recall=(5, 9))
+    _write_node(tmp_path / "n3.json", "N3", "live", "2026-09-29T00:00:00+00:00", recall=(3, 7))
+    _write_node(tmp_path / "n4.json", "N4", "live", "2026-09-29T00:00:00+00:00", recall=(4, 10))
+    total = service.evaluation_table(load_replays(tmp_path))[-1]
+    assert total["노드"] == "홀드아웃 합계"
+    assert total["recall(m/n)"] == f"{12 / 26:.3f} (12/26)"  # N1(tune) 7/8 은 섞이지 않는다
+    (tmp_path / "n4.json").unlink()
+    total = service.evaluation_table(load_replays(tmp_path))[-1]
+    assert total["노드"] == "홀드아웃 합계 (N2·N3 만 — 골드 16/26건)"
+    assert total["recall(m/n)"] == "0.500 (8/16)"
+    markdown = service.evaluation_markdown(load_replays(tmp_path))
+    assert len(markdown.splitlines()) == 2 + 3 + 1  # 머리·구분 + N1·N2·N3 + 합계
+    assert "| 0.500 (8/16) |" in markdown
+
+
+# (d) 9/29 N1 파일의 `recall_n1` 키와 I-1 의 `recall` 키를 둘 다 읽는다.
+@pytest.mark.parametrize("key", ["recall_n1", "recall"])
+def test_recall_key_compat(tmp_path: Path, key: str) -> None:
+    _write_node(tmp_path / "n1.json", "N1", "live", "2026-09-29T00:00:00+00:00", recall=(7, 8), recall_key=key)
+    result = load_replay(tmp_path)
+    assert result.meta["recall"] == {"recall": 0.875, "matched": 7, "total": 8}
+    assert "recall_n1" not in result.meta
+    assert "N1(tune) recall 0.875 (7/8)" in service.summary_line(result)
+
+
+def test_committed_n1_replay_reads_recall_n1_key() -> None:
+    assert load_replay().meta["recall"]["total"] == 8
+
+
+# (e) AppTest — 프리셋 4개를 차례로 눌러도 예외 0, 미캡처는 비활성.
+def test_app_switches_between_four_presets(monkeypatch: pytest.MonkeyPatch) -> None:
+    from streamlit.testing.v1 import AppTest
+
+    monkeypatch.delenv("HAZOP_ALLOW_LIVE", raising=False)
+    replays = load_replays()
+    at = AppTest.from_file(str(_APP), default_timeout=30).run()
+    assert not at.exception
+    assert len(at.table) == 1  # 평가 요약 표
+    for node in service.PRESETS:
+        button = at.button(key=f"preset_{node}")
+        assert button.disabled is (node not in replays)
+        assert ("미캡처" in button.label) is (node not in replays)
+        if node not in replays:
+            continue
+        button.click().run()
+        assert not at.exception
+        assert len(at.dataframe) == 1
+        assert len(at.dataframe[0].value) == len(replays[node].records)
+        assert any(f"{node}(" in m.value for m in at.markdown)

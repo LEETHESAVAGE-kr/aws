@@ -1,0 +1,3826 @@
+{
+  "schema_version": 1,
+  "source": "live",
+  "captured_at": "2026-09-28T16:52:58+00:00",
+  "node": "N4",
+  "split": "holdout",
+  "provider": "anthropic",
+  "model_id": "claude-opus-4-8",
+  "node_meta": {
+    "node": "N4",
+    "substance": "NH3",
+    "phase": "unknown",
+    "P_kPag": null,
+    "T_degC": null,
+    "equipment": [
+      "이송 운전 절차"
+    ],
+    "safeguards": []
+  },
+  "latency_s": 553.5,
+  "cost_usd": 1.0084,
+  "expected_cells": 100,
+  "judged_cells": 100,
+  "review_guidewords": [],
+  "recall": {
+    "recall": 0.0,
+    "matched": 0,
+    "total": 10
+  },
+  "max_tokens": 16384,
+  "raw_calls": [
+    {
+      "tokens_out": 733,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3359,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3509,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 4053,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3545,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3989,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3418,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3452,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3493,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 4344,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3869,
+      "stop_reason": "tool_use"
+    }
+  ],
+  "truncated_calls": 0,
+  "records": [
+    {
+      "id": "n4-001",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "유량",
+      "deviation": "이송 라인에 NH3 흐름이 전혀 형성되지 않아 이송이 진행되지 않음",
+      "causes": [
+        "이송 펌프 미기동 또는 정지",
+        "라인 상 차단밸브 폐쇄 상태로 이송 개시",
+        "라인 막힘 또는 커플링 미연결"
+      ],
+      "consequences": [
+        "이송 목표 미달성으로 운전 지연",
+        "펌프 데드헤드 운전에 따른 과열·씰 손상 및 NH3 누출",
+        "무유량 상태에서 밸브 강제 조작 시 계통 이상"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 개시 전 라인업 확인 체크리스트 적용",
+        "펌프 최소유량 보호(재순환·저유량 트립) 설치 검토",
+        "이송 라인 유량 확인 지시계 설치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-002",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "압력",
+      "deviation": "이송 계통에 이송 압력이 전혀 형성되지 않아 압송이 이루어지지 않음",
+      "causes": [
+        "압송원(펌프·가압원) 미작동",
+        "공급측 밸브 폐쇄로 압력 전달 차단"
+      ],
+      "consequences": [
+        "이송 불성립으로 운전 목표 미달",
+        "압력 없음을 유량 문제로 오판하여 밸브 무리 조작 시 계통 손상 및 누출"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 3,
+      "risk_score": 6,
+      "recommendations": [
+        "이송 계통 압력 확인 지시 및 기동 전 확인 절차 마련",
+        "압송원 상태 확인 인터록 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-003",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "준위",
+      "deviation": "수용측 탱크 준위가 전혀 상승하지 않아 이송 수령이 확인되지 않음",
+      "causes": [
+        "수용 탱크로의 라인업 미완성",
+        "수용측 입구밸브 폐쇄",
+        "실제 이송 무유량"
+      ],
+      "consequences": [
+        "이송 완료 오판으로 미이송 잔량 발생",
+        "엉뚱한 경로로의 이송을 인지하지 못해 오이송 지속"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "송·수 양측 준위 대조 확인 절차 도입",
+        "수용 탱크 준위 지시 및 이상 시 경보 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-004",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "조성",
+      "deviation": "이송되는 유체에 NH3가 전혀 포함되지 않고 다른 물질만 이송됨",
+      "causes": [
+        "공급원 라인업 오류로 엉뚱한 물질 계통 연결",
+        "잔류 세정수·불활성 매질만 이송"
+      ],
+      "consequences": [
+        "수용 탱크 내용물 오염 및 부적합 물질 혼입",
+        "NH3와 혼합 시 반응·부식 유발 가능"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "이송 개시 전 공급원 물질 식별·표찰 확인 절차",
+        "라인업 검증을 위한 독립 확인(2인 확인) 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-005",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "상 변화",
+      "deviation": "예정된 액상 이송이 전혀 이루어지지 않고 기상만 존재하여 액 이송 불성립",
+      "causes": [
+        "라인 내 완전 기화(베이퍼록)로 펌프 흡입 상실",
+        "공급 탱크 액상 미공급"
+      ],
+      "consequences": [
+        "펌프 공회전·건조 운전으로 씰 손상 및 NH3 누출",
+        "이송량 미달로 운전 목표 실패"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "흡입측 과냉·가압 확보 절차 마련",
+        "펌프 흡입 상태 감시 및 저유량 보호 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-006",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "이송 순서",
+      "deviation": "규정된 밸브 개폐·라인업 순서가 전혀 이행되지 않은 채 이송이 시도됨",
+      "causes": [
+        "절차서 미준수 또는 순서 생략",
+        "작업자 교육 부족·의사소통 오류"
+      ],
+      "consequences": [
+        "폐쇄 밸브에 대한 압송으로 계통 과압 및 누출",
+        "역류·오이송 발생으로 독성 NH3 확산"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "순서 기반 체크리스트 및 단계별 확인 서명 도입",
+        "핵심 밸브 위치 인터록 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-007",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "이송 라인업",
+      "deviation": "의도한 계통 연결이 전혀 성립되지 않아 이송 경로가 구성되지 않음",
+      "causes": [
+        "밸브·연결부 라인업 누락",
+        "엉뚱한 탱크·라인으로의 경로 구성"
+      ],
+      "consequences": [
+        "이송 불성립 또는 오이송으로 수용 부적합 계통에 NH3 유입",
+        "폐쇄 경로에 대한 압송으로 과압·누출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "라인업 검증 절차 및 경로 표찰 관리 강화",
+        "밸브 위치 확인 및 독립 검증 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-008",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "격리 및 방출",
+      "deviation": "이송 완료·중단 시 잔류 NH3 격리·방출 조치가 전혀 수행되지 않음",
+      "causes": [
+        "격리·퍼지 절차 생략",
+        "격리밸브 미폐쇄로 잔류 라인 고립 실패"
+      ],
+      "consequences": [
+        "잔류 NH3의 열팽창에 의한 과압·누출",
+        "커플링 해제 시 라인 내 잔류 NH3 방출로 독성 노출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 후 격리·퍼지·안전방출 절차 명문화",
+        "잔류압 확인 후 해제 작업 허용 규정 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-009",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "커플링 연결부",
+      "deviation": "이송 접속부가 전혀 체결되지 않은 상태에서 이송이 개시됨",
+      "causes": [
+        "커플링 체결 누락 또는 미완결",
+        "체결 확인 절차 생략"
+      ],
+      "consequences": [
+        "접속부에서 NH3 직접 대량 누출로 독성 확산",
+        "작업자 근접 노출로 인한 중독·동상"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 전 커플링 체결·기밀 확인 절차 의무화",
+        "체결 미완 시 이송 개시 차단 인터록 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-010",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "기동정지",
+      "deviation": "이송 개시 또는 종료 전환 절차가 전혀 수행되지 않음",
+      "causes": [
+        "기동·정지 절차 생략",
+        "급격한 밸브·펌프 조작으로 전환 단계 누락"
+      ],
+      "consequences": [
+        "서지·수격에 의한 계통 과압 및 배관 손상",
+        "제어되지 않은 정지로 잔류 NH3 격리 실패 및 누출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "기동·정지 단계별 절차 및 밸브 조작 속도 규정 마련",
+        "서지 완화 조치 및 순차 정지 로직 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-011",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "유량",
+      "deviation": "이송 라인 내 NH3 유량이 설계 이송 유량을 초과하여 과다하게 흐른다",
+      "causes": [
+        "이송 펌프 과속 운전 또는 토출 밸브 과다 개방",
+        "공급측·수용측 압력차 과대로 인한 유량 급증",
+        "유량 조절 절차 미준수로 밸브를 한 번에 개방"
+      ],
+      "consequences": [
+        "라인·수용측 탱크 과충전으로 이어져 서지·과압 발생",
+        "고유량에 의한 배관 진동·해머링으로 접속부 손상 및 NH3 누출",
+        "누출 시 독성 NH3 확산으로 인명 피해"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 유량 상한 설정 및 유량 지시·경보 설치",
+        "단계적 밸브 개방을 규정한 이송 절차서 정비",
+        "펌프 토출측 유량 제한 오리피스 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-012",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "압력",
+      "deviation": "이송 계통 압력이 설계 압력을 초과하여 과압 상태가 된다",
+      "causes": [
+        "밸브 오조작으로 폐쇄 라인에 압송 지속(데드헤드 운전)",
+        "수용측 탱크 만액 상태에서 계속 압송",
+        "주위 온도 상승으로 액상 NH3 열팽창"
+      ],
+      "consequences": [
+        "배관·플랜지·접속부 파열로 대량 NH3 누출",
+        "독성·저온 액상 NH3 방출로 다수 인명 피해",
+        "설비 손상 및 장기 정지"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "이송 라인 안전밸브 설치 및 적정 셋팅 확인",
+        "압력 지시·고압 경보 및 인터록 설치",
+        "폐쇄 구간 액봉 방지용 열팽창 릴리프 설치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-013",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "준위",
+      "deviation": "수용측 탱크 준위가 설계 최대 허용 준위를 초과하여 과충전된다",
+      "causes": [
+        "이송 종료 준위 감시 소홀로 이송 지속",
+        "준위 지시 오류로 잔여 용량 오판",
+        "고준위 정지 절차 미이행"
+      ],
+      "consequences": [
+        "탱크 오버플로 및 릴리프 계통으로 NH3 방출",
+        "액상 만액 시 열팽창에 의한 탱크 과압·손상",
+        "독성 NH3 누출로 인명·환경 피해"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "고준위 경보 및 고고준위 이송 정지 인터록 설치",
+        "이송 전 수용측 잔여 용량 확인 절차 명문화",
+        "독립 준위 계측 이중화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-014",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "조성",
+      "deviation": "이송되는 NH3에 수분·불순물이 설계 허용치를 초과하여 함유된다",
+      "causes": [
+        "공급원 품질 관리 미흡으로 수분 함량 과다",
+        "라인 퍼지 불충분으로 잔류 수분·공기 혼입",
+        "이송 전 조성 확인 절차 누락"
+      ],
+      "consequences": [
+        "수분 함유 NH3에 의한 탄소강 응력부식균열 촉진",
+        "부식·균열 진전으로 계통 누출",
+        "누출 시 독성 NH3 확산"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "이송 전 NH3 수분 함량 분석 절차 수립",
+        "이송 라인 건조 퍼지 절차 강화",
+        "재질 적합성 및 부식 점검 주기화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-015",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "상 변화",
+      "deviation": "이송 중 액상 NH3의 기화(플래싱)가 과도하게 증가한다",
+      "causes": [
+        "이송 라인 압력 저하로 액상이 비등점 이하 유지 실패",
+        "주위 온도 상승·단열 미흡으로 입열 과다",
+        "빠른 밸브 조작에 따른 급격한 압력 강하"
+      ],
+      "consequences": [
+        "펌프 베이퍼록 및 캐비테이션으로 이송 불안정",
+        "기상 발생으로 라인 서지·압력 변동 및 접속부 손상",
+        "기화된 NH3 방출 시 독성 확산"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 라인 압력 유지 관리 및 저압 경보 설치",
+        "라인 단열 및 냉각 보조 검토",
+        "밸브 조작 속도 제한 절차 반영"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-016",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "격리 및 방출",
+      "deviation": "이송 중단·완료 시 방출 계통으로 배출되는 NH3 양이 과다해진다",
+      "causes": [
+        "잔류 NH3 격리 전 과다 방출 절차 수행",
+        "방출 속도 제한 없이 일시에 대량 벤트",
+        "격리 밸브 조작 순서 미준수로 과잉 배출"
+      ],
+      "consequences": [
+        "방출 계통 용량 초과로 독성 NH3 대기 확산",
+        "선내·항만 인접 구역 독성 노출 피해",
+        "저온 액상 동반 시 배관·인체 동상 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "방출량·방출 속도 제한 절차 수립",
+        "NH3 회수·스크러버 계통으로 유도",
+        "격리·방출 순서 체크리스트 운영"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-017",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "커플링 연결부",
+      "deviation": "커플링 체결 토크·응력이 과다하게 가해져 연결부가 손상된다",
+      "causes": [
+        "과도한 조임으로 개스킷·씰 손상",
+        "이송 중 과압·서지 하중이 접속부에 과다 작용",
+        "접속부 정렬 불량 상태에서 강제 체결"
+      ],
+      "consequences": [
+        "개스킷 압착 파손 및 씰 기능 상실로 접속부 누출",
+        "독성 NH3 직접 누출로 작업자 노출",
+        "접속부 재사용 불가 및 이송 중단"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "규정 토크 체결 절차 및 토크 관리 도구 사용",
+        "체결 후 누설 시험 절차 의무화",
+        "브레이크어웨이 커플링 적용 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-018",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "기동정지",
+      "deviation": "이송 기동·정지 시 계통 압력·유량이 과도하게 급증(서지)한다",
+      "causes": [
+        "펌프 급기동 또는 밸브 급폐쇄로 서지 압력 발생",
+        "정지 시 관성 유동에 의한 수격(액격) 발생",
+        "기동정지 램프 속도 절차 미준수"
+      ],
+      "consequences": [
+        "서지·수격에 의한 배관·접속부 손상 및 NH3 누출",
+        "압력 스파이크로 안전밸브 작동·방출",
+        "누출 시 독성 확산 및 인명 피해"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "완속 기동·정지 및 밸브 서서히 조작 절차 수립",
+        "서지 완화 장치(소프트 스타트·서지 완충) 검토",
+        "수격 방지를 위한 밸브 폐쇄 시간 관리"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-019",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "유량",
+      "deviation": "이송 중 NH3 유량이 설계 의도보다 낮게 유지되어 목표량 이송이 지연되거나 계통 내 유속 저하가 발생",
+      "causes": [
+        "이송 펌프 성능 저하 또는 회전수 부족",
+        "라인 내 부분 폐색(스트레이너 막힘, 밸브 부분 개도)",
+        "공급측 탱크 압력 저하로 압송력 부족",
+        "액상 NH3 일부 기화로 유효 유량 감소"
+      ],
+      "consequences": [
+        "이송 시간 연장에 따른 작업자 NH3 노출 기회 증가",
+        "저유량 지속으로 펌프 캐비테이션·과열 및 밀봉부 손상 후 누출",
+        "수용측 탱크 미충전으로 후속 공정 차질"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 유량 하한 감시 및 저유량 경보 설정",
+        "펌프 흡입측 스트레이너 정기 점검 절차 수립",
+        "저유량 지속 시 이송 중단 판단 기준을 절차서에 명시"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-020",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "압력",
+      "deviation": "이송 계통 압력이 설계 의도보다 낮아져 NH3 압송이 불충분하고 액상 유지 조건이 무너짐",
+      "causes": [
+        "공급측 탱크 헤드압 부족",
+        "펌프 토출압 저하",
+        "라인 저온으로 인한 증기압 하락 또는 누설로 인한 압력 손실"
+      ],
+      "consequences": [
+        "계통 압력이 NH3 증기압 이하로 내려가 액상이 기화하며 베이퍼록 발생",
+        "이송 중단 및 재기동 시 서지 유발",
+        "저압 부위로 외부 공기·수분 침입 시 부식 및 조성 오염"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 라인 압력 하한 감시 및 경보 설정",
+        "액상 유지에 필요한 최소 계통 압력 기준을 절차서에 규정"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-021",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "준위",
+      "deviation": "공급측 탱크 준위가 과도하게 낮아져 흡입측 공동화가 발생",
+      "causes": [
+        "이송 종료 기준 준위 미준수로 저준위까지 계속 이송",
+        "준위 지시 오류로 실제보다 높게 인지",
+        "공급 탱크 잔량 관리 미흡"
+      ],
+      "consequences": [
+        "펌프 흡입 공동화로 캐비테이션·기계 손상 후 밀봉부 누출",
+        "기상 NH3 흡입에 따른 이송 불안정 및 서지",
+        "저준위 탱크 내 기상부 확대로 후속 취급 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "공급측 저준위 경보 및 이송 자동 정지 연동 검토",
+        "이송 종료 최소 준위 기준을 절차서에 명시"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-022",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "조성",
+      "deviation": "이송되는 NH3 중 유효 농도가 낮아져 수분·불순물 비율이 상대적으로 증가한 저순도 상태로 이송",
+      "causes": [
+        "저준위 이송으로 탱크 바닥 침전 수분·불순물 유입",
+        "라인 저압부로 외부 수분 침입",
+        "이전 이송 잔류물 혼입"
+      ],
+      "consequences": [
+        "수분 함량 증가로 탄소강 라인·밸브의 응력부식균열 촉진 후 누출",
+        "수용측 탱크 품질 저하 및 부식성 증가",
+        "부식 진행으로 장기적 계통 건전성 저하"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "이송 전후 순도·수분 확인 절차 도입",
+        "저준위 구간 이송 제한으로 바닥 침전물 혼입 방지"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-023",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "상 변화",
+      "deviation": "계통 압력·온도 조건 저하로 액상 NH3의 일부가 기화하여 액상 비율이 감소한 이상 상 상태로 이송",
+      "causes": [
+        "계통 압력이 증기압 이하로 저하",
+        "이송 유량 저하로 라인 내 체류·가열",
+        "저압 발생 구간에서 플래싱"
+      ],
+      "consequences": [
+        "베이퍼록으로 이송 중단 및 펌프 손상",
+        "기상 NH3 급증에 따른 릴리프 요구 증가",
+        "재기동 시 상 불균일로 인한 압력 서지 및 누출 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "라인 압력·온도 유지로 액상 조건 확보 절차 수립",
+        "플래싱 발생 시 이송 중단·재냉각 기준 명시"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-024",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "이송 순서",
+      "deviation": "정해진 밸브 개폐 순서 중 일부 단계가 누락·축소되어 불완전한 라인업 상태로 이송이 진행됨",
+      "causes": [
+        "절차 단계 생략 또는 축약 수행",
+        "다밸브 개방 확인 누락",
+        "교대·인수인계 시 진행 단계 오인"
+      ],
+      "consequences": [
+        "닫힌 구간으로의 이송 시 국부 과압 후 파손 누출",
+        "부분 개방 밸브로 인한 저유량·마모",
+        "미개방 방출경로로 인한 격리 실패"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 순서 체크리스트 및 단계별 확인 서명 도입",
+        "핵심 밸브 개폐 상태 상호 확인(2인 확인) 절차 적용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-025",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "이송 라인업",
+      "deviation": "의도한 수용처로의 이송량이 부족하고 일부가 잘못 연결된 계통으로 분기되어 수용측 도달량이 감소",
+      "causes": [
+        "다중 목적지 밸브 중 일부만 정확히 정렬",
+        "매니폴드 라인업 오류로 이송 흐름 분산",
+        "라인 식별 표시 미흡"
+      ],
+      "consequences": [
+        "엉뚱한 탱크·라인으로의 NH3 유입 및 오염·과충전",
+        "의도 수용처 미충전으로 후속 차질",
+        "비지정 계통 과압·누출 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 전 라인업 검증 및 목적지 밸브 정렬 확인 절차",
+        "라인·밸브 명확한 태깅 및 오연결 방지 장치 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-026",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "격리 및 방출",
+      "deviation": "이송 완료·중단 시 잔류 NH3 배출·감압이 불충분하여 계통 내 잔압·잔액이 낮은 수준으로만 처리된 채 격리됨",
+      "causes": [
+        "배출·감압 단계 축소 수행",
+        "격리 밸브 완전 폐쇄 미확인",
+        "잔류 회수 절차 미준수"
+      ],
+      "consequences": [
+        "격리 구간 잔류 NH3의 온도 상승 시 과압 및 누출",
+        "커플링 해제 시 잔류 NH3 방출로 작업자 노출",
+        "불완전 격리로 인한 예기치 않은 흐름"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 종료 시 감압·퍼지·격리 확인 절차 명문화",
+        "커플링 해제 전 잔압 무압 확인 단계 추가"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-027",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "커플링 연결부",
+      "deviation": "커플링 체결력이 규정보다 부족한 상태로 이송이 이루어져 접속부 밀봉이 불완전함",
+      "causes": [
+        "체결 토크 부족 또는 부분 체결",
+        "가스켓·씰 열화로 밀봉력 저하",
+        "체결 확인 절차 미이행"
+      ],
+      "consequences": [
+        "접속부 미세 누출로 독성 NH3 방출 및 작업자 노출",
+        "이송 압력 하에서 커플링 이탈 시 대량 누출",
+        "저밀봉으로 인한 반복 누출 및 부식"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "커플링 체결 상태 및 누출 점검을 이송 개시 전 필수화",
+        "씰·가스켓 교체 주기 관리 및 체결 토크 기준 설정"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-028",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "기동정지",
+      "deviation": "이송 기동·정지 시 유량·압력을 서서히 올리거나 내리지 않고 부족한 단계로 급하게 전환함",
+      "causes": [
+        "기동 시 예냉·승압 단계 축소",
+        "정지 시 감속·감압 절차 생략",
+        "펌프 급기동·급정지"
+      ],
+      "consequences": [
+        "급전환에 따른 압력 서지로 라인·커플링 손상 후 누출",
+        "급냉·급가열에 따른 열충격 및 플래싱",
+        "펌프 손상 및 이송 불안정"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "단계적 기동·정지 절차 수립 및 승압·감압 속도 기준 설정",
+        "정지 시 잔류 서지 흡수 및 방출 확인 절차 포함"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-029",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "유량",
+      "deviation": "NH3가 수용측에서 공급원 방향으로 역류하여 계통 내 흐름 방향이 설계와 반대가 됨",
+      "causes": [
+        "이송 펌프 정지 또는 트립 시 수용측과 공급원 간 압력차 역전",
+        "역지밸브 미설치 또는 고착·역방향 누설",
+        "수용측 탱크가 공급원보다 높은 압력·수두를 형성"
+      ],
+      "consequences": [
+        "고압측 NH3가 저압 공급라인으로 밀려 공급 계통 과압 및 손상",
+        "역류에 의한 펌프 역회전·기계손상",
+        "라인 취약부 파손 시 독성 NH3 누출로 인명 피해"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 라인에 역지밸브 설치 및 주기적 기밀·역방향 누설 점검",
+        "펌프 트립 시 자동 격리밸브 연동 로직 반영",
+        "이송 절차서에 역류 방지용 밸브 개폐 순서 명문화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-030",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "압력",
+      "deviation": "역방향 압력 전이로 공급 계통이 설계압 이상으로 가압되어 압력 구배가 반대가 됨",
+      "causes": [
+        "수용측 탱크 고압 상태에서 이송라인 밸브 오개방",
+        "역류에 동반한 배압 상승",
+        "펌프 정지 후 체크 기능 상실로 수용측 압력 역전달"
+      ],
+      "consequences": [
+        "공급측 저압 설계 배관·부속 과압 파손",
+        "플랜지·씰 파손을 통한 NH3 누출",
+        "압력방출 없는 폐구간 형성 시 국부 과압"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "공급 계통에 안전밸브 또는 압력방출 경로 확보",
+        "역방향 배압 감시용 압력 지시·경보 설치",
+        "이송 전 계통 압력 정렬 확인 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-031",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "준위",
+      "deviation": "역류로 인해 이미 비운 공급 탱크로 NH3가 되돌아가 준위가 의도와 반대로 상승함",
+      "causes": [
+        "이송 종료 후 밸브 라인업 미복구 상태에서 수용측 압력에 의한 역이송",
+        "역지 기능 상실로 수용측→공급측 유입"
+      ],
+      "consequences": [
+        "비운 것으로 간주한 공급 탱크 재충전·과충전 위험",
+        "준위 관리 오판으로 후속 작업 중 예상외 NH3 잔류 및 누출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "양측 탱크 준위 지시·고준위 경보 상호 확인",
+        "이송 종료 시 격리밸브 확실 폐쇄 후 준위 재확인 절차"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-032",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "상 변화",
+      "deviation": "역류로 저압 공급 계통에 유입된 액상 NH3가 감압되며 플래싱하여 기상으로 급전환됨",
+      "causes": [
+        "역방향 이동으로 고압 액상 NH3가 저압 구간 진입",
+        "역류 시 밸브 교축부 통과에 따른 급격 감압"
+      ],
+      "consequences": [
+        "베이퍼록으로 후속 정상 이송 불가",
+        "급격 기화에 따른 국부 온도 저하·취성 및 압력 변동",
+        "기상 NH3 축적 후 방출·누출 시 독성 확산"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "역류 방지로 저압 구간 액상 유입 차단",
+        "기상 배출·벤트 경로의 안전한 처리 계통 확보"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-033",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "이송 순서",
+      "deviation": "밸브 개폐 순서 오류로 흐름이 의도한 방향과 반대로 형성되어 역이송이 진행됨",
+      "causes": [
+        "수용측 밸브를 공급측보다 먼저 개방하는 등 라인업 순서 착오",
+        "이송 종료 순서 미준수로 잔압에 의한 역흐름 허용"
+      ],
+      "consequences": [
+        "엉뚱한 방향 이송으로 공급 계통 오염·과압",
+        "역흐름 중 부속 손상 시 NH3 누출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 4,
+      "risk_score": 12,
+      "recommendations": [
+        "체크리스트 기반 밸브 개폐 순서 확인 절차 강화",
+        "방향성 있는 인터록으로 순서 오류 시 이송 불가 처리"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-034",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "이송 라인업",
+      "deviation": "잘못된 계통 연결로 NH3가 의도한 수용측이 아닌 반대 방향 계통으로 흘러감",
+      "causes": [
+        "엉뚱한 탱크·라인 밸브 개방으로 역방향 경로 형성",
+        "이송 방향과 반대되는 계통 라인업 착오"
+      ],
+      "consequences": [
+        "부적합 계통으로 NH3 유입에 따른 부식·반응·과충전",
+        "설계되지 않은 방향 흐름으로 계통 손상 및 누출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 전 라인업 독립 이중 확인",
+        "밸브 태깅·방향 표시로 오연결 방지"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-035",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "격리 및 방출",
+      "deviation": "격리 실패로 방출 경로를 통해 NH3가 계통으로 역류하여 격리 의도가 무효화됨",
+      "causes": [
+        "방출·벤트 라인 밸브 오개방으로 역방향 유입 경로 형성",
+        "격리밸브 불완전 폐쇄로 역흐름 허용"
+      ],
+      "consequences": [
+        "격리 구간으로 NH3 역유입되어 정비·작업자 노출",
+        "방출 계통 역가압으로 처리설비 손상"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "격리 후 압력 확인으로 역류 없음 검증",
+        "방출 라인에 역류 방지 조치 및 이중 격리 적용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-036",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "커플링 연결부",
+      "deviation": "역류·역압 발생 시 커플링 접속부에 반대 방향 하중이 걸려 체결이 풀리거나 이탈함",
+      "causes": [
+        "역방향 압력 서지가 커플링에 설계 외 하중 부여",
+        "방향성 커플링의 역방향 사용·체결 불량"
+      ],
+      "consequences": [
+        "접속부 이탈로 독성 NH3 대량 누출",
+        "작업자 직접 노출 및 인명 피해"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "역압에 견디는 커플링 사양 및 체결 확인 절차",
+        "브레이크어웨이 커플링 등 이탈 시 자동 차단 수단 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-037",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "기동정지",
+      "deviation": "정지 시점에 펌프 관성 소멸로 흐름이 역전되어 역방향 서지가 발생함",
+      "causes": [
+        "정지 시 역지 기능 미작동으로 수용측 압력에 의한 역류",
+        "기동·정지 순서 미준수로 방향 역전 허용"
+      ],
+      "consequences": [
+        "역방향 서지로 배관·펌프 손상",
+        "충격압에 의한 부속 파손 및 NH3 누출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "정지 절차에 역류 방지 밸브 폐쇄 순서 반영",
+        "서지 완화 및 역지 기능 정상 확인 점검"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-038",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "유량",
+      "deviation": "설계 의도한 NH3 대신 다른 물질(예: 세정용 물·질소 등)이 이송 라인을 통해 흐르거나, NH3가 지정 경로가 아닌 다른 경로로 흐르는 상태",
+      "causes": [
+        "이전 세정·퍼지 작업 후 잔류 유체가 라인에 남은 상태에서 이송 개시",
+        "공용 헤더에서 밸브 라인업 오류로 다른 물질이 NH3 이송 경로로 유입"
+      ],
+      "consequences": [
+        "NH3와 잔류 물질(수분 등) 접촉 시 발열·부식 진행으로 배관 건전성 저하",
+        "수용측에 규격 외 물질 이송으로 오염 및 공정 이상 반응 유발"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 개시 전 라인 잔류물 확인 및 퍼지 완료 검증 절차 수립",
+        "물질별 전용 경로 표기 및 라인업 체크리스트 적용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-039",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "압력",
+      "deviation": "이송 유체가 설계와 다른 물질이어서 계통 내에서 예상과 다른 증기압·거동을 보여 비정상 압력 상태가 형성됨",
+      "causes": [
+        "NH3 대신 증기압 특성이 다른 물질이 혼입되어 이송 조건에서 예상 밖 압력 형성",
+        "잔류 불활성 가스와 NH3 혼재로 계통 압력이 설계 의도와 다르게 거동"
+      ],
+      "consequences": [
+        "예상 밖 과압으로 접속부·배관 응력 초과 및 NH3 누출 가능",
+        "독성 NH3 대기 확산으로 작업자 흡입 재해"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "이송 물질 확인 후 해당 물질 기준 압력 관리 범위 재설정",
+        "이송 개시 전 계통 압력·조성 확인 절차 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-040",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "준위",
+      "deviation": "수용측 탱크에 NH3가 아닌 다른 물질이 채워져 준위가 형성되거나, 엉뚱한 탱크로 이송되어 예상과 다른 탱크의 준위가 변동됨",
+      "causes": [
+        "라인업 오류로 지정 탱크가 아닌 다른 탱크로 NH3 이송",
+        "다른 물질이 혼입된 상태로 수용측 탱크에 유입"
+      ],
+      "consequences": [
+        "부적합 탱크 과충전 또는 엉뚱한 물질 혼합에 따른 반응·부식",
+        "혼합물 반응열 축적으로 탱크 과압 및 NH3 누출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 목적지 탱크 사전 확인 및 라벨·태그 대조 절차 수립",
+        "수용 탱크 잔류물 및 물질 적합성 확인 후 이송 승인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-041",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "조성",
+      "deviation": "이송되는 NH3에 수분·불순물이 혼입되거나 NH3가 아닌 엉뚱한 물질이 조성에 섞여 규격 외 상태가 됨",
+      "causes": [
+        "라인·탱크 내 수분 잔류 또는 퍼지 불량으로 NH3에 수분 혼입",
+        "공용 설비에서 다른 물질이 혼입되어 조성 오염"
+      ],
+      "consequences": [
+        "NH3 수분 혼입으로 탄소강 배관 응력부식균열 진행 및 누출",
+        "규격 외 조성이 수용측 공정 이상 반응 유발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 전후 조성·수분 함량 확인 절차 마련",
+        "수분 유입 차단을 위한 건조 퍼지 및 접속부 관리"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-042",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "상 변화",
+      "deviation": "이송 조건에서 NH3가 의도한 상(액상)이 아닌 다른 상(기상)으로 존재하여 플래싱·베이퍼록이 발생하는 상태",
+      "causes": [
+        "이송 라인의 온도 상승·압력 저하로 액상 NH3가 부분 기화",
+        "잔류 불활성 가스 존재로 이송 초기 기상 우세 상태 형성"
+      ],
+      "consequences": [
+        "베이퍼록으로 이송 중단 및 압력 맥동 발생",
+        "플래싱으로 급격한 부피 팽창·과압 및 접속부 누출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 전 라인 예냉·압력 확보 절차 수립",
+        "기상 배출(벤트) 순서를 절차에 명확히 규정"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-043",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "이송 순서",
+      "deviation": "밸브 개폐·라인업 순서가 절차와 다르게 수행되어 의도와 다른 경로로 NH3가 이송되거나 역류가 발생함",
+      "causes": [
+        "작업자가 밸브 개폐 순서를 오조작하여 엉뚱한 라인 개방",
+        "절차서 미준수로 수용측 밸브 미개방 상태에서 공급측 개방"
+      ],
+      "consequences": [
+        "차단 구간으로의 이송·역류로 국부 과압 및 NH3 누출",
+        "밀폐 구간 액봉 후 열팽창에 의한 배관 파손"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "밸브 개폐 순서 체크리스트 및 상호 확인(더블체크) 도입",
+        "핵심 밸브에 순서 잠금(인터록·태그) 적용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-044",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "이송 라인업",
+      "deviation": "지정된 공급원·수용 탱크가 아닌 엉뚱한 탱크·라인으로 계통이 연결되어 오이송이 발생함",
+      "causes": [
+        "다수 탱크·라인 중 목적지 오인식으로 잘못된 계통 연결",
+        "밸브·플렉시블 접속 대상 혼동"
+      ],
+      "consequences": [
+        "부적합 탱크로의 NH3 이송으로 과충전·이상 반응 및 누출",
+        "비수용 물질 혼합에 따른 부식·발열로 설비 손상"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 개시 전 공급·수용 계통 라인업 현장 확인 및 태그 대조",
+        "탱크·라인 식별 표기 강화 및 승인 서명 절차 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-045",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "격리 및 방출",
+      "deviation": "이송 완료·중단 시 잔류 NH3가 설계 의도와 달리 격리되지 않거나 안전 경로가 아닌 곳으로 방출되는 상태",
+      "causes": [
+        "이송 종료 후 격리 밸브 미폐쇄로 잔류 NH3 계통 잔존",
+        "안전 방출 경로 미설정 상태로 라인 개방·분리"
+      ],
+      "consequences": [
+        "잔류 NH3 대기 방출로 작업자 급성 흡입 재해",
+        "격리 미흡 구간에서 예기치 못한 누출 및 독성 확산"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 종료 시 격리·감압·퍼지 순서를 절차서에 명문화",
+        "안전 방출 지정 경로 및 개방 전 압력 확인 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-046",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "커플링 연결부",
+      "deviation": "이송 접속부에 규격에 맞지 않는 엉뚱한 커플링이 체결되거나 체결 불량 상태로 이송이 진행됨",
+      "causes": [
+        "규격 불일치 커플링을 강제 체결하여 밀봉 불완전",
+        "체결 확인 누락으로 이탈 가능 상태에서 이송 개시"
+      ],
+      "consequences": [
+        "접속부 이탈·누설로 액상 NH3 분출 및 독성 확산",
+        "근접 작업자 동상·흡입 재해"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "전용 규격 커플링만 사용하도록 물리적 호환 제한 적용",
+        "체결 후 누설 시험·상호 확인 절차 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-047",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "기동정지",
+      "deviation": "이송 기동·종료 전환 시점에 설계와 다른 절차로 밸브·펌프를 조작하여 서지·과압 상태가 형성됨",
+      "causes": [
+        "펌프 기동 시 토출 밸브 미개방 등 절차와 다른 조작으로 서지 발생",
+        "종료 시 급격한 밸브 폐쇄로 수격·압력 급상승"
+      ],
+      "consequences": [
+        "서지·수격에 의한 접속부·배관 손상 및 NH3 누출",
+        "순간 과압으로 계통 건전성 저하"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "기동·정지 시 밸브 조작 순서와 개폐 속도 규정",
+        "단계별 승압·감압 절차 및 확인 항목 마련"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-048",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "유량",
+      "deviation": "이송 계통 중 일부 경로로만 NH3가 흐르고 나머지 분기·라인은 흐름이 결핍되어 설계 배분 유량이 부분적으로만 달성됨",
+      "causes": [
+        "분기 밸브 일부만 개방된 채 이송 개시",
+        "병렬 라인 중 한쪽 폐색 또는 부분 막힘",
+        "이송 절차상 다중 수용측 중 일부만 라인업"
+      ],
+      "consequences": [
+        "흐름이 끊긴 구간에 NH3 정체·국부 승온으로 압력 상승",
+        "설계 배분 미달로 이송 지연 및 잔류량 증가",
+        "정체 구간 배관 응력·부식 진행"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 전 각 분기 밸브 개도 및 유량 배분 확인 체크리스트 적용",
+        "분기별 유량 지시계 설치로 부분 흐름 감시"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-049",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "압력",
+      "deviation": "계통 일부 구간만 설계 압력에 도달하고 다른 구간은 미달되어 압력 프로파일이 부분적으로만 성립함",
+      "causes": [
+        "부분 개방 밸브로 인한 구간별 차압 발생",
+        "일부 라인 막힘으로 하류 압력 미형성",
+        "다단 이송 중 한 단계만 가압"
+      ],
+      "consequences": [
+        "부분 정체 구간 국부 과압으로 씰·플랜지 손상 및 NH3 누출",
+        "하류 미가압으로 이송 불완전",
+        "독성 NH3 누출 시 인명 피해"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "구간별 압력계 감시 및 차압 경보 설정",
+        "이송 절차에 구간 가압 순서·확인 단계 명문화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-050",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "준위",
+      "deviation": "다중 수용 탱크 중 일부에만 NH3가 채워지고 나머지는 채워지지 않아 계획 준위 배분이 부분적으로만 달성됨",
+      "causes": [
+        "수용측 탱크 라인업 일부 누락",
+        "탱크 유입 밸브 일부 미개방",
+        "이송 절차상 순차 충전 단계 생략"
+      ],
+      "consequences": [
+        "채워진 탱크 과충전으로 릴리프 작동·NH3 방출",
+        "미충전 탱크로 인한 공정 불균형",
+        "과충전 시 액봉 및 압력 상승"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "탱크별 목표 준위 및 라인업 확인 절차 강화",
+        "고준위 경보·인터록으로 과충전 방지"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-051",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "조성",
+      "deviation": "이송된 유체가 순수 NH3 일부와 수분·불순물 혼입분으로 구성되어 설계 조성의 일부만 달성됨",
+      "causes": [
+        "세정·퍼지 불완전으로 잔류 수분·공기 혼입",
+        "공용 라인 전환 시 이전 물질 잔류",
+        "커플링부 대기 혼입"
+      ],
+      "consequences": [
+        "수분 혼입 시 NH3 부식성 강화로 배관·탱크 부식 및 누출",
+        "불순물로 인한 예상외 반응",
+        "부식 관통부 NH3 누출로 독성 노출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 전 라인 퍼지·건조 절차 확인",
+        "샘플링 또는 수분 모니터링 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-052",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "상 변화",
+      "deviation": "이송 유체가 액상 일부와 기상 일부로 혼재되어 단일 상 이송이라는 설계 의도가 부분적으로만 달성됨",
+      "causes": [
+        "압력 저하로 라인 내 액 NH3 부분 플래싱",
+        "부분 흐름 정체 구간 승온 기화",
+        "커플링 접속부 압력 강하"
+      ],
+      "consequences": [
+        "이상류·베이퍼록으로 이송 중단 및 유량 불안정",
+        "기상 발생으로 계통 압력 변동 및 서지",
+        "액충격에 의한 배관 손상"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 압력을 NH3 증기압 이상 유지하는 절차 명시",
+        "라인 온도·압력 감시로 플래싱 조건 회피"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-053",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "이송 순서",
+      "deviation": "규정된 밸브 개폐·라인업 순서 중 일부 단계만 수행되어 절차 시퀀스가 부분적으로만 완료됨",
+      "causes": [
+        "운전원의 순서 단계 누락",
+        "인수인계 중 절차 중단",
+        "체크리스트 미준수"
+      ],
+      "consequences": [
+        "미격리 구간으로의 역류·오이송",
+        "밸브 미개방 구간 과압 및 누출",
+        "독성 NH3 오방출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "단계별 서명 확인 체크리스트 및 순서 인터록 적용",
+        "순서 완료 확인 없이는 다음 단계 진행 금지 절차화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-054",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "이송 라인업",
+      "deviation": "목표 계통 일부만 정상 연결되고 일부는 엉뚱한 탱크·라인으로 연결되어 라인업이 부분적으로만 올바르게 구성됨",
+      "causes": [
+        "유사 라인 밸브 오조작",
+        "라인업 도면과 현장 불일치",
+        "다중 수용측 식별 오류"
+      ],
+      "consequences": [
+        "엉뚱한 탱크로 NH3 오이송 및 과충전·누출",
+        "비양립 물질 계통 혼입 시 반응 위험",
+        "대량 NH3 방출로 선외 영향"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "라인업 이중 확인 및 태그·잠금 체계 도입",
+        "오연결 방지 위한 라인 식별 표시 강화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-055",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "격리 및 방출",
+      "deviation": "이송 종료·중단 시 계통 일부만 격리·방출되고 나머지 구간에 NH3가 잔류하여 격리 의도가 부분적으로만 달성됨",
+      "causes": [
+        "격리 밸브 일부 미폐쇄",
+        "방출·퍼지 절차 일부 생략",
+        "잔류 압력 확인 누락"
+      ],
+      "consequences": [
+        "잔류 NH3 구간 승온 과압으로 누출",
+        "커플링 분리 시 잔류 NH3 대기 방출",
+        "정비·분리 작업자 독성 노출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "격리 완료 후 잔압·잔량 확인 절차 명문화",
+        "안전 방출 경로 및 스크러버 연결 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-056",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "커플링 연결부",
+      "deviation": "이송 접속부 체결이 부분적으로만 이루어져 완전 밀폐가 달성되지 못한 상태로 이송이 진행됨",
+      "causes": [
+        "커플링 나사·클램프 부분 체결",
+        "가스켓 부분 안착 또는 손상",
+        "체결 토크 확인 미실시"
+      ],
+      "consequences": [
+        "접속부 틈새로 NH3 누출 및 독성 확산",
+        "체결부 완전 이탈 시 대량 방출",
+        "인근 작업자 및 선외 영향"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "체결 후 누설시험·비눗물 점검 절차 도입",
+        "이송 개시 전 커플링 체결 상태 이중 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-057",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "기동정지",
+      "deviation": "기동 또는 정지 전환 절차의 일부 단계만 수행되어 전환 시퀀스가 부분적으로만 완료됨",
+      "causes": [
+        "기동 시 승압·워밍 단계 일부 생략",
+        "정지 시 감압·격리 단계 일부 누락",
+        "전환 속도 조절 미준수"
+      ],
+      "consequences": [
+        "급격한 유량·압력 변화로 서지·과압 발생",
+        "미완료 전환으로 라인 내 액충격",
+        "과압에 의한 NH3 누출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "기동·정지 단계별 절차 및 완료 확인 체크리스트 적용",
+        "서지 완화 위한 단계적 밸브 조작 절차 명시"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-058",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "유량",
+      "deviation": "의도한 NH3 이송 유량에 더해 병렬 라인·바이패스를 통한 추가 유입 경로가 동시에 열려 합산 유량이 형성됨",
+      "causes": [
+        "병렬 이송 라인 밸브 동시 개방",
+        "바이패스 밸브 잔류 개방",
+        "라인업 확인 없이 추가 펌프 병렬 기동"
+      ],
+      "consequences": [
+        "수용측 유입 과다로 과충전 및 배관 과압",
+        "예상치 못한 지점에서의 NH3 누출과 독성 확산",
+        "기기 손상 및 국부 부상"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 개시 전 라인업 체크리스트로 단일 경로 확인 절차화",
+        "병렬 라인·바이패스 밸브 잠금(LO) 관리",
+        "유량 총합 감시 및 이상 시 경보 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-059",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "압력",
+      "deviation": "정상 이송 압력에 더해 외부 가압원(질소 퍼지·타 계통 압력)이 함께 걸려 계통 압력이 중첩됨",
+      "causes": [
+        "퍼지용 불활성가스 라인이 열린 채 이송 진행",
+        "인접 고압 계통과의 크로스 연결",
+        "압력 평형 절차 누락"
+      ],
+      "consequences": [
+        "계통 과압으로 씰·플랜지 파손",
+        "액상 NH3 급방출과 독성 증기운 확산",
+        "선내 국한 중상 이상"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 전 가압원 격리 확인 절차 수립",
+        "질소 퍼지 라인 단독차단밸브 상태 점검",
+        "압력 중첩 방지용 인터록 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-060",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "준위",
+      "deviation": "의도한 이송량에 더해 다른 공급원으로부터의 유입이 겹쳐 수용측 준위가 목표치를 초과",
+      "causes": [
+        "복수 공급원 라인업 동시 개방",
+        "회수·순환 라인 잔류 개방",
+        "준위 목표 재확인 없이 추가 이송"
+      ],
+      "consequences": [
+        "수용 탱크 과충전 및 릴리프 작동",
+        "액상 NH3 오버플로우로 독성 누출",
+        "선내 다수 노출 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "단일 공급원 이송 원칙 절차화",
+        "고고준위 경보·자동차단 확인",
+        "이송 전 잔여 라인 격리 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-061",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "조성",
+      "deviation": "이송되는 NH3에 수분·공기·타 계통 잔류물질이 추가로 혼입되어 순수 조성을 벗어남",
+      "causes": [
+        "퍼지·세정 잔류 수분 미배출",
+        "커먼 라인 이전 물질 잔류",
+        "불활성가스 혼입"
+      ],
+      "consequences": [
+        "수분·NH3 반응에 의한 부식 가속 및 배관 열화",
+        "장기 누출 경로 형성",
+        "품질 저하 및 국부 손상"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 전 라인 건조·퍼지 완료 확인",
+        "커먼 라인 전용화 또는 세정 절차 강화",
+        "혼입 감시 샘플링 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-062",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "상 변화",
+      "deviation": "액상 이송에 더해 기상 NH3가 함께 유입·발생하여 이상(二相) 흐름이 형성됨",
+      "causes": [
+        "압력 강하로 인한 부분 플래싱",
+        "탑부 기상 라인 동시 개방",
+        "온도 상승에 따른 증발 병존"
+      ],
+      "consequences": [
+        "베이퍼록으로 이송 불안정 및 서지",
+        "기상 팽창에 의한 국부 과압",
+        "누출·설비 손상 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "기상·액상 라인 분리 운전 절차 확립",
+        "이송 중 압력·온도 유지 관리",
+        "이상흐름 감지 시 이송 중단 기준 마련"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-063",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "이송 순서",
+      "deviation": "정규 개폐 순서에 더해 예정에 없던 밸브 조작이 끼어들어 추가 경로가 함께 활성화됨",
+      "causes": [
+        "작업자 순서 혼동으로 여분 밸브 조작",
+        "동시 병행 작업 간섭",
+        "절차서 단계 누락"
+      ],
+      "consequences": [
+        "의도 외 라인으로 NH3 유입·역류",
+        "잘못된 지점에서의 누출",
+        "선내 국한 중상"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "단계별 확인·서명(step-by-step sign-off) 절차 도입",
+        "핵심 밸브 순서 인터록 검토",
+        "동시 작업 통제(작업허가) 강화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-064",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "이송 라인업",
+      "deviation": "의도한 목적지 라인업에 더해 엉뚱한 탱크·라인으로의 경로가 동시에 연결됨",
+      "causes": [
+        "매니폴드 밸브 오설정",
+        "라인업 도면 대조 누락",
+        "유사 라인 오식별"
+      ],
+      "consequences": [
+        "비의도 탱크 과충전·오이송으로 누출",
+        "비호환 잔류물질과 혼합 위험",
+        "독성 확산 및 다수 노출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 전 목적지 라인업 독립 확인(더블체크)",
+        "밸브·라인 명확한 태깅 및 색상 구분",
+        "잘못된 목적지 밸브 잠금 관리"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-065",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "격리 및 방출",
+      "deviation": "정상 격리 조작에 더해 방출·벤트 경로가 함께 열린 채로 남아 잔류 NH3가 계통 밖으로 추가 배출됨",
+      "causes": [
+        "벤트·드레인 밸브 잔류 개방",
+        "격리와 방출 순서 혼동",
+        "이중 격리 미완료"
+      ],
+      "consequences": [
+        "잔류 NH3의 대기 방출로 독성 증기운 형성",
+        "인접 구역 및 선외 영향",
+        "다수 노출 위험"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "격리 후 방출 경로 폐쇄 확인 절차화",
+        "잔류 회수·중화(스크러버 연계) 검토",
+        "이중 차단 및 확인 후 방출 원칙 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-066",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "커플링 연결부",
+      "deviation": "정상 이송 접속에 더해 체결 불완전 상태로 인한 누설 경로가 추가로 존재",
+      "causes": [
+        "커플링 체결 토크 부족",
+        "가스켓·씰 노후·손상",
+        "접속 확인 절차 누락"
+      ],
+      "consequences": [
+        "접속부에서 액상·기상 NH3 누출",
+        "작업자 직접 노출 및 독성 확산",
+        "선내 다수 중상 이상"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "접속 후 누설시험(리크테스트) 절차 의무화",
+        "커플링·가스켓 정기 교체·점검",
+        "드라이브레이크 커플링 등 이탈방지형 도입 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-067",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "기동정지",
+      "deviation": "이송 기동·종료 전환에 더해 다른 계통 조작이 겹쳐 서지·압력 변동이 중첩 발생",
+      "causes": [
+        "펌프 기동과 밸브 조작 타이밍 겹침",
+        "종료 시 급폐로 인한 수격과 잔압 병존",
+        "동시 다계통 전환"
+      ],
+      "consequences": [
+        "수격·서지로 배관·씰 손상",
+        "손상부에서 NH3 누출과 독성 확산",
+        "선내 국한 중상"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "기동·정지 시퀀스 표준화 및 단계 간 대기시간 규정",
+        "완폐 밸브 운영으로 수격 저감",
+        "전환 시 단일 조작 원칙 적용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-068",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Too early",
+      "parameter": "유량",
+      "deviation": "라인업·수용측 준비가 완료되기 전에 NH3 이송 유량이 조기에 형성되어 흐름이 시작됨",
+      "causes": [
+        "펌프 기동·공급밸브 개방을 절차상 순서보다 이르게 수행",
+        "수용측 준비 확인 전 이송 개시 지시"
+      ],
+      "consequences": [
+        "닫힌 밸브·미정렬 계통으로 NH3가 흘러 과압 및 배관·씰 손상",
+        "독성 NH3 누출로 이송 작업자 흡입·동상 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 개시 전 라인업 완료·수용측 준비 확인 체크리스트 의무화",
+        "펌프 기동과 목적지 밸브 개방을 인터록으로 연동"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-069",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Too early",
+      "parameter": "압력",
+      "deviation": "수용측 밸브 개방·베이퍼 리턴 확립 전에 압송을 조기에 시작해 계통 압력이 이르게 상승함",
+      "causes": [
+        "가압·압송 단계를 목적지 라인 정렬 전에 선행",
+        "베이퍼 리턴 확립 확인 누락"
+      ],
+      "consequences": [
+        "밀폐된 라인 구간 과압으로 플랜지·씰 파손 및 NH3 누출",
+        "독성 가스 국소 확산으로 인명 피해"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "가압 개시 조건에 목적지 라인 개방·베이퍼 리턴 확립을 전제로 설정",
+        "라인 릴리프·압력 모니터링 절차 명문화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-070",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Too early",
+      "parameter": "준위",
+      "deviation": "수용측 탱크 준위 확인 전에 이송을 조기 개시해 예상보다 이른 준위 상승이 진행됨",
+      "causes": [
+        "수용 탱크 여유 용량 확인 전 이송 시작",
+        "준위 계측 안정화 전 개시 판단"
+      ],
+      "consequences": [
+        "여유 용량 부족 상태 이송으로 과충전 진행 및 릴리프 작동·NH3 방출",
+        "공급측 조기 배출로 공동화·베이퍼록 유발"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 개시 전 양측 준위·여유 용량 확인 절차 강제",
+        "고준위 경보 정상 확인 후 개시 허가"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-071",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Too early",
+      "parameter": "조성",
+      "deviation": "라인 퍼지·수분 제거가 끝나기 전에 이송을 조기 개시해 잔류 수분·공기가 NH3에 혼입됨",
+      "causes": [
+        "질소 퍼지·건조 완료 확인 전 이송 시작",
+        "이전 유체 잔류 배출 완료 전 개시"
+      ],
+      "consequences": [
+        "수분 혼입으로 부식성 증가 및 배관·탱크 내부 부식",
+        "장기 건전성 저하로 누출 경로 형성"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "퍼지·건조 완료 판정 기준을 이송 개시 조건에 포함",
+        "라인 청정·잔류 확인 절차 명문화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-072",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Too early",
+      "parameter": "상 변화",
+      "deviation": "라인 예냉·안정화 전에 액상 NH3 이송을 조기 개시해 고온 배관에서 급격한 플래싱이 발생함",
+      "causes": [
+        "예냉·라인 온도 안정화 절차 생략하고 조기 이송",
+        "가압 안정 전 액상 도입"
+      ],
+      "consequences": [
+        "플래싱·베이퍼록으로 유량 불안정 및 압력 서지",
+        "급격한 기화로 배관 진동·씰 손상 및 NH3 누출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "라인 예냉·안정화 완료 후 액상 이송 개시하도록 절차화",
+        "이송 초기 저유량 램프업 단계 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-073",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Too early",
+      "parameter": "이송 순서",
+      "deviation": "선행 단계(밸브 개폐 확인) 완료 전에 다음 단계를 이르게 진행해 순서가 앞당겨짐",
+      "causes": [
+        "단계 확인 없이 절차를 건너뛰어 진행",
+        "작업자 서두름·구두 지시로 순서 선행"
+      ],
+      "consequences": [
+        "밸브 미개방 구간으로 이송되어 과압·역류 발생",
+        "오이송에 따른 NH3 누출 및 설비 손상"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "각 단계 완료 서명·확인 후 진행하는 순차 잠금 절차 도입",
+        "핵심 밸브 위치 확인 게이트 설정"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-074",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Too early",
+      "parameter": "이송 라인업",
+      "deviation": "목적지 계통 최종 확인 전에 라인업을 조기 확정하고 이송을 개시함",
+      "causes": [
+        "엉뚱한 탱크·라인 정렬 상태에서 확인 전 개시",
+        "라인업 대조 절차 생략"
+      ],
+      "consequences": [
+        "엉뚱한 탱크로 오이송되어 과충전·물질 혼입",
+        "부적합 계통 압력 초과로 누출 및 독성 확산"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 개시 전 라인업 독립 이중 확인 의무화",
+        "목적지 태그·밸브 위치 대조 체크리스트 적용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-075",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Too early",
+      "parameter": "격리 및 방출",
+      "deviation": "이송이 완전히 종료·잔압 해소되기 전에 격리·방출 조작을 이르게 수행함",
+      "causes": [
+        "이송 완료 확인 전 격리밸브 조작·라인 개방",
+        "잔류 압력 확인 없이 방출 절차 선행"
+      ],
+      "consequences": [
+        "잔류 가압 NH3가 개방부로 분출되어 작업자 피폭",
+        "잔류 액상 급기화로 동상·독성 누출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "격리·방출 전 이송 완료 및 잔압 해소 확인 절차 강제",
+        "라인 잔류 배출을 지정 방출 계통으로만 수행"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-076",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Too early",
+      "parameter": "커플링 연결부",
+      "deviation": "커플링 체결·기밀 확인이 완료되기 전에 이송을 조기 개시함",
+      "causes": [
+        "체결 토크·리크 테스트 완료 전 이송 시작",
+        "접속부 확인 절차 생략하고 개시"
+      ],
+      "consequences": [
+        "미완결 커플링에서 NH3 누출·분출로 작업자 피폭",
+        "이탈·분리 시 대량 누출 및 국소 독성 확산"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "커플링 체결·기밀 확인 완료를 이송 개시 전제로 명문화",
+        "접속부 리크 테스트 후 개시 허가 절차 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-077",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Too early",
+      "parameter": "기동정지",
+      "deviation": "계통 안정화·준비 완료 전에 이송 기동을 이르게 수행함",
+      "causes": [
+        "예냉·라인업·기밀 확인 등 준비 완료 전 조기 기동",
+        "기동 순서 단축·선행 조작"
+      ],
+      "consequences": [
+        "준비 미완 상태 기동으로 압력 서지·과압 발생",
+        "서지에 의한 배관·씰 손상 및 NH3 누출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "기동 허가 조건(준비 완료 확인)을 절차에 명시",
+        "저유량 램프업 등 완만한 기동 절차 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-078",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Too late",
+      "parameter": "유량",
+      "deviation": "이송 개시 후 목표 유량 도달이 지연되거나, 유량 조정(감량·차단) 지시가 정해진 시점보다 늦게 반영되어 NH3가 예정 시간을 넘겨 계속 흐른다",
+      "causes": [
+        "유량 감시·조정 시점을 놓친 운전원 대응 지연",
+        "수동 밸브 조작 순서상 유량 조절 단계가 늦게 수행됨",
+        "교대 인수인계 지연으로 유량 조정 타이밍 상실"
+      ],
+      "consequences": [
+        "예정 이송량 초과로 수용측 과충전 진행",
+        "과충전 시 액봉·과압으로 릴리프 작동 및 독성 NH3 방출",
+        "지연된 차단으로 누출 상황 확대"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "유량 조정 시점을 절차서에 타임스탬프 체크포인트로 명시",
+        "목표 유량 대비 실적 편차 경보 도입",
+        "교대 시 이송 진행상태 표준 인수인계 서식 적용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-079",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Too late",
+      "parameter": "압력",
+      "deviation": "계통 과압 인지 후 압력 저감·감압 조치가 정해진 시점보다 늦게 수행되어 과압 상태가 지속된다",
+      "causes": [
+        "압력 상승 감시 지연으로 감압 밸브 조작이 늦어짐",
+        "펌프·압송 정지 판단 시점 지연",
+        "감압 절차 단계 착수 지연"
+      ],
+      "consequences": [
+        "설계압 초과 상태 장시간 유지로 라인·플랜지 손상",
+        "손상부에서 독성 NH3 누출",
+        "릴리프 반복 작동 및 방출 확대"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "과압 경보 시점과 감압 조치 착수 기한을 절차에 연동",
+        "고압 시 자동 감압/정지 인터록 검토",
+        "압력 상승 추세 조기 경보 설정"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-080",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Too late",
+      "parameter": "준위",
+      "deviation": "수용측 탱크 고준위 도달 후 이송 중단이 정해진 시점보다 늦게 이루어져 과충전이 진행된다",
+      "causes": [
+        "준위 감시 타이밍을 놓친 대응 지연",
+        "고준위 확인 후 차단 밸브 조작 지연",
+        "공급원 저준위 시 이송 중단 시점 지연으로 공동화 진행"
+      ],
+      "consequences": [
+        "과충전으로 액팽창·액봉에 의한 과압",
+        "탱크 벤트/릴리프로 NH3 방출 및 독성 확산",
+        "저준위 지연 시 펌프 공동화로 설비 손상"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "고·저준위 경보와 이송 자동 차단 인터록 연계",
+        "준위 기준 도달 시 중단 착수 기한 절차화",
+        "충전 종료 예상 시점 사전 산정 및 알림"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-081",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Too late",
+      "parameter": "조성",
+      "deviation": "수분·불순물 혼입이 확인된 뒤 이송 중단·계통 격리 조치가 정해진 시점보다 늦게 수행되어 오염 NH3가 계속 이송된다",
+      "causes": [
+        "조성 이상 확인 후 대응 지연",
+        "라인 퍼지·건조 완료 확인 시점 지연 후 이송 강행",
+        "샘플링·판정 결과 반영 지연"
+      ],
+      "consequences": [
+        "수분 함유 NH3에 의한 탄소강 라인·탱크 부식(응력부식균열 경로)",
+        "부식 진전에 따른 누출 위험 증대",
+        "오염물 수용측 확산"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 전 건조·조성 확인 완료를 착수 전제 조건으로 절차화",
+        "조성 이상 시 즉시 중단 기준 명시",
+        "수분 모니터링 및 경보 도입 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-082",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Too late",
+      "parameter": "상 변화",
+      "deviation": "라인 예냉·가압 등 상변화 억제 조치가 정해진 시점보다 늦게 수행되어 이송 중 액상 NH3가 플래싱하거나 베이퍼록이 발생한다",
+      "causes": [
+        "이송 전 라인 예냉·가압 절차 착수 지연",
+        "잔류 기상 배출 시점 지연",
+        "펌프 기동 대비 계통 안정화 타이밍 상실"
+      ],
+      "consequences": [
+        "플래싱으로 급격한 기화·저온 및 유량 불안정",
+        "베이퍼록으로 펌프 운전 이상 및 서지",
+        "저온 취성·압력 변동으로 설비 손상 및 누출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "예냉·가압 완료 확인을 펌프 기동 전제 조건으로 절차화",
+        "라인 온도·압력 안정화 체크포인트 설정",
+        "베이퍼록 감지 시 대응 절차 명확화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-083",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Too late",
+      "parameter": "이송 순서",
+      "deviation": "밸브 개폐·라인업 단계가 정해진 순번보다 늦게 수행되어(예: 하류 밸브 개방 전 펌프 가동) 데드헤드·역류가 발생한다",
+      "causes": [
+        "절차 단계 수행 지연으로 순서 뒤바뀜",
+        "하류 밸브 개방이 상류 가압 이후로 늦어짐",
+        "확인 지연으로 중간 단계 건너뜀"
+      ],
+      "consequences": [
+        "폐쇄계 가압(데드헤드)으로 과압 및 라인 손상",
+        "역류로 오이송·계통 오염",
+        "손상·오이송에 따른 독성 NH3 누출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "순차 체크리스트와 단계별 확인 서명 도입",
+        "핵심 단계 순서 위반 방지 인터록 검토",
+        "밸브 상태 정위치 확인 절차 강화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-084",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Too late",
+      "parameter": "이송 라인업",
+      "deviation": "정확한 계통 라인업 확정이 정해진 시점보다 늦어진 채 이송이 개시되어 엉뚱한 탱크·라인으로 NH3가 흐른다",
+      "causes": [
+        "라인업 검증 완료 전 이송 착수",
+        "밸브 정렬 확인 시점 지연",
+        "다중 수용 계통에서 목적지 확정 지연"
+      ],
+      "consequences": [
+        "잘못된 탱크·라인으로 오이송",
+        "비수용 계통 과충전·과압으로 방출",
+        "잘못된 물질 계통 접촉 시 반응·부식 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 착수 전 라인업 독립 확인(2인 확인) 절차화",
+        "목적지 밸브 정렬 완료 확인을 개시 전제 조건으로 명시",
+        "라인 식별 표시 및 밸브 잠금 관리"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-085",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Too late",
+      "parameter": "격리 및 방출",
+      "deviation": "이송 완료·중단 후 잔류 NH3 격리 및 안전 방출 절차가 정해진 시점보다 늦게 수행되어 잔류 액이 라인에 갇힌 채 방치된다",
+      "causes": [
+        "이송 종료 후 격리 밸브 폐쇄 지연",
+        "잔류 감압·퍼지 착수 지연",
+        "차기 작업 전 격리 확인 시점 상실"
+      ],
+      "consequences": [
+        "밸브 사이 갇힌 액 NH3의 열팽창으로 과압",
+        "커플링 분리·정비 시 잔류 NH3 누출 및 인원 노출",
+        "독성 확산에 의한 인명 피해"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 종료 직후 격리·감압·퍼지 완료 확인 절차화",
+        "액봉 구간 열팽창 릴리프 설치 검토",
+        "정비 착수 전 잔류 확인(가스 측정) 의무화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-086",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Too late",
+      "parameter": "커플링 연결부",
+      "deviation": "커플링 체결 완료·체결 확인이 정해진 시점보다 늦은 상태에서 가압/이송이 진행되어 불완전 체결부에서 누출된다",
+      "causes": [
+        "체결 완료 전 가압 착수",
+        "체결 상태 확인 단계 지연 후 이송 개시",
+        "누설 시험 시점 지연으로 미확인 상태 가압"
+      ],
+      "consequences": [
+        "불완전 체결부에서 액/기상 NH3 직접 분출",
+        "접속부 인근 작업자 독성 노출",
+        "누출 확대 시 광역 독성 확산"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "체결 완료 및 누설 시험 통과를 가압 전제 조건으로 절차화",
+        "체결 확인 체크리스트·서명 도입",
+        "접속부 누출 감지 및 비상 차단 수단 마련"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-087",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Too late",
+      "parameter": "기동정지",
+      "deviation": "이송 종료 시 펌프·압송 정지가 정해진 시점보다 늦게 이루어지거나, 정지 전환 지연으로 계통에 서지·과압이 남는다",
+      "causes": [
+        "종료 신호 후 정지 조작 지연",
+        "정지 시 밸브 폐쇄 순서 타이밍 상실",
+        "감압 전 정지 지연으로 잔류 에너지 방치"
+      ],
+      "consequences": [
+        "정지 지연에 따른 서지·워터해머로 라인 손상",
+        "폐쇄계 잔압에 의한 과압",
+        "손상·과압부에서 독성 NH3 누출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "정지 시퀀스와 정지 착수 기한을 절차에 명시",
+        "정상 정지 시 순차 밸브 폐쇄·감압 단계화",
+        "서지 완화 조치 및 정지 후 잔압 확인 절차 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-088",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Wrong action",
+      "parameter": "유량",
+      "deviation": "운전원이 이송 유량 설정을 잘못 조작하여 설계 의도와 다른 과다 유량으로 NH3가 이송됨",
+      "causes": [
+        "이송 유량 조절밸브를 규정치보다 크게 개방하는 오조작",
+        "펌프 토출 조절 스텝을 건너뛰고 과속 운전",
+        "유량 지시값 오독으로 잘못된 목표 유량 설정"
+      ],
+      "consequences": [
+        "수용측 탱크 급속 충전으로 과충전·오버플로우 유발",
+        "라인 유속 과다에 따른 수격·배관 진동으로 접속부 손상 및 NH3 누출",
+        "독성 NH3 누출로 인한 인명 피해"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 유량 상한 인터록 및 고유량 경보 설치",
+        "유량 설정 이중 확인 체크리스트 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-089",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Wrong action",
+      "parameter": "압력",
+      "deviation": "잘못된 밸브 조작 순서로 밀폐 구간에 NH3를 압송하여 계통 과압이 발생함",
+      "causes": [
+        "토출측 밸브를 열지 않은 상태에서 펌프 기동하는 오조작",
+        "압력 조절 조작 단계를 잘못 수행",
+        "닫힌 라인으로의 이송 개시"
+      ],
+      "consequences": [
+        "밀폐 계통 과압으로 배관·접속부 파열",
+        "액상 NH3 대량 방출 및 독성 확산",
+        "선내외 인명 피해"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "펌프 기동 전 토출 경로 개방 확인 인터록",
+        "계통 안전밸브 설정압 검증 및 정기 점검"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-090",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Wrong action",
+      "parameter": "준위",
+      "deviation": "수용측 탱크 준위 감시를 소홀히 한 채 계속 이송하여 과충전 상태에 도달함",
+      "causes": [
+        "이송 중단 시점 판단 오류로 규정 준위 초과 운전",
+        "잘못된 탱크의 준위계를 보고 조작",
+        "준위 상승 확인 없이 이송 지속"
+      ],
+      "consequences": [
+        "탱크 과충전으로 릴리프·벤트를 통한 NH3 방출",
+        "액팽창 여유 상실에 따른 탱크 과압",
+        "독성 증기 확산 및 인명 피해"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "고준위 경보 및 이송 자동 차단 인터록 설치",
+        "이송 전 목표 탱크 준위·수용 용량 확인 절차화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-091",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Wrong action",
+      "parameter": "조성",
+      "deviation": "라인업 오조작으로 NH3 라인에 수분·타 물질이 혼입된 채 이송이 수행됨",
+      "causes": [
+        "퍼지·건조 단계를 건너뛴 오조작",
+        "타 물질 라인과 잘못 연결된 상태로 이송",
+        "잔류 세정수 배출 절차 누락"
+      ],
+      "consequences": [
+        "수분 혼입에 의한 배관·접속부 부식 및 응력부식균열",
+        "부식 진전으로 인한 장기적 NH3 누출 경로 형성",
+        "누출 시 독성 노출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 전 라인 건조·퍼지 확인 절차 강화",
+        "수분·순도 샘플링 점검 항목 추가"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-092",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Wrong action",
+      "parameter": "상 변화",
+      "deviation": "예냉·가압 조작을 생략하고 이송을 개시하여 라인 내 액상 NH3가 플래싱·베이퍼록을 일으킴",
+      "causes": [
+        "라인 예냉 단계를 건너뛴 오조작",
+        "가압 유지 없이 이송 시작으로 압력 저하 발생",
+        "잘못된 밸브 조작으로 국부 감압 구간 형성"
+      ],
+      "consequences": [
+        "베이퍼록으로 펌프 캐비테이션 및 유량 불안정",
+        "급격한 플래싱에 의한 열충격 및 접속부 이탈",
+        "NH3 기상 방출 및 독성 노출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 개시 전 라인 예냉·가압 확인 단계 절차화",
+        "펌프 흡입측 저압 경보 설치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-093",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Wrong action",
+      "parameter": "이송 순서",
+      "deviation": "밸브 개폐 순서를 뒤바꿔 조작하여 의도하지 않은 방향으로 NH3가 흐르거나 역류함",
+      "causes": [
+        "라인업 절차의 밸브 순서 착오",
+        "수용측 밸브 개방 전 공급측 밸브 개방",
+        "체크밸브 미확인 상태에서 순서 오조작"
+      ],
+      "consequences": [
+        "역류로 인한 공급원 계통 오염·과압",
+        "엉뚱한 방향 이송으로 인한 누출 위험",
+        "독성 NH3 노출 및 설비 손상"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "순서 인터록(밸브 개폐 시퀀스) 적용",
+        "라인업 순서 체크리스트 및 이중 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-094",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Wrong action",
+      "parameter": "이송 라인업",
+      "deviation": "잘못된 탱크·라인으로 계통을 구성하여 목적지가 아닌 곳으로 NH3가 이송됨",
+      "causes": [
+        "밸브 태그·라인 식별 오인으로 엉뚱한 계통 연결",
+        "다중 탱크 매니폴드에서 잘못된 밸브 선택",
+        "라인업 확인 절차 미수행"
+      ],
+      "consequences": [
+        "부적합 탱크로의 이송으로 과충전·오염",
+        "미준비 라인 가압에 따른 파열·누출",
+        "대량 NH3 방출 및 독성 확산"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "이송 전 라인업 검증(밸브 위치 확인·서명) 절차화",
+        "목적지 탱크 식별 태깅 및 상호 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-095",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Wrong action",
+      "parameter": "격리 및 방출",
+      "deviation": "이송 중단·완료 시 격리 및 잔류 방출 조작을 잘못 수행하여 라인에 NH3가 고립되거나 부적절하게 방출됨",
+      "causes": [
+        "격리 밸브 폐쇄 순서 오조작으로 액봉입(liquid trap) 형성",
+        "잔류 NH3를 안전 방출 계통이 아닌 곳으로 배출",
+        "감압·퍼지 단계 누락"
+      ],
+      "consequences": [
+        "액봉입 구간의 열팽창 과압으로 배관 파열",
+        "부적절 방출로 인한 대기 중 독성 NH3 확산",
+        "작업자 노출 및 인명 피해"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "액봉입 방지용 열팽창 릴리프 설치",
+        "격리·방출 절차의 안전 방출 경로 명시 및 교육"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-096",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Wrong action",
+      "parameter": "커플링 연결부",
+      "deviation": "이송 접속부 체결 조작을 잘못 수행하여 커플링이 불완전 체결된 상태로 이송이 진행됨",
+      "causes": [
+        "커플링 잠금 절차를 건너뛰거나 불완전 체결",
+        "가압 상태에서 접속 조작",
+        "누설 확인 없이 이송 개시"
+      ],
+      "consequences": [
+        "이송 중 커플링 이탈로 액상 NH3 직접 분출",
+        "고농도 독성 증기 급속 확산",
+        "작업자 즉각 노출 및 사망 위험"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "커플링 체결 완료·누설 시험 확인 후 이송 개시 절차화",
+        "드라이 브레이크 커플링 및 체결 인터록 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "n4-097",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Wrong action",
+      "parameter": "기동정지",
+      "deviation": "이송 기동·종료 전환 시 규정과 다른 조작 순서로 펌프·밸브를 조작하여 서지·과압이 발생함",
+      "causes": [
+        "밸브 완전 개방 전 펌프 급기동",
+        "펌프 정지 전 밸브 급폐쇄로 수격 발생",
+        "기동정지 램프업/다운 단계 생략"
+      ],
+      "consequences": [
+        "서지·수격에 의한 배관·접속부 손상",
+        "국부 과압으로 인한 NH3 누출",
+        "독성 노출 및 설비 손상"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "펌프 기동정지 시퀀스 인터록 적용",
+        "완속 개폐 밸브 도입 및 수격 완화 조치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    }
+  ]
+}
