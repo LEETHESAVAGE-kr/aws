@@ -153,17 +153,13 @@ def test_config_null_model_id_is_missing(tmp_path: Path) -> None:
         load_model_config(path)
 
 
-@pytest.mark.xfail(
-    strict=False,
-    reason="지시문 E-1 2단계(모델 목록 확인) 전까지 models.yaml 의 model_id 는 null 이다 — 추측 금지",
-)
 def test_repo_config_provider_declared() -> None:
     """저장소 models.yaml 이 provider 를 선언하고 모델 ID 가 채워져 있는지 확인한다 (REQ-12).
 
     `test_repo_config_is_pending_g0`("models.yaml 이 G0 오류로 실패해야 한다")을 대체한다.
     삭제 사유: G0 대체 경로 확정, 2026-09-15 — 대회 계정에 Bedrock 권한이 없음이 확인돼
     provider=anthropic 으로 개발하기로 했으므로, "비어 있어야 정상"이라는 단언 자체가
-    더 이상 목표 상태가 아니다. 2단계에서 사람이 모델 ID 를 기입하면 xfail 을 걷어낸다.
+    더 이상 목표 상태가 아니다. 2026-09-28 에 사람이 모델 ID 2개를 선택해 기입했으므로 xfail 을 걷어냈다.
     """
     config = load_model_config(REPO_ROOT / "config" / "models.yaml")
     assert config.provider in {"bedrock", "anthropic"}
