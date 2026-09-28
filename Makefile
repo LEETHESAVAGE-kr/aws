@@ -1,4 +1,4 @@
-.PHONY: setup test test-live build-gold test-gold test-llm smoke
+.PHONY: setup test test-live build-gold test-gold test-llm smoke demo capture-replay
 
 PY ?= python
 VENV := .venv
@@ -35,6 +35,14 @@ build-gold:
 		--input data/raw/D1_HAZOP_워크시트.xlsx \
 		--sheet HAZOP워크시트 \
 		--split node --tune-nodes N1
+
+# Streamlit 재생 데모 (FR-10). 기본은 재생 모드 — 실호출 0회.
+demo:
+	$(VENV_PY) -m streamlit run apps/web/app.py
+
+# 재생 데이터 캡처 (FR-10 H-01). 실호출 1회 — 약 10분·$0.8. 키는 ANTHROPIC_API_KEY 환경변수.
+capture-replay:
+	$(VENV_PY) tools/capture_replay.py --node N1 --out data/replay/n1_20260928.json --source live
 
 # 골드셋 단위 테스트만 실행 (전체는 make test)
 test-gold:
