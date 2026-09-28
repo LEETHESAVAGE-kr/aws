@@ -2,6 +2,7 @@ data/raw/
 .venv/
 __pycache__/
 .env
+.streamlit/secrets.toml
 results/
 *.pyc
 *.egg-info/
