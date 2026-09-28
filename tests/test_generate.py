@@ -11,9 +11,13 @@ from __future__ import annotations
 
 import ast
 import json
+import logging
+import os
+import time
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
+import pytest
 from jsonschema import Draft7Validator
 
 from core.agent import DeviationRecord, HazopGenerator, NodeMeta
@@ -22,14 +26,22 @@ from core.agent.generate import (
     PROCEDURAL_GUIDEWORDS,
     STANDARD_GUIDEWORDS,
     _select_guidewords,
+    load_generator_config,
 )
-from core.llm import ConverseResponse, Message, MockBedrockClient
+from core.llm import (
+    ConfigValidationError,
+    ConverseResponse,
+    Message,
+    MockBedrockClient,
+    get_bedrock_client,
+    load_model_config,
+)
 
-if TYPE_CHECKING:
-    import pytest
+_LOG = logging.getLogger(__name__)
 
 _ROOT = Path(__file__).parent.parent
 _GOLD_PATH = _ROOT / "data" / "gold" / "hazop_nh3.json"
+_TUNE_PATH = _ROOT / "data" / "gold" / "hazop_nh3_tune.json"
 _GENERATE_PY = _ROOT / "core" / "agent" / "generate.py"
 _DEVIATION_SCHEMA = json.loads(
     (_ROOT / "schemas" / "deviation.schema.json").read_text(encoding="utf-8")
@@ -321,3 +333,147 @@ def test_fabricated_safeguards_pass_through() -> None:
     records = generator.generate(N1_META)
     assert records[0].safeguards_before == ["존재하지 않는 인터락"]
     assert N1_META.safeguards == []
+
+
+# ── 실호출 시험 — T-07 / T-08 (지시문 E-2) ────────────────────────────────────
+# `pytest -m live` 로만 돈다. 노드 1건 생성 = converse 8회(파라미터 열거 1 + 가이드워드 7)다.
+_G1_RECALL_THRESHOLD = 0.5
+_T07_LATENCY_BUDGET_S = 60.0
+
+#: 파라미터 정규화에서 떼는 조사 (T-08 문면: "공백·조사 제거"). 긴 것부터 떼야 "으로"가 "로"로 잘리지 않는다.
+_PARTICLES = ("으로", "에서", "이나", "과", "와", "은", "는", "이", "가", "을", "를", "의", "에", "로")
+
+
+def _normalize_parameter(text: str) -> str:
+    """공백 제거 후 말미 조사 1개 제거. T-08 이 정한 매칭 규칙 그대로 — 여기서 넓히지 않는다."""
+    compact = "".join(text.split())
+    for particle in _PARTICLES:
+        if len(compact) > len(particle) + 1 and compact.endswith(particle):
+            return compact[: -len(particle)]
+    return compact
+
+
+def _recall_n1(generated: list[DeviationRecord], gold: list[dict[str, Any]]) -> dict[str, Any]:
+    """가이드워드 정확 일치 + 파라미터 정규화 일치로 recall 을 잰다.
+
+    recall = 매칭된 골드 레코드 수 / 전체 골드 레코드 수(N1 8건). 생성물이 골드보다 많아도
+    분모는 골드다 — precision 은 T-08 의 판정 대상이 아니다.
+    """
+    produced = {(r.guideword, _normalize_parameter(r.parameter)) for r in generated}
+    rows = [
+        {
+            "guideword": g["guideword"],
+            "parameter": g["parameter"],
+            "key": (g["guideword"], _normalize_parameter(g["parameter"])),
+        }
+        for g in gold
+    ]
+    for row in rows:
+        row["matched"] = row["key"] in produced
+        row["guideword_seen"] = any(gw == row["guideword"] for gw, _ in produced)
+        row["parameter_seen"] = any(pm == row["key"][1] for _, pm in produced)
+    matched = sum(1 for row in rows if row["matched"])
+    return {
+        "recall": matched / len(rows),
+        "matched": matched,
+        "total": len(rows),
+        "rows": rows,
+        "produced": sorted(produced),
+    }
+
+
+def _live_generator() -> HazopGenerator:
+    """실 클라이언트 기반 생성기. 설정·자격증명이 없으면 skip 한다."""
+    try:
+        config = load_model_config()
+    except ConfigValidationError as exc:
+        pytest.skip(f"config/models.yaml 미완성: {exc}")
+    if config.provider == "anthropic" and not os.environ.get("ANTHROPIC_API_KEY"):
+        pytest.skip("ANTHROPIC_API_KEY 없음")
+    return HazopGenerator(get_bedrock_client(), load_generator_config())
+
+
+def _log_comparison(label: str, result: dict[str, Any]) -> None:
+    """골드 8건 × 생성 결과 대조표. 미달일 때 원인(가이드워드 vs 파라미터)을 가르기 위한 것."""
+    _LOG.info("[%s] recall=%.3f (%d/%d)", label, result["recall"], result["matched"], result["total"])
+    _LOG.info("[%s] 생성된 (가이드워드, 파라미터): %s", label, result["produced"])
+    for row in result["rows"]:
+        if row["matched"]:
+            verdict = "일치"
+        elif not row["guideword_seen"]:
+            verdict = "가이드워드 자체가 생성 안 됨"
+        elif not row["parameter_seen"]:
+            verdict = "파라미터 어휘 불일치"
+        else:
+            verdict = "가이드워드·파라미터 각각 존재하나 조합이 없음"
+        _LOG.info("  %-11s %-6s → %s", row["guideword"], row["parameter"], verdict)
+
+
+@pytest.mark.live
+def test_generate_live_n1() -> None:
+    """T-07 실호출 스모크 — N1 1회 생성. 지연·레코드 수·스키마 100% 를 단언한다 (R-09).
+
+    단언은 전부 **로그를 남긴 뒤** 실행한다. 지연 초과로 실패하더라도 토큰·비용·recall 이
+    출력에 남아야 원인을 판정할 수 있기 때문이다(지시문 E-2: 초과 시 재실행 금지).
+    """
+    generator = _live_generator()
+    started = time.perf_counter()
+    records = generator.generate(N1_META)
+    elapsed = time.perf_counter() - started
+
+    invalid = [r for r in records if list(Draft7Validator(_DEVIATION_SCHEMA).iter_errors([r.model_dump()]))]
+    gold = [g for g in json.loads(_TUNE_PATH.read_text(encoding="utf-8")) if g["node"] == "N1"]
+    result = _recall_n1(records, gold)
+
+    _LOG.info(
+        "[T-07] records=%d latency_s=%.1f cost_usd=%.4f cells=%d/%d review_gw=%s",
+        len(records), elapsed, generator.total_cost_usd,
+        generator.judged_cells, generator.expected_cells, generator.review_guidewords,
+    )
+    _log_comparison("T-07", result)
+
+    assert records, "레코드가 0건이다"
+    assert not invalid, f"스키마 위반 {len(invalid)}건 — 100% 통과가 아니다"
+    assert elapsed <= _T07_LATENCY_BUDGET_S, (
+        f"노드 지연 {elapsed:.1f}s > {_T07_LATENCY_BUDGET_S}s — 노드 1건은 converse "
+        f"{1 + len(_select_guidewords(N1_META))}회(열거 1 + 가이드워드 {len(_select_guidewords(N1_META))})를 "
+        "순차 호출한다. 원인은 호출 수 또는 max_tokens 다."
+    )
+
+
+@pytest.mark.live
+def test_recall_live_n1_x3() -> None:
+    """T-08 G1 킬체크 — 프롬프트 수정 없이 N1 을 3회 생성해 recall 평균·분산을 본다.
+
+    판정을 단언으로 박는다. 표만 출력하면 미달이 눈에 띄지 않은 채 남기 때문이다.
+    """
+    runs: list[dict[str, Any]] = []
+    for attempt in range(1, 4):
+        generator = _live_generator()
+        started = time.perf_counter()
+        records = generator.generate(N1_META)
+        elapsed = time.perf_counter() - started
+        gold = [g for g in json.loads(_TUNE_PATH.read_text(encoding="utf-8")) if g["node"] == "N1"]
+        result = _recall_n1(records, gold)
+        result.update(
+            {"attempt": attempt, "latency_s": elapsed,
+             "cost_usd": generator.total_cost_usd, "records": len(records)}
+        )
+        runs.append(result)
+        _log_comparison(f"T-08 run{attempt}", result)
+
+    recalls = [r["recall"] for r in runs]
+    mean = sum(recalls) / len(recalls)
+    _LOG.info("[T-08] === 회차별 요약 ===")
+    for r in runs:
+        _LOG.info(
+            "  run%d recall=%.3f (%d/%d) records=%d cost_usd=%.4f latency_s=%.1f",
+            r["attempt"], r["recall"], r["matched"], r["total"],
+            r["records"], r["cost_usd"], r["latency_s"],
+        )
+    _LOG.info("[T-08] recall 평균=%.3f 최소=%.3f 최대=%.3f", mean, min(recalls), max(recalls))
+
+    assert mean >= _G1_RECALL_THRESHOLD, (
+        f"G1 미달 — recall 평균 {mean:.3f} < {_G1_RECALL_THRESHOLD}. "
+        "프롬프트를 고치지 말고 위 대조표로 원인을 보고할 것(지시문 E-2)."
+    )
