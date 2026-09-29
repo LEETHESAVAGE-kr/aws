@@ -28,24 +28,30 @@ from core.export import export_all, normalize_rows
 from core.export.rows import HEADERS
 from core.export.xlsx import confidence_label
 from core.llm import (
+    AnthropicClient,
+    BedrockClient,
     ConfigValidationError,
     ConverseResponse,
+    Message,
     MockBedrockClient,
     get_bedrock_client,
     load_model_config,
 )
 
-from .catalog import load_catalog, nodes_by_id, validate_node_meta
+from .catalog import load_catalog, node_meta_schema, nodes_by_id, validate_node_meta
 from .replay import Result
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Mapping, MutableMapping
 
     from core.agent import DeviationRecord
-    from core.llm import AbstractBedrockClient, Message
+    from core.llm import AbstractBedrockClient
 
 LIVE_NOTE: Final[str] = "약 7~9분 · 약 $0.75~1.01 소요(9/29 실측 4노드)"
-QUICK_NOTE: Final[str] = "약 1분 · API 호출 2회(파라미터 열거 1 + 가이드워드 1)"
+QUICK_NOTE: Final[str] = "약 1분 · API 호출 3회(입력 해석 1 + 파라미터 열거 1 + 가이드워드 1, JSON 입력이면 2회)"
+#: 자연어 입력 길이 상한 — 해석 호출 비용·남용 방지.
+NODE_TEXT_LIMIT: Final[int] = 600
+_PARSE_PROMPT: Final[Path] = Path(__file__).parent / "prompts" / "node_parse.md"
 SESSION_LIMIT: Final[int] = 1
 DAILY_LIMIT: Final[int] = 5
 SECRET_KEYS: Final[tuple[str, ...]] = ("HAZOP_ALLOW_LIVE", "HAZOP_LIVE_SCOPE", "ANTHROPIC_API_KEY")
@@ -190,15 +196,107 @@ def _mock_factory(replay: Result) -> Callable[..., ConverseResponse]:
     return make
 
 
-def run_live(node_meta_json: str, replay: Result, environ: Mapping[str, str] = os.environ) -> Result:
-    """노드 1건 생성. mock 모드면 재생 레코드를 돌려주는 모의 클라이언트로 끝까지 돈다(H-02 ⑦)."""
-    node_meta = NodeMeta.model_validate_json(node_meta_json)
+# ── 자연어 입력 → NodeMeta (사용자 결정 9/29, PRD FR-10 밖) ─────────────────────
+#: 압력 단위 → kPa 배수. 모델은 숫자·단위를 적힌 그대로 옮기고 환산은 여기서 한다 —
+#: 9/29 실측에서 모델에게 환산을 맡기자 "90 MPa" 가 9,000 kPag(10배 오류)로 나왔다. 게이지압으로 간주한다.
+PRESSURE_TO_KPA: Final[dict[str, float]] = {"kPa": 1.0, "bar": 100.0, "MPa": 1000.0, "kgf/cm2": 98.0665}
+
+
+def _parse_schema() -> dict[str, Any]:
+    """입력 해석 호출의 응답 스키마 — 산출물 스키마의 `node_meta` 에서 `P_kPag` 만 {value, unit} 으로 바꾼다."""
+    schema = node_meta_schema()
+    properties = {
+        name: {k: v for k, v in spec.items() if k != "$comment"}
+        for name, spec in schema["properties"].items()
+        if name != "P_kPag"
+    }
+    properties["pressure"] = {
+        "type": ["object", "null"],
+        "required": ["value", "unit"],
+        "properties": {"value": {"type": "number"}, "unit": {"type": "string", "enum": list(PRESSURE_TO_KPA)}},
+        "additionalProperties": False,
+    }
+    required = ["node", *("pressure" if f == "P_kPag" else f for f in schema["required"])]
+    return {"type": "object", "required": required, "properties": properties, "additionalProperties": False}
+
+
+def _to_node_meta_payload(reply: dict[str, Any]) -> dict[str, Any]:
+    """해석 응답의 `pressure` {value, unit} → `P_kPag`(kPa 게이지)."""
+    payload = dict(reply)
+    pressure = payload.pop("pressure", None)
+    payload["P_kPag"] = (
+        None if pressure is None else round(pressure["value"] * PRESSURE_TO_KPA[pressure["unit"]], 3)
+    )
+    return payload
+
+
+def _mock_parse_factory(**_: Any) -> ConverseResponse:
+    """mock 모드의 입력 해석 — 네트워크 없이 스키마를 통과하는 고정 응답."""
+    payload = {
+        "node": "X1", "substance": "수소", "phase": "gas", "pressure": None, "T_degC": None,
+        "equipment": ["수소 저장용기", "디스펜서"], "safeguards": ["긴급차단밸브"],
+    }
+    return ConverseResponse(content=json.dumps(payload, ensure_ascii=False))
+
+
+def _parser_client() -> AbstractBedrockClient:
+    """입력 해석은 저비용 `verifier` 프로필(config/models.yaml)로 부른다 — 필드 추출일 뿐이라서다."""
+    config = load_model_config()
+    client_cls = AnthropicClient if config.provider == "anthropic" else BedrockClient
+    return client_cls(config=config, profile="verifier")
+
+
+def parse_node_text(
+    text: str, environ: Mapping[str, str] = os.environ, client: AbstractBedrockClient | None = None
+) -> tuple[NodeMeta, dict[str, Any]]:
+    """자연어 공정 설명 또는 NodeMeta JSON → `NodeMeta`.
+
+    `{` 로 시작하면 JSON 으로 보고 API 를 부르지 않는다. 문장이면 저비용 모델 1회로 구조화한 뒤
+    JSON 입력과 같은 스키마 검증을 거친다(설명에 없는 수치는 null — 프롬프트 `prompts/node_parse.md`).
+    """
+    stripped = text.strip()
+    if not stripped:
+        raise ValueError("공정 설명이 비어 있습니다.")
+    if stripped.startswith("{"):
+        return validate_node_meta(json.loads(stripped)), {"parsed_by": "json", "raw_calls": [], "cost_usd": 0.0}
+    if len(stripped) > NODE_TEXT_LIMIT:
+        raise ValueError(f"공정 설명은 {NODE_TEXT_LIMIT}자 이내로 적어 주세요(지금 {len(stripped)}자).")
+    if client is None:
+        client = MockBedrockClient(response_factory=_mock_parse_factory) if is_mock(environ) else _parser_client()
+    calls = _observe_calls(client)
+    system, _, user = _PARSE_PROMPT.read_text(encoding="utf-8").partition("<!-- USER -->")
+    response = client.converse(
+        system=system.strip(),
+        messages=[Message(role="user", content=user.strip().replace("{text}", stripped))],
+        response_schema=_parse_schema(),
+        context={"node": "parse"},
+    )
+    if response.content is None:
+        raise ValueError(
+            "공정 설명을 노드 입력으로 바꾸지 못했습니다(응답 스키마 2회 위반). 물질·설비를 넣어 다시 적어 주세요."
+        )
+    node_meta = validate_node_meta(_to_node_meta_payload(json.loads(response.content)))
+    return node_meta, {
+        "parsed_by": "llm",
+        "node_text": stripped,
+        "parse_model": client.model_short,
+        "raw_calls": [{**c, "stage": "parse"} for c in calls],
+        "cost_usd": response.cost_usd,
+    }
+
+
+def run_live(node_text: str, replay: Result, environ: Mapping[str, str] = os.environ) -> Result:
+    """노드 1건 생성. mock 모드면 재생 레코드를 돌려주는 모의 클라이언트로 끝까지 돈다(H-02 ⑦).
+
+    `node_text` 는 NodeMeta JSON 또는 자연어 공정 설명(`parse_node_text`).
+    """
+    started = time.perf_counter()
+    node_meta, parsed = parse_node_text(node_text, environ)
     mock = is_mock(environ)
     client: AbstractBedrockClient = (
         MockBedrockClient(response_factory=_mock_factory(replay)) if mock else get_bedrock_client()
     )
     generator = HazopGenerator(client, load_generator_config())
-    started = time.perf_counter()
     records = generator.generate(node_meta)
     latency = time.perf_counter() - started
     meta = {
@@ -206,8 +304,9 @@ def run_live(node_meta_json: str, replay: Result, environ: Mapping[str, str] = o
         "captured_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
         "node": node_meta.node,
         "node_meta": node_meta.model_dump(),
+        **{k: parsed[k] for k in ("parsed_by", "node_text", "parse_model") if k in parsed},
         "latency_s": round(latency, 1),
-        "cost_usd": round(generator.total_cost_usd, 4),
+        "cost_usd": round(generator.total_cost_usd + parsed["cost_usd"], 4),
         "expected_cells": generator.expected_cells,
         "judged_cells": generator.judged_cells,
         "review_guidewords": list(generator.review_guidewords),
@@ -231,16 +330,18 @@ def _observe_calls(client: AbstractBedrockClient) -> list[dict[str, Any]]:
 
 
 def run_quick(
-    node_meta_json: str, guideword: str, replay: Result, environ: Mapping[str, str] = os.environ
+    node_text: str, guideword: str, replay: Result, environ: Mapping[str, str] = os.environ
 ) -> Result:
     """직접 입력 빠른 실호출(J-03): 파라미터 열거 1회 + 가이드워드 1종 판정 1회 = `converse` 2회.
 
+    `node_text` 가 자연어면 그 앞에 입력 해석 1회(저비용 모델)가 붙어 3회다. JSON 이면 2회.
     노드 전체(가이드워드 7~10종, 약 8분)를 돌지 않고 한 행만 채운다. mock 모드면 `replay` 레코드를
-    돌려주는 모의 클라이언트로 같은 경로를 돈다. 입력이 스키마를 어기면 API 를 부르기 전에 `ValueError`.
+    돌려주는 모의 클라이언트로 같은 경로를 돈다. 입력이 스키마를 어기면 생성 호출 전에 `ValueError`.
     """
     if guideword not in GUIDEWORD_DEFINITIONS:
         raise ValueError(f"알 수 없는 가이드워드: {guideword}")
-    node_meta = validate_node_meta(json.loads(node_meta_json))
+    started = time.perf_counter()
+    node_meta, parsed = parse_node_text(node_text, environ)
     mock = is_mock(environ)
     client: AbstractBedrockClient = (
         MockBedrockClient(response_factory=_mock_factory(replay)) if mock else get_bedrock_client()
@@ -255,7 +356,6 @@ def run_quick(
             config.provider, config.generation.model_id, config.generation.max_tokens
         )
     generator = HazopGenerator(client, load_generator_config())
-    started = time.perf_counter()
     # 비공개 메서드 의존 3곳(_enumerate_parameters·_generate_batch·_assemble) — core/ 무수정을 위해
     # 지시문 J 에 한해 허용. 본선에서 HazopGenerator.generate_quick() 공개 API 로 승격(docs/backlog.md).
     parameters = generator._enumerate_parameters(node_meta)  # noqa: SLF001
@@ -273,18 +373,19 @@ def run_quick(
         "node": node_meta.node or "직접입력",
         "split": "none",
         "node_meta": node_meta.model_dump(),
+        **{k: parsed[k] for k in ("parsed_by", "node_text", "parse_model") if k in parsed},
         "guidewords": [guideword],
         "parameters": [p["name"] for p in parameters],
         "latency_s": round(latency, 1),
-        "cost_usd": round(generator.total_cost_usd, 4),
+        "cost_usd": round(generator.total_cost_usd + parsed["cost_usd"], 4),
         "expected_cells": len(parameters),
         "judged_cells": generator.judged_cells,
         "review_guidewords": list(generator.review_guidewords),
         "recall": None,
-        "raw_calls": raw_calls,
+        "raw_calls": parsed["raw_calls"] + raw_calls,
         "truncated_calls": sum(
             c["stop_reason"] == "max_tokens" or (max_tokens is not None and c["tokens_out"] >= max_tokens)
-            for c in raw_calls
+            for c in parsed["raw_calls"] + raw_calls
         ),
     }
     return Result(meta=meta, records=records)

@@ -71,6 +71,7 @@ Too early·Too late·Wrong action 같은 절차형 가이드워드를 쓴다. �
 apps/web/app.py (Streamlit)         위젯 배선만 (공정 선택 → 입력·생성 과정 → 워크시트 → 평가)
   └─ apps/web/service.py            실호출 판정·상한·빠른 실호출·결과표·평가 요약 표·내보내기
   └─ apps/web/catalog.py            data/presets.json 공정 카탈로그 로더 (NodeMeta·스키마 검증)
+  └─ apps/web/prompts/node_parse.md 직접 입력 문장 → NodeMeta 해석 프롬프트 (verifier 프로필)
   └─ apps/web/replay.py             data/replay/*.json 로더 (노드별 live > gold)
         │
         ▼
@@ -124,7 +125,7 @@ tools/build_gold.py      data/raw/*.xlsx → data/gold/*.json
   [self-verification](.kiro/specs/self-verification/requirements.md).
   **Kiro 크레딧 소진 후(9/11 export-formats 부터) spec 3종과 bedrock-client 의 REQ-12·T-15 는 Kiro 와 같은
   형식(EARS requirements + design + tasks)으로 손으로 작성·유지했다.**
-- 시험: `pytest -m "not live"` **211 passed, 3 deselected**(live 마커), `ruff check .` clean.
+- 시험: `pytest -m "not live"` **222 passed, 3 deselected**(live 마커), `ruff check .` clean.
 
 ### 추적 매트릭스
 
@@ -320,8 +321,11 @@ py -3.12 -m venv .venv
   신뢰도 리포트 JSON 다운로드 → 접힌 **평가 결과**(골드셋 대비 recall, NH3 4노드만).
 - 카탈로그 공정은 **재생**이다: API 키 불필요, 실호출 0회. 화면에 캡처 일시(KST)·모델·비용을 적는다.
   NH3 는 골드셋 34건과 recall 을 실측했고, 예시 공정 2개는 골드셋이 없다(정성 검토용).
-- **직접 입력 (빠른 실호출)**: 공정 선택 맨 아래. NodeMeta JSON 을 고치고 가이드워드 1개(기본 More)를 골라
-  누르면 파라미터 열거 1회 + 가이드워드 판정 1회, **API 호출 2회**로 워크시트 한 행 묶음을 실제로 생성한다(약 1분).
+- **직접 입력 (빠른 실호출)**: 공정 선택 맨 아래. 공정을 **자연어 문장**으로 설명하고(입력 칸의 회색 예시 참고)
+  가이드워드 1개(기본 More)를 골라 누르면 워크시트 한 행 묶음을 실제로 생성한다(약 1분). 호출은 3회 —
+  ① 문장 → NodeMeta 해석(저비용 `verifier` 모델, 약 $0.003) ② 파라미터 열거 ③ 가이드워드 판정. 해석 결과는 원문 옆에
+  그대로 보여 준다. 설명에 없는 수치는 비워 두고(추정 금지), 압력은 모델이 숫자·단위만 옮기고 **kPag 환산은 코드가 한다**.
+  NodeMeta JSON(`{` 로 시작)을 넣으면 해석을 건너뛰어 2회다. 입력은 600자 이내.
   [.env.example](.env.example) 을 참고해 `HAZOP_ALLOW_LIVE=true` 와 `ANTHROPIC_API_KEY` 를 환경변수로 준다
   (Streamlit Cloud 는 App settings → Secrets). 앱은 `.env` 파일을 자동으로 읽지 않는다 — 실행 셸의 환경변수로 넣는다.
 - **`HAZOP_LIVE_SCOPE`**: `quick`(기본 — 빠른 실호출만) | `full`(직접 입력 아래에 **노드 전체 실호출** 버튼 추가,

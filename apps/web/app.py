@@ -12,7 +12,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import contextlib  # noqa: E402
-import json  # noqa: E402
 
 import streamlit as st  # noqa: E402
 
@@ -23,16 +22,14 @@ from core.agent.generate import PROCEDURAL_GUIDEWORDS, STANDARD_GUIDEWORDS  # no
 DIRECT = "직접 입력 (빠른 실호출)"
 GUIDEWORDS = STANDARD_GUIDEWORDS + PROCEDURAL_GUIDEWORDS
 README_EVAL = "https://github.com/LEETHESAVAGE-kr/aws/blob/main/README.md#-6-평가-결과"
-#: 직접 입력 기본값 — 카탈로그에 없는 임의 노드 예시.
-DIRECT_EXAMPLE = {
-    "node": "X1",
-    "substance": "프로판",
-    "phase": "liquid",
-    "P_kPag": 800,
-    "T_degC": 30,
-    "equipment": ["프로판 저장탱크", "탱크 출구 배관"],
-    "safeguards": ["안전밸브", "압력계", "가스누출감지기"],
-}
+#: 직접 입력 칸의 placeholder — 입력 방식을 보여주는 예시(값으로 채우지 않는다).
+DIRECT_PLACEHOLDER = (
+    "예시) 수소충전소에서 튜브트레일러의 압축 수소를 압축기로 약 90 MPa 까지 올려 저장용기에 모았다가 "
+    "디스펜서로 차량에 충전한다. 안전장치는 안전밸브, 긴급차단밸브, 수소누출감지기.\n\n"
+    "· 물질 · 설비(흐름 순서) · 압력 · 온도 · 안전장치를 적을수록 결과가 구체적입니다. 모르는 값은 빼도 됩니다.\n"
+    '· NodeMeta JSON 도 그대로 받습니다: {"node": "X1", "substance": "프로판", "phase": "liquid", '
+    '"P_kPag": 800, "T_degC": 30, "equipment": ["프로판 저장탱크"], "safeguards": ["안전밸브"]}'
+)
 
 st.set_page_config(page_title="HAZOP 코파일럿", layout="wide")
 
@@ -45,7 +42,7 @@ state = st.session_state
 state.setdefault("live_runs", 0)
 state.setdefault("quick_result", None)
 state.setdefault("node", None)
-state.setdefault("quick_json", json.dumps(DIRECT_EXAMPLE, ensure_ascii=False, indent=2))
+state.setdefault("quick_text", "")
 
 # ── 1. 제목 ──────────────────────────────────────────────────────────────────
 st.title("HAZOP 위험성평가 코파일럿")
@@ -89,11 +86,17 @@ if process is not None:
     result = replays.get(state.node)
 else:
     st.markdown(
-        ":blue-background[직접 입력] 임의 공정 노드를 JSON 으로 넣고 가이드워드 1개만 골라 실제로 생성합니다 "
-        "(파라미터 열거 1회 + 가이드워드 판정 1회). `phase` 는 `liquid`·`gas`·`liquid/gas`·`unknown` 중 하나."
+        ":blue-background[직접 입력] 공정을 문장으로 설명하고 가이드워드 1개를 고르면 실제로 생성합니다 — "
+        "문장을 노드 입력으로 해석(저비용 모델 1회) → 파라미터 열거 1회 → 가이드워드 판정 1회."
     )
     left, right = st.columns([2, 1])
-    left.text_area("NodeMeta (JSON)", key="quick_json", height=230)
+    left.text_area(
+        "공정 설명 — 자연어 문장 또는 NodeMeta JSON",
+        key="quick_text",
+        height=230,
+        max_chars=service.NODE_TEXT_LIMIT,
+        placeholder=DIRECT_PLACEHOLDER,
+    )
     guideword = right.selectbox("가이드워드", GUIDEWORDS, index=GUIDEWORDS.index("More"))
     if live_reason:
         right.caption(live_reason)
@@ -101,6 +104,7 @@ else:
         right.info("mock 모드 — 네트워크 없이 재생 레코드로 생성 경로를 돕니다.")
     quota = service.quota_block_reason(state.live_runs)
     blocked = live_reason is not None or quota is not None
+    blocked = blocked or not state.quick_text.strip()
     clicked_quick = right.button("빠른 실호출(약 1분)", type="primary", disabled=blocked)
     right.caption(quota or service.QUICK_NOTE)
     clicked_full = False
@@ -116,9 +120,9 @@ else:
             with st.spinner("생성 중… " + (service.QUICK_NOTE if clicked_quick else service.LIVE_NOTE)):
                 try:
                     if clicked_quick:
-                        state.quick_result = service.run_quick(state.quick_json, guideword, mock_source)
+                        state.quick_result = service.run_quick(state.quick_text, guideword, mock_source)
                     else:
-                        state.quick_result = service.run_live(state.quick_json, mock_source)
+                        state.quick_result = service.run_live(state.quick_text, mock_source)
                 except Exception as exc:  # noqa: BLE001 — 사유를 보이고 앱은 계속 산다
                     st.error(f"생성 실패: {type(exc).__name__}: {exc}")
                 else:
@@ -138,6 +142,10 @@ else:
     left, right = st.columns(2)
     with left:
         st.markdown("**LLM 에 보낸 입력** — 프롬프트에 채워지는 노드 정보는 이것뿐입니다")
+        if result.meta.get("node_text"):
+            st.markdown("입력 문장")
+            st.code(result.meta["node_text"], language=None, wrap_lines=True)
+            st.markdown(f"→ 해석된 NodeMeta ({result.meta.get('parse_model')} 1회 — 설명에 없는 수치는 비워 둠)")
         st.json(result.meta.get("node_meta", {}))
     with right:
         st.markdown("**생성 과정**")
