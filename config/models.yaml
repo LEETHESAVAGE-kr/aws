@@ -9,7 +9,7 @@
 #   Fable 5)에서 sampling 파라미터가 400 을 돌려주는 것을 피해 일부러 생략한다. 아래 값은 provider=bedrock
 #   전환 시점에 되살아난다 — provider=anthropic 동안의 재현성은 temperature 가 아니라 프롬프트·스키마가 담보한다.
 
-provider: anthropic # bedrock | anthropic (REQ-12). 제출 전 bedrock 으로 되돌린다 — docs/backlog.md
+provider: anthropic # bedrock | anthropic. provider 는 REQ-12 공급자 교체용. 실측은 anthropic
 
 region: ap-northeast-2 # Bedrock 전용. provider=anthropic 동안에는 쓰이지 않는다.
 

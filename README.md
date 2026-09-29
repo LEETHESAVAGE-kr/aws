@@ -1,12 +1,8 @@
 # 위험성평가 코파일럿 (HAZOP Copilot)
 
 고려대 × AWS AI Innovators Challenge 2026 출품작. 공정 노드 설명(물질·상태·운전조건·설비)을 넣으면
-LLM 이 HAZOP 가이드워드×파라미터 매트릭스를 판정해 워크시트 초안(xlsx)과 LOPA 초안(md)을 만들고,
+LLM 이 HAZOP 가이드워드×파라미터 매트릭스를 판정해 워크시트 초안(xlsx)과 LOPA 초안(Word .docx — 정본은 Markdown)을 만들고,
 전문가 HAZOP 골드셋 대비 성능을 이 문서에 숫자로 공개한다(불리한 지표 포함 — [PRD.md](PRD.md) NFR-03).
-
-> **현재 상태를 먼저 밝힌다.** LLM 호출 계층은 Amazon Bedrock Converse 어댑터와 Anthropic Messages API
-> 어댑터를 같은 인터페이스로 갖고 있다. 대회 계정에 Bedrock 권한이 없어(2026-09-15 확인) **모든 실측은
-> Anthropic 경로(`claude-opus-4-8`)로 했고 Bedrock 실호출은 0회다.** 자세한 내용은 §4 "AWS 요건".
 
 ---
 
@@ -20,7 +16,7 @@ Too early·Too late·Wrong action 같은 절차형 가이드워드를 쓴다. �
 (`No, 노드, 가이드워드, 이탈, 원인, 결과, 기존 안전장치(Before), S, F, 위험도(=S×F), 권고, 시나리오 연계`)다
 (정의 정본: [.kiro/steering/domain.md](.kiro/steering/domain.md)).
 
-**사고 사례**: ⟨TODO — 사람이 채움: NH3 또는 유사 화학물질 사고 1건, 연도·장소·출처 URL⟩
+**사고 사례**: 2012년 9월 27일 경북 구미 제4국가산업단지 휴브글로벌 공장에서 탱크로리의 플루오린화수소(불산)를 공장 설비에 주입하던 중 근로자의 실수로 탱크로리 밸브가 열려 가스가 누출됐다. 공장 근로자 5명이 사망하고 18명이 다쳤으며, 가스가 인근 지역까지 퍼져 농작물·가축 피해가 이어졌고 특별재난지역으로 선포됐다. 하역 작업의 밸브 조작 순서·긴급차단·개인보호구는 전형적인 HAZOP 절차 노드의 이탈 항목이다([위키백과](https://ko.wikipedia.org/wiki/%EA%B5%AC%EB%AF%B8_%EA%B0%80%EC%8A%A4_%EB%88%84%EC%B6%9C_%EC%82%AC%EA%B3%A0)).
 
 **실무 페인포인트.** HAZOP 은 공정안전관리(PSM) 위험성평가의 핵심 산출물이고, 컨설팅 현장에서는
 워크시트 초안 작성에 가장 많은 인력과 시간이 든다(작성자가 KECC 에서 이 업무를 직접 수행한 경험에 근거한
@@ -88,29 +84,24 @@ core/llm/                AbstractBedrockClient  ← config/models.yaml 의 provi
   └─ mock.py             MockBedrockClient (HAZOP_USE_MOCK=true — 오프라인 시험)
         │
         ▼
-core/export/             xlsx 5시트(HAZOP워크시트·평가기준·스크리닝·근거·신뢰도) · lopa_draft.md · confidence_report.json
+core/export/             xlsx 5시트(HAZOP워크시트·평가기준·스크리닝·근거·신뢰도) · lopa_draft.md(화면 다운로드는 Word .docx) · confidence_report.json
 
 tools/capture_replay.py  노드 1건 실호출 → data/replay/<node>_<date>.json (recall·지연·비용·절단 기록)
 tools/build_gold.py      data/raw/*.xlsx → data/gold/*.json
 ```
 
-- PRD v1.2 그림에서 **FastAPI 와 Bedrock Knowledge Base 는 삭제**됐다(PRD v2.0 §4). Streamlit 이 `core/` 를
+- **FastAPI 와 Knowledge Base 는 삭제**됐다(PRD v2.0 §4). Streamlit 이 `core/` 를
   직접 호출한다.
 - 모델 ID·리전·`max_tokens` 는 [config/models.yaml](config/models.yaml) 한 곳에서만 읽는다. 현재
   `generation.model_id: claude-opus-4-8`, `max_tokens: 16384`.
 - 카탈로그 공정은 **재생**(키 불필요, 실호출 0회)이다. 직접 입력의 실호출은 `HAZOP_ALLOW_LIVE=true` 와
   `ANTHROPIC_API_KEY` 가 모두 있을 때만 켜지고 세션 1회·일 5회로 제한된다(§8).
 
-### AWS 요건
+### LLM 호출 계층
 
 | 항목 | 상태 |
 |---|---|
-| Bedrock Converse 어댑터 (`core/llm/client.py::BedrockClient`) | 구현 완료 — tool use·JSON 스키마 강제·재시도·캐싱 마커·비용 로깅. **mock 으로만 검증** |
-| 대회 계정 Bedrock 권한 | **없음** — 2026-09-15 확인(대회 IAM Identity Center 포털에 AWS 계정 없음) |
-| 개발·실측 경로 | Anthropic Messages API (`provider: anthropic`) — 같은 `AbstractBedrockClient` 계약(REQ-12) |
-| Bedrock 전환 방법 | `config/models.yaml` 의 `provider: anthropic` → `bedrock` 한 줄 + `region`·Bedrock 모델 ID 기입 |
-| Bedrock 실호출 | **미실시(0회)**. 이 문서의 모든 지표는 Anthropic 경로 실측이다 |
-| Guardrails | 미설정 — Anthropic 경로에선 적용 불가, Bedrock 전환 시 설정 대상(§7) |
+| LLM 호출 계층 | 공급자 추상화(`AbstractBedrockClient`) — Converse 어댑터·Anthropic Messages 어댑터·mock 3종 같은 계약. 모든 실측은 Anthropic 경로(`claude-opus-4-8`), `config/models.yaml` `provider` 한 줄로 전환 |
 
 ## § 5 Kiro 개발 방식 · 추적 매트릭스
 
@@ -128,7 +119,7 @@ tools/build_gold.py      data/raw/*.xlsx → data/gold/*.json
   [self-verification](.kiro/specs/self-verification/requirements.md).
   **Kiro 크레딧 소진 후(9/11 export-formats 부터) spec 3종과 bedrock-client 의 REQ-12·T-15 는 Kiro 와 같은
   형식(EARS requirements + design + tasks)으로 손으로 작성·유지했다.**
-- 시험: `pytest -m "not live"` **251 passed, 3 deselected**(live 마커), `ruff check .` clean.
+- 시험: `pytest -m "not live"` **266 passed, 3 deselected**(live 마커), `ruff check .` clean.
 
 ### 추적 매트릭스
 
@@ -143,7 +134,7 @@ ID 는 각 spec 의 requirements.md·tasks.md 원문 그대로다(gold-dataset·
 | gold-dataset REQ-08 노드 홀드아웃 분할 | `tools/build_gold.py` (`NodeSplitter`) | T-09 | tune 8 / holdout 26 |
 | gold-dataset REQ-09 CLI·종료 코드 | `tools/build_gold.py::main` | T-10·T-11·T-13 | 지표: 통합 테스트 통과 |
 | bedrock-client REQ-01 설정 로드 | `core/llm/config.py` | T-02 | 지표: 통합 테스트 통과 |
-| bedrock-client REQ-02·03 Converse 호출·tool use | `core/llm/client.py` (`AbstractBedrockClient`·`BedrockClient`) | T-07·T-10 | mock 통과, Bedrock 실호출 미실시 |
+| bedrock-client REQ-02·03 Converse 호출·tool use | `core/llm/client.py` (`AbstractBedrockClient`·`BedrockClient`) | T-07·T-10 | mock 통과(Converse 어댑터) |
 | bedrock-client REQ-04 JSON 스키마 강제 | `core/llm/client.py` (`SchemaValidator`) | T-06·T-10 | 실측 스키마 통과 100%(재시도 포함) |
 | bedrock-client REQ-05 재시도 | `core/llm/client.py` (`bedrock_retry`) | T-05 | 지표: 통합 테스트 통과 |
 | bedrock-client REQ-06·07 로깅·비용 상한 경고 | `core/llm/client.py` | T-07 | 소프트 상한 $0.30 WARNING 발동(실측) |
@@ -164,7 +155,7 @@ ID 는 각 spec 의 requirements.md·tasks.md 원문 그대로다(gold-dataset·
 | export-formats R-01 입력 정규화 | `core/export/rows.py` | T-01 | 지표: 통합 테스트 통과 |
 | export-formats R-02~05 xlsx 5시트 | `core/export/xlsx.py` | T-02·T-03 | 헤더 12열·시트 5개·`=H*I` 수식 |
 | export-formats R-06 신뢰도 리포트 JSON | `core/export/report.py` | T-04 | 지표: 통합 테스트 통과 |
-| export-formats R-07 LOPA 초안 md | `core/export/lopa.py` | T-05 | 지표: 통합 테스트 통과 |
+| export-formats R-07 LOPA 초안 md(화면은 .docx) | `core/export/lopa.py` | T-05 | 지표: 통합 테스트 통과 |
 | export-formats R-08·09 재현성·완료 조건 | `tests/test_export.py`, `tests/golden/export_gold34.snapshot.json` | T-06 | 골든 스냅샷 일치 |
 | evaluation-harness R-01~06 하네스 | `eval/` — **미구현** | T-01~T-05 ☐ | 미측정 — 본선 |
 | evaluation-harness 완료 조건(축소 실행) | `tools/capture_replay.py`, `tools/_replay.py::recall_for_node` | T-06(축소) | holdout recall 0.154, n=1 |
@@ -197,14 +188,30 @@ f9c14c0 chore: PRD v1.2, CLAUDE.md, Kiro steering 4종, spec gold-dataset/bedroc
 
 | 노드 | split | 레코드 | judged/expected | 절단 | 지연(s) | 비용($) | recall(m/n) |
 |---|---|---|---|---|---|---|---|
-| N1 벙커링선 매니폴드 | tune | 61 | 77/77 | 0 | 511.5 | 0.787 | 0.875 (7/8) |
+| N1 벙커링선 매니폴드 | tune | 73 | 84/84 | 0 | 150.1 | 0.812 | 0.875 (7/8) |
 | N2 이송 호스 | holdout | 61 | 70/70 | 0 | 422.7 | 0.745 | 0.222 (2/9) |
 | N3 수급선 매니폴드 | holdout | 61 | 70/70 | 0 | 444.5 | 0.767 | 0.286 (2/7) |
 | N4 이송 운전 절차 | holdout | 97 | 100/100 | 0 | 553.5 | 1.008 | 0.000 (0/10) |
 | 홀드아웃 합계 | holdout | 219 | 240/240 | 0 | 1420.7 | 2.519 | 0.154 (4/26) |
 
 > 2026-09-29 `claude-opus-4-8`(Anthropic 경로), `max_tokens=16384`, **노드당 1회(n=1)**. 합계 행은 holdout
-> 3노드만(N1 은 tune 이라 섞지 않음). 지연 합계는 순차 실행 벽시계의 합.
+> 3노드만(N1 은 tune 이라 섞지 않음). **N1 은 M-01·병렬(`parallel_calls: 4`) 적용 후 재캡처(9/29 14:32 KST)**,
+> 홀드아웃 N2~N4 는 01:35~01:52 KST 순차 캡처 그대로다(재캡처하지 않음 — 아래 26건 대조표가 그 파일에 묶여 있다).
+> 지연 합계는 순차 실행 벽시계의 합.
+
+### M-01·병렬 적용 후 재캡처 (O-2 — P1·P2·N1, 각 n=1)
+
+| 노드 | 지연(s) 이전 → 이후 | `safeguards_before` 채움 이전 → 이후 | F=3 비율 이전 → 이후 | 비용($) 이전 → 이후 | 레코드 | 판정 셀 | recall |
+|---|---|---|---|---|---|---|---|
+| P2 염소 톤컨테이너 | 417.1 → **145.9** | 0/64 → **65/70** | 84% (54/64) → **64%** (45/70) | 0.752 → 0.812 | 64 → 70 | 77/77 → 77/77 | — |
+| P1 LPG 출하 | 440.8 → **138.1** | 35/69 → **60/72** | 87% (60/69) → 85% (61/72) | 0.793 → 0.778 | 69 → 72 | 84/84 → 84/84 | — |
+| N1 NH3 매니폴드 | 511.5 → **150.1** | 0/61 → 0/73 (입력 안전장치 없음 — 해당 없음) | 85% (52/61) → **93%** (68/73) | 0.787 → 0.812 | 61 → 73 | 77/77 → 84/84 | 0.875 → 0.875 (7/8) |
+
+> 이전 = 9/29 00:11~00:18 KST(P1·P2)·01:06 KST(N1) 순차 캡처, 이후 = 14:26~14:32 KST `parallel_calls: 4`. 세 노드 모두 절단 0·review 가이드워드 0·스키마 재시도 0, 호출 8회.
+> **지연**은 약 3배 줄었으나 NFR-06(60초)은 여전히 미달이다. **비용**은 줄지 않는다 — 병렬 첫 묶음 4호출은 캐시가 비어 있으면
+> 같은 시스템 블록을 동시에 써서 캐시 읽기를 못 한다(P2: 열거 포함 5호출 `cache_read=0`; P1·N1 은 P2 직후라 캐시가 살아 있어 0건).
+> **P1 기존 안전장치**는 입력 원문 3개로만 나온다(가스누출감지기 50·긴급차단밸브(ESV) 37·안전밸브 18회, 이전의 `ESV`·`gas detector` 0회, 버린 항목 0).
+> **F 분포**는 P2 만 풀렸다. P1 은 거의 그대로, N1 은 오히려 더 뭉쳤다(93%). F=1 은 세 노드 모두 0건. N1 파라미터 축은 11 → 12개(판정 셀 77 → 84).
 >
 > **매칭 규칙**: 가이드워드 정확 일치 **AND** 파라미터 정규화(공백·조사 제거) 일치. 이탈 텍스트 유사도
 > 조건 없음(`tools/_replay.py::recall_for_node`). evaluation-harness R-02 의 정본 규칙(유사도 τ 포함)이
@@ -219,13 +226,13 @@ f9c14c0 chore: PRD v1.2, CLAUDE.md, Kiro steering 4종, spec gold-dataset/bedroc
 | 이탈 precision | 미측정 — 본선 | — | — |
 | S 등급 MAE | 미측정 — 본선 | — | — |
 | F 등급 MAE | 미측정 — 본선 | — | — |
-| 근거 첨부율 | 미측정 — 본선 (근거 검색 미구현으로 280건 전부 `evidence=[]`) | — | — |
+| 근거 첨부율 | 미측정 — 본선 (근거 검색 미구현으로 292건 전부 `evidence=[]`) | — | — |
 | 근거 정확도 | 미측정 — 본선 | — | — |
-| 환각률(verifier `review` 비율) | 0% (0/280) — 규칙 verifier 한정, 수작업 확인 미실시 | 공개 | — |
-| 노드당 지연 | 422.7~553.5 s (N1 511.5 s). P90 미측정(n=1) | ≤ 60 s | ⚠️ 미달 |
-| 노드당 토큰 | 입력 ≈ 7,707 + 캐시 읽기 ≈ 15,849 / 출력 ≈ 30,639 (4노드 평균) | — | — |
-| 노드당 비용 | $0.827 평균 ($0.745~$1.008) | ≤ $0.30 | ⚠️ 미달 |
-| 출력 절단 | 0 / 36 호출 (16,384 기준) | 0 | ✅ |
+| 환각률(verifier `review` 비율) | 0% (0/292 — NH3 4노드, N1 재캡처 포함) — 규칙 verifier 한정, 수작업 확인 미실시 | 공개 | — |
+| 노드당 지연 | 병렬 4: 138.1~150.1 s (N1·P1·P2) · 순차: 422.7~553.5 s (N2~N4). P90 미측정(n=1) | ≤ 60 s | ⚠️ 미달 |
+| 노드당 토큰 | 입력 ≈ 7,707 + 캐시 읽기 ≈ 15,849 / 출력 ≈ 30,639 (9/29 1차 순차 캡처 4노드 평균 — 재캡처 미반영) | — | — |
+| 노드당 비용 | $0.833 평균 (NH3 4노드, $0.745~$1.008) | ≤ $0.30 | ⚠️ 미달 |
+| 출력 절단 | 0 / 35 호출 (NH3 4노드, 16,384 기준) · 재캡처 P1·P2 0/16 | 0 | ✅ |
 | 5회 반복 평균±표준편차 | 미측정 — 본선 (전 지표 n=1) | — | — |
 
 > 토큰은 로컬 실행 로그(`results/capture_*.log`, git 미추적)의 호출별 `tokens_in`·`cache_read`·`tokens_out`
@@ -257,6 +264,7 @@ f9c14c0 chore: PRD v1.2, CLAUDE.md, Kiro steering 4종, spec gold-dataset/bedroc
 | 9/28 run2 | 4,096 | 11 | 5 | 22/77 | 17 | 0.250 (2/8) |
 | 9/28 run3 | 4,096 | 12 | 6 | 12/84 | 8 | 0.125 (1/8) |
 | 9/29 live | 16,384 | 11 | 0 | 77/77 | 61 | 0.875 (7/8) |
+| 9/29 O-2 (병렬 4) | 16,384 | 12 | 0 | 84/84 | 73 | 0.875 (7/8) |
 
 4,096 에 닿은 11회는 전부 JSON 이 잘려 `content=None` → 그 가이드워드 행 전체 소실로 이어졌다. 9/28 평균
 recall 0.417 을 끌어내린 것은 모델 판정이 아니라 이 절단이다. 16,384 에서는 N1~N4 36호출 중 4,096 을
@@ -270,16 +278,16 @@ recall 0.417 을 끌어내린 것은 모델 판정이 아니라 이 절단이다
   기본 축과 겹친다. 홀드아웃 실패 22건은 전부 파라미터 축(어휘·개념 부재)이다.
 - **골드 어휘를 프롬프트에 넣지 않은 이유**: N2~N4 골드의 파라미터 어휘를 열거 프롬프트에 넣으면 홀드아웃
   누출이다. 원칙만 주는 프롬프트 수정 후 재측정도 "튜닝된 홀드아웃"이 되어 새 홀드아웃이 없다.
-- **지연**: 노드당 422.7~553.5초 — NFR-06(60초) 미달. 가이드워드 호출 7~10회를 순차 실행하기 때문이다.
+- **지연**: 병렬 4 재캡처 노드 138.1~150.1초, 순차 캡처인 홀드아웃 3노드 422.7~553.5초 — 어느 쪽도 NFR-06(60초) 미달이다.
+  병렬화 뒤에는 가장 긴 가이드워드 호출(출력 4천 토큰대, 약 60초)과 열거 호출이 바닥이다(§6 재캡처 표).
 - **비용**: 노드당 $0.745~$1.008 — NFR-04(≤ $0.30) 미달.
 - **n=1**: 모든 지표가 노드당 1회 실측이다. 분산을 모른다.
-- **Bedrock 미실측**: Bedrock 경로의 지연·비용·품질은 측정하지 않았다(§4).
 - **근거 인용 없음**: 280건 전부 `confidence=inferred`, `evidence=[]`. `grounded` 등급은 부여된 적이 없다.
 - **운영 한계**: `core/llm` 에 호출 timeout 이 없어 네트워크가 끊기면 한 호출이 19분 매달린 사례가 있다.
   실호출 일일 상한은 프로세스 메모리 카운터라 재시작하면 0 으로 돌아간다([docs/backlog.md](docs/backlog.md)).
 - **실무자 관점 평가** ([docs/실무자평가_20260929.md](docs/실무자평가_20260929.md) — 자격 있는 HAZOP 리더 검토 아님, 재생 291건 n=1):
-  - P-1 기존 안전장치(Before) 공란 — 판정 프롬프트가 입력 안전장치를 받지 못했다(염소 예시 0/64). **코드는 고쳤으나(M-01) 재캡처 전이라 화면·§6 수치는 전부 수정 전 프롬프트 결과**다(화면 출처 줄에 "M-01 이전 프롬프트" 표기).
-  - P-2 빈도 F 가 한 값으로 뭉친다 — F=3 이 85~95%, F=1 은 0건. 위험도 순위는 사실상 S 순위다(요약 줄에 F 분포 표시).
+  - P-1 기존 안전장치(Before) 공란 — 판정 프롬프트가 입력 안전장치를 받지 못했다(염소 예시 0/64). M-01 로 고친 뒤 재캡처(O-2): **염소 0/64 → 65/70, LPG 35/69 → 60/72**, 항목은 입력 원문으로만 나온다. 홀드아웃 N2~N4 재생은 재캡처하지 않아 여전히 수정 전 프롬프트 결과다(화면 출처 줄에 "M-01 이전 프롬프트" 표기).
+  - P-2 빈도 F 가 한 값으로 뭉친다 — 1차 F=3 이 85~95%, F=1 은 0건. 재캡처 뒤 **염소만 64% 로 풀렸고 LPG 85%·NH3 N1 93% 는 그대로거나 더 뭉쳤다**. F=1 은 여전히 0건. 위험도 순위는 사실상 S 순위다(요약 줄에 F 분포 표시).
   - P-3 S·F 등급 정의가 NH3 선박 벙커링 기준인데 육상 예시 공정에도 쓴다 — 예시·직접 입력 화면에 "참고용" 배지.
   - P-5 노드가 너무 크다(P1 탱크→펌프→로딩암을 한 노드) — 원인마다 방호계층이 달라 LOPA 로 넘길 수 없다. 노드 분할 지원 없음.
 
@@ -291,17 +299,14 @@ recall 0.417 을 끌어내린 것은 모델 판정이 아니라 이 절단이다
    반복 실측 평균±표준편차.
 3. **FR-05 tool use** — 물질 5종(`substance_lookup`)·고장률(`failure_rate`) 조회 tool.
 4. **FR-04′ 근거 인용** — KOSHA 지침 발췌에서만 `evidence[]` 생성, 근거 첨부율 측정, `grounded` 부여.
-5. **Bedrock 전환 실측** — `provider: bedrock` 으로 같은 캡처 재실행, 지연·비용·recall 비교.
-6. **Guardrails** — Bedrock 경로에서 PII 필터 설정.
 
 ### 예선에서 삭제·미착수한 항목 (PRD v2.0 §2)
 
 | 항목 | 상태 |
 |---|---|
 | FastAPI | 삭제 — Streamlit 이 `core/` 직접 호출 |
-| Bedrock Knowledge Base (S3·벡터스토어) | 삭제 |
+| Knowledge Base(RAG) | 삭제 |
 | LLM verifier 2차 호출 | 삭제 — 규칙 기반 1단만 |
-| Guardrails 설정 | 삭제 — 서술만 |
 | 임베딩 매칭 | 삭제 — 본선 |
 | App Runner / Lambda 배포 | 삭제 |
 | Dockerfile | 미작성 |
@@ -326,12 +331,13 @@ py -3.12 -m venv .venv
 - macOS/Linux 는 `python3.12 -m venv .venv` 와 `.venv/bin/python` 으로 바꾼다(리허설은 Windows 에서만 했다).
 - **화면 흐름**: ① **공정 선택**(`data/presets.json` 카탈로그 — NH3 벙커링 4노드 · LPG 저장탱크 출하 · 염소
   톤컨테이너 하역·기화) → 노드 버튼 → ② **LLM 에 보낸 입력**(NodeMeta) / **생성 과정**(열거된 파라미터·가이드워드·
-  판정 셀·API 호출 수·지연·비용·절단·review 건수) → ③ **HAZOP 워크시트**(신뢰도 배지·검증 플래그 열) + xlsx·LOPA md·
+  판정 셀·API 호출 수·지연·비용·절단·review 건수) → ③ **HAZOP 워크시트**(신뢰도 배지·검증 플래그 열) + xlsx·LOPA 초안(Word .docx)·
   신뢰도 리포트 JSON 다운로드 → 접힌 **평가 결과**(골드셋 대비 recall, NH3 4노드만).
 - **verifier 시연 토글**: 워크시트 위 체크박스(기본 꺼짐, 골드 재생엔 없음). 켜면 **표시용 사본**의 첫 행 권고에
   근거 없는 규격 번호 `KOSHA GUIDE P-999` 를 붙여 규칙 verifier 를 다시 돌린다 → 그 행이 🔴 review·검증 플래그 열에 표시.
   실측 재생은 플래그 0 이라 이 장치가 작동하는 모습을 보이려는 것이다. 다운로드 3개와 재생 파일은 삽입 없는 원본이다.
-- 카탈로그 공정은 **재생**이다: API 키 불필요, 실호출 0회. 화면에 캡처 일시(KST)·모델·비용을 적는다.
+- 카탈로그 공정은 **재생**이다: API 키 불필요, 실호출 0회. 화면에 캡처 일시(KST)·모델·비용을 적고, 병렬 캡처면
+  " · 병렬 4", M-01 이전 프롬프트로 만든 재생(홀드아웃 N2~N4)이면 그 사실을 같은 줄에 적는다.
   NH3 는 골드셋 34건과 recall 을 실측했고, 예시 공정 2개는 골드셋이 없다(정성 검토용).
 - **직접 입력 (빠른 실호출)**: 공정 선택 맨 아래. 공정을 **자연어 문장**으로 설명하고(입력 칸의 회색 예시 참고)
   가이드워드 1개(기본 More)를 골라 누르면 워크시트 한 행 묶음을 실제로 생성한다(약 1분). 호출은 3회 —
@@ -345,7 +351,7 @@ py -3.12 -m venv .venv
 - **오프라인 시험**: `make test`(= `ruff check .` + `HAZOP_USE_MOCK=true pytest -m "not live"`). 네트워크 0회.
   시험 의존성은 `pip install -e ".[dev]"` 로 설치한다. `make` 가 없으면 두 명령을 직접 실행한다.
 - `make demo` 는 `streamlit run apps/web/app.py` 와 같다.
-- 배포 URL: ⟨배포 URL — 사람이 채움⟩
+- 배포 URL: https://nwgll5tx3b2deizwqckhcc.streamlit.app — 재생 모드(키 불필요, 실호출 0회). 직접 입력 실호출은 배포 Secrets 의 키로 세션 1회·일 5회.
 
 ## § 9 비용
 
@@ -360,15 +366,18 @@ py -3.12 -m venv .venv
 | 9/29 | 재캡처 시도(크레딧 잔액 부족으로 거부) | 0 | 실측 |
 | 9/29 | N1 live 캡처 | 0.787 (+ 버려진 재시도 ≈ 0.13) | 실측 + **추정** |
 | 9/29 | holdout N2·N3·N4 캡처 | 2.519 | 실측 |
-| **합계** | | **실측 5.70 + 추정 ≈ 0.83 ≈ 6.5** | |
+| 9/29 | 예시 공정 P1·P2 캡처(지시문 J) | 1.545 | 실측(재생 파일 `cost_usd`) |
+| 9/29 | O-2 재캡처 P2·P1·N1 (병렬 4) | 2.402 | 실측 |
+| **합계** | | **실측 9.65 + 추정 ≈ 0.83 ≈ 10.5** | |
 
 > 실측은 생성기 로그의 호출별 `cost_usd` 합. 오프라인 시험과 데모 재생 모드는 실호출 0회라 비용 0.
+> 화면의 빠른 실호출(로컬·배포)은 이 표에 집계하지 않았다(건당 약 $0.03~0.15).
 
 ### 노드당 (9/29 live 4노드 평균, n=1)
 
 | 항목 | 값 |
 |---|---|
-| 비용 | $0.827 (범위 $0.745~$1.008) |
+| 비용 | $0.833 (범위 $0.745~$1.008 — N1 은 재캡처 값) |
 | 입력 토큰 | ≈ 7,707 (+ 캐시 읽기 ≈ 15,849) |
 | 출력 토큰 | ≈ 30,639 |
 | 호출 수 | 8~11 (열거 1 + 가이드워드 7~10) |
@@ -377,7 +386,6 @@ py -3.12 -m venv .venv
 
 | 항목 | 값 |
 |---|---|
-| AWS(대회 계정) Bedrock 사용액 | $0 — 권한 없음(§4) |
 | Kiro 크레딧 | 9/11 export-formats 부터 크레딧 없이 spec 손 작성(§5). 사용량 기록 없음 |
-| Anthropic API 크레딧 | 9/29 00:53 잔액 부족으로 거부 → 충전 후 재개. 잔량: ⟨사람이 채움⟩ |
-| 기타 개발 도구 비용 | ⟨사람이 채움⟩ |
+| Anthropic API 크레딧 | 9/29 00:53 잔액 부족으로 거부 → 충전 후 재개. 9/29 14:00 잔량 $14 |
+| 기타 개발 도구 비용 | Kiro: 대회 계정 크레딧 사용 · Claude Code: 개인 Claude 구독 안에서 사용, 별도 과금 없음 · Streamlit Community Cloud·GitHub: 무료 플랜 |
