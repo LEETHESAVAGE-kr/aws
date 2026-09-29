@@ -1,4 +1,4 @@
-"""오프라인 시험 — FR-10 H-04 (지시문 H (a)~(g)) + H-06 (지시문 I-1 (a)~(d)). 네트워크 0회."""
+"""오프라인 시험 — FR-10 H-04 (지시문 H (a)~(g)) + H-06 (지시문 I-1 (a)~(d)) + J-01·J-03·J-04 (지시문 J). 네트워크 0회."""
 
 from __future__ import annotations
 
@@ -115,18 +115,19 @@ def test_live_path_runs_end_to_end_on_mock() -> None:
     assert set(service.export_files(result)) == {"xlsx", "lopa", "report"}
 
 
-# (g) AppTest — 기동 → 프리셋 → 결과표, 예외 0건.
+# (g) AppTest — 기동하면 첫 공정의 N1 결과표가 바로 보이고, 노드 버튼으로 바뀐다. 예외 0건.
+# (J-04 에서 "프리셋을 눌러야 표가 뜬다" → "공정을 고르면 첫 노드 표가 뜬다" 로 바뀌었다.)
 def test_app_preset_click_shows_table(monkeypatch: pytest.MonkeyPatch) -> None:
     from streamlit.testing.v1 import AppTest
 
     monkeypatch.delenv("HAZOP_ALLOW_LIVE", raising=False)
     at = AppTest.from_file(str(_APP), default_timeout=30).run()
     assert not at.exception
-    assert len(at.dataframe) == 0
-    at.button[0].click().run()
-    assert not at.exception
     assert len(at.dataframe) == 1
     assert len(at.dataframe[0].value) == len(load_replay().records)
+    at.button(key="preset_N2").click().run()
+    assert not at.exception
+    assert len(at.dataframe[0].value) == len(load_replays()["N2"].records)
 
 
 # ── H-06 (지시문 I-1) ─────────────────────────────────────────────────────────
@@ -219,8 +220,8 @@ def test_committed_n1_replay_reads_recall_n1_key() -> None:
     assert load_replay().meta["recall"]["total"] == 8
 
 
-# (e) AppTest — 프리셋 4개를 차례로 눌러도 예외 0, 미캡처는 비활성.
-def test_app_switches_between_four_presets(monkeypatch: pytest.MonkeyPatch) -> None:
+# (e) AppTest — 공정 3개 × 노드 전환(J-04). 예외 0, 미캡처는 비활성, 평가 표는 접힌 expander 안.
+def test_app_switches_between_processes_and_nodes(monkeypatch: pytest.MonkeyPatch) -> None:
     from streamlit.testing.v1 import AppTest
 
     monkeypatch.delenv("HAZOP_ALLOW_LIVE", raising=False)
@@ -228,17 +229,23 @@ def test_app_switches_between_four_presets(monkeypatch: pytest.MonkeyPatch) -> N
     at = AppTest.from_file(str(_APP), default_timeout=30).run()
     assert not at.exception
     assert len(at.table) == 1  # 평가 요약 표
-    for node in service.PRESETS:
-        button = at.button(key=f"preset_{node}")
-        assert button.disabled is (node not in replays)
-        assert ("미캡처" in button.label) is (node not in replays)
-        if node not in replays:
-            continue
-        button.click().run()
+    assert at.expander[0].proto.expanded is False
+    assert at.selectbox[0].options[-1] == "직접 입력 (빠른 실호출)"
+    for process in service.CATALOG:
+        at.selectbox[0].select(process["name"]).run()
         assert not at.exception
-        assert len(at.dataframe) == 1
-        assert len(at.dataframe[0].value) == len(replays[node].records)
-        assert any(f"{node}(" in m.value for m in at.markdown)
+        for node in process["nodes"]:
+            nid = node["id"]
+            button = at.button(key=f"preset_{nid}")
+            assert button.disabled is (nid not in replays)
+            assert ("미캡처" in button.label) is (nid not in replays)
+            if nid not in replays:
+                continue
+            button.click().run()
+            assert not at.exception
+            assert len(at.dataframe) == 1
+            assert len(at.dataframe[0].value) == len(replays[nid].records)
+            assert any(nid in m.value for m in at.markdown)
 
 
 # ── self-verification T-03 ──────────────────────────────────────────────────

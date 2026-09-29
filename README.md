@@ -60,14 +60,17 @@ Too early·Too late·Wrong action 같은 절차형 가이드워드를 쓴다. �
   ([data/gold/split_node.json](data/gold/split_node.json)).
 - **재생 데이터**: [data/replay/](data/replay/) — `tools/capture_replay.py` 가 실호출 결과를 저장한 JSON.
   데모의 기본 화면과 §6 표가 이 파일을 읽는다.
+- **공정 카탈로그**: [data/presets.json](data/presets.json) — NH3 벙커링 4노드 + 예시 공정 2개(LPG 저장탱크 출하,
+  염소 톤컨테이너 하역·기화). **예시 공정 2개는 골드셋이 없다** — recall 을 재지 않는 정성 검토용이다.
 - **실데이터 금지**: KECC 고객사 실데이터·개인정보는 쓰지 않는다([CLAUDE.md](CLAUDE.md) 불변규칙 1).
 - 예선에서 KOSHA Guide 발췌·물질 DB·고장률 대장(`data/kb/`)은 만들지 않았다(§7).
 
 ## § 4 아키텍처
 
 ```text
-apps/web/app.py (Streamlit)         위젯 배선만
-  └─ apps/web/service.py            모드 판정·실호출 상한·결과표·평가 요약 표·내보내기
+apps/web/app.py (Streamlit)         위젯 배선만 (공정 선택 → 입력·생성 과정 → 워크시트 → 평가)
+  └─ apps/web/service.py            실호출 판정·상한·빠른 실호출·결과표·평가 요약 표·내보내기
+  └─ apps/web/catalog.py            data/presets.json 공정 카탈로그 로더 (NodeMeta·스키마 검증)
   └─ apps/web/replay.py             data/replay/*.json 로더 (노드별 live > gold)
         │
         ▼
@@ -91,8 +94,8 @@ tools/build_gold.py      data/raw/*.xlsx → data/gold/*.json
   직접 호출한다.
 - 모델 ID·리전·`max_tokens` 는 [config/models.yaml](config/models.yaml) 한 곳에서만 읽는다. 현재
   `generation.model_id: claude-opus-4-8`, `max_tokens: 16384`.
-- 데모는 기본 **재생 모드**(키 불필요, 실호출 0회). 실호출 모드는 `HAZOP_ALLOW_LIVE=true` 와
-  `ANTHROPIC_API_KEY` 가 모두 있을 때만 켜지고 세션 1회·일 5회로 제한된다.
+- 카탈로그 공정은 **재생**(키 불필요, 실호출 0회)이다. 직접 입력의 실호출은 `HAZOP_ALLOW_LIVE=true` 와
+  `ANTHROPIC_API_KEY` 가 모두 있을 때만 켜지고 세션 1회·일 5회로 제한된다(§8).
 
 ### AWS 요건
 
@@ -121,7 +124,7 @@ tools/build_gold.py      data/raw/*.xlsx → data/gold/*.json
   [self-verification](.kiro/specs/self-verification/requirements.md).
   **Kiro 크레딧 소진 후(9/11 export-formats 부터) spec 3종과 bedrock-client 의 REQ-12·T-15 는 Kiro 와 같은
   형식(EARS requirements + design + tasks)으로 손으로 작성·유지했다.**
-- 시험: `pytest -m "not live"` **195 passed, 3 deselected**(live 마커), `ruff check .` clean.
+- 시험: `pytest -m "not live"` **211 passed, 3 deselected**(live 마커), `ruff check .` clean.
 
 ### 추적 매트릭스
 
@@ -299,7 +302,8 @@ recall 0.417 을 끌어내린 것은 모델 판정이 아니라 이 절단이다
 ## § 8 실행 방법
 
 아래 설치 경로(`requirements.txt` → `streamlit run`)는 9/29 새 venv 리허설(로컬 clone, Windows)에서 검증했다:
-설치 1분 44초, 첫 화면 5.6초, 프리셋 클릭 → 표 3.3초.
+설치 1분 44초, 첫 화면 5.6초, 프리셋 클릭 → 표 3.3초(J-04 화면 재배치 이전 측정 — 재배치 후 로컬 측정은
+[docs/진행로그.md](docs/진행로그.md) 2026-09-29 J 항).
 
 ```bash
 git clone https://github.com/LEETHESAVAGE-kr/aws.git hazop-copilot
@@ -310,11 +314,18 @@ py -3.12 -m venv .venv
 ```
 
 - macOS/Linux 는 `python3.12 -m venv .venv` 와 `.venv/bin/python` 으로 바꾼다(리허설은 Windows 에서만 했다).
-- **재생 모드(기본)**: API 키 불필요, 실호출 0회. 좌측 프리셋 N1~N4 → 결과표(신뢰도 배지·검증 플래그 열)
-  → xlsx·LOPA md·신뢰도 리포트 JSON 다운로드.
-- **실호출 모드**: [.env.example](.env.example) 을 참고해 `HAZOP_ALLOW_LIVE=true` 와 `ANTHROPIC_API_KEY` 를
-  환경변수로 준다(Streamlit Cloud 는 `st.secrets`). 노드 1건 약 7~9분·약 $0.75~1.01. 앱은 `.env` 파일을
-  자동으로 읽지 않는다 — 실행 셸의 환경변수로 넣는다.
+- **화면 흐름**: ① **공정 선택**(`data/presets.json` 카탈로그 — NH3 벙커링 4노드 · LPG 저장탱크 출하 · 염소
+  톤컨테이너 하역·기화) → 노드 버튼 → ② **LLM 에 보낸 입력**(NodeMeta) / **생성 과정**(열거된 파라미터·가이드워드·
+  판정 셀·API 호출 수·지연·비용·절단·review 건수) → ③ **HAZOP 워크시트**(신뢰도 배지·검증 플래그 열) + xlsx·LOPA md·
+  신뢰도 리포트 JSON 다운로드 → 접힌 **평가 결과**(골드셋 대비 recall, NH3 4노드만).
+- 카탈로그 공정은 **재생**이다: API 키 불필요, 실호출 0회. 화면에 캡처 일시(KST)·모델·비용을 적는다.
+  NH3 는 골드셋 34건과 recall 을 실측했고, 예시 공정 2개는 골드셋이 없다(정성 검토용).
+- **직접 입력 (빠른 실호출)**: 공정 선택 맨 아래. NodeMeta JSON 을 고치고 가이드워드 1개(기본 More)를 골라
+  누르면 파라미터 열거 1회 + 가이드워드 판정 1회, **API 호출 2회**로 워크시트 한 행 묶음을 실제로 생성한다(약 1분).
+  [.env.example](.env.example) 을 참고해 `HAZOP_ALLOW_LIVE=true` 와 `ANTHROPIC_API_KEY` 를 환경변수로 준다
+  (Streamlit Cloud 는 App settings → Secrets). 앱은 `.env` 파일을 자동으로 읽지 않는다 — 실행 셸의 환경변수로 넣는다.
+- **`HAZOP_LIVE_SCOPE`**: `quick`(기본 — 빠른 실호출만) | `full`(직접 입력 아래에 **노드 전체 실호출** 버튼 추가,
+  가이드워드 7~10종, 노드 1건 약 7~9분·약 $0.75~1.01). 모르는 값은 `quick`. 상한(세션 1회·일 5회)은 두 버튼 공용이다.
 - **오프라인 시험**: `make test`(= `ruff check .` + `HAZOP_USE_MOCK=true pytest -m "not live"`). 네트워크 0회.
   시험 의존성은 `pip install -e ".[dev]"` 로 설치한다. `make` 가 없으면 두 명령을 직접 실행한다.
 - `make demo` 는 `streamlit run apps/web/app.py` 와 같다.
