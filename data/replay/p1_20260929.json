@@ -1,0 +1,3245 @@
+{
+  "schema_version": 1,
+  "source": "live",
+  "captured_at": "2026-09-29T00:11:34+00:00",
+  "node": "P1",
+  "split": "none",
+  "provider": "anthropic",
+  "model_id": "claude-opus-4-8",
+  "node_meta": {
+    "node": "P1",
+    "substance": "프로판",
+    "phase": "liquid",
+    "P_kPag": 700.0,
+    "T_degC": 25.0,
+    "equipment": [
+      "LPG 저장탱크",
+      "출하 펌프",
+      "로딩암"
+    ],
+    "safeguards": [
+      "안전밸브",
+      "긴급차단밸브(ESV)",
+      "가스누출감지기"
+    ]
+  },
+  "latency_s": 440.8,
+  "cost_usd": 0.7933,
+  "expected_cells": 84,
+  "judged_cells": 84,
+  "review_guidewords": [],
+  "recall": null,
+  "parameters": [
+    "유량",
+    "압력",
+    "온도",
+    "준위",
+    "조성",
+    "상 변화",
+    "누출·격납",
+    "로딩암 연결·분리",
+    "기동정지",
+    "유틸리티",
+    "유지보수",
+    "정전기·점화원"
+  ],
+  "max_tokens": 16384,
+  "raw_calls": [
+    {
+      "tokens_out": 997,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3882,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3857,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 4543,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3606,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3975,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3947,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 4139,
+      "stop_reason": "tool_use"
+    }
+  ],
+  "truncated_calls": 0,
+  "records": [
+    {
+      "id": "p1-001",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "No",
+      "parameter": "유량",
+      "deviation": "출하 펌프 가동에도 로딩암을 통한 프로판 액상 이송이 전혀 일어나지 않음(무유량)",
+      "causes": [
+        "출하 펌프 흡입/토출 밸브 닫힘 또는 오정렬",
+        "펌프 정지·구동전원 상실",
+        "저준위로 인한 펌프 흡입 상실 및 공회전",
+        "로딩암 라인 막힘 또는 ESV 닫힘"
+      ],
+      "consequences": [
+        "출하 중단으로 운전 지연",
+        "펌프 데드헤드 운전 시 케이싱 내 액 온도상승·증기압 상승으로 밀봉부 과열 및 프로판 누출",
+        "무유량 지속 시 캐비테이션으로 펌프 손상 후 밀봉 파손·인화성 가스 누출"
+      ],
+      "safeguards_before": [
+        "가스누출감지기",
+        "ESV"
+      ],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "펌프 최소유량 순환라인 또는 저유량 보호 트립 설치",
+        "펌프 흡입 저준위 연동 정지 로직 확인",
+        "출하 전 밸브 정렬 체크리스트 운영"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-002",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "No",
+      "parameter": "압력",
+      "deviation": "출하 배관/펌프 계통에 이송압이 전혀 형성되지 않아 프로판이 밀리지 않음(무압)",
+      "causes": [
+        "펌프 정지 또는 구동동력 상실",
+        "흡입측 완전 폐쇄로 압력 형성 불가",
+        "배관 대구경 파단으로 압력 유지 실패"
+      ],
+      "consequences": [
+        "출하 불가",
+        "배관 파단이 원인일 경우 700 kPag 가압 액상 프로판 대량 방출·증기운 형성으로 화재·폭발"
+      ],
+      "safeguards_before": [
+        "가스누출감지기",
+        "ESV"
+      ],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "저압 검출 시 ESV 자동 폐쇄 연동 확인",
+        "라인 무결성 정기 점검 및 압력 트렌드 감시"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-003",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "No",
+      "parameter": "준위",
+      "deviation": "저장탱크 액위가 전혀 없음(공탱크 상태에서 출하 시도)",
+      "causes": [
+        "재고 소진 후 준위 확인 없이 펌프 기동",
+        "액위계 고장으로 잔량 오판"
+      ],
+      "consequences": [
+        "펌프 흡입 상실·공회전으로 캐비테이션 및 밀봉 손상",
+        "밀봉 손상 시 프로판 누출로 화재·폭발 가능"
+      ],
+      "safeguards_before": [
+        "가스누출감지기",
+        "ESV"
+      ],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "저준위 연동 펌프 정지 인터록 설치",
+        "독립 액위계 이중화 및 정기 교정"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-004",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "No",
+      "parameter": "누출·격납",
+      "deviation": "격납이 전혀 유지되지 않음 — 플랜지·씰·밀봉부 파손으로 프로판이 대기로 방출",
+      "causes": [
+        "펌프 기계씰 파손",
+        "플랜지 가스켓 열화·체결 불량",
+        "로딩암 씰 손상 및 배관 부식"
+      ],
+      "consequences": [
+        "인화성 프로판 증기운 형성",
+        "점화원 접촉 시 화재·증기운 폭발로 선내외 인명 피해",
+        "저비점 액상 방출로 저온 동상 위험"
+      ],
+      "safeguards_before": [
+        "가스누출감지기",
+        "ESV"
+      ],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "가스감지기 경보 시 ESV 자동 폐쇄 및 펌프 트립 연동 확인",
+        "밀봉부·플랜지 정기 누출 점검 및 이중 밀봉 펌프 적용 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-005",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "No",
+      "parameter": "로딩암 연결·분리",
+      "deviation": "로딩암과 탱크로리 연결이 전혀 이뤄지지 않은 상태에서 출하 개시(미연결 이송)",
+      "causes": [
+        "연결 확인 절차 누락",
+        "커플러 체결 미완료로 개방 이송"
+      ],
+      "consequences": [
+        "로딩암 말단에서 프로판 대량 분출",
+        "증기운 형성 및 화재·폭발"
+      ],
+      "safeguards_before": [
+        "가스누출감지기",
+        "ESV"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "연결 확인 인터록(커플러 체결 신호 없으면 펌프·밸브 개방 차단) 설치",
+        "출하 개시 전 이중 확인 절차 및 태그아웃 운영"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-006",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "No",
+      "parameter": "기동정지",
+      "deviation": "기동 시퀀스가 전혀 수행되지 않아 밸브 정렬·퍼지 없이 출하 계통이 방치됨",
+      "causes": [
+        "기동 절차 생략 또는 제어 로직 실패",
+        "운전원 조작 누락"
+      ],
+      "consequences": [
+        "미정렬 밸브로 인한 역송·과압 경로 형성",
+        "잔류가스 상태에서 오조작 시 누출·화재"
+      ],
+      "safeguards_before": [
+        "가스누출감지기",
+        "ESV"
+      ],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "기동 시퀀스 인터록 및 밸브 정렬 확인 로직 구축",
+        "표준 기동/정지 절차서 준수 점검"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-007",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "No",
+      "parameter": "유틸리티",
+      "deviation": "구동전원 등 유틸리티가 전혀 공급되지 않아 펌프·ESV·감지기 기능이 동시 상실됨",
+      "causes": [
+        "정전 또는 주전원 상실",
+        "제어전원·계장공기 공급 실패"
+      ],
+      "consequences": [
+        "가스누출감지기·ESV 기능 상실로 누출 시 방호 불가",
+        "펌프 급정지에 따른 서지 및 밸브 미작동 상태 방치로 안전기능 무력화"
+      ],
+      "safeguards_before": [
+        "가스누출감지기",
+        "ESV"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "ESV를 페일세이프(무전원 시 폐쇄) 사양으로 확인",
+        "안전계장·감지기용 무정전 전원(UPS) 및 비상전원 공급"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-008",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "No",
+      "parameter": "유지보수",
+      "deviation": "정비 대상 설비의 격리·퍼지가 전혀 수행되지 않은 채 배관 개방",
+      "causes": [
+        "격리 밸브 미폐쇄 및 태그아웃 누락",
+        "퍼지·불활성화 절차 생략"
+      ],
+      "consequences": [
+        "잔류 가압 프로판 방출로 작업자 노출·동상",
+        "인화성 가스 분출 후 점화 시 화재·폭발"
+      ],
+      "safeguards_before": [
+        "가스누출감지기",
+        "ESV"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "정비 전 이중 격리·퍼지·잔압 배출 확인 절차(LOTO) 강제",
+        "작업허가서 및 가스농도 측정 후 개방 원칙 적용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-009",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "No",
+      "parameter": "정전기·점화원",
+      "deviation": "출하 계통 접지·본딩이 전혀 이뤄지지 않아 정전기 방전 방지 기능이 부재함",
+      "causes": [
+        "로딩암·탱크로리 본딩 케이블 미연결",
+        "접지 단선 또는 접점 부식"
+      ],
+      "consequences": [
+        "프로판 이송 중 정전기 축적 후 스파크 방전",
+        "누출된 인화성 증기 착화로 화재·폭발"
+      ],
+      "safeguards_before": [
+        "가스누출감지기",
+        "ESV"
+      ],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "본딩·접지 연속성 확인 인터록(미연결 시 출하 개시 차단) 설치",
+        "접지 저항 정기 측정 및 방폭 구역 점화원 관리 강화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-010",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "More",
+      "parameter": "유량",
+      "deviation": "출하 펌프·로딩암을 통한 프로판 액상 이송량이 설계치를 초과하여 과다 유량으로 흐름",
+      "causes": [
+        "출하 펌프 토출 밸브 과개방 또는 유량제어 실패",
+        "탱크로리 측 흡입 요구 과다",
+        "펌프 병렬 운전 오류로 유량 급증"
+      ],
+      "consequences": [
+        "로딩암·배관 내 유속 과다로 서지압 발생 및 플랜지·씰 손상",
+        "탱크로리 과충전으로 이어지는 액상 프로판 누출·화재·폭발",
+        "펌프 과부하 및 씰 파손을 통한 가연성 증기 방출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "출하 라인 유량 상한 경보 및 유량제어밸브 설치",
+        "탱크로리 정량 계량·자동 정지 인터록 도입",
+        "펌프 토출측 서지 완화 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-011",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "More",
+      "parameter": "압력",
+      "deviation": "저장탱크·이송배관 내 압력이 700 kPag 설계 운전압을 초과하여 과압 상태로 상승",
+      "causes": [
+        "외기·화재 노출로 인한 증기압 상승",
+        "밸브 폐쇄 상태에서 펌프 가동으로 인한 데드헤드 가압",
+        "과충전 후 액상 열팽창"
+      ],
+      "consequences": [
+        "탱크·배관 파열로 대량 프로판 방출 및 증기운 폭발",
+        "플랜지·씰 누출로 화재 발생",
+        "릴리프 용량 초과 시 격납 상실"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "안전밸브 용량 적정성 재검토",
+        "고압 경보 및 펌프 정지 인터록 설치",
+        "탱크 살수·차열 설비 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-012",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "More",
+      "parameter": "온도",
+      "deviation": "저장탱크·배관 내 프로판 온도가 25°C 운전 조건을 초과하여 상승",
+      "causes": [
+        "외기 고온·직사광선 노출",
+        "인접 화재로 인한 복사열",
+        "탱크 차열·차광 미흡"
+      ],
+      "consequences": [
+        "증기압 상승으로 탱크 과압 및 안전밸브 작동·방출",
+        "지속 승온 시 BLEVE 위험",
+        "액상 열팽창으로 배관 과압"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "탱크 표면 온도 감시 및 고온 경보",
+        "살수·차열 설비 설치",
+        "탱크 도장·차광 상태 정기 점검"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-013",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "More",
+      "parameter": "준위",
+      "deviation": "저장탱크 액위가 설계 최대 허용 준위를 초과하여 과충전 상태에 도달",
+      "causes": [
+        "입고 시 액위 측정 오류 또는 경보 미작동",
+        "충전 자동 정지 실패",
+        "이송 중 액위 감시 소홀"
+      ],
+      "consequences": [
+        "증기공간 부족으로 열팽창 시 급격한 액압 상승 및 탱크 과압",
+        "안전밸브를 통한 액상 프로판 방출",
+        "릴리프 용량 초과로 탱크 손상·누출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "고고준위(HHLL) 독립 경보 및 충전 정지 인터록 설치",
+        "액위계 이중화",
+        "충전 절차서 정비"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-014",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "More",
+      "parameter": "조성",
+      "deviation": "저장·이송 프로판 중 에탄 등 경질분 함량이 설계치보다 증가하여 증기압이 상승",
+      "causes": [
+        "입고 원료 규격 이탈로 경질분 과다 혼입",
+        "조성 관리·분석 미흡"
+      ],
+      "consequences": [
+        "동일 온도에서 증기압 상승으로 탱크 과압 위험 증가",
+        "안전밸브 조기 작동 및 방출 빈도 증가",
+        "출하 품질 저하"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "입고 시 조성·증기압 분석 강화",
+        "규격 이탈 원료 수입 차단 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-015",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "More",
+      "parameter": "상 변화",
+      "deviation": "펌프 흡입부·로딩암에서 액상 프로판의 기화(증기 발생) 비율이 증가",
+      "causes": [
+        "온도 상승 또는 흡입측 압력 저하로 인한 플래싱 증가",
+        "흡입 배관 히트 픽업 과다"
+      ],
+      "consequences": [
+        "펌프 캐비테이션으로 씰 손상 및 프로판 누출",
+        "로딩암 내 증기 혼입으로 계량 오류 및 이송 불안정",
+        "국부 압력 변동으로 배관 진동·손상"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "펌프 흡입측 충분한 NPSH 확보 및 흡입압 감시",
+        "흡입 배관 차열 검토",
+        "흡입 저압 경보 및 펌프 보호 인터록"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-016",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "More",
+      "parameter": "누출·격납",
+      "deviation": "밀봉·플랜지·씰에서 프로판 누출량이 미소 수준을 초과하여 증가",
+      "causes": [
+        "과압·진동으로 인한 플랜지·씰 열화 가속",
+        "펌프 씰 마모 진행",
+        "가스켓 체결 불량"
+      ],
+      "consequences": [
+        "가연성 증기운 형성 및 점화 시 화재·폭발",
+        "확산 시 선내·인접 구역 인명 피해",
+        "지속 누출로 대량 방출"
+      ],
+      "safeguards_before": [
+        "가스누출감지기",
+        "ESV"
+      ],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "감지기 배치 밀도 및 커버리지 재검토",
+        "ESV 자동 연동 및 정기 작동시험",
+        "플랜지·씰 예방정비 주기 강화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-017",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "More",
+      "parameter": "로딩암 연결·분리",
+      "deviation": "로딩암 결합·이탈 시 잔류압 방출량이 정상 수준을 초과하여 증가",
+      "causes": [
+        "분리 전 배관 감압·퍼지 불충분",
+        "긴급분리커플러 조기 동작",
+        "체결 불량 상태에서 가압"
+      ],
+      "consequences": [
+        "잔류 액상·증기 프로판 대량 분출로 인한 화재·폭발",
+        "분리 작업자 동상·화상",
+        "증기운 확산"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "분리 전 감압·퍼지 확인 인터록 도입",
+        "긴급분리커플러 정비 및 방출량 최소화 설계 검토",
+        "연결·분리 절차서 정비"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-018",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "More",
+      "parameter": "기동정지",
+      "deviation": "출하 펌프 기동 시 배관계 과도 서지압이 설계 허용치를 초과하여 증가",
+      "causes": [
+        "밸브 정렬 오류 상태에서 펌프 급기동",
+        "체크밸브 급폐로 인한 수격",
+        "기동 순서 미준수"
+      ],
+      "consequences": [
+        "서지압으로 배관·플랜지 손상 및 프로판 누출",
+        "펌프·씰 손상",
+        "누출 시 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "기동 전 밸브 정렬 확인 및 소프트스타트 도입",
+        "서지 완화 장치 검토",
+        "기동정지 절차서 및 인터록 정비"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-019",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "More",
+      "parameter": "유지보수",
+      "deviation": "정비 목적 배관 개방 시 격리·퍼지 불량으로 잔류 프로판 방출량이 증가",
+      "causes": [
+        "격리 밸브 누설 또는 이중차단 미시행",
+        "퍼지·불활성화 불충분",
+        "개방 전 압력 확인 소홀"
+      ],
+      "consequences": [
+        "개방부에서 잔류 프로판 분출로 작업자 화상·화재",
+        "증기 축적 후 점화 시 폭발",
+        "선내 확산"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "작업허가제 및 이중차단·맹판 격리 절차 강화",
+        "개방 전 퍼지·잔압 확인 체크리스트 적용",
+        "휴대용 가스검지 병행"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-020",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "More",
+      "parameter": "정전기·점화원",
+      "deviation": "출하 중 고유속 이송·분출로 정전기 축적량이 증가하여 방전 에너지가 상승",
+      "causes": [
+        "과다 유속 이송으로 대전 증가",
+        "본딩·접지 불량",
+        "비도전성 요소 존재"
+      ],
+      "consequences": [
+        "방전 스파크가 누출 증기에 점화되어 화재·폭발",
+        "인명 피해 및 설비 손상"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "로딩암·탱크로리 본딩·접지 연속성 확인 인터록",
+        "이송 유속 상한 관리",
+        "점화원 관리구역 지정 및 정기 점검"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-021",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Less",
+      "parameter": "유량",
+      "deviation": "출하 펌프·로딩암을 통한 프로판 액상 이송량이 정상 대비 감소하여 출하가 지연되거나 목표량에 미달함",
+      "causes": [
+        "펌프 흡입측 필터·스트레이너 막힘",
+        "밸브 부분 개방 또는 오정렬",
+        "펌프 성능 저하(임펠러 마모)",
+        "저준위로 인한 펌프 흡입 부족",
+        "로딩암 내부 유로 협착"
+      ],
+      "consequences": [
+        "출하 시간 지연 및 운영 손실",
+        "펌프 저유량 운전에 따른 과열·베어링 손상",
+        "흡입 부족 시 캐비테이션으로 씰 손상 및 프로판 미량 누출",
+        "장시간 저유량 재순환으로 배관 온도 상승"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 3,
+      "risk_score": 6,
+      "recommendations": [
+        "펌프 흐름·차압 지시계 및 저유량 경보 설치",
+        "스트레이너 정기 점검 및 차압 감시",
+        "펌프 최소유량 재순환 라인 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-022",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Less",
+      "parameter": "압력",
+      "deviation": "탱크·배관 내 압력이 정상 700 kPag 대비 저하되어 액상 프로판이 유지되지 못하고 증발이 촉진됨",
+      "causes": [
+        "탱크 온도 저하 또는 급격한 출하로 인한 압력 강하",
+        "펌프 흡입측 압력 저하",
+        "질소 패드 등 가압 유지 실패",
+        "대량 인출에 따른 자연 냉각(자기냉각)"
+      ],
+      "consequences": [
+        "펌프 흡입부 압력이 증기압 이하로 떨어져 캐비테이션 발생",
+        "펌프 씰 손상 및 프로판 누출 경로 형성",
+        "액 이송 불능으로 출하 중단",
+        "배관 내 기화로 유량 불안정"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "펌프 흡입측 저압 경보 및 인터록 설치",
+        "적정 흡입 순양정(NPSH) 확보 설계 확인",
+        "탱크 압력 감시 및 인출률 제한"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-023",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Less",
+      "parameter": "온도",
+      "deviation": "저온 환경 또는 급격한 감압 이송으로 탱크·배관 온도가 정상 25°C보다 낮아져 증기압이 저하됨",
+      "causes": [
+        "겨울철 외기 저온 노출",
+        "대량·급속 인출에 따른 자기냉각",
+        "감압에 의한 줄-톰슨 냉각"
+      ],
+      "consequences": [
+        "증기압 저하로 펌프 흡입 압력 부족 및 캐비테이션",
+        "출하 능력 저하",
+        "수분 함유 시 국부 동결로 밸브·계장 오작동"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 3,
+      "risk_score": 6,
+      "recommendations": [
+        "인출률 제한으로 급냉 방지",
+        "저온 지시·경보 설치 검토",
+        "탱크 압력·온도 상관 감시"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-024",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Less",
+      "parameter": "준위",
+      "deviation": "저장탱크 액위가 정상 하한 이하로 낮아져 펌프 흡입 확보가 불가능한 상태",
+      "causes": [
+        "과다 출하 또는 보충 지연",
+        "액위계 오지시로 실제 준위 미인지",
+        "재고 관리 오류"
+      ],
+      "consequences": [
+        "펌프 공회전 및 건식 운전으로 씰·베어링 손상",
+        "손상부에서 프로판 누출·화재 위험",
+        "증기 흡입으로 이송 불능 및 출하 중단"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "저준위 경보 및 펌프 저준위 트립 인터록 설치",
+        "독립 액위계 이중화",
+        "펌프 건식운전 보호장치 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-025",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Less",
+      "parameter": "조성",
+      "deviation": "프로판 순도가 낮아지고 중질분 증가 또는 경질분 부족으로 증기압이 정상보다 낮아짐",
+      "causes": [
+        "원료 규격 미달 프로판 수령",
+        "저장 중 경질분(에탄 등) 우선 증발 및 벤팅",
+        "탱크 간 이송 시 혼입"
+      ],
+      "consequences": [
+        "증기압 저하로 펌프 흡입 확보 곤란",
+        "출하 제품 규격 미달",
+        "탱크 압력 유지 실패로 이송 불안정"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "수령 시 조성·증기압 분석",
+        "정기 샘플링으로 순도 관리",
+        "벤팅 관리로 경질분 과도 손실 방지"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-026",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Less",
+      "parameter": "상 변화",
+      "deviation": "액상 프로판의 비율이 감소하고 흡입·이송 경로에서 기상 발생이 증가하여 액 이송이 불완전해짐",
+      "causes": [
+        "흡입측 압력이 증기압 이하로 저하",
+        "급속 인출로 자기냉각 후 국부 기화",
+        "저준위·저압 조건에서 흡입부 플래싱"
+      ],
+      "consequences": [
+        "펌프 캐비테이션으로 임펠러·씰 손상",
+        "씰 손상부에서 프로판 누출·화재 위험",
+        "로딩암에 기상 유입으로 계량 오차 및 이송 불량"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "충분한 흡입 순양정 확보 및 흡입압 감시",
+        "펌프 캐비테이션 감시(진동·소음)",
+        "인출률 제한 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-027",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Less",
+      "parameter": "누출·격납",
+      "deviation": "밀봉·플랜지·씰에서 정상보다 낮은 유속·미세한 관통으로 프로판이 소량 지속 누출되어 격납이 부분적으로 상실됨",
+      "causes": [
+        "펌프 기계씰 미세 마모",
+        "플랜지 볼트 이완 또는 개스킷 열화",
+        "로딩암 스위블 씰 저하"
+      ],
+      "consequences": [
+        "인화성 증기운 형성 및 점화 시 화재·폭발",
+        "저농도 지속 누출로 감지 지연 시 확산 확대",
+        "인접 설비·인원 노출"
+      ],
+      "safeguards_before": [
+        "가스누출감지기",
+        "ESV(긴급차단밸브)"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "감지기 배치 밀도 및 저농도 경보 임계 검토",
+        "씰·플랜지 정기 누설 점검 강화",
+        "ESV 연동 작동 시험 주기화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-028",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Less",
+      "parameter": "로딩암 연결·분리",
+      "deviation": "로딩암 결합이 완전히 체결되지 못한 불완전 연결 상태에서 이송이 개시됨",
+      "causes": [
+        "커플러 체결 미흡 또는 마모",
+        "연결부 정렬 불량",
+        "체결 확인 절차 누락"
+      ],
+      "consequences": [
+        "연결부에서 프로판 누출 및 증기운 형성",
+        "이송 중 분리로 대량 방출·화재",
+        "정전기·점화원과 결합 시 폭발"
+      ],
+      "safeguards_before": [
+        "ESV(긴급차단밸브)",
+        "가스누출감지기"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "연결 완결 확인 인터록(이송 개시 조건) 설치",
+        "브레이크어웨이 커플링 적용 검토",
+        "연결 절차 체크리스트 및 교육"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-029",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Less",
+      "parameter": "기동정지",
+      "deviation": "펌프 기동 시 배관에 충분한 액이 채워지지 않은 저충전 상태에서 과도 운전이 발생함",
+      "causes": [
+        "기동 전 흡입 라인 프라이밍 부족",
+        "밸브 정렬 오류로 흡입 부족",
+        "잔류 가스 미배출"
+      ],
+      "consequences": [
+        "펌프 건식·저유량 기동으로 씰 손상 및 누출",
+        "캐비테이션 및 진동으로 배관 피로",
+        "출하 개시 지연"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 3,
+      "risk_score": 6,
+      "recommendations": [
+        "기동 전 밸브 정렬·프라이밍 확인 절차",
+        "저유량·저흡입압 기동 인터록",
+        "순차 기동 로직 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-030",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Less",
+      "parameter": "유틸리티",
+      "deviation": "구동전원·계장전원의 전압 저하 등 유틸리티 공급이 정상보다 부족하여 펌프·안전장치 기능이 저하됨",
+      "causes": [
+        "전원 전압 강하 또는 부분 정전",
+        "계장용 전원 용량 부족",
+        "배전 계통 이상"
+      ],
+      "consequences": [
+        "펌프 저속 운전으로 유량 부족·과열",
+        "감지기·ESV 구동 동력 부족으로 안전기능 저하",
+        "출하 중단 및 과도상태 위험"
+      ],
+      "safeguards_before": [
+        "ESV(긴급차단밸브)",
+        "가스누출감지기"
+      ],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "안전장치용 무정전·비상 전원 확보",
+        "저전압 감지 및 안전측 트립(페일세이프) 설계",
+        "유틸리티 상태 감시 경보"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-031",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Less",
+      "parameter": "유지보수",
+      "deviation": "정비 전 격리·퍼지가 불충분하여 배관·기기 내 잔류 프로판이 완전히 제거되지 못한 상태",
+      "causes": [
+        "격리 밸브 누설 또는 이중차단 미적용",
+        "퍼지 시간·유량 부족",
+        "작업 허가 절차 미준수"
+      ],
+      "consequences": [
+        "기기 개방 시 잔류 프로판 방출 및 인화",
+        "작업자 화상·화재",
+        "증기운 확산 및 점화 시 폭발"
+      ],
+      "safeguards_before": [
+        "가스누출감지기"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이중차단·블리드 격리 및 퍼지 완료 확인 절차",
+        "개방 전 가스농도 측정 의무화",
+        "작업 허가서·LOTO 시행"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-032",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Reverse",
+      "parameter": "유량",
+      "deviation": "출하 펌프 정지·정전 시 로딩암·배관에서 프로판이 탱크로리 측에서 저장탱크 방향으로 역류함",
+      "causes": [
+        "출하 펌프 트립·정전으로 토출압 상실",
+        "탱크로리와 저장탱크 간 액두 차 또는 압력 역전",
+        "체크밸브 미설치·고착으로 역류 차단 실패"
+      ],
+      "consequences": [
+        "역류로 펌프 임펠러 역회전 및 축 손상",
+        "탱크로리 측 가압 프로판이 계통으로 역이송되어 배관·씰 과압 및 누출",
+        "누출 프로판 증기운 형성으로 화재·폭발"
+      ],
+      "safeguards_before": [
+        "가스누출감지기",
+        "ESV"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "펌프 토출측 체크밸브 설치 및 주기 정비",
+        "펌프 트립 시 ESV 자동 폐쇄 인터록 구성"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-033",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Reverse",
+      "parameter": "압력",
+      "deviation": "정상 출하방향과 반대의 압력 구배가 형성되어 탱크로리 측 고압이 저장계통으로 밀려들어옴",
+      "causes": [
+        "탱크로리 잔압이 저장탱크보다 높은 상태에서 펌프 정지",
+        "역류 차단설비 부재로 압력 역전 전파"
+      ],
+      "consequences": [
+        "저압 설계 구간 배관·플랜지 과압으로 손상·누출",
+        "누출 프로판 인화·폭발"
+      ],
+      "safeguards_before": [
+        "gas detector",
+        "ESV"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "역류·역압 방지용 체크밸브 및 릴리프 경로 검토",
+        "출하 완료 전 압력 평형 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-034",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Reverse",
+      "parameter": "준위",
+      "deviation": "역류된 프로판이 저장탱크로 되돌아 유입되어 예상과 반대로 액위가 상승함",
+      "causes": [
+        "펌프 정지 후 탱크로리 측 프로판이 저장탱크로 역류",
+        "체크밸브 고착으로 역방향 유입 지속"
+      ],
+      "consequences": [
+        "출하 중 탱크 액위 재상승으로 과충전 접근",
+        "릴리프 용량 초과 및 열팽창 과압 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "고액위 경보·차단 인터록 확인",
+        "역류 방지 체크밸브 설치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-035",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Reverse",
+      "parameter": "상 변화",
+      "deviation": "역류로 펌프가 역회전하며 흡입측 감압이 발생, 흡입 배관에서 액상 프로판이 기화(플래싱)함",
+      "causes": [
+        "펌프 정지·역류에 따른 흡입측 순간 감압",
+        "역방향 유동으로 흡입 유동 불안정"
+      ],
+      "consequences": [
+        "펌프 캐비테이션·베이퍼록으로 재기동 실패 및 기계 손상",
+        "기화 프로판 축적으로 국부 과압"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "펌프 흡입측 NPSH 및 역류 방지 검토",
+        "베이퍼 리턴/벤트 경로 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-036",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Reverse",
+      "parameter": "누출·격납",
+      "deviation": "역류·역압에 의해 저압 설계 씰·플랜지가 설계방향과 반대로 하중을 받아 격납이 깨지고 프로판이 누출됨",
+      "causes": [
+        "역류로 인한 예상치 못한 방향의 압력 부하",
+        "체크밸브 부재로 역압 전파",
+        "씰·플랜지 방향성 설계 한계"
+      ],
+      "consequences": [
+        "인화성 프로판 대기 방출로 증기운 형성",
+        "점화 시 화재·폭발, 인명 피해"
+      ],
+      "safeguards_before": [
+        "가스누출감지기",
+        "ESV"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "역류 방지장치 설치로 역압 부하 제거",
+        "감지기 경보 연동 ESV 자동 차단 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-037",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Reverse",
+      "parameter": "로딩암 연결·분리",
+      "deviation": "출하 종료 없이 역류가 진행되는 중 로딩암 분리가 시도되어 역방향 잔류 유동 상태에서 결합이 해제됨",
+      "causes": [
+        "역류 발생을 인지하지 못한 상태에서 분리 절차 진행",
+        "역류 차단 미완료로 계통에 잔류 압력·유동 존재"
+      ],
+      "consequences": [
+        "분리 순간 역방향 프로판 분출·비산",
+        "작업자 동상·화재·폭발 노출"
+      ],
+      "safeguards_before": [
+        "ESV"
+      ],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "분리 전 무유동·무역류 확인 인터록",
+        "브레이크어웨이 커플링 및 잔류압 방출 절차 적용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-038",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Reverse",
+      "parameter": "기동정지",
+      "deviation": "펌프 정지 과도상태에서 밸브 정렬 오류로 역류가 발생하고 재기동 시 역회전 상태에서 기동됨",
+      "causes": [
+        "정지 시 체크밸브·차단밸브 미정렬",
+        "역류로 펌프 역회전 중 재기동 시도"
+      ],
+      "consequences": [
+        "펌프 역회전 기동으로 기계 손상 및 씰 파손",
+        "씰 파손부 프로판 누출·화재"
+      ],
+      "safeguards_before": [
+        "ESV"
+      ],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "정지·기동 시 밸브 정렬 체크리스트 및 인터록",
+        "역회전 방지 래칫/체크밸브 적용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-039",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Reverse",
+      "parameter": "유틸리티",
+      "deviation": "구동전원 상실로 펌프가 정지하면서 역류가 발생하나 동시에 ESV 구동 동력도 상실되어 역류 차단에 실패함",
+      "causes": [
+        "정전으로 펌프·ESV·감지기 동력 동시 상실",
+        "페일세이프 미구성으로 차단 실패"
+      ],
+      "consequences": [
+        "역류 차단 불능으로 프로판 계통 역이송·누출",
+        "안전장치 무력화 상태에서 화재·폭발"
+      ],
+      "safeguards_before": [
+        "ESV",
+        "가스누출감지기"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "ESV 페일세이프 클로즈 및 축압/비상전원 확보",
+        "정전 시 자동 안전정지 로직 검증"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-040",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Reverse",
+      "parameter": "유지보수",
+      "deviation": "정비 후 체크밸브를 역방향으로 오설치하거나 방향 표식 오인으로 정상 운전 시 역류가 상시화됨",
+      "causes": [
+        "체크밸브·방향성 부품 역방향 설치",
+        "정비 후 유동방향 확인 누락"
+      ],
+      "consequences": [
+        "출하 시 지속적 역류로 펌프·계통 손상",
+        "역류 지점 누출로 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "방향성 부품 설치 방향 표식 및 정비 후 검증 절차",
+        "재가동 전 유동방향·기밀 시험"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-041",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Other than",
+      "parameter": "조성",
+      "deviation": "프로판이 아닌 다른 물질(경질분·수분·이종 LPG 등)이 저장·출하 계통에 존재하여 설계 규격과 다른 조성의 물질이 이송된다.",
+      "causes": [
+        "탱크로리 오배차 또는 상류 공급원 혼입으로 규격 외 물질이 탱크에 유입",
+        "에탄 등 경질분 과다 혼입으로 증기압이 설계 초과",
+        "수분 혼입으로 계통 내 유리수 형성",
+        "잔류 세정수·불활성가스 등 이종 물질이 배관에 잔존한 상태로 출하 개시"
+      ],
+      "consequences": [
+        "경질분 과다로 증기압 상승 시 탱크·배관 과압 및 릴리프 빈발, 최악의 경우 격납 파괴로 대량 인화성 가스 방출·화재·폭발",
+        "수분 동결로 밸브·계장 폐색 및 감압부 결빙, 부식에 의한 씰·배관 건전성 저하로 누출 경로 형성",
+        "규격 외 물질 출하로 수요처 설비 손상 및 재작업 중 프로판 방출 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "탱크 입고 및 출하 전 조성·증기압 분석과 규격 확인 절차 수립",
+        "수분 함량 관리 및 계통 건조 절차 확립",
+        "탱크로리 배차·물질 식별 이중확인(오배차 방지) 절차 도입",
+        "규격 외 검출 시 출하 인터록 또는 격리 조치 마련"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-042",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Other than",
+      "parameter": "상 변화",
+      "deviation": "설계상 액상으로 이송되어야 할 프로판이 펌프 흡입부·로딩암에서 기상(2상)으로 존재하여 설계 의도와 다른 상 상태가 된다.",
+      "causes": [
+        "저장탱크 저준위·저압 또는 흡입측 압력손실로 펌프 흡입부에서 플래시 기화",
+        "외기·화재 노출에 의한 온도 상승으로 액이 부분 기화",
+        "감압·잔류압 방출 시 로딩암 내부에서 액이 기화"
+      ],
+      "consequences": [
+        "펌프 흡입 기화(캐비테이션)로 펌프 손상 및 씰 파손, 이로 인한 인화성 프로판 누출·화재",
+        "로딩암 내 2상 유동으로 서지·진동 발생, 연결부 건전성 저하 및 누출",
+        "기상 프로판 방출 시 증기운 형성으로 폭발·화재 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "펌프 흡입측 최소압력(NPSH) 확보 및 저압·저준위 시 펌프 정지 인터록",
+        "출하 전 계통 프라이밍 및 액상 확인 절차",
+        "로딩암 온도·압력 상승 감시 및 차폐"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-043",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Other than",
+      "parameter": "누출·격납",
+      "deviation": "격납되어야 할 프로판이 밀봉·플랜지·씰을 벗어나 대기 등 설계 의도와 다른 공간에 존재한다.",
+      "causes": [
+        "플랜지·씰·펌프 밀봉부 열화 또는 체결 불량",
+        "부식·피로에 의한 배관 미세 균열",
+        "로딩암·밸브 밀봉 결함으로 인한 상시 미세 누출"
+      ],
+      "consequences": [
+        "인화성 프로판 대기 방출로 증기운 형성, 점화 시 화재·폭발로 다수 사상 및 인접 설비 피해",
+        "저온 액 분사로 인한 동상·설비 취성 손상",
+        "가스 축적으로 밀폐부 산소결핍·질식 위험"
+      ],
+      "safeguards_before": [
+        "가스누출감지기",
+        "ESV"
+      ],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "플랜지·씰 정기 누설점검 및 밀봉부 예방정비 프로그램",
+        "감지기 경보 연동 ESV 자동 격리 로직 검증",
+        "누출 대비 살수·방류벽 등 완화설비 점검"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-044",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Other than",
+      "parameter": "로딩암 연결·분리",
+      "deviation": "로딩암이 잔류 프로판이 격납된 상태로 분리되어, 개방된 연결부에 설계 의도와 다르게 인화성 물질이 방출되는 상태가 된다.",
+      "causes": [
+        "분리 전 배관 잔류 프로판 미배출·미퍼지",
+        "긴급분리커플링 오작동 또는 조기 분리",
+        "밸브 정렬 오류로 잔류압이 남은 채 분리"
+      ],
+      "consequences": [
+        "잔류 액상·기상 프로판이 대기 분출되어 증기운 형성, 점화 시 화재·폭발",
+        "저온 액 분사로 작업자 동상 및 부상",
+        "분리부 손상으로 지속 누출 및 격납 상실"
+      ],
+      "safeguards_before": [
+        "ESV"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "분리 전 배관 배출·퍼지 및 압력 확인 인터록",
+        "긴급분리커플링(브레이크어웨이) 설치·점검",
+        "연결·분리 표준작업절차 및 밸브 정렬 확인 체크리스트"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-045",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Other than",
+      "parameter": "유지보수",
+      "deviation": "정비를 위해 격리·퍼지되어야 할 계통에 잔류 프로판이 남아, 개방된 배관·기기에 설계 의도와 다르게 인화성 물질이 존재한다.",
+      "causes": [
+        "안전밸브·ESV·펌프 정비 시 격리 불충분 또는 이중차단 미확보",
+        "배관 개방 전 퍼지·배출 미실시",
+        "격리밸브 누설로 잔류 프로판이 작업부로 유입"
+      ],
+      "consequences": [
+        "배관 개방 중 잔류 프로판 방출로 화재·폭발 및 작업자 사상",
+        "저온 액 접촉에 의한 동상·부상",
+        "밀폐공간 작업 시 가스 축적으로 질식·중독"
+      ],
+      "safeguards_before": [
+        "ESV"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "정비 전 격리·잠금표찰(LOTO)·퍼지·가스측정 절차 의무화",
+        "이중차단·블리드 구성 확인 및 격리 유효성 점검",
+        "작업허가서 및 잔류가스 확인 체크리스트 운영"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-046",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Other than",
+      "parameter": "정전기·점화원",
+      "deviation": "출하 계통에 설계 의도와 다른 점화 에너지(정전기 축적·외부 점화원)가 존재하여 인화성 분위기와 공존한다.",
+      "causes": [
+        "프로판 유동·분출 시 정전기 축적 및 미접지·접지 불량",
+        "본딩 미실시 상태로 로딩암 연결·분리",
+        "출하 구역 내 비방폭 기기·화기 등 외부 점화원 유입"
+      ],
+      "consequences": [
+        "누출된 인화성 프로판 증기와 점화원 공존 시 즉시 착화·폭발로 다수 사상 및 인접 설비 피해",
+        "정전기 방전에 의한 화재 개시"
+      ],
+      "safeguards_before": [
+        "가스누출감지기"
+      ],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "탱크·배관·로딩암·탱크로리 접지 및 본딩 확인 절차",
+        "출하 구역 방폭 등급 준수 및 화기작업 통제",
+        "정전기 완화(유속 제한, 도전성 확보) 조치 및 점화원 관리 점검"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-047",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Part of",
+      "parameter": "유량",
+      "deviation": "출하 유량이 설계 이송량의 일부만 도달하여 로딩암을 통한 프로판 이송이 부분적으로만 이루어짐",
+      "causes": [
+        "출하 펌프 흡입측 부분 막힘 또는 스트레이너 부분 폐색",
+        "밸브 부분 개방(정렬 오류)",
+        "펌프 임펠러 마모로 토출 저하",
+        "로딩암 배관 내 부분 기화로 유효 유량 감소"
+      ],
+      "consequences": [
+        "출하 시간 지연 및 탱크로리 계량 부정확",
+        "펌프 부분 재순환에 따른 국부 과열·씰 손상으로 프로판 누출·화재 가능"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "펌프 토출 유량계 및 최소유량 재순환 라인 설치",
+        "스트레이너 차압 감시 및 정기 점검",
+        "출하 전 밸브 정렬 체크리스트 운영"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-048",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Part of",
+      "parameter": "압력",
+      "deviation": "이송 계통 일부 구간만 설계압에 도달하고 하류는 압력이 부족하여 부분 가압 상태가 됨",
+      "causes": [
+        "부분 개방 밸브에 의한 교축",
+        "라인 내 잔류가스 포켓으로 압력 전달 저하",
+        "펌프 토출압 부분 상실"
+      ],
+      "consequences": [
+        "국부 저압 구간에서 액상 프로판 기화·캐비테이션 발생",
+        "펌프 손상 및 씰 열화로 누출·화재 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "주요 구간 압력계 설치 및 압력 프로파일 감시",
+        "정상 가압 확인 후 출하 개시 인터록"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-049",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Part of",
+      "parameter": "준위",
+      "deviation": "탱크 목표 충전 준위의 일부까지만 채워져 출하·수급 계획상 필요한 재고가 부분적으로만 확보됨",
+      "causes": [
+        "수급 라인 부분 유량 저하",
+        "레벨 지시 오차로 조기 정지",
+        "다중 탱크 중 일부만 충전"
+      ],
+      "consequences": [
+        "저준위 상태에서 출하 지속 시 펌프 흡입 부족·공회전으로 캐비테이션·씰 손상",
+        "국부 과열에 의한 프로판 누출 가능"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 3,
+      "risk_score": 6,
+      "recommendations": [
+        "펌프 저준위 인터록 정지 설치",
+        "레벨 지시 이중화 및 정기 교정"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-050",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Part of",
+      "parameter": "조성",
+      "deviation": "프로판 조성 중 일부 규격 성분만 만족하고 경질분·수분 등 일부 성분이 규격에서 벗어난 부분적 조성 이탈",
+      "causes": [
+        "수급 원료 내 에탄 등 경질분 혼입",
+        "탱크·배관 내 수분 잔류",
+        "이전 물질 잔류 혼입"
+      ],
+      "consequences": [
+        "경질분 혼입으로 증기압 상승 및 탱크 과압 경향",
+        "수분에 의한 저온 동결·밸브 폐색 및 부식으로 누출 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "수급 시 조성·수분 분석 및 규격 관리",
+        "탱크 드레인 정기 배수 및 건조 관리"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-051",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Part of",
+      "parameter": "상 변화",
+      "deviation": "이송 유체가 액상과 기상이 혼재하는 이상(二相) 상태로, 액상 이송 의도의 일부만 달성됨",
+      "causes": [
+        "펌프 흡입측 압력 저하로 부분 기화(플래싱)",
+        "온도 상승에 의한 부분 증발",
+        "로딩암 내 저압 구간 발생"
+      ],
+      "consequences": [
+        "이상 흐름에 의한 펌프 캐비테이션·진동으로 씰·베어링 손상",
+        "프로판 누출 및 화재·폭발 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "펌프 흡입 NPSH 여유 확보 및 흡입압 감시",
+        "이송 라인 보온·차폐로 기화 억제"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-052",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Part of",
+      "parameter": "누출·격납",
+      "deviation": "격납 경계가 완전 건전성의 일부만 유지되어 씰·플랜지에서 미소 누출이 지속되는 부분적 격납 상실",
+      "causes": [
+        "펌프 기계씰 부분 열화",
+        "플랜지 볼트 부분 이완",
+        "가스켓 부분 손상"
+      ],
+      "consequences": [
+        "프로판 미소 지속 누출로 인화성 증기운 형성",
+        "점화 시 화재·폭발로 인명·설비 피해"
+      ],
+      "safeguards_before": [
+        "가스누출감지기",
+        "ESV"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "감지기 경보 설정값 검증 및 정기 점검",
+        "플랜지·씰 누설 정기 순회 점검",
+        "ESV 자동 차단 로직 연동 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-053",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Part of",
+      "parameter": "로딩암 연결·분리",
+      "deviation": "로딩암 결합이 완전 체결되지 못하고 부분 결합 상태로 출하가 진행되는 불완전 연결",
+      "causes": [
+        "커플러 부분 체결 후 잠금 미완료",
+        "연결부 이물·정렬 불량",
+        "체결 확인 절차 누락"
+      ],
+      "consequences": [
+        "부분 결합부에서 프로판 분출·누출",
+        "인화성 증기운 형성 및 점화 시 화재·폭발"
+      ],
+      "safeguards_before": [
+        "ESV",
+        "가스누출감지기"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "완전 체결 확인 인터록(체결 확인 전 이송 불가)",
+        "연결부 정렬·잠금 이중 확인 절차"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-054",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Part of",
+      "parameter": "기동정지",
+      "deviation": "기동·정지 시퀀스 중 일부 단계만 완료되어(일부 밸브 미정렬 등) 계통이 부분 정렬 상태에서 운전됨",
+      "causes": [
+        "밸브 정렬 시퀀스 일부 누락",
+        "정지 시 잔류가스 미배출",
+        "인터록 일부 미충족 상태에서 강제 기동"
+      ],
+      "consequences": [
+        "부분 폐로 구간에 서지·과압 형성으로 배관 손상·누출",
+        "프로판 방출 및 화재 위험"
+      ],
+      "safeguards_before": [
+        "ESV"
+      ],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "기동·정지 인터록 완비 및 시퀀스 순서 강제화",
+        "밸브 정렬 상태 확인 후 기동 허용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-055",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Part of",
+      "parameter": "유틸리티",
+      "deviation": "구동전원·구동동력 등 유틸리티가 일부만 공급되어 펌프·ESV·감지기 중 일부 기능만 유지됨",
+      "causes": [
+        "부분 정전 또는 전원 계통 일부 상실",
+        "ESV 구동 동력(공압·전원) 부분 저하",
+        "감지기 전원 회로 일부 고장"
+      ],
+      "consequences": [
+        "안전장치 일부 기능 상실로 누출 감지·차단 실패",
+        "이상 상황 미검출 시 화재·폭발 확대"
+      ],
+      "safeguards_before": [
+        "ESV",
+        "가스누출감지기"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "안전장치용 비상전원·백업 동력 확보",
+        "ESV 페일세이프(동력 상실 시 차단) 설계 확인",
+        "유틸리티 상실 경보 설치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-056",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Part of",
+      "parameter": "유지보수",
+      "deviation": "정비 전 격리·퍼지가 일부만 수행되어 계통에 잔류 프로판이 남은 상태에서 개방 작업이 진행됨",
+      "causes": [
+        "격리 밸브 일부만 차단",
+        "퍼지 시간·매체 부족으로 부분 퍼지",
+        "블라인드 미설치"
+      ],
+      "consequences": [
+        "배관 개방 시 잔류 프로판 방출로 작업자 노출·화재",
+        "점화 시 폭발로 인명 피해"
+      ],
+      "safeguards_before": [
+        "ESV"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이중 격리 및 블라인드 설치 절차 강제화",
+        "퍼지 완료 가스농도 측정 확인 후 개방 허용",
+        "작업허가서 운영"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-057",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "Part of",
+      "parameter": "정전기·점화원",
+      "deviation": "본딩·접지 등 점화원 관리 조치가 일부만 적용되어 정전기 축적 경로가 부분적으로 방치됨",
+      "causes": [
+        "로딩암·탱크로리 본딩 일부 미연결",
+        "접지 저항 불량",
+        "이송 유속 관리 미흡으로 정전기 발생 증가"
+      ],
+      "consequences": [
+        "정전기 방전이 누출 프로판 증기와 만나 점화",
+        "화재·폭발로 인명·설비 피해"
+      ],
+      "safeguards_before": [
+        "가스누출감지기"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "본딩·접지 연결 확인 인터록(미연결 시 이송 불가)",
+        "접지 저항 정기 측정",
+        "이송 유속 제한 절차"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-058",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "As well as",
+      "parameter": "유량",
+      "deviation": "출하 유량에 더해 의도치 않은 부가 유체(예: 이전 배출물, 세정수, 다른 라인 잔류물)가 로딩암 경로에 함께 유입됨",
+      "causes": [
+        "공용 배관·매니폴드에서 밸브 오정렬로 인접 라인 유체가 합류",
+        "출하 전 라인 퍼지·배수 미완료로 잔류물이 프로판과 함께 이송"
+      ],
+      "consequences": [
+        "탱크로리 수령 프로판에 이물·수분 혼입으로 규격 미달 및 하류 동결·부식",
+        "예상외 유체 혼합 시 이상 반응 또는 계량 오차로 과충전 유발"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "출하 전 라인 배수·퍼지 절차 및 확인 체크리스트 운영",
+        "공용 매니폴드 밸브 정렬 인터록 또는 이중 확인 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-059",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "As well as",
+      "parameter": "압력",
+      "deviation": "정상 이송압에 더해 외부 열입력·펌프 서지 등 부가적 압력원이 중첩되어 국부 과압 발생",
+      "causes": [
+        "폐쇄 구간에 갇힌 액상 프로판이 외기 가열로 열팽창하여 부가 압력 발생",
+        "펌프 기동 서지가 정상 운전압에 중첩"
+      ],
+      "consequences": [
+        "배관·플랜지·씰의 설계압 초과로 누출 또는 파열, 인화성 가스 방출·화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "폐쇄 가능 구간에 열팽창 릴리프 밸브 설치",
+        "펌프 기동 시 서지 완화 절차 및 압력 트렌드 감시"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-060",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "As well as",
+      "parameter": "온도",
+      "deviation": "정상 25°C 운전에 더해 외부 화재·복사열 등 부가 열원이 중첩되어 저장·이송 온도가 상승",
+      "causes": [
+        "인접 화재 노출로 탱크·배관에 부가 열입력",
+        "직사일광·주변 고온 설비의 복사열이 정상 운전에 더해짐"
+      ],
+      "consequences": [
+        "증기압 상승에 따른 과압, 릴리프 용량 초과 및 최악의 경우 BLEVE로 대량 방출"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 2,
+      "risk_score": 10,
+      "recommendations": [
+        "탱크 살수·냉각 설비 설치 및 화재 시 자동 작동 연계",
+        "복사열 차폐 및 온도 상한 경보 설정"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-061",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "As well as",
+      "parameter": "준위",
+      "deviation": "정상 액위에 더해 계획되지 않은 추가 수령·반송으로 액위가 상승하여 과충전 영역에 도달",
+      "causes": [
+        "출하 취소분의 탱크 재반송이 정상 재고에 더해짐",
+        "동시 수령 라인 병행으로 예상보다 액위 추가 상승"
+      ],
+      "consequences": [
+        "증기공간 부족으로 열팽창 시 릴리프 용량 초과 과압, 액상 릴리프 방출 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "고고액위 경보 및 자동 차단 인터록 확인",
+        "재반송·동시 수령 작업 시 재고 관리 절차 강화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-062",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "As well as",
+      "parameter": "조성",
+      "deviation": "프로판에 더해 경질분(에탄 등)·수분 등 부가 성분이 함께 존재하여 규격 조성을 벗어남",
+      "causes": [
+        "공급 원료에 에탄 등 경질분이 추가 혼입",
+        "습기·수분이 탱크·배관 내로 부가 유입"
+      ],
+      "consequences": [
+        "증기압 상승으로 과압 위험, 수분 함유 시 저온부 동결·밸브 폐색 및 부식으로 격납 저하"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "입고 프로판 조성·수분 분석 주기적 수행",
+        "탈수·건조 관리 및 수분 침입 경로 점검"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-063",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "As well as",
+      "parameter": "상 변화",
+      "deviation": "이송 액상에 더해 기상(증기) 성분이 함께 존재하여 2상 흐름이 발생",
+      "causes": [
+        "펌프 흡입부 압력저하로 액상 일부가 부가적으로 기화",
+        "고온·감압 구간에서 증기 생성이 액상 흐름에 중첩"
+      ],
+      "consequences": [
+        "펌프 캐비테이션·손상, 계량 오차 및 로딩암에서 기상 방출로 출하 불량 및 누출 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "펌프 흡입 NPSH 확보 및 흡입압 감시",
+        "로딩암 기상 회수·베이퍼 리턴 라인 점검"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-064",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "As well as",
+      "parameter": "누출·격납",
+      "deviation": "정상 격납 상태에 더해 밀봉·플랜지·씰에서 부가적 미소 누출이 동시에 발생하여 인화성 가스가 방출됨",
+      "causes": [
+        "펌프 씰·플랜지 개스킷 열화로 부가 누출 발생",
+        "진동·온도변동으로 다수 접합부에서 동시 미소 누출"
+      ],
+      "consequences": [
+        "프로판 증기운 형성 및 점화 시 화재·폭발로 인명·설비 피해"
+      ],
+      "safeguards_before": [
+        "가스누출감지기",
+        "ESV(긴급차단밸브)"
+      ],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "플랜지·씰 정기 누출 점검(LDAR) 및 감지기 커버리지 검증",
+        "ESV 정기 작동시험"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-065",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "As well as",
+      "parameter": "로딩암 연결·분리",
+      "deviation": "정상 결합에 더해 부가적 오연결·다중 연결 상태에서 출하가 진행됨",
+      "causes": [
+        "규격 상이한 탱크로리 커플러에 강제 연결로 부가 접점 발생",
+        "이전 작업 잔류 연결이 해제되지 않은 채 신규 연결 병행"
+      ],
+      "consequences": [
+        "연결부 밀봉 불량으로 프로판 방출, 분리 시 잔류압 방출로 화재·폭발 및 인명 피해"
+      ],
+      "safeguards_before": [
+        "ESV(긴급차단밸브)"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "연결 규격 표준화 및 오연결 방지 커플러 적용",
+        "출하 전 연결 상태·잔류 연결 확인 절차 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-066",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "As well as",
+      "parameter": "기동정지",
+      "deviation": "기동·정지 과도상태에 더해 잔류가스·서지 등 부가 과도현상이 중첩되어 발생",
+      "causes": [
+        "정지 후 라인 잔류 프로san이 다음 기동 시 부가 방출",
+        "펌프 급기동으로 서지가 과도상태에 중첩"
+      ],
+      "consequences": [
+        "과도 압력 상승으로 배관·씰 손상 및 잔류가스 방출로 국부 인화성 분위기 형성"
+      ],
+      "safeguards_before": [
+        "ESV(긴급차단밸브)"
+      ],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "기동·정지 순차 제어(밸브 정렬·서서히 승압) 절차 수립",
+        "정지 시 라인 잔류압 관리 및 배출 절차 마련"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-067",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "As well as",
+      "parameter": "유틸리티",
+      "deviation": "정상 유틸리티 공급에 더해 예비/비상 전원이 동시 개입하여 안전장치 상태가 예기치 않게 변동",
+      "causes": [
+        "주전원 상실 시 비상전원 절체 과정에서 ESV·감지기 전원이 과도적으로 중첩·순단"
+      ],
+      "consequences": [
+        "ESV·감지기 순간 기능 저하로 누출 감지·차단 지연, 인화성 가스 방출 대응 실패"
+      ],
+      "safeguards_before": [
+        "ESV(긴급차단밸브)",
+        "가스누출감지기"
+      ],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "안전장치 무정전 전원(UPS) 및 페일세이프 설계 확인",
+        "전원 절체 시험 및 안전장치 가용성 검증"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-068",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "As well as",
+      "parameter": "유지보수",
+      "deviation": "정비 대상 설비에 더해 격리되지 않은 인접 계통이 함께 개방되어 잔류 프로판이 방출됨",
+      "causes": [
+        "격리·퍼지 범위 설정 오류로 정비 구간 외 배관까지 개방",
+        "안전밸브·ESV 탈거 중 상류 잔류압이 부가적으로 존재"
+      ],
+      "consequences": [
+        "잔류 프로판 방출로 작업자 노출·질식 및 점화 시 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "작업 전 격리·퍼지·가스프리 확인 및 잠금표지(LOTO) 시행",
+        "정비 구간 경계 명확화 및 잔류압 배출 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p1-069",
+      "node": "P1",
+      "node_meta": {
+        "node": "P1",
+        "substance": "프로판",
+        "phase": "liquid",
+        "P_kPag": 700.0,
+        "T_degC": 25.0,
+        "equipment": [
+          "LPG 저장탱크",
+          "출하 펌프",
+          "로딩암"
+        ],
+        "safeguards": [
+          "안전밸브",
+          "긴급차단밸브(ESV)",
+          "가스누출감지기"
+        ]
+      },
+      "guideword": "As well as",
+      "parameter": "정전기·점화원",
+      "deviation": "출하 작업에 더해 정전기 축적·비인가 점화원이 부가적으로 존재하여 인화성 분위기와 공존함",
+      "causes": [
+        "로딩암·탱크로리 접지·본딩 불량으로 정전기 축적",
+        "작업구역 내 비방폭 기기·차량 등 부가 점화원 반입"
+      ],
+      "consequences": [
+        "누출 증기와 점화원 공존 시 착화되어 화재·폭발로 인명·설비 대규모 피해"
+      ],
+      "safeguards_before": [
+        "가스누출감지기"
+      ],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "출하 전 접지·본딩 연결 확인 인터록 적용",
+        "방폭 구역 관리 및 점화원 반입 통제 절차 시행"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    }
+  ]
+}
