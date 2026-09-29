@@ -107,7 +107,13 @@ st.html(
     .hz-empty { border: 1px dashed var(--line); border-radius: 16px; padding: 40px 24px; text-align: center;
         color: var(--muted); background: var(--card); }
     .hz-empty strong { display: block; font-size: 17px; color: var(--text); margin-bottom: 8px; }
-    [class*="st-key-intro"] p { font-size: 14px; line-height: 1.65; }
+    .hz-info { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px;
+        height: 100%; }
+    .hz-info-t { font-size: 13px; font-weight: 600; color: var(--accent-text); margin: 0 0 6px; }
+    .hz-info-h { font-size: 17px; font-weight: 700; color: var(--text); margin: 0 0 14px; line-height: 1.4; }
+    .hz-info-r { display: flex; gap: 12px; padding: 9px 0; border-top: 1px solid var(--line); font-size: 14px; }
+    .hz-info-r span { flex: none; width: 36px; color: var(--muted); }
+    .hz-info-r b { font-weight: 500; color: var(--text); }
     .st-key-mode, .st-key-mode .stRadio, .st-key-mode [data-testid="stRadio"] > div { width: 100% !important; }
     .st-key-mode [role="radiogroup"] { gap: 0; background: var(--card2); border-radius: 12px; padding: 4px;
         display: flex; flex-wrap: nowrap; width: 100%; }
@@ -217,7 +223,9 @@ with tool.container(border=True, key="tool"):
         clicked_full = False
         if service.live_scope() == "full":
             clicked_full = st.button(
-                f"노드 전체 초안 생성 ({service.LIVE_NOTE})", disabled=blocked, width="stretch"
+                f"노드 전체 초안 생성 ({service.LIVE_NOTE.replace('~', '–')})",
+                disabled=blocked,
+                width="stretch",
             )
         left_runs = max(service.SESSION_LIMIT - state.live_runs, 0)
         if live_reason:
@@ -388,35 +396,52 @@ else:
 
 # ── HAZOP 이 처음이라면 ──────────────────────────────────────────────────────
 st.html('<div id="intro" class="hz-section">HAZOP 이 처음이라면</div>')
-what, why, split = st.columns(3)
-with what.container(border=True, key="intro_what"):
-    st.markdown(
-        "**🔍 HAZOP 이란**\n\n"
-        "공정을 구간(노드)으로 나누고 유량·압력·온도 같은 파라미터에 **No·More·Less·Reverse** 등 가이드워드를 붙여, "
-        "설계 의도에서 벗어나는 경우를 빠짐없이 찾는 위험성평가입니다. PSM 의 표준 기법(KOSHA GUIDE P-82)."
-    )
-with why.container(border=True, key="intro_why"):
-    st.markdown(
-        "**⏱ 왜 힘든가**\n\n"
-        "공정·계장·운전·안전 담당 6~8명이 한 방에서 **노드마다 수 시간**, 셀 하나씩 토론합니다. "
-        "공장 하나에 노드가 수십~수백 개 — 셀을 빠뜨리지 않는 것 자체가 일입니다."
-    )
-with split.container(border=True, key="intro_split"):
-    st.markdown(
-        "**🤝 이 앱의 역할**\n\n"
-        "AI 가 전 셀 판정과 원인·결과·위험도·권고 **초안**을 쓰고, 전문가는 **검토·승인**합니다. "
-        "회의를 없애지 않고, 회의의 시작점을 올립니다."
+#: (제목, 핵심 한 줄, [(항목, 내용)...]) — 줄글 대신 한눈에 읽히는 행. 마크다운을 거치지 않는다(`~` 가 취소선이 된다).
+INTRO_CARDS: tuple[tuple[str, str, tuple[tuple[str, str], ...]], ...] = (
+    (
+        "HAZOP 이란",
+        "설계 의도에서 벗어나는 경우를 빠짐없이 찾는 위험성평가",
+        (
+            ("대상", "공정 구간(노드) — 배관·설비"),
+            ("방법", "유량·압력·온도 × No·More·Less·Reverse…"),
+            ("근거", "PSM 표준 기법 · KOSHA GUIDE P-82"),
+        ),
+    ),
+    (
+        "왜 힘든가",
+        "노드 1개에 회의 수 시간",
+        (
+            ("참석", "공정·계장·운전·안전 담당 6–8명"),
+            ("규모", "공장 하나에 노드 수십–수백 개"),
+            ("위험", "셀 하나만 빠져도 시나리오 누락"),
+        ),
+    ),
+    (
+        "이 앱의 역할",
+        "초안은 AI, 판단은 사람",
+        (
+            ("AI", "전 셀 판정 · 원인·결과·S×F·권고 초안"),
+            ("사람", "검토 · 수정 · 최종 승인"),
+            ("효과", "회의를 없애지 않고 시작점을 올림"),
+        ),
+    ),
+)
+for column, (title, headline, rows) in zip(st.columns(3), INTRO_CARDS, strict=True):
+    column.html(
+        f'<div class="hz-info"><p class="hz-info-t">{title}</p><p class="hz-info-h">{headline}</p>'
+        + "".join(f"<div class='hz-info-r'><span>{k}</span><b>{v}</b></div>" for k, v in rows)
+        + "</div>"
     )
 with st.expander("현장 절차와 한눈에 비교", expanded=False):
     st.markdown(
         "| 단계 | 기존 HAZOP 회의 | 이 앱 |\n|---|---|---|\n"
         "| 노드 정의 | 사람 (P&ID) | 사람 — 문장 한 문단 또는 JSON |\n"
-        "| 파라미터 도출 | 팀 브레인스토밍 | AI 1회 호출, 노드당 8~12개 |\n"
+        "| 파라미터 도출 | 팀 브레인스토밍 | AI 1회 호출, 노드당 8–12개 |\n"
         "| 가이드워드 전 셀 판정 | 셀마다 토론, 누락 위험 | AI 가이드워드별 병렬 호출, 셀 누락 0 |\n"
         "| 원인·결과·안전장치·S×F·권고 | 서기가 회의 중 기록 | 초안 자동, 신뢰도 배지 + 규칙 verifier |\n"
         "| 워크시트·LOPA 문서화 | 회의 후 수일 | 즉시 xlsx(5시트)·LOPA docx·신뢰도 JSON |"
     )
-    st.caption("실측: 노드 1건 약 2~2.5분 · 약 $0.8 (2026-09-29, 병렬 4).")
+    st.caption("실측: 노드 1건 약 2–2.5분 · 약 $0.8 (2026-09-29, 병렬 4).")
 
 # ── 정확도 (기본 접힘) ───────────────────────────────────────────────────────
 st.html('<div id="eval"></div>')
