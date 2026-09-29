@@ -98,7 +98,9 @@ def test_run_quick_makes_two_calls_for_one_guideword() -> None:
     assert (m["source"], m["mock"], m["guidewords"], m["recall"]) == ("quick", True, ["More"], None)
     assert m["expected_cells"] == len(m["parameters"]) == m["judged_cells"]
     assert {r.node for r in result.records} == {"X1"}
+    assert "X1 골드셋 없음" in service.summary_line(result)
     assert set(service.export_files(result)) == {"xlsx", "lopa", "report"}
+    assert service.process_view(result)["api_calls"] == 2
 
 
 @pytest.mark.parametrize(
@@ -125,3 +127,38 @@ def test_run_quick_rejects_bad_input_before_any_call(
 )
 def test_live_scope(value: str | None, scope: str) -> None:
     assert service.live_scope({} if value is None else {"HAZOP_LIVE_SCOPE": value}) == scope
+
+
+# ── J-04 화면 — 직접 입력 mock 경로·상한 공용·HAZOP_LIVE_SCOPE 분기 ─────────────
+@pytest.mark.parametrize("scope", ["quick", "full"])
+def test_app_direct_input_quick_run_on_mock(monkeypatch: pytest.MonkeyPatch, scope: str) -> None:
+    from streamlit.testing.v1 import AppTest
+
+    for key, value in {**_MOCK_ENV, "HAZOP_LIVE_SCOPE": scope}.items():
+        monkeypatch.setenv(key, value)
+    at = AppTest.from_file(str(_APP), default_timeout=30).run()
+    at.selectbox[0].select(_DIRECT).run()
+    assert not at.exception
+    assert len(at.dataframe) == 0
+    assert any("노드 전체" in b.label for b in at.button) is (scope == "full")
+    quick = next(b for b in at.button if b.label.startswith("빠른 실호출"))
+    assert quick.disabled is False
+    quick.click().run()
+    assert not at.exception
+    assert len(at.dataframe) == 1
+    assert {v.split(" (")[0] for v in at.dataframe[0].value["가이드워드"]} == {"More"}  # "More (압력)" 형식
+    assert any("API 호출 2회" in m.value for m in at.markdown)
+    # 상한은 공용 — 빠른 실호출 1회 뒤엔 노드 전체 버튼도 막힌다.
+    assert all(b.disabled for b in at.button if "실호출" in b.label)
+    assert any("세션" in c.value for c in at.caption)
+
+
+def test_app_direct_input_disabled_without_allow(monkeypatch: pytest.MonkeyPatch) -> None:
+    from streamlit.testing.v1 import AppTest
+
+    monkeypatch.delenv("HAZOP_ALLOW_LIVE", raising=False)
+    at = AppTest.from_file(str(_APP), default_timeout=30).run()
+    at.selectbox[0].select(_DIRECT).run()
+    assert not at.exception
+    assert [b.disabled for b in at.button] == [True]
+    assert any("HAZOP_ALLOW_LIVE" in c.value for c in at.caption)
