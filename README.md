@@ -125,7 +125,7 @@ tools/build_gold.py      data/raw/*.xlsx → data/gold/*.json
   [self-verification](.kiro/specs/self-verification/requirements.md).
   **Kiro 크레딧 소진 후(9/11 export-formats 부터) spec 3종과 bedrock-client 의 REQ-12·T-15 는 Kiro 와 같은
   형식(EARS requirements + design + tasks)으로 손으로 작성·유지했다.**
-- 시험: `pytest -m "not live"` **231 passed, 3 deselected**(live 마커), `ruff check .` clean.
+- 시험: `pytest -m "not live"` **251 passed, 3 deselected**(live 마커), `ruff check .` clean.
 
 ### 추적 매트릭스
 
@@ -273,6 +273,11 @@ recall 0.417 을 끌어내린 것은 모델 판정이 아니라 이 절단이다
 - **근거 인용 없음**: 280건 전부 `confidence=inferred`, `evidence=[]`. `grounded` 등급은 부여된 적이 없다.
 - **운영 한계**: `core/llm` 에 호출 timeout 이 없어 네트워크가 끊기면 한 호출이 19분 매달린 사례가 있다.
   실호출 일일 상한은 프로세스 메모리 카운터라 재시작하면 0 으로 돌아간다([docs/backlog.md](docs/backlog.md)).
+- **실무자 관점 평가** ([docs/실무자평가_20260929.md](docs/실무자평가_20260929.md) — 자격 있는 HAZOP 리더 검토 아님, 재생 291건 n=1):
+  - P-1 기존 안전장치(Before) 공란 — 판정 프롬프트가 입력 안전장치를 받지 못했다(염소 예시 0/64). **코드는 고쳤으나(M-01) 재캡처 전이라 화면·§6 수치는 전부 수정 전 프롬프트 결과**다(화면 출처 줄에 "M-01 이전 프롬프트" 표기).
+  - P-2 빈도 F 가 한 값으로 뭉친다 — F=3 이 85~95%, F=1 은 0건. 위험도 순위는 사실상 S 순위다(요약 줄에 F 분포 표시).
+  - P-3 S·F 등급 정의가 NH3 선박 벙커링 기준인데 육상 예시 공정에도 쓴다 — 예시·직접 입력 화면에 "참고용" 배지.
+  - P-5 노드가 너무 크다(P1 탱크→펌프→로딩암을 한 노드) — 원인마다 방호계층이 달라 LOPA 로 넘길 수 없다. 노드 분할 지원 없음.
 
 ### 본선 로드맵
 
