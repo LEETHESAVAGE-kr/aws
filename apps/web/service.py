@@ -13,7 +13,7 @@ import shutil
 import tempfile
 import threading
 import time
-from datetime import date
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final
 
@@ -60,6 +60,7 @@ NODES: Final[dict[str, dict[str, Any]]] = nodes_by_id(CATALOG)
 PRESETS: Final[dict[str, str]] = {
     nid: ", ".join(n["node_meta"].equipment) for nid, n in NODES.items()
 }
+KST: Final[timezone] = timezone(timedelta(hours=9))
 #: data/gold/split_node.json 의 holdout_count.
 HOLDOUT_GOLD_TOTAL: Final[int] = 26
 EVAL_HEADERS: Final[tuple[str, ...]] = (
@@ -364,9 +365,59 @@ def summary_line(result: Result) -> str:
         parts.append(
             f"{node}({split}) recall {recall['recall']:.3f} ({recall['matched']}/{recall['total']})"
         )
+    elif split == "none":
+        parts.append(f"{node} 골드셋 없음 — recall 해당 없음")
     else:
         parts.append(f"{node}({split}) recall 해당 없음")
     return " · ".join(parts)
+
+
+def _kst(captured_at: str | None) -> str:
+    """ISO 시각(UTC 저장)을 KST 로. 형식이 다르면 원문 그대로."""
+    if not captured_at:
+        return "시각 미상"
+    try:
+        stamp = datetime.fromisoformat(captured_at)
+    except ValueError:
+        return captured_at
+    if stamp.tzinfo is None:
+        return stamp.strftime("%Y-%m-%d %H:%M")
+    return stamp.astimezone(KST).strftime("%Y-%m-%d %H:%M KST")
+
+
+def provenance_line(result: Result) -> str:
+    """이 결과가 어디서 왔는지 한 줄(J-04 ③). 재생이어도 실호출 캡처 일시·모델·비용을 적는다."""
+    m = result.meta
+    cost = m.get("cost_usd")
+    tail = f" · 모델 {m.get('model_id') or '미상'}" + (f" · 비용 ${cost:.3f}" if cost is not None else "")
+    source = m.get("source")
+    if result.is_gold:
+        return f"전문가 골드셋 재생 — LLM 생성 결과 아님 ({_kst(m.get('captured_at'))} 저장)"
+    if source == "live":
+        return f"{_kst(m.get('captured_at'))} 실호출 캡처를 재생{tail}"
+    if m.get("mock"):
+        return f"mock 실행 — 네트워크 없이 재생 레코드로 생성 경로를 돈 결과 ({_kst(m.get('captured_at'))})"
+    return f"{_kst(m.get('captured_at'))} 방금 실호출{tail}"
+
+
+def process_view(result: Result) -> dict[str, Any]:
+    """'생성 과정' 패널 값(J-04 ③). 파라미터는 저장된 열거 결과가 있으면 그것, 없으면 레코드 등장 순서."""
+    m = result.meta
+    parameters = m.get("parameters") or list(dict.fromkeys(r.parameter for r in result.records))
+    guidewords = m.get("guidewords") or list(dict.fromkeys(r.guideword for r in result.records))
+    raw_calls = m.get("raw_calls")
+    records, _ = verified(result)
+    return {
+        "parameters": parameters,
+        "guidewords": guidewords,
+        "api_calls": len(raw_calls) if raw_calls is not None else None,
+        "judged_cells": m.get("judged_cells"),
+        "expected_cells": m.get("expected_cells"),
+        "latency_s": m.get("latency_s"),
+        "cost_usd": m.get("cost_usd"),
+        "truncated_calls": m.get("truncated_calls"),
+        "review": sum(r.confidence == "review" for r in records),
+    }
 
 
 # ── 평가 요약 표 (H-06 / FR-08 축소 실행) ─────────────────────────────────────
