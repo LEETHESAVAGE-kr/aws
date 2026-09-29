@@ -11,3 +11,6 @@ results/
 *.key
 *credential*
 *api*key*.txt
+
+# 로컬 Claude Code 설정 (2026-09-29 지시문 O)
+.claude/
