@@ -448,6 +448,29 @@ def verified(result: Result) -> tuple[list[DeviationRecord], VerifySummary]:
     return result.verified
 
 
+#: verifier 시연 토글(지시문 O-3). 실측 플래그가 0 이라 심사위원이 🔴 를 볼 수 없어서, **표시용 사본**에만
+#: 근거 없는 규격 번호 1개를 붙인다. 재생 파일·`Result` 원본·다운로드 3개는 삽입 없는 원본 그대로다.
+DEMO_TOGGLE_LABEL: Final[str] = "verifier 시연 — 결함 1건 삽입(근거 없는 규격 번호)"
+DEMO_SUFFIX: Final[str] = " (KOSHA GUIDE P-999 참조)"
+DEMO_BANNER: Final[str] = (
+    ":red-background[시연] 아래 1행의 규격 번호는 시연용으로 삽입한 것입니다 — 원본 재생 데이터에는 없습니다."
+)
+
+
+def demo_injected(result: Result) -> Result:
+    """첫 레코드 `recommendations[0]` 끝에 `DEMO_SUFFIX` 를 붙인 **새** `Result`(검증 캐시 없음).
+
+    원본 레코드는 `model_copy` 로 건드리지 않는다. 권고가 비어 있으면 새 항목으로 넣는다. 골드·빈 결과는 원본 그대로.
+    """
+    if result.is_gold or not result.records:
+        return result
+    first = result.records[0]
+    recs = list(first.recommendations) or [""]
+    recs[0] = (recs[0] + DEMO_SUFFIX).strip()
+    records = [first.model_copy(update={"recommendations": recs}), *result.records[1:]]
+    return Result(meta=result.meta, records=records)
+
+
 def _display_records(result: Result) -> list[dict[str, Any]]:
     """verifier 가 격하한 레코드. 골드 재생이면 confidence 를 지운다 — 사람 작성 레코드에 '모델 추론' 을
     붙이지 않기 위해서다.
