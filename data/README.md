@@ -7,6 +7,7 @@
 | `data/raw/` | 원본 xlsx (전문가 HAZOP 워크시트) | **git-ignored** |
 | `data/gold/` | `tools/build_gold.py` 변환 산출물 (JSON) | tracked |
 | `data/replay/` | `tools/capture_replay.py` 캡처 산출물 — 노드별 생성 결과 JSON(`source=live`) 또는 골드 재생(`source=gold`). 출처 = 본 저장소 실행 로그(LLM 생성물, 외부 데이터 아님) | tracked |
+| `data/presets.json` | 데모 공정 카탈로그(FR-10 J-01) — 공정별 노드 입력(`node_meta`). NH3 4노드는 `data/gold` 의 node_meta 와 같은 값, LPG·염소 예시 공정 2개는 저장소 소유자가 작성한 가상의 입력(실데이터 아님, 골드셋 없음) | tracked |
 
 ## 원본 출처 — `data/raw/D1_HAZOP_워크시트.xlsx`
 
