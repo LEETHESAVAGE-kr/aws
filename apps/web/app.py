@@ -274,6 +274,12 @@ with tool.container(border=True, key="tool"):
                         status.update(label="생성 실패", state="error")
                         st.error(f"생성 실패: {type(exc).__name__}: {exc}")
                         st.caption(_failure_hint(exc))
+                        st.button(
+                            "실측 사례 보기 — 완성된 결과를 바로 확인",
+                            key="fail_to_cases",
+                            on_click=_to_cases,
+                            width="stretch",
+                        )
                         if service.is_auth_error(exc):
                             st.caption(service.key_hint())
                     else:
