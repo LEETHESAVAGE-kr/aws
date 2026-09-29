@@ -54,63 +54,76 @@ GUIDEWORD_HELP = (
     "As well as: 이물 혼입 · Other than: 다른 물질/상태"
 )
 
+#: 가이드워드 → 뜻 (선택 칸에 함께 보여 준다). "No: 흐름 없음" → {"No": "흐름 없음"}
+GUIDEWORD_MEANING: dict[str, str] = dict(
+    part.split(": ", 1) for part in GUIDEWORD_HELP.split(" · ")
+)
+
 st.set_page_config(page_title="HAZOP Copilot", layout="wide")
 # DESIGN.md 토큰: primary #9046ff · primary-tint #f3ecff · primary-soft #c59eff · rounded.md 14px.
 # 회색 캔버스 위 흰 카드 = "앱" 의 기본 문법. 셀렉터가 버전과 달라도 기능은 같다 — 모양만 잃는다(U-R6).
 st.html(
     """<style>
+    :root { --bg: #141417; --card: #1e1e23; --card2: #26262d; --line: #32323b; --text: #f3f3f6;
+        --muted: #9b9ba8; --accent: #9046ff; --accent-text: #b996ff; --accent-soft: rgba(144,70,255,.16); }
     header[data-testid="stHeader"], #MainMenu, footer { display: none !important; }
-    .stApp { background: #f5f5f8; }
+    .stApp { background: var(--bg); }
     .block-container { padding-top: 0 !important; max-width: 1240px; }
-    [data-testid="stVerticalBlockBorderWrapper"] { background: #fff; border-radius: 14px !important;
-        border-color: #e8e8ef !important; box-shadow: 0 1px 2px rgba(20,20,40,.04), 0 4px 16px rgba(20,20,40,.04); }
-    [data-testid="stMetric"] { background: #fff; border: 1px solid #e8e8ef; border-radius: 12px; padding: 12px 16px; }
-    [data-testid="stMetricLabel"] p { font-size: 13px; color: #6b6b7b; }
-    [data-testid="stMetricValue"] { font-size: 28px; font-weight: 700; }
-    .hz-bar { position: sticky; top: 0; z-index: 100; background: #fff; height: 60px; display: flex;
-        align-items: center; justify-content: space-between; border-bottom: 1px solid #e8e8ef;
-        margin: 0 -9999px 20px; padding: 0 9999px; }
-    .hz-logo { font-size: 19px; font-weight: 700; color: #1a1a2e; display: flex; align-items: center; gap: 8px; }
-    .hz-logo i { width: 26px; height: 26px; border-radius: 8px; background: #9046ff; display: inline-block; }
-    .hz-nav a { margin-left: 22px; color: #555; text-decoration: none; font-size: 14px; }
-    .hz-nav a:hover { color: #6a2fd6; }
+    [data-testid="stVerticalBlockBorderWrapper"] { background: var(--card); border-radius: 16px !important;
+        border-color: var(--line) !important; }
+    [data-testid="stMetric"] { background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+        padding: 14px 18px; }
+    [data-testid="stMetricLabel"] p { font-size: 13px; color: var(--muted); }
+    [data-testid="stMetricValue"] { font-size: 30px; font-weight: 700; color: var(--text); }
+    .hz-bar { position: sticky; top: 0; z-index: 100; background: var(--bg); height: 60px; display: flex;
+        align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line);
+        margin: 0 -9999px 24px; padding: 0 9999px; }
+    .hz-logo { font-size: 18px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 10px; }
+    .hz-logo i { width: 24px; height: 24px; border-radius: 7px; background: var(--accent); display: inline-block; }
+    .hz-nav a { margin-left: 22px; color: var(--muted); text-decoration: none; font-size: 14px; }
+    .hz-nav a:hover { color: var(--text); }
     @media (max-width: 900px) { .hz-nav { display: none; } }
-    .hz-eyebrow { font-size: 13px; font-weight: 600; color: #6a2fd6; margin: 8px 0 6px; }
-    .hz-h1 { font-size: 27px; letter-spacing: -0.3px; font-weight: 700; line-height: 1.35; margin: 0 0 10px; color: #1a1a2e; }
-    .hz-sub { font-size: 15px; color: #555; margin: 0 0 22px; line-height: 1.65; }
-    .hz-steps { display: flex; flex-direction: column; gap: 14px; margin-bottom: 22px; }
-    .hz-step { display: flex; gap: 12px; align-items: flex-start; }
-    .hz-step b { flex: none; width: 28px; height: 28px; border-radius: 50%; background: #f3ecff; color: #6a2fd6;
-        font-size: 14px; display: flex; align-items: center; justify-content: center; }
-    .hz-step strong { display: block; font-size: 15px; color: #1a1a2e; }
-    .hz-step span { font-size: 13px; color: #6b6b7b; }
+    .hz-eyebrow { font-size: 13px; font-weight: 600; color: var(--accent-text); margin: 8px 0 8px; }
+    .hz-h1 { font-size: 28px; letter-spacing: -0.4px; font-weight: 700; line-height: 1.4; margin: 0 0 12px;
+        color: var(--text); }
+    .hz-sub { font-size: 15px; color: var(--muted); margin: 0 0 26px; line-height: 1.65; }
+    .hz-steps { display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; }
+    .hz-step { display: flex; gap: 14px; align-items: center; background: var(--card); border: 1px solid var(--line);
+        border-radius: 12px; padding: 12px 14px; }
+    .hz-step b { flex: none; width: 28px; height: 28px; border-radius: 8px; background: var(--accent-soft);
+        color: var(--accent-text); font-size: 14px; display: flex; align-items: center; justify-content: center; }
+    .hz-step strong { display: block; font-size: 15px; color: var(--text); }
+    .hz-step span { font-size: 13px; color: var(--muted); }
     .hz-trust { display: flex; gap: 8px; flex-wrap: wrap; }
-    .hz-trust span { font-size: 12px; padding: 4px 10px; border-radius: 999px; background: #fff;
-        border: 1px solid #e8e8ef; color: #555; }
-    .hz-card-title { font-size: 18px; font-weight: 700; margin: 0 0 2px; color: #1a1a2e; }
-    .hz-card-sub { font-size: 13px; color: #6b6b7b; margin: 0; }
-    .hz-section { font-size: 20px; font-weight: 700; margin: 28px 0 4px; color: #1a1a2e; }
-    .hz-empty { border: 2px dashed #dcdce6; border-radius: 14px; padding: 36px 24px; text-align: center;
-        color: #6b6b7b; background: #fafafc; }
-    .hz-empty strong { display: block; font-size: 16px; color: #1a1a2e; margin-bottom: 6px; }
-    .hz-mini b { color: #6a2fd6; }
-    [class*="st-key-intro"] p { font-size: 14px; line-height: 1.6; }
-    .st-key-mode [role="radiogroup"] { gap: 0; background: #f1f1f5; border-radius: 10px; padding: 3px;
-        display: flex; flex-wrap: nowrap; width: 100%; }
+    .hz-trust span { font-size: 12px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line);
+        color: var(--muted); }
+    .hz-progress { height: 4px; background: var(--card2); border-radius: 4px; overflow: hidden; margin: 4px 0 18px; }
+    .hz-progress div { height: 100%; background: var(--accent); border-radius: 4px; }
+    .hz-q-step { font-size: 12px; color: var(--muted); margin: 0 0 4px; letter-spacing: .3px; }
+    .hz-q { font-size: 21px; font-weight: 700; color: var(--text); margin: 0 0 4px; letter-spacing: -0.3px; }
+    .hz-q-help { font-size: 13px; color: var(--muted); margin: 0 0 4px; }
+    .hz-card-sub { font-size: 13px; color: var(--muted); margin: 0; }
+    .hz-section { font-size: 22px; font-weight: 700; margin: 36px 0 6px; color: var(--text); }
+    .hz-empty { border: 1px dashed var(--line); border-radius: 16px; padding: 40px 24px; text-align: center;
+        color: var(--muted); background: var(--card); }
+    .hz-empty strong { display: block; font-size: 17px; color: var(--text); margin-bottom: 8px; }
+    [class*="st-key-intro"] p { font-size: 14px; line-height: 1.65; }
     .st-key-mode, .st-key-mode .stRadio, .st-key-mode [data-testid="stRadio"] > div { width: 100% !important; }
+    .st-key-mode [role="radiogroup"] { gap: 0; background: var(--card2); border-radius: 12px; padding: 4px;
+        display: flex; flex-wrap: nowrap; width: 100%; }
     .st-key-mode [role="radiogroup"] > div { flex: 1; }
-    .st-key-mode [data-testid="stRadioOption"] p { white-space: nowrap; }
-    .st-key-mode [data-testid="stRadioOption"] { width: 100%; justify-content: center; border-radius: 8px;
-        padding: 7px 10px; margin: 0; cursor: pointer; }
+    .st-key-mode [data-testid="stRadioOption"] { width: 100%; justify-content: center; border-radius: 9px;
+        padding: 8px 10px; margin: 0; cursor: pointer; }
     .st-key-mode [data-testid="stRadioOption"] > div > div:first-child { display: none; }
-    .st-key-mode [data-testid="stRadioOption"] p { font-size: 14px; color: #6b6b7b; }
-    .st-key-mode [data-testid="stRadioOption"][data-selected="true"] { background: #fff;
-        box-shadow: 0 1px 3px rgba(0,0,0,.12); }
-    .st-key-mode [data-testid="stRadioOption"][data-selected="true"] p { color: #6a2fd6; font-weight: 600; }
-    [class*="st-key-chip_"] button { border-radius: 999px; min-height: 30px; padding: 2px 12px; font-size: 13px;
-        background: #f7f7fa; }
-    .st-key-process_name [data-baseweb="select"] > div { background-color: #f3ecff; border: 1px solid #c59eff;
-        font-weight: 600; min-height: 44px; }
+    .st-key-mode [data-testid="stRadioOption"] p { font-size: 14px; color: var(--muted); white-space: nowrap; }
+    .st-key-mode [data-testid="stRadioOption"][data-selected="true"] { background: #3a3a44; }
+    .st-key-mode [data-testid="stRadioOption"][data-selected="true"] p { color: var(--text); font-weight: 600; }
+    [class*="st-key-chip_"] button { border-radius: 999px; min-height: 34px; padding: 2px 14px; font-size: 13px;
+        background: var(--card2); border-color: var(--line); }
+    [class*="st-key-chip_"] button:hover { border-color: var(--accent); color: var(--accent-text); }
+    .st-key-cta button { min-height: 54px; font-size: 16px; font-weight: 700; border-radius: 12px; }
+    .st-key-process_name [data-baseweb="select"] > div { background-color: var(--accent-soft);
+        border: 1px solid var(--accent); font-weight: 600; min-height: 46px; }
     </style>"""
 )
 
@@ -150,7 +163,7 @@ intro.html(
     <p class="hz-sub">며칠짜리 HAZOP 회의의 첫 초안을 AI 가 2분 안에 채웁니다. 전문가는 검토와 승인만 하세요.</p>
     <div class="hz-steps">
       <div class="hz-step"><b>1</b><div><strong>공정을 문장으로 설명</strong>
-        <span>물질·설비·압력·온도·안전장치 — 예시 버튼으로 바로 시작</span></div></div>
+        <span>예시 버튼 하나로 바로 시작</span></div></div>
       <div class="hz-step"><b>2</b><div><strong>AI 가 가이드워드 전 셀 판정</strong>
         <span>파라미터를 스스로 세우고 이탈·원인·결과·S×F 위험도·권고까지</span></div></div>
       <div class="hz-step"><b>3</b><div><strong>검토하고 내려받기</strong>
@@ -166,35 +179,41 @@ with tool.container(border=True, key="tool"):
         "모드", [MODE_NL, MODE_CASES], horizontal=True, label_visibility="collapsed", key="mode"
     )
     if mode == MODE_NL:
+        done = 3 if state.quick_result is not None else (2 if state.quick_text.strip() else 1)
         st.html(
-            '<p class="hz-card-sub">처음 보는 공정도 됩니다. 예시를 눌러 채우거나 직접 적으세요.</p>'
+            f'<div class="hz-progress"><div style="width:{done * 33.4:.0f}%"></div></div>'
+            '<p class="hz-q-step">STEP 1 / 2</p><p class="hz-q">어떤 공정을 분석할까요?</p>'
+            '<p class="hz-q-help">물질·설비·압력·온도·안전장치를 적을수록 정확해집니다. 예시를 눌러도 됩니다.</p>'
         )
         for i, (column, (label, text)) in enumerate(
             zip(st.columns(len(EXAMPLES)), EXAMPLES, strict=True)
         ):
-            column.button(
-                f"예시 · {label}", key=f"chip_{i}", on_click=_fill, args=(text,), width="stretch"
-            )
+            column.button(label, key=f"chip_{i}", on_click=_fill, args=(text,), width="stretch")
         st.text_area(
             "공정 설명",
             key="quick_text",
-            height=150,
+            height=130,
             max_chars=service.NODE_TEXT_LIMIT,
             placeholder=DIRECT_PLACEHOLDER,
             label_visibility="collapsed",
         )
-        left, right = st.columns([1, 2], vertical_alignment="bottom")
-        guideword = left.selectbox(
+        st.html(
+            '<p class="hz-q-step" style="margin-top:8px">STEP 2 / 2</p>'
+            '<p class="hz-q">어떤 이탈부터 볼까요?</p>'
+        )
+        guideword = st.selectbox(
             "가이드워드",
             GUIDEWORDS,
             index=GUIDEWORDS.index("More"),
-            help=f"이번 실행에서 판정할 가이드워드 1개. {GUIDEWORD_HELP}",
+            format_func=lambda g: f"{g} — {GUIDEWORD_MEANING[g]}" if g in GUIDEWORD_MEANING else g,
+            label_visibility="collapsed",
         )
         quota = service.quota_block_reason(state.live_runs)
         blocked = live_reason is not None or quota is not None or not state.quick_text.strip()
-        clicked_quick = right.button(
-            "HAZOP 초안 생성 (약 1분)", type="primary", disabled=blocked, width="stretch"
-        )
+        with st.container(key="cta"):
+            clicked_quick = st.button(
+                "HAZOP 초안 생성 (약 1분)", type="primary", disabled=blocked, width="stretch"
+            )
         clicked_full = False
         if service.live_scope() == "full":
             clicked_full = st.button(
