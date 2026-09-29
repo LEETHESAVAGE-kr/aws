@@ -1,7 +1,8 @@
 # config/models.yaml — 모델 ID·리전의 단일 소스 (steering aws.md §2, REQ-01)
 # 이 파일만 수정하면 전체 모델 교체가 적용된다. 코드에 하드코딩 금지.
 #
-# ⚠ 2026-09-15: 대회 계정에 Bedrock 권한 없음 확인 → provider=anthropic 으로 개발, 제출 전 bedrock 전환.
+# ⚠ 2026-09-15: 대회 계정에 Bedrock 권한 없음 확인 → provider=anthropic 으로 개발. 예선 제출본도 anthropic
+#   (Bedrock 실호출 0회 — README §4). bedrock 전환은 권한 확보 후 이 파일의 provider 한 줄.
 #   2026-09-28: models.list() 결과(12개)를 보고 사람이 아래 2개를 선택했다 — 추측 기입 아님.
 #   provider=anthropic 인 동안 region·embedding.model_id·guardrails 는 비어 있어도 검증을 통과한다(REQ-12).
 #
