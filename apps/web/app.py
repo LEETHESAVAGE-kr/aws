@@ -168,6 +168,9 @@ else:
 
     # ── 4. HAZOP 워크시트 ────────────────────────────────────────────────────
     st.subheader("③ HAZOP 워크시트")
+    notice = service.criteria_notice(result)
+    if notice:
+        st.markdown(f":orange-background[평가기준] {notice}")
     st.markdown(f"**{service.summary_line(result)}**")
     st.dataframe(service.worksheet_table(result), hide_index=True)
     files = service.export_files(result)
