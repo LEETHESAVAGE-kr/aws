@@ -54,9 +54,13 @@ QUICK_NOTE: Final[str] = "약 1분 · API 호출 3회(입력 해석 1 + 파라�
 #: 자연어 입력 길이 상한 — 해석 호출 비용·남용 방지.
 NODE_TEXT_LIMIT: Final[int] = 600
 _PARSE_PROMPT: Final[Path] = Path(__file__).parent / "prompts" / "node_parse.md"
-SESSION_LIMIT: Final[int] = 1
-DAILY_LIMIT: Final[int] = 5
-SECRET_KEYS: Final[tuple[str, ...]] = ("HAZOP_ALLOW_LIVE", "HAZOP_LIVE_SCOPE", "ANTHROPIC_API_KEY")
+#: 실호출 상한 — Streamlit Cloud 는 최상위 Secrets 를 프로세스 환경변수로 넣은 뒤 스크립트를 import 하므로
+#: import 시점에 읽어도 Secrets 값이 반영된다(U-1). 기본값은 세션 1회·일 5회.
+SESSION_LIMIT: Final[int] = int(os.environ.get("HAZOP_SESSION_LIMIT", 1))
+DAILY_LIMIT: Final[int] = int(os.environ.get("HAZOP_DAILY_LIMIT", 5))
+SECRET_KEYS: Final[tuple[str, ...]] = (
+    "HAZOP_ALLOW_LIVE", "HAZOP_LIVE_SCOPE", "ANTHROPIC_API_KEY", "HAZOP_SESSION_LIMIT", "HAZOP_DAILY_LIMIT",
+)
 LIVE_SCOPES: Final[tuple[str, ...]] = ("quick", "full")
 BADGES: Final[dict[str | None, str]] = {"grounded": "🟢", "inferred": "🟡", "review": "🔴"}
 CONFIDENCE_COLUMN: Final[str] = "신뢰도"
@@ -157,7 +161,7 @@ def live_block_reason(environ: Mapping[str, str] = os.environ) -> str | None:
 
 # ── 상한 (H-02 ⑥) ────────────────────────────────────────────────────────────
 def quota_block_reason(session_runs: int, today: date | None = None) -> str | None:
-    """세션 1회·일 5회 상한. 초과면 사유 문자열."""
+    """세션·일 상한(`SESSION_LIMIT`·`DAILY_LIMIT`). 초과면 사유 문자열."""
     if session_runs >= SESSION_LIMIT:
         return f"이 세션의 실호출 {SESSION_LIMIT}회를 이미 썼습니다."
     used = _daily_runs.get(today or date.today(), 0)
