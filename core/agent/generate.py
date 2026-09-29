@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Final
@@ -302,6 +303,10 @@ class HazopGenerator:
                 "node": node_meta.node or "미상",
                 "substance": node_meta.substance,
                 "equipment": ", ".join(node_meta.equipment) or "미상",
+                "phase": node_meta.phase or "미상",
+                "P_kPag": _fmt_number(node_meta.P_kPag),
+                "T_degC": _fmt_number(node_meta.T_degC),
+                "safeguards": ", ".join(node_meta.safeguards) or "없음",
                 "guideword": guideword,
                 "guideword_definition": GUIDEWORD_DEFINITIONS.get(guideword, ""),
                 "n": str(len(parameters)),
@@ -360,7 +365,9 @@ class HazopGenerator:
                         deviation=str(cell["deviation"]),
                         causes=list(cell.get("causes", [])),
                         consequences=list(cell.get("consequences", [])),
-                        safeguards_before=list(cell.get("safeguards_before", [])),
+                        safeguards_before=_normalize_safeguards(
+                            node_meta, guideword, str(cell["parameter"]), cell.get("safeguards_before", [])
+                        ),
                         S=int(cell["S"]),
                         F=int(cell["F"]),
                         recommendations=list(cell.get("recommendations", [])),
@@ -401,6 +408,41 @@ def _select_guidewords(node_meta: NodeMeta) -> list[str]:
     if any(keyword in equipment_text for keyword in PROCEDURAL_KEYWORDS):
         guidewords.extend(PROCEDURAL_GUIDEWORDS)
     return guidewords
+
+
+_SAFEGUARD_SPLIT: Final[re.Pattern[str]] = re.compile(r"[()\s·/,]+")
+
+
+def _safeguard_tokens(text: str) -> set[str]:
+    """괄호·공백·`·`·`/`·`,` 로 쪼갠 2글자 이상 토큰(소문자). 부분문자열 비교로는
+    "ESV(긴급차단밸브)" ↔ "긴급차단밸브(ESV)" 가 안 잡히므로 토큰 단위로 비교한다."""
+    return {t for t in _SAFEGUARD_SPLIT.split(text.lower()) if len(t) >= 2}
+
+
+def _normalize_safeguards(
+    node_meta: NodeMeta, guideword: str, parameter: str, generated: list[Any]
+) -> list[str]:
+    """`safeguards_before` 를 입력 `node_meta.safeguards` 의 원문 문자열로만 남긴다(지시문 M-01, P-1·P-9).
+
+    생성 항목과 토큰이 하나라도 겹치는 입력은 전부 채택(둘과 겹치면 둘 다), 어느 입력과도
+    안 겹치면 버리고 WARNING. 결과는 중복 없이 입력 순서. 입력이 비면 항상 빈 배열.
+    """
+    inputs = node_meta.safeguards
+    input_tokens = [_safeguard_tokens(s) for s in inputs]
+    kept: set[int] = set()
+    for item in generated:
+        tokens = _safeguard_tokens(str(item))
+        hits = {i for i, toks in enumerate(input_tokens) if toks & tokens}
+        if not hits:
+            logger.warning(
+                "node=%s gw=%s param=%s safeguards_before 입력에 없는 항목을 버린다: %s",
+                node_meta.node,
+                guideword,
+                parameter,
+                item,
+            )
+        kept |= hits
+    return [inputs[i] for i in sorted(kept)]
 
 
 def _cell_is_complete(cell: dict[str, Any]) -> bool:
