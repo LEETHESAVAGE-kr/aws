@@ -15,6 +15,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 import contextlib  # noqa: E402
 
 import streamlit as st  # noqa: E402
+import streamlit.components.v1 as components  # noqa: E402
 
 from apps.web import service  # noqa: E402
 from apps.web.replay import load_replays  # noqa: E402
@@ -227,6 +228,37 @@ with tool.container(border=True, key="tool"):
                 disabled=blocked,
                 width="stretch",
             )
+        if clicked_quick or clicked_full:
+            reason = service.reserve_live_run(state.live_runs)
+            if reason:
+                st.error(reason)
+            else:
+                state.live_runs += 1
+                mock_source = replays.get("N1") or next(iter(replays.values()))
+                # 진행 표시는 버튼 바로 아래 — 결과 영역은 첫 화면 밖이라 거기 두면 "아무 일도 없다"로 보인다(9/29 23:05).
+                with st.status(
+                    "HAZOP 초안 생성 중 · 약 1분 — 이 화면에서 기다려 주세요", expanded=True
+                ) as status:
+                    st.write("1/3 문장을 노드 입력으로 해석")
+                    st.caption("생성 중에 다른 버튼을 누르면 이번 생성이 취소됩니다.")
+                    try:
+                        if clicked_quick:
+                            state.quick_result = service.run_quick(
+                                state.quick_text, guideword, mock_source
+                            )
+                        else:
+                            state.quick_result = service.run_live(state.quick_text, mock_source)
+                    except Exception as exc:  # noqa: BLE001 — 사유를 보이고 앱은 계속 산다
+                        status.update(label="생성 실패", state="error")
+                        st.error(f"생성 실패: {type(exc).__name__}: {exc}")
+                        if service.is_auth_error(exc):
+                            st.caption(service.key_hint())
+                    else:
+                        st.write("2/3 점검 파라미터 열거")
+                        st.write(f"3/3 가이드워드 '{guideword}' 판정")
+                        status.update(label="완료", state="complete")
+                        state.scroll_result = True  # 다음 실행에서 결과로 스크롤
+                        st.rerun()  # 버튼을 상한 사유와 함께 즉시 비활성으로 다시 그린다
         left_runs = max(service.SESSION_LIMIT - state.live_runs, 0)
         if live_reason:
             st.caption(live_reason)
@@ -276,36 +308,7 @@ with tool.container(border=True, key="tool"):
                 state.node = node["id"]
                 st.rerun()  # 선택 강조(primary)를 새 노드로 다시 그린다
 
-if mode == MODE_NL:
-    if clicked_quick or clicked_full:
-        reason = service.reserve_live_run(state.live_runs)
-        if reason:
-            st.error(reason)
-        else:
-            state.live_runs += 1
-            mock_source = replays.get("N1") or next(iter(replays.values()))
-            with st.status("HAZOP 초안 생성 중", expanded=True) as status:
-                st.write("1/3 문장을 노드 입력으로 해석")
-                try:
-                    if clicked_quick:
-                        state.quick_result = service.run_quick(
-                            state.quick_text, guideword, mock_source
-                        )
-                    else:
-                        state.quick_result = service.run_live(state.quick_text, mock_source)
-                except Exception as exc:  # noqa: BLE001 — 사유를 보이고 앱은 계속 산다
-                    status.update(label="생성 실패", state="error")
-                    st.error(f"생성 실패: {type(exc).__name__}: {exc}")
-                    if service.is_auth_error(exc):
-                        st.caption(service.key_hint())
-                else:
-                    st.write("2/3 점검 파라미터 열거")
-                    st.write(f"3/3 가이드워드 '{guideword}' 판정")
-                    status.update(label="완료", state="complete")
-                    st.rerun()  # 버튼을 상한 사유와 함께 즉시 비활성으로 다시 그린다
-    result = state.quick_result
-else:
-    result = replays.get(state.node)
+result = state.quick_result if mode == MODE_NL else replays.get(state.node)
 
 # ── 결과 ─────────────────────────────────────────────────────────────────────
 st.html('<div id="result" class="hz-section">분석 결과</div>')
@@ -458,3 +461,11 @@ st.caption(
     "데이터 보안: 고객사의 실제 데이터는 일체 사용하지 않으며, 팀이 자체 보유한 데이터로만 작동합니다. · "
     f"{service.system_note(result) if result is not None else ''} · [리포지토리]({REPO})"
 )
+
+if state.pop("scroll_result", False):
+    st.toast("HAZOP 초안이 완성됐습니다 — 결과로 이동합니다.")
+    components.html(
+        "<script>const go = () => window.parent.document.getElementById('result')"
+        "?.scrollIntoView({block: 'start'}); setTimeout(go, 600); setTimeout(go, 1500);</script>",
+        height=0,
+    )
