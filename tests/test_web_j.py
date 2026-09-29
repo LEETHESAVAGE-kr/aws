@@ -236,3 +236,66 @@ def test_app_direct_input_disabled_without_allow(monkeypatch: pytest.MonkeyPatch
     assert not at.exception
     assert [b.disabled for b in at.button] == [True]
     assert any("HAZOP_ALLOW_LIVE" in c.value for c in at.caption)
+
+
+# ── 시크릿 공백 정리 · 401 키 진단 (9/29 배포 401) ──────────────────────────────
+_FAKE_KEY = "sk-ant-api03-" + "A1b2_C3d4-" * 9 + "xyz"  # 형식만 흉내 낸 가짜(106자)
+
+
+def test_sync_secrets_strips_whitespace_new_and_existing() -> None:
+    environ: dict[str, str] = {"HAZOP_LIVE_SCOPE": " full\n"}
+    service.sync_secrets({"ANTHROPIC_API_KEY": f"  {_FAKE_KEY}\n", "HAZOP_ALLOW_LIVE": "true "}, environ)
+    assert environ == {"ANTHROPIC_API_KEY": _FAKE_KEY, "HAZOP_ALLOW_LIVE": "true", "HAZOP_LIVE_SCOPE": "full"}
+    service.sync_secrets({"ANTHROPIC_API_KEY": "other"}, environ)
+    assert environ["ANTHROPIC_API_KEY"] == _FAKE_KEY  # 이미 있는 값은 덮어쓰지 않는다
+
+
+@pytest.mark.parametrize(
+    ("key", "expected"),
+    [
+        (_FAKE_KEY, ["시작 ✅", f"길이 {len(_FAKE_KEY)}자", "외 문자 없음 ✅"]),
+        ("sk-ant-...", ["예시 값", "외 문자 3개 ❌"]),
+        ("apikey_1234", ["시작하지 않음 ❌", "길이 11자"]),
+        (f"\u201c{_FAKE_KEY}\u201d", ["시작하지 않음 ❌", "외 문자 2개 ❌"]),  # 스마트 따옴표
+        (f"{_FAKE_KEY} \n", ["시작 ✅", "공백·줄바꿈 있음"]),
+        ("", ["비어 있습니다"]),
+    ],
+)
+def test_key_hint_never_reveals_key(key: str, expected: list[str]) -> None:
+    hint = service.key_hint({"ANTHROPIC_API_KEY": key})
+    assert all(part in hint for part in expected), hint
+    assert "api03" not in hint and "A1b2" not in hint  # 접두사 'sk-ant-' 외 키 문자는 한 글자도 없다
+
+
+class AuthenticationError(Exception):
+    """anthropic.AuthenticationError 대역 — 이름으로 판정되는지 본다."""
+
+
+class _Http401Error(Exception):
+    status_code = 401
+
+
+def test_is_auth_error() -> None:
+    assert service.is_auth_error(AuthenticationError("401"))
+    assert service.is_auth_error(_Http401Error())
+    assert not service.is_auth_error(ValueError("x"))
+
+
+def test_app_shows_key_hint_on_auth_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    from streamlit.testing.v1 import AppTest
+
+    for key, value in {**_MOCK_ENV, "ANTHROPIC_API_KEY": _FAKE_KEY}.items():
+        monkeypatch.setenv(key, value)
+
+    def _reject(*_: object, **__: object) -> None:
+        raise AuthenticationError("Error code: 401 - API key is invalid.")
+
+    monkeypatch.setattr(service, "run_quick", _reject)
+    at = AppTest.from_file(str(_APP), default_timeout=30).run()
+    at.selectbox[0].select(_DIRECT).run()
+    at.text_area[0].input(_SENTENCE).run()
+    next(b for b in at.button if b.label.startswith("빠른 실호출")).click().run()
+    assert not at.exception
+    assert any("AuthenticationError" in e.value for e in at.error)
+    hints = [c.value for c in at.caption if c.value.startswith("키 진단")]
+    assert hints and "시작 ✅" in hints[0] and "api03" not in hints[0]
