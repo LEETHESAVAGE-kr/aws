@@ -387,3 +387,22 @@ def test_lopa_download_is_docx_with_markdown_content_preserved(monkeypatch: pyte
         checked += 1
     assert checked > 50
     assert not any("`" in p for p in paragraphs + cells)
+
+
+# ── 화면 문구 개편 (사용자 요청 9/29) — 정확도 줄은 튜닝 수치만 내세우지 않는다 ─────────
+def test_accuracy_line_discloses_holdout_next_to_tuning_recall() -> None:
+    replays = load_replays()
+    assert service.holdout_recall(replays) == (4, 26)
+    n1 = service.accuracy_line(replays["N1"], replays)
+    assert "87.5%" in n1 and "(7/8" in n1 and "튜닝 노드" in n1 and "15.4%" in n1 and "(4/26)" in n1
+    n2 = service.accuracy_line(replays["N2"], replays)
+    assert "22.2%" in n2 and "홀드아웃 노드" in n2 and "15.4%" not in n2
+    assert "측정하지 않았습니다" in service.accuracy_line(replays["P1"], replays)
+
+
+def test_system_note_reads_model_and_cost_from_result() -> None:
+    replays = load_replays()
+    note = service.system_note(replays["N1"])
+    assert replays["N1"].meta["model_id"] in note and "$0.787" in note and "에스코어 드림" in note
+    gold = service.Result(meta={"source": "gold", "model_id": None})
+    assert service.system_note(gold) == "화면에는 S-Core에서 제공한 에스코어 드림 폰트가 적용되어 있습니다."

@@ -493,6 +493,46 @@ def f_distribution(result: Result) -> str:
     return f"F={value} 비율 {count / len(result.records):.0%}"
 
 
+def holdout_recall(replays: Mapping[str, Result]) -> tuple[int, int] | None:
+    """홀드아웃 노드 recall 합계 (matched, total). 캡처가 없으면 None."""
+    pairs = [
+        (r.meta["recall"]["matched"], r.meta["recall"]["total"])
+        for r in replays.values()
+        if r.meta.get("split") == "holdout" and r.meta.get("recall")
+    ]
+    return (sum(m for m, _ in pairs), sum(n for _, n in pairs)) if pairs else None
+
+
+def accuracy_line(result: Result, replays: Mapping[str, Result]) -> str:
+    """화면 ③ '정확도' 한 줄. 튜닝 노드 수치만 내세우지 않도록 홀드아웃 합계를 같이 적는다(NFR-03)."""
+    recall = result.meta.get("recall")
+    if result.meta.get("split") == "none":
+        return "골드셋이 없는 공정이라 정확도는 측정하지 않았습니다(정성 검토용)."
+    if not recall:
+        return "골드셋 재생 화면이라 정확도는 해당 없음."
+    line = f"전문가 결과물 대비 **{recall['recall']:.1%}** ({recall['matched']}/{recall['total']}, 1회 실행)"
+    held = holdout_recall(replays)
+    if result.meta.get("split") == "tune" and held:
+        line += (
+            f" — {result.meta.get('node')} 은 프롬프트를 맞춘 튜닝 노드입니다. "
+            f"처음 보는 홀드아웃 3노드 합계는 **{held[0] / held[1]:.1%}** ({held[0]}/{held[1]})"
+        )
+    elif result.meta.get("split") == "holdout":
+        line += " — 프롬프트 개발에 쓰지 않은 홀드아웃 노드"
+    return line
+
+
+def system_note(result: Result) -> str:
+    """💡 참고사항의 시스템 정보 줄. 모델·캡처 시각·비용은 결과 메타에서 읽는다."""
+    font = "화면에는 S-Core에서 제공한 에스코어 드림 폰트가 적용되어 있습니다."
+    m = result.meta
+    if result.is_gold or not m.get("model_id"):
+        return font
+    cost = m.get("cost_usd")
+    tail = f" / 1회 구동 비용 ${cost:.3f}" if cost is not None else ""
+    return f"이 결과는 {m['model_id']} 모델로 생성했으며, {font} (실호출 기준: {_kst(m.get('captured_at'))}{tail})"
+
+
 def summary_line(result: Result) -> str:
     """요약 줄. 불리한 숫자도 그대로(NFR-03) — 값이 없으면 없다고 적는다."""
     m = result.meta

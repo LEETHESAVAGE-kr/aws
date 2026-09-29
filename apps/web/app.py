@@ -55,21 +55,16 @@ state.setdefault("node", None)
 state.setdefault("quick_text", "")
 
 # ── 1. 제목 ──────────────────────────────────────────────────────────────────
-st.title("HAZOP 위험성평가 코파일럿")
+st.title("HAZOP 위험성평가 AI 코파일럿")
+st.markdown("#### 복잡한 HAZOP 워크시트 초안, 이제 AI가 작성합니다. 전문가는 검토에만 집중하세요.")
 st.markdown(
-    "공정 노드 설명(물질·상·압력·온도·설비·안전장치)을 넣으면 LLM 이 **파라미터 축을 스스로 열거**하고 "
-    "가이드워드(No·More·Less·Reverse·Other than·Part of·As well as)마다 매트릭스 셀을 판정해 "
-    "원인·결과·기존 안전장치·S×F 위험도·권고가 채워진 **HAZOP 워크시트 초안**을 만듭니다. "
-    "아래 결과는 전부 LLM 이 **왼쪽 입력만 보고** 생성한 것입니다(캡처 일시·모델·비용 표기). "
-    "사람은 검토에 집중합니다."
-)
-st.caption(
-    "고객사 실데이터는 쓰지 않았습니다. NH3 골드셋은 팀 보유 전문가 HAZOP 34건입니다. "
-    "이 페이지에는 S-Core에서 제공한 에스코어 드림이 적용되어 있습니다."
+    "사용자가 공정의 기본 정보(물질, 온도, 설비 등)만 입력하면, AI가 스스로 점검 항목(파라미터)을 세우고 "
+    "가이드워드마다 발생 가능한 이탈 시나리오를 빠짐없이 판정합니다. 원인과 결과부터 위험도(S×F), "
+    "개선 권고사항까지 채워진 HAZOP 워크시트 초안을 자동으로 생성합니다."
 )
 
 # ── 2. 공정 선택 ─────────────────────────────────────────────────────────────
-st.subheader("① 공정 선택")
+st.subheader("① 시나리오 및 공정 선택")
 names = [p["name"] for p in service.CATALOG] + [DIRECT]
 choice = st.selectbox("공정", names, key="process_name", label_visibility="collapsed")
 process = next((p for p in service.CATALOG if p["name"] == choice), None)
@@ -81,7 +76,14 @@ if process is not None:
         if process["gold"]
         else ":orange-background[예시 공정 · 골드셋 없음(정성 검토)]"
     )
-    st.markdown(f"{badge} {process['description']}")
+    if process["gold"]:
+        st.markdown(
+            f"{badge} 자체 구축한 전문가 검증 데이터(골드셋)를 기반으로 AI의 분석 정확도를 평가합니다.\n"
+            "- **대상 공정**: 액체 암모니아(NH3) 이송 공정 (공급선 → 이송 호스 → 수급선)\n"
+            "- **비교 검증**: 전문가가 직접 수행한 34건의 HAZOP 데이터를 기준으로 AI 결과물의 정확도(Recall)를 측정합니다."
+        )
+    else:
+        st.markdown(f"{badge} {process['description']}")
     node_ids = [n["id"] for n in process["nodes"]]
     if state.node not in node_ids:  # 공정을 바꾸면 그 공정의 첫 캡처 노드를 연다
         state.node = next((n for n in node_ids if n in replays), node_ids[0])
@@ -148,43 +150,52 @@ else:
 if result is None:
     st.info("직접 입력한 노드로 '빠른 실호출' 을 누르면 여기에 생성 과정과 워크시트가 나타납니다.")
 else:
-    st.subheader("② LLM 에 보낸 입력 → 생성 과정")
+    st.subheader("② 최소한의 입력, 압도적인 AI 분석")
+    st.markdown("AI는 좌측에 입력된 단편적인 노드 정보만으로도 전문가처럼 사고하고 분석을 확장합니다.")
     if result.is_gold:
         st.warning(service.provenance_line(result))
     else:
         st.caption(service.provenance_line(result))
     view = service.process_view(result)
+    node_meta = result.meta.get("node_meta", {})
     left, right = st.columns(2)
     with left:
-        st.markdown("**LLM 에 보낸 입력** — 프롬프트에 채워지는 노드 정보는 이것뿐입니다")
+        kind = "문장" if result.meta.get("node_text") else "JSON"
+        st.markdown(
+            f"**사용자 입력 ({kind})** — 노드({node_meta.get('node') or '—'}), "
+            f"취급 물질({node_meta.get('substance') or '—'}), "
+            f"대상 설비({', '.join(node_meta.get('equipment') or []) or '—'}) 등 필수 정보만 입력"
+        )
         if result.meta.get("node_text"):
-            st.markdown("입력 문장")
             st.code(result.meta["node_text"], language=None, wrap_lines=True)
             st.markdown(f"→ 해석된 NodeMeta ({result.meta.get('parse_model')} 1회 — 설명에 없는 수치는 비워 둠)")
-        st.json(result.meta.get("node_meta", {}))
+        st.json(node_meta)
     with right:
-        st.markdown("**생성 과정**")
         cells = (
             f"{view['judged_cells']}/{view['expected_cells']}" if view["expected_cells"] is not None else "—"
         )
         st.markdown(
-            f"1. **파라미터 열거** ({len(view['parameters'])}개, LLM 이 노드에서 도출): "
-            + " · ".join(view["parameters"])
-            + f"\n2. **가이드워드 판정** {len(view['guidewords'])}종: {' · '.join(view['guidewords'])}"
-            + f"\n3. 판정 셀 **{cells}** · API 호출 "
-            + ("—" if view["api_calls"] is None else f"{view['api_calls']}회(재시도 포함)")
-            + f" · 절단 {'—' if view['truncated_calls'] is None else view['truncated_calls']}회"
-            + f"\n4. 지연 {'—' if view['latency_s'] is None else f'{view["latency_s"]:.0f}초'}"
-            + f" · 비용 {'—' if view['cost_usd'] is None else f'${view["cost_usd"]:.3f}'}"
-            + f" · verifier review {view['review']}건"
+            "**AI 자동 분석 과정**\n"
+            f"1. **파라미터 자동 도출**: {' · '.join(view['parameters'])} 등 "
+            f"**{len(view['parameters'])}개**의 주요 점검 항목을 AI가 스스로 식별합니다.\n"
+            f"2. **가이드워드 매핑**: 식별된 항목에 가이드워드 {len(view['guidewords'])}종"
+            f"({' · '.join(view['guidewords'])})을 교차 적용해 매트릭스 셀 **{cells}** 을 빠짐없이 판정합니다."
         )
 
     # ── 4. HAZOP 워크시트 ────────────────────────────────────────────────────
-    st.subheader("③ HAZOP 워크시트")
+    st.subheader("③ HAZOP 워크시트 초안 완성")
+    st.markdown("도출된 위험 시나리오를 바탕으로 검토용 워크시트 초안이 완성됩니다.")
     notice = service.criteria_notice(result)
     if notice:
         st.markdown(f":orange-background[평가기준] {notice}")
-    st.markdown(f"**{service.summary_line(result)}**")
+    latency = "—" if view["latency_s"] is None else f"{view['latency_s']:.0f}초"
+    calls = "—" if view["api_calls"] is None else f"{view['api_calls']}회"
+    st.markdown(
+        f"- **분석 결과**: 총 {len(result.records)}건의 위험성 평가 레코드 도출\n"
+        f"- **정확도(Recall)**: {service.accuracy_line(result, replays)}\n"
+        f"- **운영 지표**: 총 {cells} 셀 판정 완료 (소요 시간: {latency} / API 호출 {calls})"
+    )
+    st.caption(service.summary_line(result))
     st.dataframe(service.worksheet_table(result), hide_index=True)
     files = service.export_files(result)
     mimes = {
@@ -195,6 +206,12 @@ else:
     for column, key in zip(st.columns(3), ("xlsx", "lopa", "report"), strict=True):
         name, data = files[key]
         column.download_button(f"⬇ {name}", data, file_name=name, mime=mimes[key])
+
+    st.markdown(
+        "💡 **참고사항 (데이터 보안 및 운영 환경)**\n"
+        "- **데이터 보안**: 고객사의 실제 데이터는 일체 사용하지 않으며, 팀이 자체 보유한 데이터로만 작동합니다.\n"
+        f"- **시스템 정보**: {service.system_note(result)}"
+    )
 
 # ── 5. 평가 결과 (기본 접힘) ─────────────────────────────────────────────────
 with st.expander("평가 결과 — 골드셋 대비 recall (n=1)", expanded=False):
