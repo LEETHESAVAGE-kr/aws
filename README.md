@@ -102,6 +102,7 @@ tools/build_gold.py      data/raw/*.xlsx → data/gold/*.json
 | 항목 | 상태 |
 |---|---|
 | LLM 호출 계층 | 공급자 추상화(`AbstractBedrockClient`) — Converse 어댑터·Anthropic Messages 어댑터·mock 3종 같은 계약. 모든 실측은 Anthropic 경로(`claude-opus-4-8`), `config/models.yaml` `provider` 한 줄로 전환 |
+| Amazon Bedrock | **실호출 0회.** 대회 계정에 Bedrock 권한이 없어(2026-09-15 확인) 모든 실측은 Anthropic 경로로 했다. Converse 어댑터(`BedrockClient`)는 mock 시험으로만 검증 |
 
 ## § 5 Kiro 개발 방식 · 추적 매트릭스
 
@@ -237,7 +238,7 @@ f9c14c0 chore: PRD v1.2, CLAUDE.md, Kiro steering 4종, spec gold-dataset/bedroc
 
 > 토큰은 로컬 실행 로그(`results/capture_*.log`, git 미추적)의 호출별 `tokens_in`·`cache_read`·`tokens_out`
 > 합을 노드 4개로 평균한 값. N1 의 스키마 재시도로 버려진 호출 1건(출력 5,088)은 로그에 없어 빠져 있다.
-> verifier 0건은 탐지 실패가 아니라 대상 부재다 — 280건 본문의 숫자는 `NH3`·`N2`·`2인` 뿐이고 규격 번호는
+> verifier 0건은 탐지 실패가 아니라 대상 부재다 — 9/29 1차 캡처 280건 본문의 숫자는 `NH3`·`N2`·`2인` 뿐이고 규격 번호는
 > 없었다. 결함 삽입 시험에서는 10건 중 10건을 `review` 로 격하했다(`tests/test_verify.py`).
 > 수작업 채점은 하지 않았다.
 
@@ -282,7 +283,7 @@ recall 0.417 을 끌어내린 것은 모델 판정이 아니라 이 절단이다
   병렬화 뒤에는 가장 긴 가이드워드 호출(출력 4천 토큰대, 약 60초)과 열거 호출이 바닥이다(§6 재캡처 표).
 - **비용**: 노드당 $0.745~$1.008 — NFR-04(≤ $0.30) 미달.
 - **n=1**: 모든 지표가 노드당 1회 실측이다. 분산을 모른다.
-- **근거 인용 없음**: 280건 전부 `confidence=inferred`, `evidence=[]`. `grounded` 등급은 부여된 적이 없다.
+- **근거 인용 없음**: 재생 레코드(NH3 4노드 292건, 화면 전체 434건) 전부 `confidence=inferred`, `evidence=[]`. `grounded` 등급은 부여된 적이 없다.
 - **운영 한계**: `core/llm` 에 호출 timeout 이 없어 네트워크가 끊기면 한 호출이 19분 매달린 사례가 있다.
   실호출 일일 상한은 프로세스 메모리 카운터라 재시작하면 0 으로 돌아간다([docs/backlog.md](docs/backlog.md)).
 - **실무자 관점 평가** ([docs/실무자평가_20260929.md](docs/실무자평가_20260929.md) — 자격 있는 HAZOP 리더 검토 아님, 재생 291건 n=1):
@@ -330,7 +331,7 @@ py -3.12 -m venv .venv
 
 - macOS/Linux 는 `python3.12 -m venv .venv` 와 `.venv/bin/python` 으로 바꾼다(리허설은 Windows 에서만 했다).
 - **화면 흐름**: ① **공정 선택**(`data/presets.json` 카탈로그 — NH3 벙커링 4노드 · LPG 저장탱크 출하 · 염소
-  톤컨테이너 하역·기화) → 노드 버튼 → ② **LLM 에 보낸 입력**(NodeMeta) / **생성 과정**(열거된 파라미터·가이드워드·
+  톤컨테이너 하역·기화) → 노드 버튼 → ② **입력·AI 분석 과정** — 사용자 입력(NodeMeta) / 분석 과정(열거된 파라미터·가이드워드·
   판정 셀·API 호출 수·지연·비용·절단·review 건수) → ③ **HAZOP 워크시트**(신뢰도 배지·검증 플래그 열) + xlsx·LOPA 초안(Word .docx)·
   신뢰도 리포트 JSON 다운로드 → 접힌 **평가 결과**(골드셋 대비 recall, NH3 4노드만).
 - **verifier 시연 토글**: 워크시트 위 체크박스(기본 꺼짐, 골드 재생엔 없음). 켜면 **표시용 사본**의 첫 행 권고에
