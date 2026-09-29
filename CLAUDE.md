@@ -18,6 +18,7 @@
 - `.kiro/specs/*/requirements.md`·`design.md`는 **읽기 전용**. 요구사항 변경이 필요하면 변경안을 텍스트로 제안하고 사용자가 Kiro에서 반영한다. `tasks.md`의 체크박스는 사용자가 Kiro에서 표시한다(이 세션은 완료 보고만).
 - steering 파일의 규칙은 이 문서보다 우선한다. 충돌 시 steering을 따르고 충돌 사실을 보고.
 - 커밋 메시지: `spec:<name> T-xx — <요약>`. 하나의 커밋은 하나의 task.
+- 커밋 메시지에 `Co-Authored-By:`·`Claude-Session:` 같은 트레일러를 넣지 않는다(저자는 사람 1인). 도구 언급은 README §5 로 충분하다.
 
 ## 불변 규칙
 

@@ -171,15 +171,15 @@ ID 는 각 spec 의 requirements.md·tasks.md 원문 그대로다(gold-dataset·
 자기 검증)와 대응한다. `git log --oneline --grep=spec` 발췌 10줄(최신이 위):
 
 ```text
-315a99d spec:self-verification T-01~T-04 — 규칙 기반 verifier (FR-06, 실호출 0회)
-cad4438 spec:evaluation-harness — FR-08 평가 하네스 spec 손 작성 (9/24 당김)
-0c9298f spec:bedrock-client T-15 — Anthropic 공급자 어댑터 (REQ-12)
-0da8139 docs: PRD v2.0 (D-7 범위 재정의) + spec:bedrock-client REQ-12·T-15 손 추가
-bc02f1d spec:export-formats T-01~T-06 — xlsx·LOPA·신뢰도 리포트 내보내기 (손 작성 spec)
-a3a9179 spec:hazop-generation T-01~T-06 — 2단 매트릭스 이탈 생성 (mock 경로)
-8cbb418 chore: Kiro spec hazop-generation 추가 (requirements/design/tasks)
-c39d86d spec:bedrock-client T-01~T-11 — Converse 래퍼 mock 경로(실호출 미검증)
-291f7ea spec:gold-dataset T-01~T-11 — xlsx→JSON 변환·노드 홀드아웃 분할
+a02eeb4 spec:self-verification T-01~T-04 — 규칙 기반 verifier (FR-06, 실호출 0회)
+92ba110 spec:evaluation-harness — FR-08 평가 하네스 spec 손 작성 (9/24 당김)
+95b6068 spec:bedrock-client T-15 — Anthropic 공급자 어댑터 (REQ-12)
+8b14ad8 docs: PRD v2.0 (D-7 범위 재정의) + spec:bedrock-client REQ-12·T-15 손 추가
+05cbcff spec:export-formats T-01~T-06 — xlsx·LOPA·신뢰도 리포트 내보내기 (손 작성 spec)
+a70817c spec:hazop-generation T-01~T-06 — 2단 매트릭스 이탈 생성 (mock 경로)
+2c45a59 chore: Kiro spec hazop-generation 추가 (requirements/design/tasks)
+e661797 spec:bedrock-client T-01~T-11 — Converse 래퍼 mock 경로(실호출 미검증)
+de80933 spec:gold-dataset T-01~T-11 — xlsx→JSON 변환·노드 홀드아웃 분할
 f9c14c0 chore: PRD v1.2, CLAUDE.md, Kiro steering 4종, spec gold-dataset/bedrock-client
 ```
 
