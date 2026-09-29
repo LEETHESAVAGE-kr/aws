@@ -1,7 +1,7 @@
-"""데모 UI 의 시험 가능한 로직 — FR-10 H-02 (PRD v2.0 §5 FR-10, 지시문 H).
+"""데모 UI 의 시험 가능한 로직 — FR-10 H-02 (지시문 H) · J-01 (지시문 J).
 
-모드 판정·실호출 상한·실행·결과표·내보내기. `app.py` 는 위젯 배선만 하고 여기를 부른다.
-`core/` 는 호출만 한다(PRD §4).
+모드 판정·실호출 상한·실행·결과표·내보내기. `app.py` 는 위젯 배선만 하고
+여기를 부른다. `core/` 는 호출만 한다(PRD §4).
 """
 
 from __future__ import annotations
@@ -27,6 +27,7 @@ from core.export.rows import HEADERS
 from core.export.xlsx import confidence_label
 from core.llm import ConverseResponse, MockBedrockClient, get_bedrock_client
 
+from .catalog import load_catalog, nodes_by_id
 from .replay import Result
 
 if TYPE_CHECKING:
@@ -42,12 +43,12 @@ SECRET_KEYS: Final[tuple[str, ...]] = ("HAZOP_ALLOW_LIVE", "ANTHROPIC_API_KEY")
 BADGES: Final[dict[str | None, str]] = {"grounded": "🟢", "inferred": "🟡", "review": "🔴"}
 CONFIDENCE_COLUMN: Final[str] = "신뢰도"
 FLAG_COLUMN: Final[str] = "검증 플래그"
-#: 프리셋 4개(H-06). 설비명은 data/gold 각 노드의 node_meta.equipment 와 같다.
+#: 공정 카탈로그(J-01, `data/presets.json`). 노드 id → 노드(+ `process`).
+CATALOG: Final[list[dict[str, Any]]] = load_catalog()
+NODES: Final[dict[str, dict[str, Any]]] = nodes_by_id(CATALOG)
+#: 노드 id → 설비명(H-06 호환). NH3 노드는 설비 1개라 예전 하드코딩 값과 같다.
 PRESETS: Final[dict[str, str]] = {
-    "N1": "벙커링선 매니폴드",
-    "N2": "이송 호스",
-    "N3": "수급선 매니폴드",
-    "N4": "이송 운전 절차",
+    nid: ", ".join(n["node_meta"].equipment) for nid, n in NODES.items()
 }
 #: data/gold/split_node.json 의 holdout_count.
 HOLDOUT_GOLD_TOTAL: Final[int] = 26
@@ -290,6 +291,8 @@ def evaluation_table(results: Mapping[str, Result]) -> list[dict[str, str]]:
     matched = gold = records = truncated = judged_sum = expected_sum = 0
     cost = latency = 0.0
     measured: list[str] = []
+    # 골드셋이 없는 예시 공정(split "none")은 recall 표 대상이 아니다(J-01).
+    results = {n: r for n, r in results.items() if r.meta.get("split") != "none"}
     for node in sorted(results, key=lambda n: (n not in PRESETS, n)):
         m = results[node].meta
         recall = m.get("recall")
