@@ -1,11 +1,12 @@
-"""데모 UI 의 시험 가능한 로직 — FR-10 H-02 (지시문 H) · J-01 (지시문 J).
+"""데모 UI 의 시험 가능한 로직 — FR-10 H-02 (지시문 H) · J-01·J-03 (지시문 J).
 
-모드 판정·실호출 상한·실행·결과표·내보내기. `app.py` 는 위젯 배선만 하고
+모드 판정·실호출 상한·실행(노드 전체 / 빠른 실호출)·결과표·내보내기. `app.py` 는 위젯 배선만 하고
 여기를 부른다. `core/` 는 호출만 한다(PRD §4).
 """
 
 from __future__ import annotations
 
+import contextlib
 import json
 import os
 import shutil
@@ -18,6 +19,7 @@ from typing import TYPE_CHECKING, Any, Final
 
 from core.agent import HazopGenerator, NodeMeta, VerifySummary, verify
 from core.agent.generate import (
+    GUIDEWORD_DEFINITIONS,
     PROCEDURAL_GUIDEWORDS,
     STANDARD_GUIDEWORDS,
     load_generator_config,
@@ -25,9 +27,15 @@ from core.agent.generate import (
 from core.export import export_all, normalize_rows
 from core.export.rows import HEADERS
 from core.export.xlsx import confidence_label
-from core.llm import ConverseResponse, MockBedrockClient, get_bedrock_client
+from core.llm import (
+    ConfigValidationError,
+    ConverseResponse,
+    MockBedrockClient,
+    get_bedrock_client,
+    load_model_config,
+)
 
-from .catalog import load_catalog, nodes_by_id
+from .catalog import load_catalog, nodes_by_id, validate_node_meta
 from .replay import Result
 
 if TYPE_CHECKING:
@@ -36,10 +44,12 @@ if TYPE_CHECKING:
     from core.agent import DeviationRecord
     from core.llm import AbstractBedrockClient, Message
 
-LIVE_NOTE: Final[str] = "약 10분 · 약 $0.8 소요(9/28 실측)"
+LIVE_NOTE: Final[str] = "약 7~9분 · 약 $0.75~1.01 소요(9/29 실측 4노드)"
+QUICK_NOTE: Final[str] = "약 1분 · API 호출 2회(파라미터 열거 1 + 가이드워드 1)"
 SESSION_LIMIT: Final[int] = 1
 DAILY_LIMIT: Final[int] = 5
-SECRET_KEYS: Final[tuple[str, ...]] = ("HAZOP_ALLOW_LIVE", "ANTHROPIC_API_KEY")
+SECRET_KEYS: Final[tuple[str, ...]] = ("HAZOP_ALLOW_LIVE", "HAZOP_LIVE_SCOPE", "ANTHROPIC_API_KEY")
+LIVE_SCOPES: Final[tuple[str, ...]] = ("quick", "full")
 BADGES: Final[dict[str | None, str]] = {"grounded": "🟢", "inferred": "🟡", "review": "🔴"}
 CONFIDENCE_COLUMN: Final[str] = "신뢰도"
 FLAG_COLUMN: Final[str] = "검증 플래그"
@@ -79,6 +89,15 @@ def sync_secrets(secrets: Mapping[str, object], environ: MutableMapping[str, str
 
 def is_mock(environ: Mapping[str, str] = os.environ) -> bool:
     return _is_true(environ.get("HAZOP_USE_MOCK", "false"))
+
+
+def live_scope(environ: Mapping[str, str] = os.environ) -> str:
+    """`HAZOP_LIVE_SCOPE` — `quick`(직접 입력 빠른 실호출만, 기본) | `full`(노드 전체 실호출 버튼도).
+
+    모르는 값은 `quick` 으로 본다 — 비싼 쪽으로 새지 않게.
+    """
+    value = environ.get("HAZOP_LIVE_SCOPE", "quick").strip().lower()
+    return value if value in LIVE_SCOPES else "quick"
 
 
 def live_block_reason(environ: Mapping[str, str] = os.environ) -> str | None:
@@ -192,6 +211,80 @@ def run_live(node_meta_json: str, replay: Result, environ: Mapping[str, str] = o
         "judged_cells": generator.judged_cells,
         "review_guidewords": list(generator.review_guidewords),
         "recall": None,
+    }
+    return Result(meta=meta, records=records)
+
+
+def _observe_calls(client: AbstractBedrockClient) -> list[dict[str, Any]]:
+    """재시도까지 포함한 원시 호출을 기록한다(`tools/capture_replay.py` 와 같은 관측 훅)."""
+    calls: list[dict[str, Any]] = []
+    do_converse = client._do_converse  # noqa: SLF001
+
+    def _observed(*args: Any, **kwargs: Any) -> ConverseResponse:
+        response = do_converse(*args, **kwargs)
+        calls.append({"tokens_out": response.usage.output, "stop_reason": response.stop_reason})
+        return response
+
+    client._do_converse = _observed  # type: ignore[method-assign]  # noqa: SLF001
+    return calls
+
+
+def run_quick(
+    node_meta_json: str, guideword: str, replay: Result, environ: Mapping[str, str] = os.environ
+) -> Result:
+    """직접 입력 빠른 실호출(J-03): 파라미터 열거 1회 + 가이드워드 1종 판정 1회 = `converse` 2회.
+
+    노드 전체(가이드워드 7~10종, 약 8분)를 돌지 않고 한 행만 채운다. mock 모드면 `replay` 레코드를
+    돌려주는 모의 클라이언트로 같은 경로를 돈다. 입력이 스키마를 어기면 API 를 부르기 전에 `ValueError`.
+    """
+    if guideword not in GUIDEWORD_DEFINITIONS:
+        raise ValueError(f"알 수 없는 가이드워드: {guideword}")
+    node_meta = validate_node_meta(json.loads(node_meta_json))
+    mock = is_mock(environ)
+    client: AbstractBedrockClient = (
+        MockBedrockClient(response_factory=_mock_factory(replay)) if mock else get_bedrock_client()
+    )
+    raw_calls = _observe_calls(client)
+    provider: str | None = None
+    model_id: str | None = None
+    max_tokens: int | None = None
+    with contextlib.suppress(ConfigValidationError):
+        config = load_model_config()
+        provider, model_id, max_tokens = (
+            config.provider, config.generation.model_id, config.generation.max_tokens
+        )
+    generator = HazopGenerator(client, load_generator_config())
+    started = time.perf_counter()
+    # 비공개 메서드 의존 3곳(_enumerate_parameters·_generate_batch·_assemble) — core/ 무수정을 위해
+    # 지시문 J 에 한해 허용. 본선에서 HazopGenerator.generate_quick() 공개 API 로 승격(docs/backlog.md).
+    parameters = generator._enumerate_parameters(node_meta)  # noqa: SLF001
+    if not parameters:
+        raise RuntimeError("파라미터 열거 실패(응답 스키마 2회 위반) — 가이드워드 판정을 건너뛰었습니다.")
+    batch = generator._generate_batch(node_meta, parameters, guideword)  # noqa: SLF001
+    records = generator._assemble(node_meta, [batch] if batch else [])  # noqa: SLF001
+    latency = time.perf_counter() - started
+    meta = {
+        "source": "quick",
+        "mock": mock,
+        "provider": "mock" if mock else provider,
+        "model_id": None if mock else model_id,
+        "captured_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+        "node": node_meta.node or "직접입력",
+        "split": "none",
+        "node_meta": node_meta.model_dump(),
+        "guidewords": [guideword],
+        "parameters": [p["name"] for p in parameters],
+        "latency_s": round(latency, 1),
+        "cost_usd": round(generator.total_cost_usd, 4),
+        "expected_cells": len(parameters),
+        "judged_cells": generator.judged_cells,
+        "review_guidewords": list(generator.review_guidewords),
+        "recall": None,
+        "raw_calls": raw_calls,
+        "truncated_calls": sum(
+            c["stop_reason"] == "max_tokens" or (max_tokens is not None and c["tokens_out"] >= max_tokens)
+            for c in raw_calls
+        ),
     }
     return Result(meta=meta, records=records)
 
