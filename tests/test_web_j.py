@@ -18,7 +18,8 @@ if TYPE_CHECKING:
 
 _APP = REPLAY_DIR.parents[1] / "apps" / "web" / "app.py"
 _MOCK_ENV = {"HAZOP_USE_MOCK": "true", "HAZOP_ALLOW_LIVE": "true"}
-_DIRECT = "직접 입력 (빠른 실호출)"
+_CASES = "실측 사례 재생"
+_GENERATE = "HAZOP 초안 생성"
 _SENTENCE = "수소충전소 압축기에서 디스펜서로 고압 수소를 보낸다. 안전장치는 긴급차단밸브."
 
 
@@ -206,15 +207,15 @@ def test_app_direct_input_quick_run_on_mock(monkeypatch: pytest.MonkeyPatch, sco
     for key, value in {**_MOCK_ENV, "HAZOP_LIVE_SCOPE": scope}.items():
         monkeypatch.setenv(key, value)
     at = AppTest.from_file(str(_APP), default_timeout=30).run()
-    at.selectbox[0].select(_DIRECT).run()
     assert not at.exception
     assert len(at.dataframe) == 0
     assert any("노드 전체" in b.label for b in at.button) is (scope == "full")
-    # 입력 칸은 비어 있고 예시는 placeholder 로만 보인다 — 비어 있으면 버튼이 막힌다.
-    assert at.text_area[0].value == "" and "예시)" in at.text_area[0].placeholder
-    assert next(b for b in at.button if b.label.startswith("빠른 실호출")).disabled is True
+    # 기본 = 문장 모드. 입력 칸은 비어 있고 예시는 칩이 맡는다 — 비어 있으면 버튼이 막힌다.
+    assert at.radio(key="mode").value == "문장으로 새 공정 분석"
+    assert at.text_area[0].value == "" and "예시" in at.text_area[0].placeholder
+    assert next(b for b in at.button if b.label.startswith(_GENERATE)).disabled is True
     at.text_area[0].input(_SENTENCE).run()
-    quick = next(b for b in at.button if b.label.startswith("빠른 실호출"))
+    quick = next(b for b in at.button if b.label.startswith(_GENERATE))
     assert quick.disabled is False
     quick.click().run()
     assert not at.exception
@@ -222,9 +223,11 @@ def test_app_direct_input_quick_run_on_mock(monkeypatch: pytest.MonkeyPatch, sco
     assert {v.split(" (")[0] for v in at.dataframe[0].value["가이드워드"]} == {"More"}  # "More (압력)" 형식
     assert any("API 호출 3회" in m.value for m in at.markdown)  # 해석 1 + 열거 1 + 판정 1
     assert any(_SENTENCE in c.value for c in at.code)  # 입력 문장이 해석 결과 옆에 보인다
-    # 상한은 공용 — 빠른 실호출 1회 뒤엔 노드 전체 버튼도 막힌다.
-    assert all(b.disabled for b in at.button if "실호출" in b.label)
+    # 상한은 공용 — 초안 생성 1회 뒤엔 노드 전체 버튼도 막히고, 사례 모드로 안내한다.
+    assert all(b.disabled for b in at.button if b.label.startswith((_GENERATE, "노드 전체")))
     assert any("세션" in c.value for c in at.caption)
+    next(b for b in at.button if b.label == "실측 사례 보기").click().run()
+    assert not at.exception and at.radio(key="mode").value == _CASES
 
 
 def test_app_direct_input_disabled_without_allow(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -232,9 +235,9 @@ def test_app_direct_input_disabled_without_allow(monkeypatch: pytest.MonkeyPatch
 
     monkeypatch.delenv("HAZOP_ALLOW_LIVE", raising=False)
     at = AppTest.from_file(str(_APP), default_timeout=30).run()
-    at.selectbox[0].select(_DIRECT).run()
     assert not at.exception
-    assert [b.disabled for b in at.button] == [True]
+    assert [b.disabled for b in at.button if b.label.startswith(_GENERATE)] == [True]
+    assert all(not b.disabled for b in at.button if (b.key or "").startswith("chip_"))
     assert any("HAZOP_ALLOW_LIVE" in c.value for c in at.caption)
 
 
@@ -292,9 +295,8 @@ def test_app_shows_key_hint_on_auth_error(monkeypatch: pytest.MonkeyPatch) -> No
 
     monkeypatch.setattr(service, "run_quick", _reject)
     at = AppTest.from_file(str(_APP), default_timeout=30).run()
-    at.selectbox[0].select(_DIRECT).run()
     at.text_area[0].input(_SENTENCE).run()
-    next(b for b in at.button if b.label.startswith("빠른 실호출")).click().run()
+    next(b for b in at.button if b.label.startswith(_GENERATE)).click().run()
     assert not at.exception
     assert any("AuthenticationError" in e.value for e in at.error)
     hints = [c.value for c in at.caption if c.value.startswith("키 진단")]
@@ -340,12 +342,13 @@ def test_app_criteria_badge_visibility(monkeypatch: pytest.MonkeyPatch) -> None:
         return any(service.CRITERIA_NOTICE in m.value for m in at.markdown)
 
     at = AppTest.from_file(str(_APP), default_timeout=30).run()
-    assert not at.exception and len(at.dataframe) == 1 and not badge_shown(at)  # 첫 화면 = N1(골드 공정)
-    at.selectbox[0].select("LPG 저장탱크 출하").run()
+    at.radio(key="mode").set_value(_CASES).run()
+    assert not at.exception and len(at.dataframe) == 1 and not badge_shown(at)  # 사례 첫 화면 = N1(골드 공정)
+    at.selectbox(key="process_name").select("LPG 저장탱크 출하").run()
     assert not at.exception and badge_shown(at)
-    at.selectbox[0].select(_DIRECT).run()
+    at.radio(key="mode").set_value("문장으로 새 공정 분석").run()
     at.text_area[0].input(_SENTENCE).run()
-    next(b for b in at.button if b.label.startswith("빠른 실호출")).click().run()
+    next(b for b in at.button if b.label.startswith(_GENERATE)).click().run()
     assert not at.exception and len(at.dataframe) == 1 and badge_shown(at)
 
 
@@ -471,7 +474,8 @@ def test_app_verifier_demo_toggle(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(service, "export_files", spy)
     at = AppTest.from_file(str(_APP), default_timeout=30).run()
     assert not at.exception
-    at.selectbox[0].select("LPG 저장탱크 출하").run()
+    at.radio(key="mode").set_value(_CASES).run()
+    at.selectbox(key="process_name").select("LPG 저장탱크 출하").run()
     boxes = [c for c in at.checkbox if c.label == service.DEMO_TOGGLE_LABEL]
     assert len(boxes) == 1 and boxes[0].value is False
 
@@ -490,3 +494,32 @@ def test_app_verifier_demo_toggle(monkeypatch: pytest.MonkeyPatch) -> None:
     boxes = [c for c in at.checkbox if c.label == service.DEMO_TOGGLE_LABEL]
     boxes[0].uncheck().run()
     assert red_rows() == 0 and not banner()
+
+
+# ── UX v3 (PRD_UX_v3 §4-4) — 문장 모드가 기본이고, 예시 칩이 입력 칸을 채운다 ─────────────
+def test_app_starts_in_sentence_mode_with_empty_input(monkeypatch: pytest.MonkeyPatch) -> None:
+    from streamlit.testing.v1 import AppTest
+
+    for key, value in _MOCK_ENV.items():
+        monkeypatch.setenv(key, value)
+    at = AppTest.from_file(str(_APP), default_timeout=30).run()
+    assert not at.exception
+    assert at.radio(key="mode").value == "문장으로 새 공정 분석"
+    assert at.session_state["quick_text"] == ""
+    assert len(at.dataframe) == 0
+    assert not any("빠른 실호출" in b.label or "직접 입력" in b.label for b in at.button)
+
+
+def test_app_example_chip_fills_input(monkeypatch: pytest.MonkeyPatch) -> None:
+    from streamlit.testing.v1 import AppTest
+
+    for key, value in _MOCK_ENV.items():
+        monkeypatch.setenv(key, value)
+    at = AppTest.from_file(str(_APP), default_timeout=30).run()
+    chips = [b for b in at.button if (b.key or "").startswith("chip_")]
+    assert len(chips) == 3
+    at.button(key="chip_0").click().run()
+    assert not at.exception
+    assert at.session_state["quick_text"].startswith("수소충전소에서 튜브트레일러")
+    assert at.text_area[0].value == at.session_state["quick_text"]
+    assert next(b for b in at.button if b.label.startswith(_GENERATE)).disabled is False
