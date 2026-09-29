@@ -164,12 +164,12 @@
 
 | 태스크 | 설명 | 오프라인 | 상태 |
 |---|---|---|---|
-| T-01 | `schemas/deviation.schema.json` 작성 | ✅ | ☐ |
-| T-02 | `NodeMeta` · `DeviationRecord` · `HazopGenerator` 뼈대 | ✅ | ☐ |
-| T-03 | 프롬프트 파일 작성 및 로딩 함수 | ✅ | ☐ |
-| T-04 | `generate` 핵심 흐름 구현 | ✅ | ☐ |
-| T-05 | 캐싱 블록 적용 | ✅ | ☐ |
-| T-06 | 오프라인 테스트 스위트 | ✅ | ☐ |
-| T-07 | 실호출 스모크 테스트 | G0 후 | ☐ |
-| T-08 | G1 킬체크 N1 recall ≥ 0.5 | G0 후 | ☐ |
+| T-01 | `schemas/deviation.schema.json` 작성 | ✅ | ☑ |
+| T-02 | `NodeMeta` · `DeviationRecord` · `HazopGenerator` 뼈대 | ✅ | ☑ |
+| T-03 | 프롬프트 파일 작성 및 로딩 함수 | ✅ | ☑ |
+| T-04 | `generate` 핵심 흐름 구현 | ✅ | ☑ |
+| T-05 | 캐싱 블록 적용 | ✅ | ☑ |
+| T-06 | 오프라인 테스트 스위트 | ✅ | ☑ |
+| T-07 | 실호출 스모크 테스트 | G0 후 | ☑ |
+| T-08 | G1 킬체크 N1 recall ≥ 0.5 | G0 후 | ☑ |
 | T-09 | 가이드워드 판정 병렬 호출 (R-10, 지시문 O-1) | ✅ | ☑ |

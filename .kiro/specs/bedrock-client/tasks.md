@@ -344,7 +344,7 @@ G0 킬체크 마감: 2026-09-07
 
 ---
 
-## T-15 · Anthropic 공급자 어댑터 (REQ-12) ☐
+## T-15 · Anthropic 공급자 어댑터 (REQ-12) ☑
 
 **목적**: `provider=anthropic` 일 때 Anthropic Messages API 로 동일한 `converse()` 계약을 수행한다. 대회 계정에 Bedrock 권한이 없어(9/15 확인) 개발·측정 경로를 확보하기 위함. 지시문 E-1 세션에서 구현.
 

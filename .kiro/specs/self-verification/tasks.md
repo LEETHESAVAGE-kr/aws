@@ -9,22 +9,22 @@
 
 ---
 
-## T-01 규칙·타입 (`core/agent/verify.py`) 【오프라인】 ☐
+## T-01 규칙·타입 (`core/agent/verify.py`) 【오프라인】 ☑
 
 `Flag`·`VerifySummary`·`STANDARD_PATTERNS`·`NUMBER_PATTERN`·`_iter_text_fields`·`_allowed_numbers`.
 `verify()` 가 R-01·R-02·R-03·R-04 를 수행. `core/llm` 임포트 0.
 
-## T-02 시험 (`tests/test_verify.py`) 【오프라인】 ☐
+## T-02 시험 (`tests/test_verify.py`) 【오프라인】 ☑
 
 결함 삽입 10건(≥ 9 플래그), 위양성(AC-02-1), 순서·개수 보존, 원본 불변, 같은 매치 1회 계수(AC-01-2),
 `deviation` 필드 수치 비대상(AC-02-3). 61건 baseline 플래그 수를 로그로 출력.
 
-## T-03 UI·내보내기 결선 (`apps/web/service.py`, `tests/test_web.py`) 【오프라인】 ☐
+## T-03 UI·내보내기 결선 (`apps/web/service.py`, `tests/test_web.py`) 【오프라인】 ☑
 
 `Result.verified` 캐시, `검증 플래그` 열, 요약 줄 `review N건`. `export_files` 가 격하된 confidence 로
 xlsx 신뢰도 시트를 쓴다. `tests/test_web.py` 에 결함 1건 삽입 → 표·xlsx 모두 `review` 인 시험 1건.
 
-## T-04 완료 보고 (`docs/진행로그.md`) 【오프라인】 ☐
+## T-04 완료 보고 (`docs/진행로그.md`) 【오프라인】 ☑
 
 61건 실측 플래그 수(규칙별), 결함 삽입 결과(10건 중 n), 결함 재삽입 검증 결과, AC 충족 표.
 
