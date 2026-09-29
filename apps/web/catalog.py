@@ -21,9 +21,15 @@ _SCHEMA_PATH: Final[Path] = _ROOT / "schemas" / "deviation.schema.json"
 
 
 @cache
-def _node_meta_validator() -> Draft7Validator:
+def node_meta_schema() -> dict[str, Any]:
+    """산출물 스키마(`schemas/deviation.schema.json`)의 `node_meta` 부분 스키마 — 정본은 그 파일 하나."""
     schema = json.loads(_SCHEMA_PATH.read_text(encoding="utf-8"))
-    return Draft7Validator(schema["items"]["properties"]["node_meta"])
+    return dict(schema["items"]["properties"]["node_meta"])
+
+
+@cache
+def _node_meta_validator() -> Draft7Validator:
+    return Draft7Validator(node_meta_schema())
 
 
 def validate_node_meta(payload: dict[str, Any]) -> NodeMeta:

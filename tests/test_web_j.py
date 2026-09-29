@@ -19,6 +19,7 @@ if TYPE_CHECKING:
 _APP = REPLAY_DIR.parents[1] / "apps" / "web" / "app.py"
 _MOCK_ENV = {"HAZOP_USE_MOCK": "true", "HAZOP_ALLOW_LIVE": "true"}
 _DIRECT = "직접 입력 (빠른 실호출)"
+_SENTENCE = "수소충전소 압축기에서 디스펜서로 고압 수소를 보낸다. 안전장치는 긴급차단밸브."
 
 
 @pytest.fixture(autouse=True)
@@ -122,6 +123,74 @@ def test_run_quick_rejects_bad_input_before_any_call(
         service.run_quick(json.dumps(node, ensure_ascii=False), guideword, load_replays()["N1"], _MOCK_ENV)
 
 
+# ── 자연어 입력 (사용자 결정 9/29, PRD FR-10 밖) ──────────────────────────────
+def _parse_client(payload: dict[str, Any]) -> service.MockBedrockClient:
+    return service.MockBedrockClient(
+        response_factory=lambda **_: service.ConverseResponse(content=json.dumps(payload, ensure_ascii=False))
+    )
+
+
+def test_run_quick_natural_language_adds_one_parse_call() -> None:
+    result = service.run_quick(_SENTENCE, "More", load_replays()["N1"], _MOCK_ENV)
+    m = result.meta
+    assert [c.get("stage") for c in m["raw_calls"]] == ["parse", None, None]  # 해석 1 + 열거 1 + 판정 1
+    assert (m["parsed_by"], m["node_text"], m["parse_model"]) == ("llm", _SENTENCE, "mock")
+    assert m["node_meta"]["substance"] == "수소" and {r.guideword for r in result.records} == {"More"}
+
+
+def test_parse_json_input_makes_no_call() -> None:
+    client = _parse_client({})
+    node = service.NODES["P2"]["node_meta"].model_dump()
+    meta, parsed = service.parse_node_text(json.dumps(node, ensure_ascii=False), _MOCK_ENV, client)
+    assert meta.substance == "염소" and parsed["parsed_by"] == "json" and client.calls == []
+
+
+def test_parse_sends_sentence_with_schema_and_validates_reply() -> None:
+    reply = {"node": "X1", "substance": "수소", "phase": "gas", "pressure": {"value": 90, "unit": "MPa"},
+             "T_degC": None, "equipment": ["압축기"], "safeguards": []}
+    client = _parse_client(reply)
+    meta, parsed = service.parse_node_text(_SENTENCE, _MOCK_ENV, client)
+    assert meta.P_kPag == 90000 and meta.T_degC is None and parsed["cost_usd"] == 0.0  # 환산은 코드가 한다
+    (call,) = client.calls
+    assert _SENTENCE in str(call["messages"][0].content) and "{text}" not in str(call["messages"][0].content)
+    schema = call["response_schema"]
+    assert schema["properties"]["phase"]["enum"] == ["liquid", "gas", "liquid/gas", "unknown"]
+    assert "P_kPag" not in schema["properties"] and "pressure" in schema["required"]
+    assert "node" in schema["required"] and "$comment" not in json.dumps(schema)
+    # 모델이 enum 밖 값을 내면 core/llm 이 응답 스키마로 1회 재시도 후 content=None → 생성 전에 막힌다.
+    # (그 뒤의 validate_node_meta 는 _parse_schema 와 산출물 스키마가 어긋날 때를 위한 2차 방어라 여기선 닿지 않는다.)
+    bad = _parse_client({**reply, "phase": "기체"})
+    with pytest.raises(ValueError, match="2회 위반"):
+        service.parse_node_text(_SENTENCE, _MOCK_ENV, bad)
+    assert len(bad.calls) == 2
+
+
+@pytest.mark.parametrize(
+    ("pressure", "kpag"),
+    [(None, None), ({"value": 7, "unit": "bar"}, 700), ({"value": 350, "unit": "kPa"}, 350),
+     ({"value": 10, "unit": "kgf/cm2"}, 980.665)],
+)
+def test_parse_converts_pressure_in_code(pressure: dict[str, Any] | None, kpag: float | None) -> None:
+    reply = {"node": "X1", "substance": "프로판", "phase": "liquid", "pressure": pressure, "T_degC": 25,
+             "equipment": ["저장탱크"], "safeguards": []}
+    meta, _ = service.parse_node_text(_SENTENCE, _MOCK_ENV, _parse_client(reply))
+    assert meta.P_kPag == kpag
+
+
+@pytest.mark.parametrize("text", ["", "   ", "가" * (service.NODE_TEXT_LIMIT + 1)])
+def test_parse_rejects_empty_or_long_text_before_call(text: str) -> None:
+    client = _parse_client({})
+    with pytest.raises(ValueError):
+        service.parse_node_text(text, _MOCK_ENV, client)
+    assert client.calls == []
+
+
+def test_parser_uses_low_cost_verifier_profile(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-test")  # 생성자만 — 호출하지 않는다
+    config = service.load_model_config()
+    assert service._parser_client().model_short == config.verifier.model_id != config.generation.model_id
+
+
 @pytest.mark.parametrize(
     ("value", "scope"), [(None, "quick"), ("quick", "quick"), ("FULL", "full"), ("everything", "quick")]
 )
@@ -141,13 +210,18 @@ def test_app_direct_input_quick_run_on_mock(monkeypatch: pytest.MonkeyPatch, sco
     assert not at.exception
     assert len(at.dataframe) == 0
     assert any("노드 전체" in b.label for b in at.button) is (scope == "full")
+    # 입력 칸은 비어 있고 예시는 placeholder 로만 보인다 — 비어 있으면 버튼이 막힌다.
+    assert at.text_area[0].value == "" and "예시)" in at.text_area[0].placeholder
+    assert next(b for b in at.button if b.label.startswith("빠른 실호출")).disabled is True
+    at.text_area[0].input(_SENTENCE).run()
     quick = next(b for b in at.button if b.label.startswith("빠른 실호출"))
     assert quick.disabled is False
     quick.click().run()
     assert not at.exception
     assert len(at.dataframe) == 1
     assert {v.split(" (")[0] for v in at.dataframe[0].value["가이드워드"]} == {"More"}  # "More (압력)" 형식
-    assert any("API 호출 2회" in m.value for m in at.markdown)
+    assert any("API 호출 3회" in m.value for m in at.markdown)  # 해석 1 + 열거 1 + 판정 1
+    assert any(_SENTENCE in c.value for c in at.code)  # 입력 문장이 해석 결과 옆에 보인다
     # 상한은 공용 — 빠른 실호출 1회 뒤엔 노드 전체 버튼도 막힌다.
     assert all(b.disabled for b in at.button if "실호출" in b.label)
     assert any("세션" in c.value for c in at.caption)
