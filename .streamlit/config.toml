@@ -4,14 +4,14 @@ headless = true
 [browser]
 gatherUsageStats = false
 
-# DESIGN.md — 화면은 흰색, 포인트(주 버튼·선택 강조·링크)만 Kiro 보라.
+# UX v3.2 (9/29 사용자 결정, Planfit 참고) — 어두운 캔버스, 포인트(주 버튼·선택 강조)만 Kiro 보라.
 [theme]
-base = "light"
+base = "dark"
 primaryColor = "#9046ff"
-backgroundColor = "#ffffff"
-secondaryBackgroundColor = "#f7f7f7"
-textColor = "#222222"
-borderColor = "#dddddd"
+backgroundColor = "#141417"
+secondaryBackgroundColor = "#26262d"
+textColor = "#f3f3f6"
+borderColor = "#32323b"
 baseRadius = "8px"
 # 에스코어 드림(S-Core 무료 배포, 수정 금지·출처 표기 권장) — 눈누 jsDelivr 웹폰트. 못 받으면 sans-serif.
 font = "Escoredream, sans-serif"
