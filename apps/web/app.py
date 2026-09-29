@@ -155,6 +155,27 @@ def _to_cases() -> None:
     state.mode = MODE_CASES
 
 
+def _failure_hint(exc: BaseException) -> str:
+    """재시도 소진(`BedrockCallError`)이 감춘 원인 상태코드를 사람 말로. 키 문자는 드러내지 않는다."""
+    cause = exc.__cause__ or exc
+    code = getattr(cause, "status_code", None)
+    if code == 429:
+        return (
+            "원인: 429 — API 키의 분당 사용량 한도에 걸렸습니다(여러 명이 연달아 누른 경우). "
+            '1분쯤 뒤 다시 누르거나, 기다리는 동안 "실측 사례 재생"을 보세요. 이번 실패는 횟수에 넣지 않았습니다.'
+        )
+    if code == 529 or (isinstance(code, int) and code >= 500):
+        return (
+            f"원인: {code} — Anthropic 서버가 일시적으로 과부하입니다. 잠시 뒤 다시 누르세요. "
+            "이번 실패는 횟수에 넣지 않았습니다."
+        )
+    return (
+        f"원인: {type(cause).__name__}"
+        + (f" (HTTP {code})" if code else "")
+        + " — 이번 실패는 횟수에 넣지 않았습니다."
+    )
+
+
 # ── 상단바 ───────────────────────────────────────────────────────────────────
 st.html(
     """<div class="hz-bar"><span class="hz-logo"><i></i>HAZOP Copilot</span>
@@ -249,8 +270,10 @@ with tool.container(border=True, key="tool"):
                         else:
                             state.quick_result = service.run_live(state.quick_text, mock_source)
                     except Exception as exc:  # noqa: BLE001 — 사유를 보이고 앱은 계속 산다
+                        state.live_runs -= 1  # 실패한 실행은 세션 횟수에서 빼지 않는다
                         status.update(label="생성 실패", state="error")
                         st.error(f"생성 실패: {type(exc).__name__}: {exc}")
+                        st.caption(_failure_hint(exc))
                         if service.is_auth_error(exc):
                             st.caption(service.key_hint())
                     else:
