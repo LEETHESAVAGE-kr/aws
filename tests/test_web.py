@@ -115,7 +115,7 @@ def test_live_path_runs_end_to_end_on_mock() -> None:
     assert set(service.export_files(result)) == {"xlsx", "lopa", "report"}
 
 
-# (g) AppTest — 기동하면 첫 공정의 N1 결과표가 바로 보이고, 노드 버튼으로 바뀐다. 예외 0건.
+# (g) AppTest — 사례 모드로 바꾸면 첫 공정의 N1 결과표가 바로 보이고, 노드 버튼으로 바뀐다. 예외 0건.
 # (J-04 에서 "프리셋을 눌러야 표가 뜬다" → "공정을 고르면 첫 노드 표가 뜬다" 로 바뀌었다.)
 def test_app_preset_click_shows_table(monkeypatch: pytest.MonkeyPatch) -> None:
     from streamlit.testing.v1 import AppTest
@@ -123,6 +123,7 @@ def test_app_preset_click_shows_table(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("HAZOP_ALLOW_LIVE", raising=False)
     at = AppTest.from_file(str(_APP), default_timeout=30).run()
     assert not at.exception
+    at.radio(key="mode").set_value("실측 사례 재생").run()
     assert len(at.dataframe) == 1
     assert len(at.dataframe[0].value) == len(load_replay().records)
     at.button(key="preset_N2").click().run()
@@ -229,10 +230,12 @@ def test_app_switches_between_processes_and_nodes(monkeypatch: pytest.MonkeyPatc
     at = AppTest.from_file(str(_APP), default_timeout=30).run()
     assert not at.exception
     assert len(at.table) == 1  # 평가 요약 표
-    assert at.expander[0].proto.expanded is False
-    assert at.selectbox[0].options[-1] == "직접 입력 (빠른 실호출)"
+    assert next(e for e in at.expander if e.label.startswith("정확도")).proto.expanded is False
+    assert next(e for e in at.expander if e.label == "현장 절차와 비교").proto.expanded is True  # S4 접지 않음
+    at.radio(key="mode").set_value("실측 사례 재생").run()
+    assert at.selectbox(key="process_name").options == [p["name"] for p in service.CATALOG]
     for process in service.CATALOG:
-        at.selectbox[0].select(process["name"]).run()
+        at.selectbox(key="process_name").select(process["name"]).run()
         assert not at.exception
         for node in process["nodes"]:
             nid = node["id"]
