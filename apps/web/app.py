@@ -271,7 +271,7 @@ with tool.container(border=True, key="tool"):
                             state.quick_result = service.run_live(state.quick_text, mock_source)
                     except Exception as exc:  # noqa: BLE001 — 사유를 보이고 앱은 계속 산다
                         state.live_runs -= 1  # 실패한 실행은 세션 횟수에서 빼지 않는다
-                        status.update(label="생성 실패", state="error")
+                        status.update(label="생성 실패", state="error", expanded=True)
                         st.error(f"생성 실패: {type(exc).__name__}: {exc}")
                         st.caption(_failure_hint(exc))
                         st.button(
