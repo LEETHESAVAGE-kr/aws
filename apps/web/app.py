@@ -32,6 +32,15 @@ DIRECT_PLACEHOLDER = (
 )
 
 st.set_page_config(page_title="HAZOP 코파일럿", layout="wide")
+# 공정 선택 칸만 옅은 보라(DESIGN.md primary-tint·primary-soft) — 화면 바탕은 흰색 그대로.
+st.html(
+    """<style>
+    .st-key-process_name [role="group"],
+    .st-key-process_name [data-baseweb="select"] > div {
+        background-color: #f3ecff; border: 1px solid #c59eff; font-weight: 600;
+    }
+    </style>"""
+)
 
 with contextlib.suppress(Exception):  # secrets.toml 이 없으면 Streamlit 이 예외를 던진다
     service.sync_secrets(dict(st.secrets))
@@ -176,7 +185,7 @@ else:
     files = service.export_files(result)
     mimes = {
         "xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "lopa": "text/markdown",
+        "lopa": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         "report": "application/json",
     }
     for column, key in zip(st.columns(3), ("xlsx", "lopa", "report"), strict=True):

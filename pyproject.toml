@@ -10,6 +10,7 @@ dependencies = [
     "pydantic>=2.7",   # DeviationRecord 등 데이터 모델 (steering engineering.md §3)
     "boto3>=1.34",     # Bedrock Converse API 호출 (FR-02)
     "anthropic==1.7.0", # provider=anthropic 경로 (REQ-12). 대회 계정에 Bedrock 권한이 없어 개발 기간 대체 경로로 쓴다. 정확한 버전 고정 — 메시지/usage 스키마가 마이너 릴리스에서 바뀌면 파싱이 조용히 어긋난다.
+    "python-docx>=1.1", # LOPA 초안 Word(.docx) 다운로드 (사용자 결정 9/29 — apps/web/docx_export.py)
     "streamlit>=1.38",  # FR-10 재생 데모 UI (apps/web). 1.38+ 는 streamlit.testing.v1.AppTest 로 오프라인 시험 가능
 ]
 
