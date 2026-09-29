@@ -13,3 +13,25 @@ secondaryBackgroundColor = "#f7f7f7"
 textColor = "#222222"
 borderColor = "#dddddd"
 baseRadius = "8px"
+# 에스코어 드림(S-Core 무료 배포, 수정 금지·출처 표기 권장) — 눈누 jsDelivr 웹폰트. 못 받으면 sans-serif.
+font = "Escoredream, sans-serif"
+
+[[theme.fontFaces]]
+family = "Escoredream"
+url = "https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-4Regular.woff"
+weight = 400
+
+[[theme.fontFaces]]
+family = "Escoredream"
+url = "https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-5Medium.woff"
+weight = 500
+
+[[theme.fontFaces]]
+family = "Escoredream"
+url = "https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-6Bold.woff"
+weight = 600
+
+[[theme.fontFaces]]
+family = "Escoredream"
+url = "https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-7ExtraBold.woff"
+weight = 700

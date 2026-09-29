@@ -34,7 +34,7 @@ colors:
   scrim: "#000000"
 
 typography:
-  fontFamily: "Pretendard, 'Noto Sans KR', Inter, -apple-system, system-ui, sans-serif"
+  fontFamily: "Escoredream, sans-serif"   # S-Core 에스코어 드림 (눈누 jsDelivr 웹폰트)
   display-xl: { fontSize: 28px, fontWeight: 700, lineHeight: 1.43 }   # 페이지 제목 1개
   display-sm: { fontSize: 20px, fontWeight: 600, lineHeight: 1.20 }   # ①②③ 절 제목
   title-md:   { fontSize: 16px, fontWeight: 600, lineHeight: 1.25 }   # 요약 줄
@@ -94,7 +94,9 @@ Airbnb 에서 사진이 하던 일을 여기서는 **HAZOP 워크시트 표**가
 
 ## 글꼴
 
-Airbnb Cereal 은 쓸 수 없다. Airbnb 문서는 Inter 를 대체로 권하지만 이 앱은 한글이 주라서 **Pretendard → Noto Sans KR → Inter** 순으로 둔다.
+Airbnb Cereal 은 쓸 수 없다. 한글이 주라서 **S-Core 에스코어 드림**(`Escoredream`)을 쓴다 — 400·500·600·700 네 굵기를 눈누 jsDelivr 웹폰트로 불러온다.
+못 받으면 sans-serif. 라이선스: 무료·재배포 가능, 수정·판매 금지, 출처 표기 권장 — 화면 상단 캡션과 README §3 에 표기했다.
+글자 폭이 넓어 화면 폭 약 1000px 미만에서는 첫 노드 버튼 이름이 말줄임된다(1024·1280·1440px 에서는 잘림 없음 실측).
 굵기는 Airbnb 처럼 절제한다: 제목 28px/700 하나, 절 제목 20px/600, 나머지는 400~600. 크게 강조하는 곳은 `metric`(recall 같은 핵심 수치 1개)뿐이다.
 
 ## 모양·간격·그림자
@@ -129,7 +131,7 @@ baseRadius = "8px"
 - `primaryColor` 하나로 주 버튼·선택 강조·링크·포커스 테두리가 보라가 된다. 바탕·보조 바탕은 흰색·옅은 회색이다 — 보라 바탕은 없다.
   로컬 mock 화면 실측: `.stApp` 바탕 `rgb(255,255,255)`, 보라(`rgb(144,70,255)`)가 쓰인 요소는 선택된 노드 버튼 하나(바탕·테두리)뿐.
 - `:orange-background[...]` 배지는 Streamlit 내장 팔레트를 따른다.
-- `font` 는 **지정하지 않았다** — Pretendard 는 웹폰트를 따로 불러와야 해서, 지금은 Streamlit 기본 글꼴을 쓴다.
+- `font = "Escoredream, sans-serif"` + `[[theme.fontFaces]]` 4개(400·500·600·700). 제목도 같은 글꼴을 쓴다.
 - 다크 모드는 두지 않는다(Airbnb 도 공개 웹에 다크 모드가 없다). `base = "light"` 로 고정한다.
 
 ## 하지 않는 것
