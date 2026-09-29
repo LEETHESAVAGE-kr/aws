@@ -86,3 +86,42 @@ def test_capture_non_gold_node_saves_null_recall(tmp_path: Path, monkeypatch: py
     assert "P1" in replays and service.evaluation_table(replays)[:-1] == []
     with pytest.raises(ValueError, match="골드셋이 없는"):
         capture_replay.main(["--node", "P1", "--out", str(out), "--source", "gold"])
+
+
+# ── J-03 직접 입력 빠른 실호출 ─────────────────────────────────────────────────
+def test_run_quick_makes_two_calls_for_one_guideword() -> None:
+    node = {**service.NODES["P1"]["node_meta"].model_dump(), "node": "X1"}
+    result = service.run_quick(json.dumps(node, ensure_ascii=False), "More", load_replays()["N1"], _MOCK_ENV)
+    m = result.meta
+    assert len(m["raw_calls"]) == 2  # 열거 1 + 가이드워드 1
+    assert result.records and {r.guideword for r in result.records} == {"More"}
+    assert (m["source"], m["mock"], m["guidewords"], m["recall"]) == ("quick", True, ["More"], None)
+    assert m["expected_cells"] == len(m["parameters"]) == m["judged_cells"]
+    assert {r.node for r in result.records} == {"X1"}
+    assert set(service.export_files(result)) == {"xlsx", "lopa", "report"}
+
+
+@pytest.mark.parametrize(
+    ("node", "guideword"),
+    [
+        ({"substance": "프로판", "phase": "액상", "P_kPag": 1, "T_degC": 1, "equipment": [], "safeguards": []}, "More"),
+        ({"substance": "프로판"}, "More"),
+        ({"substance": "프로판", "phase": "gas", "P_kPag": 1, "T_degC": 1, "equipment": [], "safeguards": []}, "Much"),
+    ],
+)
+def test_run_quick_rejects_bad_input_before_any_call(
+    node: dict[str, Any], guideword: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def _boom(*_: object, **__: object) -> None:
+        raise AssertionError("API 를 부르면 안 된다")
+
+    monkeypatch.setattr(service, "HazopGenerator", _boom)
+    with pytest.raises(ValueError):
+        service.run_quick(json.dumps(node, ensure_ascii=False), guideword, load_replays()["N1"], _MOCK_ENV)
+
+
+@pytest.mark.parametrize(
+    ("value", "scope"), [(None, "quick"), ("quick", "quick"), ("FULL", "full"), ("everything", "quick")]
+)
+def test_live_scope(value: str | None, scope: str) -> None:
+    assert service.live_scope({} if value is None else {"HAZOP_LIVE_SCOPE": value}) == scope
