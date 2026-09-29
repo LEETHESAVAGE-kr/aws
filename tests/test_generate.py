@@ -323,17 +323,92 @@ def test_no_prompt_literals_in_generate_py() -> None:
     assert not offenders, f"프롬프트가 코드에 박혀 있다: {offenders}"
 
 
-# ── 범위 밖임을 명시하는 시험 ─────────────────────────────────────────────────
-def test_fabricated_safeguards_pass_through() -> None:
-    """노드 메타에 안전장치가 없는데 모델이 채워 넣으면 **지금은 통과시킨다**.
+# ── 기존 안전장치 전달·정규화 (지시문 M-01, 실무자평가 P-1·P-6·P-9) ────────────
+P1_META = NodeMeta(
+    node="P1",
+    substance="프로판",
+    phase="liquid",
+    P_kPag=700,
+    T_degC=25,
+    equipment=["LPG 저장탱크", "출하 펌프", "로딩암"],
+    safeguards=["안전밸브", "긴급차단밸브(ESV)", "가스누출감지기"],
+)
+#: 수정 전(900f974) `deviation_generate.md` 시스템 블록의 sha256. 노드별 값이 시스템으로 새면 캐시가 깨진다(R-08).
+_SYSTEM_SHA256 = "35210ae713a27f2593b6f754fd7f63cfea3052d54c39bf7d2b364e3cd34189ee"
 
-    프롬프트로만 억제하고 코드로 막지 않는다. 이 판정은 FR-06(self-verification) 소관이며,
-    이 시험은 그 경계를 문서화하기 위해 존재한다. FR-06 구현 시 이 시험은 뒤집혀야 한다.
+
+def _safeguards_of(generated: list[str], meta: NodeMeta = P1_META) -> list[str]:
+    generator, _ = _generator(extra_cell_field={"safeguards_before": generated})
+    return generator.generate(meta)[0].safeguards_before
+
+
+def test_fabricated_safeguards_are_dropped_when_input_is_empty() -> None:
+    """입력 안전장치가 없으면 모델이 무엇을 채워도 빈 배열(M-01 (e)). 예전엔 통과시켰다."""
+    assert _safeguards_of(["존재하지 않는 인터락"], N1_META) == []
+
+
+def test_batch_user_turn_carries_node_conditions_and_safeguards() -> None:
+    """(a) 판정 호출 사용자 메시지에 safeguards·P·T·phase 가 들어간다 — 시스템에는 없다."""
+    generator, client = _generator()
+    generator.generate(P1_META)
+    for call in client.calls[1:]:
+        user = call["messages"][0].content
+        for text in ("안전밸브", "긴급차단밸브(ESV)", "가스누출감지기", "700", "25", "liquid"):
+            assert text in user, f"사용자 턴에 {text} 없음"
+        assert "긴급차단밸브(ESV)" not in call["system"]
+
+
+def test_batch_user_turn_marks_missing_values() -> None:
+    generator, client = _generator()
+    generator.generate(N1_META)
+    user = client.calls[1]["messages"][0].content
+    assert "압력(kPag): 미상" in user and "기존 안전장치: 없음" in user
+
+
+def test_system_prompt_bytes_unchanged() -> None:
+    """(f) 시스템 블록(캐시 프리픽스)이 수정 전과 바이트 동일."""
+    import hashlib
+
+    from core.agent.generate import _load_prompt, _split_prompt
+
+    system, _ = _split_prompt(_load_prompt("deviation_generate.md"))
+    assert hashlib.sha256(system.encode("utf-8")).hexdigest() == _SYSTEM_SHA256
+
+
+def test_safeguard_exact_match_kept() -> None:
+    """(b) 정확 일치는 그대로, 순서는 입력 순서."""
+    assert _safeguards_of(["가스누출감지기", "안전밸브"]) == ["안전밸브", "가스누출감지기"]
+
+
+@pytest.mark.parametrize("generated", ["ESV", "ESV(긴급차단밸브)", "esv", "긴급차단밸브"])
+def test_safeguard_token_overlap_maps_to_input_original(generated: str) -> None:
+    """(c) 토큰 겹침 → 입력 원문. "ESV(긴급차단밸브)" 는 부분문자열 비교로는 안 잡힌다."""
+    assert _safeguards_of([generated]) == ["긴급차단밸브(ESV)"]
+
+
+def test_safeguard_duplicates_collapse() -> None:
+    assert _safeguards_of(["ESV", "ESV(긴급차단밸브)", "긴급차단밸브(ESV)"]) == ["긴급차단밸브(ESV)"]
+
+
+def test_safeguard_overlapping_two_inputs_adopts_both() -> None:
+    """한 항목이 입력 둘과 겹치면 둘 다 채택한다."""
+    assert _safeguards_of(["안전밸브·ESV"]) == ["안전밸브", "긴급차단밸브(ESV)"]
+
+
+@pytest.mark.parametrize("generated", ["gas detector", "체크밸브", "누출감지기"])
+def test_safeguard_unrelated_is_dropped_with_warning(
+    generated: str, caplog: pytest.LogCaptureFixture
+) -> None:
+    """(d) 어느 입력과도 토큰이 안 겹치면 버리고 WARNING 1줄.
+
+    "체크밸브" ↔ "긴급차단밸브"·"안전밸브": 토큰이 통째로 달라 붙지 않는다.
+    "누출감지기" ↔ "가스누출감지기": 같은 장치일 수 있지만 토큰 규칙상 버려진다 — 규칙의 한계를 고정해 둔다.
     """
-    generator, _ = _generator(extra_cell_field={"safeguards_before": ["존재하지 않는 인터락"]})
-    records = generator.generate(N1_META)
-    assert records[0].safeguards_before == ["존재하지 않는 인터락"]
-    assert N1_META.safeguards == []
+    with caplog.at_level(logging.WARNING, logger="core.agent.generate"):
+        assert _safeguards_of([generated]) == []
+    dropped = [r for r in caplog.records if "safeguards_before" in r.getMessage()]
+    assert dropped and generated in dropped[0].getMessage()
+    assert "gw=" in dropped[0].getMessage() and "param=" in dropped[0].getMessage()
 
 
 # ── 실호출 시험 — T-07 / T-08 (지시문 E-2) ────────────────────────────────────
