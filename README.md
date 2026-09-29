@@ -63,6 +63,8 @@ Too early·Too late·Wrong action 같은 절차형 가이드워드를 쓴다. �
 - **공정 카탈로그**: [data/presets.json](data/presets.json) — NH3 벙커링 4노드 + 예시 공정 2개(LPG 저장탱크 출하,
   염소 톤컨테이너 하역·기화). **예시 공정 2개는 골드셋이 없다** — recall 을 재지 않는 정성 검토용이다.
 - **실데이터 금지**: KECC 고객사 실데이터·개인정보는 쓰지 않는다([CLAUDE.md](CLAUDE.md) 불변규칙 1).
+- **글꼴**: 데모 화면에 S-Core 에스코어 드림을 쓴다 — S-Core 무료 배포 글꼴(개인·기업 무료, 수정·판매 금지, 출처 표기 권장).
+  웹폰트는 눈누가 jsDelivr 에 올린 파일(`projectnoonnu/noonfonts_six@1.2`)을 `.streamlit/config.toml` 에서 불러온다.
 - 예선에서 KOSHA Guide 발췌·물질 DB·고장률 대장(`data/kb/`)은 만들지 않았다(§7).
 
 ## § 4 아키텍처
