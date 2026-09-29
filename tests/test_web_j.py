@@ -299,3 +299,56 @@ def test_app_shows_key_hint_on_auth_error(monkeypatch: pytest.MonkeyPatch) -> No
     assert any("AuthenticationError" in e.value for e in at.error)
     hints = [c.value for c in at.caption if c.value.startswith("키 진단")]
     assert hints and "시작 ✅" in hints[0] and "api03" not in hints[0]
+
+
+# ── M-03 평가기준 불일치 배지 · F 분포 (실무자평가 P-2·P-3) ──────────────────────
+def test_criteria_notice_only_for_non_gold_processes() -> None:
+    replays = load_replays()
+    assert service.criteria_notice(replays["N1"]) is None
+    assert service.criteria_notice(replays["N4"]) is None
+    assert service.criteria_notice(replays["P1"]) == service.CRITERIA_NOTICE
+    quick = service.run_quick(_SENTENCE, "More", replays["N1"], _MOCK_ENV)
+    assert service.criteria_notice(quick) == service.CRITERIA_NOTICE
+
+
+@pytest.mark.parametrize(("node", "expected"), [("N1", "F=3 비율 85%"), ("N4", "F=3 비율 95%"), ("P1", "F=3 비율 87%")])
+def test_f_distribution_from_replays(node: str, expected: str) -> None:
+    """실무자평가 P-2 표의 값(52/61·92/97·60/69)이 그대로 나온다 — 불리한 숫자도 그대로."""
+    result = load_replays()[node]
+    assert service.f_distribution(result) == expected
+    assert expected in service.summary_line(result)
+
+
+def test_f_distribution_tie_and_empty() -> None:
+    base = load_replays()["N1"]
+    two = [base.records[0].model_copy(update={"F": 4}), base.records[0].model_copy(update={"F": 2})]
+    assert service.f_distribution(service.Result(meta={}, records=two)) == "F=2 비율 50%"
+    assert service.f_distribution(service.Result(meta={}, records=[])) == "F 분포 해당 없음"
+
+
+def test_app_criteria_badge_visibility(monkeypatch: pytest.MonkeyPatch) -> None:
+    from streamlit.testing.v1 import AppTest
+
+    for key, value in _MOCK_ENV.items():
+        monkeypatch.setenv(key, value)
+
+    def badge_shown(at: AppTest) -> bool:
+        return any(service.CRITERIA_NOTICE in m.value for m in at.markdown)
+
+    at = AppTest.from_file(str(_APP), default_timeout=30).run()
+    assert not at.exception and len(at.dataframe) == 1 and not badge_shown(at)  # 첫 화면 = N1(골드 공정)
+    at.selectbox[0].select("LPG 저장탱크 출하").run()
+    assert not at.exception and badge_shown(at)
+    at.selectbox[0].select(_DIRECT).run()
+    at.text_area[0].input(_SENTENCE).run()
+    next(b for b in at.button if b.label.startswith("빠른 실호출")).click().run()
+    assert not at.exception and len(at.dataframe) == 1 and badge_shown(at)
+
+
+def test_provenance_marks_replays_captured_before_m01() -> None:
+    """커밋된 재생은 전부 M-01 이전 프롬프트 결과다 — 화면 출처 줄에 그렇게 적힌다. 이후 캡처엔 안 붙는다."""
+    replays = load_replays()
+    for node in ("N1", "N2", "N3", "N4", "P1", "P2"):
+        assert "M-01 이전 프롬프트" in service.provenance_line(replays[node]), node
+    later = service.Result(meta={**replays["P1"].meta, "captured_at": "2026-09-29T05:00:00+00:00"})
+    assert "M-01 이전" not in service.provenance_line(later)

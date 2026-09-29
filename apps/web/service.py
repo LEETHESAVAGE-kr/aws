@@ -13,6 +13,7 @@ import shutil
 import tempfile
 import threading
 import time
+from collections import Counter
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final
@@ -473,10 +474,28 @@ def worksheet_table(result: Result) -> list[dict[str, object]]:
     return table
 
 
+#: 골드셋 없는 공정 결과에 붙는 평가기준 불일치 배지(지시문 M-03, 실무자평가 P-3).
+CRITERIA_NOTICE = "S·F 등급 정의는 NH3 선박 벙커링 기준(선내·항만 영향)입니다 — 이 공정에는 참고용."
+
+
+def criteria_notice(result: Result) -> str | None:
+    """예시 공정·직접 입력(`split == "none"`)이면 배지 문구, 골드 공정이면 None."""
+    return CRITERIA_NOTICE if result.meta.get("split") == "none" else None
+
+
+def f_distribution(result: Result) -> str:
+    """가장 많은 F 값과 그 비율(실무자평가 P-2 공개). 동률이면 작은 F. 레코드가 없으면 해당 없음."""
+    counts = Counter(r.F for r in result.records)
+    if not counts:
+        return "F 분포 해당 없음"
+    value, count = max(counts.items(), key=lambda kv: (kv[1], -kv[0]))
+    return f"F={value} 비율 {count / len(result.records):.0%}"
+
+
 def summary_line(result: Result) -> str:
     """요약 줄. 불리한 숫자도 그대로(NFR-03) — 값이 없으면 없다고 적는다."""
     m = result.meta
-    parts = [f"레코드 {len(result.records)}건"]
+    parts = [f"레코드 {len(result.records)}건", f_distribution(result)]
     if m.get("expected_cells") is not None:
         parts.append(f"판정 셀 {m.get('judged_cells')}/{m['expected_cells']}")
     review = m.get("review_guidewords") or []
@@ -519,6 +538,19 @@ def _kst(captured_at: str | None) -> str:
     return stamp.astimezone(KST).strftime("%Y-%m-%d %H:%M KST")
 
 
+#: 지시문 M-01(판정 프롬프트에 safeguards·P·T·phase 전달 + safeguards_before 정규화) 적용 시각.
+#: 이보다 먼저 캡처된 재생은 옛 프롬프트 결과다 — 9/29 커밋된 재생 7파일 전부.
+M01_APPLIED_AT: Final[datetime] = datetime(2026, 9, 29, 13, 0, tzinfo=KST)
+
+
+def _before_m01(meta: Mapping[str, Any]) -> bool:
+    try:
+        stamp = datetime.fromisoformat(str(meta.get("captured_at")))
+    except ValueError:
+        return False
+    return stamp.tzinfo is not None and stamp < M01_APPLIED_AT
+
+
 def provenance_line(result: Result) -> str:
     """이 결과가 어디서 왔는지 한 줄(J-04 ③). 재생이어도 실호출 캡처 일시·모델·비용을 적는다."""
     m = result.meta
@@ -528,7 +560,8 @@ def provenance_line(result: Result) -> str:
     if result.is_gold:
         return f"전문가 골드셋 재생 — LLM 생성 결과 아님 ({_kst(m.get('captured_at'))} 저장)"
     if source == "live":
-        return f"{_kst(m.get('captured_at'))} 실호출 캡처를 재생{tail}"
+        stale = " · **M-01 이전 프롬프트**(판정 단계에 기존 안전장치·운전조건 미전달)" if _before_m01(m) else ""
+        return f"{_kst(m.get('captured_at'))} 실호출 캡처를 재생{tail}{stale}"
     if m.get("mock"):
         return f"mock 실행 — 네트워크 없이 재생 레코드로 생성 경로를 돈 결과 ({_kst(m.get('captured_at'))})"
     return f"{_kst(m.get('captured_at'))} 방금 실호출{tail}"
