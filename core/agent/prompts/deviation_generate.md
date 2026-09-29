@@ -33,6 +33,11 @@
 
 {node} · {substance} · {equipment}
 
+- 상(phase): {phase}
+- 압력(kPag): {P_kPag}
+- 온도(℃): {T_degC}
+- 기존 안전장치: {safeguards}
+
 ## 이번 가이드워드
 
 {guideword} — {guideword_definition}
