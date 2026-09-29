@@ -515,3 +515,154 @@ def test_recall_live_n1_x3() -> None:
         f"G1 미달 — recall 평균 {mean:.3f} < {_G1_RECALL_THRESHOLD}. "
         "프롬프트를 고치지 말고 위 대조표로 원인을 보고할 것(지시문 E-2)."
     )
+
+
+# ── R-10 가이드워드 판정 병렬화 (지시문 O-1) ──────────────────────────────────
+import threading  # noqa: E402
+
+from core.agent.generate import GeneratorConfig  # noqa: E402
+
+
+def _parallel_factory(*, broken_guideword: str | None = None, delay_s: float = 0.02):
+    """앞 가이드워드일수록 늦게 끝나는 응답(완료 순서 ≠ 목록 순서)과 가이드워드별 다른 비용.
+
+    동시에 떠 있는 호출 수의 최댓값도 잰다 — 병렬이 실제로 일어났는지의 증거.
+    """
+    lock = threading.Lock()
+    state = {"inflight": 0, "max_inflight": 0}
+    base = _factory(broken_guideword=broken_guideword)
+
+    def make(system: str, messages: list[Message], **kwargs: Any) -> ConverseResponse:
+        with lock:
+            state["inflight"] += 1
+            state["max_inflight"] = max(state["max_inflight"], state["inflight"])
+        try:
+            response = base(system=system, messages=messages, **kwargs)
+            if _is_enumeration(system):
+                response.cost_usd = 0.5
+                return response
+            user = messages[0].content
+            assert isinstance(user, str)
+            index = STANDARD_GUIDEWORDS.index(_guideword_of(user))
+            time.sleep(delay_s * (len(STANDARD_GUIDEWORDS) - index))
+            response.cost_usd = 2.0 ** -(index + 2)  # 이진 분수 — 합산 순서와 무관하게 정확히 더해진다
+            return response
+        finally:
+            with lock:
+                state["inflight"] -= 1
+
+    return make, state
+
+
+def _run_parallel(parallel_calls: int, **kwargs: Any):
+    make, state = _parallel_factory(**kwargs)
+    client = MockBedrockClient(response_factory=make)
+    generator = HazopGenerator(client, GeneratorConfig(parallel_calls=parallel_calls))
+    records = generator.generate(N1_META)
+    return generator, client, records, state
+
+
+def test_parallel_preserves_guideword_order_and_sequential_ids() -> None:
+    _, _, records, state = _run_parallel(4)
+    assert state["max_inflight"] > 1, "parallel_calls=4 인데 호출이 한 번도 겹치지 않았다(순차로 돌았다)"
+    order = list(dict.fromkeys(r.guideword for r in records))
+    assert order == STANDARD_GUIDEWORDS
+    assert [r.id for r in records] == [f"n1-{i:03d}" for i in range(1, len(records) + 1)]
+
+
+def test_parallel_and_sequential_results_are_byte_identical() -> None:
+    seq, _, seq_records, seq_state = _run_parallel(1, delay_s=0.0)
+    par, _, par_records, _ = _run_parallel(4)
+    assert seq_state["max_inflight"] == 1
+    dump = lambda rs: json.dumps([r.model_dump() for r in rs], ensure_ascii=False)  # noqa: E731
+    assert dump(par_records) == dump(seq_records)
+    assert (par.expected_cells, par.judged_cells) == (seq.expected_cells, seq.judged_cells)
+    assert par.total_cost_usd == seq.total_cost_usd
+    assert par.review_guidewords == seq.review_guidewords == []
+
+
+def test_parallel_broken_row_is_isolated_to_review() -> None:
+    """스키마 위반 2회(재시도 포함) → 그 가이드워드만 review, 나머지 6종 정상, 호출 = 열거 1 + 7 + 재시도 1."""
+    generator, client, records, _ = _run_parallel(4, broken_guideword="Reverse")
+    assert generator.review_guidewords == ["Reverse"]
+    assert list(dict.fromkeys(r.guideword for r in records)) == [
+        g for g in STANDARD_GUIDEWORDS if g != "Reverse"
+    ]
+    assert len(client.calls) == 1 + len(STANDARD_GUIDEWORDS) + 1
+
+
+def test_parallel_cost_equals_sum_of_calls() -> None:
+    """합계 = 열거 0.5 + Σ 2^-(i+2). 공유 변수 경쟁이 있으면 일부가 사라진다."""
+    generator, client, _, _ = _run_parallel(4)
+    expected = 0.5 + sum(2.0 ** -(i + 2) for i in range(len(STANDARD_GUIDEWORDS)))
+    assert generator.total_cost_usd == expected
+    assert len(client.calls) == 1 + len(STANDARD_GUIDEWORDS)
+
+
+def test_parallel_exception_in_one_row_degrades_only_that_row() -> None:
+    make, _ = _parallel_factory(delay_s=0.0)
+
+    def flaky(system: str, messages: list[Message], **kwargs: Any) -> ConverseResponse:
+        user = messages[0].content
+        if not _is_enumeration(system) and isinstance(user, str) and _guideword_of(user) == "Less":
+            raise TimeoutError("네트워크")
+        return make(system=system, messages=messages, **kwargs)
+
+    generator = HazopGenerator(
+        MockBedrockClient(response_factory=flaky), GeneratorConfig(parallel_calls=4)
+    )
+    records = generator.generate(N1_META)
+    assert generator.review_guidewords == ["Less"]
+    assert "Less" not in {r.guideword for r in records} and len({r.guideword for r in records}) == 6
+
+
+def test_parallel_calls_config_default_and_validation(tmp_path: Path) -> None:
+    assert load_model_config().parallel_calls == 4  # config/models.yaml
+    assert load_generator_config().parallel_calls == 4
+    assert GeneratorConfig().parallel_calls == 1  # 직접 생성은 순차(응답 목록 mock 호환)
+    base = (_ROOT / "config" / "models.yaml").read_text(encoding="utf-8")
+    absent = tmp_path / "absent.yaml"
+    absent.write_text(base.replace("  parallel_calls: 4", "  # (없음)"), encoding="utf-8")
+    assert load_model_config(absent).parallel_calls == 4  # 필드 없는 옛 yaml 호환
+    for bad in ("0", "true", "2.5"):
+        broken = tmp_path / f"bad_{bad}.yaml"
+        broken.write_text(base.replace("  parallel_calls: 4", f"  parallel_calls: {bad}"), encoding="utf-8")
+        with pytest.raises(ConfigValidationError, match="parallel_calls"):
+            load_model_config(broken)
+
+
+def test_provenance_line_marks_parallel_capture() -> None:
+    from apps.web import service
+
+    meta = {"source": "live", "captured_at": "2026-09-29T08:00:00+00:00", "model_id": "m", "cost_usd": 1.0}
+    assert "병렬" not in service.provenance_line(service.Result(meta=meta))
+    assert "병렬" not in service.provenance_line(service.Result(meta={**meta, "parallel_calls": 1}))
+    assert " · 병렬 4" in service.provenance_line(service.Result(meta={**meta, "parallel_calls": 4}))
+
+
+def test_generate_batch_does_not_mutate_self() -> None:
+    """스레드에서 도는 `_generate_batch` 는 `self.x = …`·`self.x += …`·`self.x.append(…)` 를 하지 않는다.
+
+    공유 float 의 `+=` 경쟁은 GIL 아래서 거의 재현되지 않아 합계 시험만으로는 못 잡는다 — 구조로 고정한다.
+    """
+    tree = ast.parse(_GENERATE_PY.read_text(encoding="utf-8"))
+    func = next(
+        n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef) and n.name == "_generate_batch"
+    )
+    offenders: list[str] = []
+    for node in ast.walk(func):
+        targets = (
+            node.targets if isinstance(node, ast.Assign)
+            else [node.target] if isinstance(node, ast.AugAssign | ast.AnnAssign) else []
+        )
+        for target in targets:
+            if isinstance(target, ast.Attribute) and isinstance(target.value, ast.Name) and target.value.id == "self":
+                offenders.append(f"L{node.lineno} self.{target.attr}")
+        if (
+            isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
+            and node.func.attr in {"append", "extend", "insert"}
+            and isinstance(node.func.value, ast.Attribute)
+            and isinstance(node.func.value.value, ast.Name) and node.func.value.value.id == "self"
+        ):
+            offenders.append(f"L{node.lineno} self.{node.func.value.attr}.{node.func.attr}")
+    assert not offenders, offenders
