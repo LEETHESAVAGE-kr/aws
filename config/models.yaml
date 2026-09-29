@@ -18,6 +18,7 @@ generation:
   temperature: 0.2
   max_tokens: 16384 # 9/28 예선 데모용 4096→16384 — 절단 방지(E-2 갈래 ①). 지연은 못 줄임, 본선 지시문 G 에서 재검토
   prompt_caching: true
+  parallel_calls: 4 # R-10(지시문 O-1): 가이드워드 판정 동시 호출 수. 1 이면 순차. 429 증가를 보고 4 로 둔다
 
 verifier:
   # 하위(저비용). $1/$5 per 1M. 목록은 claude-haiku-4-5-20251001 로 오지만 **별칭을 쓴다** —

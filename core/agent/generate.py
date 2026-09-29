@@ -19,6 +19,7 @@ from __future__ import annotations
 import json
 import logging
 import re
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Final
@@ -163,6 +164,9 @@ def _load_rating_scale() -> str:
 class GeneratorConfig:
     prompt_caching: bool = True
     cost_limit_usd: float = 0.30
+    # 가이드워드 판정 동시 호출 수(R-10). 1 이면 순차 경로. 직접 생성한 설정의 기본값은 1 —
+    # 응답 목록을 순서대로 소비하는 mock 시험이 흔들리지 않게. models.yaml 로더 기본은 4.
+    parallel_calls: int = 1
 
 
 def load_generator_config() -> GeneratorConfig:
@@ -179,6 +183,7 @@ def load_generator_config() -> GeneratorConfig:
     return GeneratorConfig(
         prompt_caching=cfg.generation.prompt_caching,
         cost_limit_usd=cfg.cost_limit_usd,
+        parallel_calls=cfg.parallel_calls,
     )
 
 
@@ -246,10 +251,24 @@ class HazopGenerator:
         guidewords = _select_guidewords(node_meta)
         self.expected_cells = len(parameters) * len(guidewords)
 
+        # 가이드워드 판정은 서로 독립이다(R-10). 각 호출은 (batch, 비용) 을 **반환**만 하고
+        # 공유 상태는 건드리지 않는다 — 합산·review 기록은 아래에서 목록 순서대로 단일 스레드로 한다.
+        workers = max(1, self._config.parallel_calls)
+        if workers == 1:
+            outcomes = [self._generate_batch(node_meta, parameters, gw) for gw in guidewords]
+        else:
+            with ThreadPoolExecutor(max_workers=workers) as pool:
+                # map 은 입력 순서로 결과를 돌려준다 — 레코드 id·골든 스냅샷이 순차와 같다.
+                outcomes = list(
+                    pool.map(lambda gw: self._generate_batch(node_meta, parameters, gw), guidewords)
+                )
+
         batches: list[dict[str, Any]] = []
-        for guideword in guidewords:
-            batch = self._generate_batch(node_meta, parameters, guideword)
+        for guideword, (batch, cost) in zip(guidewords, outcomes, strict=True):
+            self.total_cost_usd += cost
             if batch is None:
+                if parameters:
+                    self.review_guidewords.append(guideword)
                 continue
             batches.append(batch)
 
@@ -292,9 +311,10 @@ class HazopGenerator:
     # -- 2단: 가이드워드 행 판정 (R-04) --------------------------------------
     def _generate_batch(
         self, node_meta: NodeMeta, parameters: list[dict[str, str]], guideword: str
-    ) -> dict[str, Any] | None:
+    ) -> tuple[dict[str, Any] | None, float]:
+        """(batch, 비용). batch=None 이면 그 행은 review. 스레드에서 돌므로 `self` 를 쓰지 않는다."""
         if not parameters:
-            return None
+            return None, 0.0
         system_template, user_template = _split_prompt(_load_prompt("deviation_generate.md"))
         system = _fill(system_template, {"rating_scale": _load_rating_scale()})
         user = _fill(
@@ -315,13 +335,19 @@ class HazopGenerator:
                 ),
             },
         )
-        response = self._client.converse(
-            system=system,
-            messages=[Message(role="user", content=user)],
-            response_schema=DEVIATION_BATCH_SCHEMA,
-            context={"node": node_meta.node},
-        )
-        self.total_cost_usd += response.cost_usd
+        try:
+            response = self._client.converse(
+                system=system,
+                messages=[Message(role="user", content=user)],
+                response_schema=DEVIATION_BATCH_SCHEMA,
+                context={"node": node_meta.node},
+            )
+        except Exception:
+            if self._config.parallel_calls <= 1:
+                raise  # 순차 경로는 기존 동작(예외 전파) 그대로
+            # 병렬에서는 한 가이드워드의 예외가 나머지를 죽이지 않게 그 행만 review 로 격하한다.
+            logger.exception("node=%s gw=%s 호출 예외 — 이 행을 review 로 기록한다", node_meta.node, guideword)
+            return None, 0.0
         if response.content is None:
             # core/llm 이 이미 1회 재시도를 소진했다(R-06). 노드 전체를 중단하지 않는다.
             logger.warning(
@@ -329,11 +355,10 @@ class HazopGenerator:
                 node_meta.node,
                 guideword,
             )
-            self.review_guidewords.append(guideword)
-            return None
+            return None, response.cost_usd
         batch: dict[str, Any] = json.loads(response.content)
         batch["guideword"] = guideword  # 모델이 다른 값을 넣어도 호출한 축을 정본으로 삼는다
-        return batch
+        return batch, response.cost_usd
 
     # -- 결과 조립 (R-02·R-05) -----------------------------------------------
     def _assemble(

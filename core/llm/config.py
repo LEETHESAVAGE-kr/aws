@@ -83,7 +83,16 @@ def _parse(raw: dict[str, Any]) -> ModelConfig:
         guardrails_id=(raw.get("guardrails") or {}).get("id"),
         cost_limit_usd=float(raw.get("cost_limit_usd", 0.30)),
         provider=_read_provider(raw),  # type: ignore[arg-type]
+        parallel_calls=_read_parallel_calls(raw["generation"]),
     )
+
+
+def _read_parallel_calls(section: dict[str, Any]) -> int:
+    """R-10. 누락 시 기본 4 — 필드가 없는 기존 models.yaml 도 그대로 통과한다."""
+    value = section.get("parallel_calls", 4)
+    if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+        raise ConfigValidationError(f"generation.parallel_calls must be an integer >= 1: {value!r}")
+    return value
 
 
 def _profile(section: dict[str, Any]) -> ModelProfile:

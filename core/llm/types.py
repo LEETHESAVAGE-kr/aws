@@ -86,3 +86,5 @@ class ModelConfig:
     cost_limit_usd: float = 0.30
     # REQ-12: LLM 공급자. `anthropic` 이면 region·embedding·guardrails 는 쓰이지 않는다.
     provider: Literal["bedrock", "anthropic"] = "bedrock"
+    # R-10: 가이드워드 판정 동시 호출 수(`generation.parallel_calls`). 1 이면 순차.
+    parallel_calls: int = 4
