@@ -37,8 +37,9 @@ st.html(
     """<style>
     .st-key-process_name [role="group"],
     .st-key-process_name [data-baseweb="select"] > div {
-        background-color: #f3ecff; border: 1px solid #c59eff; font-weight: 600;
+        background-color: #f3ecff; border: 1px solid #c59eff; font-weight: 600; min-height: 52px;
     }
+    .st-key-process_name input { font-size: 21px; }  /* 기본 14px 의 1.5배 */
     </style>"""
 )
 
