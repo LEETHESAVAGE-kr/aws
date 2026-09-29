@@ -40,6 +40,7 @@ from core.llm import (
 )
 
 from .catalog import load_catalog, node_meta_schema, nodes_by_id, validate_node_meta
+from .docx_export import lopa_markdown_to_docx
 from .replay import Result
 
 if TYPE_CHECKING:
@@ -672,6 +673,10 @@ def export_files(result: Result) -> dict[str, tuple[str, bytes]]:
         paths = export_all(
             _display_records(result), tmp, generated_at=meta.get("captured_at"), coverage=coverage
         )
-        return {key: (path.name, path.read_bytes()) for key, path in paths.items()}
+        files = {key: (path.name, path.read_bytes()) for key, path in paths.items()}
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
+    # LOPA 초안은 Word 로 내려받는다(사용자 결정 9/29). 내용은 core/export/lopa.py 의 Markdown 그대로.
+    name, markdown = files["lopa"]
+    files["lopa"] = (Path(name).with_suffix(".docx").name, lopa_markdown_to_docx(markdown.decode("utf-8")))
+    return files
