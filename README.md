@@ -125,7 +125,7 @@ tools/build_gold.py      data/raw/*.xlsx → data/gold/*.json
   [self-verification](.kiro/specs/self-verification/requirements.md).
   **Kiro 크레딧 소진 후(9/11 export-formats 부터) spec 3종과 bedrock-client 의 REQ-12·T-15 는 Kiro 와 같은
   형식(EARS requirements + design + tasks)으로 손으로 작성·유지했다.**
-- 시험: `pytest -m "not live"` **222 passed, 3 deselected**(live 마커), `ruff check .` clean.
+- 시험: `pytest -m "not live"` **231 passed, 3 deselected**(live 마커), `ruff check .` clean.
 
 ### 추적 매트릭스
 

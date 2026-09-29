@@ -87,11 +87,44 @@ def _is_true(value: object) -> bool:
 def sync_secrets(secrets: Mapping[str, object], environ: MutableMapping[str, str] = os.environ) -> None:
     """`st.secrets` 값을 `os.environ` 으로 복사한다 — `core/llm` 은 환경변수만 본다(AC-12-3).
 
-    이미 환경변수에 있는 값은 덮어쓰지 않는다.
+    이미 환경변수에 있는 값은 덮어쓰지 않는다. 값의 앞뒤 공백·줄바꿈은 떼어 낸다 — 붙여 넣기로 섞인
+    공백이 키에 남으면 401 이 난다(9/29 배포). Streamlit Cloud 는 최상위 시크릿을 환경변수로도 직접 넣으므로
+    이미 있는 값도 공백만은 정리한다.
     """
     for key in SECRET_KEYS:
-        if key in secrets and not environ.get(key):
-            environ[key] = str(secrets[key])
+        if key in secrets and not environ.get(key, "").strip():
+            environ[key] = str(secrets[key]).strip()
+        elif key in environ and environ[key] != environ[key].strip():
+            environ[key] = environ[key].strip()
+
+
+_KEY_CHARS: Final[frozenset[str]] = frozenset(
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
+)
+
+
+def is_auth_error(exc: BaseException) -> bool:
+    """API 키 인증 실패(401)인가 — 공급자 SDK 를 import 하지 않고 이름·상태 코드로 본다."""
+    return type(exc).__name__ == "AuthenticationError" or getattr(exc, "status_code", None) == 401
+
+
+def key_hint(environ: Mapping[str, str] = os.environ) -> str:
+    """`ANTHROPIC_API_KEY` 형식 진단 — **키 문자는 한 글자도 드러내지 않는다**(접두사 일치 여부·길이·이상 문자 수만)."""
+    raw = environ.get("ANTHROPIC_API_KEY", "")
+    key = raw.strip()
+    if not key:
+        return "키 진단: ANTHROPIC_API_KEY 가 비어 있습니다."
+    odd = sum(ch not in _KEY_CHARS for ch in key)
+    parts = [
+        "sk-ant- 로 시작 ✅" if key.startswith("sk-ant-") else "sk-ant- 로 시작하지 않음 ❌",
+        f"길이 {len(key)}자 (Anthropic 키는 보통 100자 안팎)",
+        "영문·숫자·-·_ 외 문자 없음 ✅" if odd == 0 else f"영문·숫자·-·_ 외 문자 {odd}개 ❌ (따옴표·공백·줄바꿈이 섞였을 수 있음)",
+    ]
+    if key == "sk-ant-...":
+        parts.append("예시 값 'sk-ant-...' 그대로입니다 ❌")
+    if raw != key:
+        parts.append("앞뒤 공백·줄바꿈 있음(자동 제거됨)")
+    return "키 진단: " + " · ".join(parts) + ". Secrets 의 값이 로컬 .env 의 키와 같은지 확인하세요."
 
 
 def is_mock(environ: Mapping[str, str] = os.environ) -> bool:

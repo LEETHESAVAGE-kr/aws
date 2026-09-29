@@ -125,6 +125,8 @@ else:
                         state.quick_result = service.run_live(state.quick_text, mock_source)
                 except Exception as exc:  # noqa: BLE001 — 사유를 보이고 앱은 계속 산다
                     st.error(f"생성 실패: {type(exc).__name__}: {exc}")
+                    if service.is_auth_error(exc):
+                        st.caption(service.key_hint())
                 else:
                     st.rerun()  # 버튼을 상한 사유와 함께 즉시 비활성으로 다시 그린다
     result = state.quick_result
