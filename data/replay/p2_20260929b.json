@@ -1,0 +1,3379 @@
+{
+  "schema_version": 1,
+  "source": "live",
+  "captured_at": "2026-09-29T05:26:54+00:00",
+  "node": "P2",
+  "split": "none",
+  "provider": "anthropic",
+  "model_id": "claude-opus-4-8",
+  "node_meta": {
+    "node": "P2",
+    "substance": "염소",
+    "phase": "liquid/gas",
+    "P_kPag": 500.0,
+    "T_degC": 20.0,
+    "equipment": [
+      "톤컨테이너",
+      "액염소 배관",
+      "기화기"
+    ],
+    "safeguards": [
+      "염소 누출감지기",
+      "긴급차단밸브",
+      "중화(가성소다) 스크러버"
+    ]
+  },
+  "latency_s": 145.9,
+  "cost_usd": 0.8117,
+  "expected_cells": 77,
+  "judged_cells": 77,
+  "review_guidewords": [],
+  "recall": null,
+  "parameters": [
+    "유량",
+    "압력",
+    "온도",
+    "상 변화",
+    "준위",
+    "조성",
+    "유틸리티",
+    "격납 건전성 상실",
+    "기동정지",
+    "유지보수",
+    "방호계통 가용성"
+  ],
+  "max_tokens": 16384,
+  "parallel_calls": 4,
+  "raw_calls": [
+    {
+      "tokens_out": 820,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 2834,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3654,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 4043,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 4507,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3624,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 4222,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 4590,
+      "stop_reason": "tool_use"
+    }
+  ],
+  "truncated_calls": 0,
+  "records": [
+    {
+      "id": "p2-001",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "No",
+      "parameter": "유량",
+      "deviation": "톤컨테이너에서 기화기로 향하는 액염소 배관에 흐름이 전혀 없어 기화기로 액염소가 공급되지 않는 상태",
+      "causes": [
+        "톤컨테이너 인출밸브 미개방 또는 잠김",
+        "긴급차단밸브 오작동에 의한 폐쇄",
+        "배관 내 액염소 동결·고형물에 의한 완전 폐색",
+        "컨테이너 잔량 소진"
+      ],
+      "consequences": [
+        "기화기 공급 중단으로 후단 염소 공급 정지 및 공정 중단",
+        "무흐름 상태 기화기 지속 가열 시 잔류 액염소 국부 과열·과압으로 기화기 손상",
+        "공급 재개 시도 중 무리한 밸브 조작으로 누출 유발 가능"
+      ],
+      "safeguards_before": [
+        "긴급차단밸브"
+      ],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "기화기 입구 흐름 저하·무흐름 감지 및 가열원 연동 정지 인터록 설치",
+        "배관 동결 방지 보온·트레이싱 점검 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-002",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "No",
+      "parameter": "압력",
+      "deviation": "밀폐계 내 압력이 전혀 형성되지 않아(완전 상실) 액염소 이송 구동력이 소실된 상태",
+      "causes": [
+        "격납 완전 파단으로 인한 급격한 압력 소실(대량 누출 동반)",
+        "컨테이너 내용물 소진 및 배관 진공화"
+      ],
+      "consequences": [
+        "파단에 의한 압력 상실 시 대량 액염소·염소가스 외부 방출로 광역 독성 확산",
+        "이송 구동력 상실로 기화기 공급 중단"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 5,
+      "F": 2,
+      "risk_score": 10,
+      "recommendations": [
+        "압력 급강하 감지 시 긴급차단밸브 자동 연동 및 경보",
+        "누출 시 스크러버 자동 기동 로직 검증"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-003",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "No",
+      "parameter": "온도",
+      "deviation": "기화기 가열이 전혀 이루어지지 않아 액염소가 상변화 없이 그대로 통과하는 무가열 상태",
+      "causes": [
+        "기화기 가열원(스팀/온수) 완전 상실",
+        "온도조절 계통 고장으로 가열 정지",
+        "가열 매체 순환 정지"
+      ],
+      "consequences": [
+        "미기화 액염소가 후단으로 이송(액꼬리)되어 후단 설비 과압·손상 및 누출",
+        "후단 배관 내 액염소 갇힘 후 주위 가열 시 과압 파열"
+      ],
+      "safeguards_before": [
+        "긴급차단밸브"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "기화기 출구 저온 감지 및 액염소 캐리오버 방지 인터록",
+        "가열원 상실 시 컨테이너측 자동 차단 연동"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-004",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "No",
+      "parameter": "상 변화",
+      "deviation": "기화기에서 액→기 상변화가 전혀 일어나지 않아 액염소 그대로 후단으로 넘어가는 상태",
+      "causes": [
+        "가열 부족 또는 가열원 상실",
+        "액염소 과다 공급으로 기화 용량 초과",
+        "기화기 전열면 오염·스케일로 열전달 상실"
+      ],
+      "consequences": [
+        "미기화 액염소 캐리오버로 후단 설비 액봉 및 과압 파열",
+        "후단 누출 시 액염소 급속 증발로 대량 염소가스 확산"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "기화기 출구 액검지/과충전 방지 장치 설치",
+        "기화 용량 대비 인출 유량 상한 관리"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-005",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "No",
+      "parameter": "준위",
+      "deviation": "톤컨테이너 내 액염소 잔량이 전혀 없어(완전 공) 인출이 불가능한 상태",
+      "causes": [
+        "컨테이너 소진 상태에서 교체 미실시",
+        "잔량 파악 실패로 빈 컨테이너 라인업"
+      ],
+      "consequences": [
+        "기화기 공급 중단으로 공정 정지",
+        "빈 컨테이너 인출 지속 시 가스상만 인출되어 공급 불안정",
+        "무흐름 기화기 지속 가열 시 국부 과열"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 3,
+      "risk_score": 6,
+      "recommendations": [
+        "컨테이너 중량 측정(계량대) 기반 잔량 관리 및 저잔량 경보",
+        "컨테이너 교체 절차 표준화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-006",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "No",
+      "parameter": "유틸리티",
+      "deviation": "기화기 가열원 및 스크러버 가성소다 공급 유틸리티가 전혀 공급되지 않는 상태",
+      "causes": [
+        "스팀/온수 등 가열원 완전 상실",
+        "가성소다 공급펌프 정지 또는 탱크 고갈",
+        "전원 상실"
+      ],
+      "consequences": [
+        "가열원 상실로 기화 정지 및 미기화 액염소 캐리오버 위험",
+        "가성소다 상실로 중화 스크러버 기능 상실 → 누출 발생 시 미처리 염소 대기 방출",
+        "복합 상실 시 누출 완화 수단 부재로 피해 확대"
+      ],
+      "safeguards_before": [
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "가성소다 재고·순환 상실 감지 경보 및 인출 인터록 연동",
+        "가열원 상실 시 자동 차단 로직 구성",
+        "비상전원 확보"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-007",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "No",
+      "parameter": "격납 건전성 상실",
+      "deviation": "톤컨테이너·배관·연결부 격납이 전혀 유지되지 않아 액염소/염소가스가 외부로 방출되는 상태",
+      "causes": [
+        "습분·불순물에 의한 배관·연결부 부식 파공",
+        "컨테이너 연결부 개스킷 손상·체결 불량",
+        "외부 충격·낙하에 의한 컨테이너 손상",
+        "기화기 전열관 파손"
+      ],
+      "consequences": [
+        "대량 염소가스 외부 확산으로 다수 인원 급성 독성 노출 및 항만·인접 영향",
+        "액염소 유출 시 급속 증발로 확산 규모 확대"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "연결부 정기 두께·부식 검사 및 습분 유입 방지 관리",
+        "누출감지 다중화 및 감지-차단-스크러버 자동 연동 검증",
+        "취급구역 방액/포집 및 강제배기-스크러버 경로 확보"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-008",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "No",
+      "parameter": "기동정지",
+      "deviation": "컨테이너 교체·라인업 전환 시 정해진 기동/정지 절차가 전혀 이행되지 않은 상태",
+      "causes": [
+        "정지 시 잔류 염소 퍼지 미실시",
+        "밸브 라인업 조작 순서 오류",
+        "교체 전 배관 감압·질소 치환 누락"
+      ],
+      "consequences": [
+        "연결 해체 시 잔류 염소 대기 방출로 작업자 급성 노출",
+        "오라인업 상태 기동 시 폐색부 과압 또는 누출",
+        "습분 유입에 의한 후속 부식 촉진"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "교체·라인업 표준절차 및 체크리스트 의무화(퍼지·치환 단계 포함)",
+        "밸브 시퀀스 오조작 방지 표시·잠금 관리"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-009",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "No",
+      "parameter": "유지보수",
+      "deviation": "컨테이너 연결·해체 및 기화기 정비 시 요구되는 격리·퍼지 등 정비 준비가 전혀 수행되지 않은 상태",
+      "causes": [
+        "개방 전 격리·감압·질소 퍼지 미실시",
+        "잔류 액염소 배출·확인 누락",
+        "정비 허가(작업허가) 절차 미준수"
+      ],
+      "consequences": [
+        "개방 작업 중 잔류 염소 방출로 정비자 급성 흡입 노출",
+        "미격리 상태 개방 시 계통 염소 대량 누출"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "개방 정비 전 격리·감압·퍼지·검지 확인 절차 의무화",
+        "정비자 개인보호구 및 비상세척/대피 수단 배치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-010",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "No",
+      "parameter": "방호계통 가용성",
+      "deviation": "누출감지기·긴급차단밸브·스크러버 방호계통이 전혀 작동하지 않는 부작동 상태",
+      "causes": [
+        "감지기 교정 불량·전원 상실로 미감지",
+        "긴급차단밸브 고착·구동원 상실로 미차단",
+        "스크러버 순환펌프 정지·약액 고갈로 미중화"
+      ],
+      "consequences": [
+        "누출 발생 시 감지·차단·중화가 모두 실패하여 미처리 염소 대량 외부 확산",
+        "완화 수단 부재로 인적 피해 및 선외 영향 극대화"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 5,
+      "F": 2,
+      "risk_score": 10,
+      "recommendations": [
+        "방호계통 정기 기능시험 및 가용성 관리(감지기 교정, 밸브 스트로크 시험, 스크러버 약액 재고)",
+        "방호계통 고장 자기진단 및 경보 구성",
+        "핵심 방호요소 다중화 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-011",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "More",
+      "parameter": "유량",
+      "deviation": "액염소 배관의 이송 유량이 설계치를 초과해 기화기 처리용량을 넘어선다",
+      "causes": [
+        "컨테이너 압력 상승으로 인출 유량 증가",
+        "하류 밸브 과도 개방·유량조절 실패",
+        "기화기 부하 초과 상태에서 계속 인출"
+      ],
+      "consequences": [
+        "기화기 미기화 액염소가 하류로 이송(액꼬리 캐리오버)",
+        "하류 배관·기기 내 액염소 급격 기화로 국부 과압 및 누출",
+        "염소 대량 방출 시 독성 확산으로 인명 피해"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "기화기 출구 유량·온도 인터록 설정",
+        "기화기 처리용량 대비 인출 유량 제한 오리피스 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-012",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "More",
+      "parameter": "압력",
+      "deviation": "밀폐계 운전압력이 500 kPag를 초과해 배관·컨테이너에 과압이 발생한다",
+      "causes": [
+        "외부 화재·직사광선에 의한 컨테이너 가열로 증기압 상승",
+        "기화기 과열로 계 내 압력 상승",
+        "하류 폐쇄상태에서 계속 가열(블록드인)"
+      ],
+      "consequences": [
+        "배관·연결부·컨테이너 파열",
+        "대량 액/기 염소 순간 방출",
+        "독성 확산으로 다수 사망 및 인접 영향"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "컨테이너·배관 과압 방지 장치 및 압력 인터록 설치",
+        "직사광선 차단·냉각 등 온도관리 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-013",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "More",
+      "parameter": "온도",
+      "deviation": "기화기 가열원 온도가 설계치를 초과해 액염소가 과열된다",
+      "causes": [
+        "가열원(온수/전기) 제어 실패로 과가열",
+        "기화기 온도조절기 고장",
+        "저유량 상태에서 지속 가열"
+      ],
+      "consequences": [
+        "계 내 증기압 급상승으로 과압",
+        "삼염화질소 등 불안정 성분의 분해·발열 위험",
+        "배관 과압·파열에 의한 염소 누출"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "기화기 고온 경보·차단 인터록 설치",
+        "가열원 온도 상한 관리 절차"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-014",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "More",
+      "parameter": "상 변화",
+      "deviation": "기화량이 과다하여 하류에 과도한 염소 가스가 급격히 공급된다",
+      "causes": [
+        "기화기 과열로 급격 기화",
+        "인출·기화 속도 불일치"
+      ],
+      "consequences": [
+        "하류 가스 압력 급상승 및 과압",
+        "밸브·씰 손상으로 염소 가스 누출",
+        "독성 확산 위험"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "기화 속도 대비 하류 소비량 균형 인터록",
+        "기화기 출구 압력 경보 설정"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-015",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "More",
+      "parameter": "준위",
+      "deviation": "컨테이너 내 액염소 잔량이 과다한 상태로 이송 요구가 걸린다",
+      "causes": [
+        "과충전된 컨테이너 반입",
+        "충전량 검수 오류"
+      ],
+      "consequences": [
+        "온도 상승 시 액팽창으로 컨테이너 과압 여유 부족",
+        "액꼬리 이송으로 하류 미기화 액염소 유입",
+        "과압에 의한 컨테이너·배관 손상"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "반입 컨테이너 충전량 검수 절차 강화",
+        "충전 상한 확인 후 라인업"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-016",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "More",
+      "parameter": "조성",
+      "deviation": "수분·불순물 함량이 증가하여 염소 순도가 저하된다",
+      "causes": [
+        "컨테이너 내 수분 혼입",
+        "충전원의 품질 관리 미흡"
+      ],
+      "consequences": [
+        "습염소에 의한 배관·컨테이너 급속 부식",
+        "부식 진행으로 격납 상실 및 누출",
+        "삼염화질소 축적 위험"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "반입 염소 수분·불순물 규격 검수",
+        "부식 취약부 정기 두께 점검"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-017",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "More",
+      "parameter": "유틸리티",
+      "deviation": "기화기 가열원 공급이 과다하여 가열량이 과잉된다",
+      "causes": [
+        "가열 매체(온수/전기) 온도·유량 과다 공급",
+        "가열원 제어 이상"
+      ],
+      "consequences": [
+        "기화기 과열 및 계 내 과압",
+        "과압에 의한 배관·기기 손상과 염소 누출"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "가열 매체 온도 상한 제어 및 경보",
+        "가열원 이상 시 자동 차단 인터록"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-018",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "More",
+      "parameter": "격납 건전성 상실",
+      "deviation": "부식·손상으로 누출 개구가 확대되어 염소 방출량이 증가한다",
+      "causes": [
+        "습염소 부식 진행으로 배관·연결부 관통 확대",
+        "진동·응력에 의한 균열 성장"
+      ],
+      "consequences": [
+        "염소 외부 대량 누출",
+        "독성 확산으로 인명·인접선 영향",
+        "스크러버 처리용량 초과"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "연결부·배관 정기 누설·두께 검사",
+        "누출감지 다중화 및 자동 격리 연동"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-019",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "More",
+      "parameter": "기동정지",
+      "deviation": "컨테이너 교체·라인업 전환 시 잔류 염소 조작이 과도하게 이루어진다",
+      "causes": [
+        "퍼지 미흡 상태에서 밸브 개방",
+        "라인업 순서 오류로 잔류 염소 방출"
+      ],
+      "consequences": [
+        "연결·해체부에서 염소 국부 방출",
+        "작업자 급성 흡입 노출",
+        "밸브 오조작 시 대량 방출"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "교체·라인업 퍼지 및 밸브 조작 체크리스트",
+        "잔류 염소 스크러버 유도 경로 확보"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-020",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "More",
+      "parameter": "유지보수",
+      "deviation": "정비 개방 작업 시 잔류 염소 노출량이 증가한다",
+      "causes": [
+        "연결부·기화기 개방 전 퍼지·격리 불충분",
+        "격리 밸브 누설 미확인"
+      ],
+      "consequences": [
+        "개방부에서 염소 방출로 작업자 노출",
+        "급성 흡입 중상·사망"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "개방 전 격리·퍼지·잔압 확인 작업허가 절차",
+        "개인보호구 및 가스검지 착용 의무화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-021",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "More",
+      "parameter": "방호계통 가용성",
+      "deviation": "누출 시 실제 요구되는 방호 부하가 방호계통 용량을 초과한다",
+      "causes": [
+        "대량 누출로 스크러버 중화 용량 초과",
+        "긴급차단밸브·감지기 동시 요구 시 부하 집중"
+      ],
+      "consequences": [
+        "미처리 염소 대기 방출",
+        "독성 확산으로 다수 인명·인접 영향"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "스크러버 처리용량 대비 최대 누출 시나리오 검토",
+        "방호계통 정기 성능시험 및 가용성 관리"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-022",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Less",
+      "parameter": "유량",
+      "deviation": "톤컨테이너에서 기화기로 향하는 액염소 이송량이 설계치보다 적게 흐른다",
+      "causes": [
+        "컨테이너 밸브 개도 부족 또는 부분 폐쇄",
+        "배관 내 염화철 슬러지·불순물 침적에 의한 유로 협착",
+        "긴급차단밸브 오작동에 의한 부분 닫힘",
+        "컨테이너 내 액염소 잔량 저하로 인출 압력 부족"
+      ],
+      "consequences": [
+        "기화기 공급 부족으로 후단 염소 공급 불안정",
+        "저유량 상태에서 기화기 국부 과열 및 열응력 누적",
+        "운전 불안정에 따른 조작 개입 증가로 노출 기회 확대"
+      ],
+      "safeguards_before": [
+        "긴급차단밸브"
+      ],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "액염소 배관 유량 저하 경보 설정",
+        "배관 스트레이너·필터 정기 점검 및 차압 감시"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-023",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Less",
+      "parameter": "압력",
+      "deviation": "액염소 배관·컨테이너의 운전압력이 500 kPag보다 낮게 유지된다",
+      "causes": [
+        "기화기 가열원 상실로 증기압 저하",
+        "주위 온도 저하에 따른 컨테이너 내 증기압 감소",
+        "컨테이너 잔량 소진에 따른 자연 압력 강하"
+      ],
+      "consequences": [
+        "기화 성능 저하로 액염소 미기화 상태 후단 이송",
+        "저압 구간에서 외부 공기·수분 역흡입 시 부식성 물질 생성",
+        "공급 부족에 따른 잦은 조작으로 노출 위험 증가"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "배관 저압 경보 및 저압 연동 정지 로직 검토",
+        "컨테이너 가열·보온 관리 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-024",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Less",
+      "parameter": "온도",
+      "deviation": "기화기 가열이 부족하여 액염소가 설계 온도 이하로 유지된다",
+      "causes": [
+        "기화기 가열원(온수·전기) 공급 저하",
+        "가열 매체 온도 저하 또는 열교환 성능 저하",
+        "저온 외기 노출에 따른 배관 냉각"
+      ],
+      "consequences": [
+        "액염소 미기화로 후단에 액상 염소 이송",
+        "액꼬리 이송 시 후단 설비에서 급격한 기화·압력 변동",
+        "재액화에 의한 배관 내 액 고임과 국부 과압"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "기화기 출구 온도 하한 경보 및 연동",
+        "가열 매체 온도·유량 감시 강화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-025",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Less",
+      "parameter": "상 변화",
+      "deviation": "기화기에서 액→기 전환이 불완전하여 미기화 액염소가 기상 라인으로 넘어간다",
+      "causes": [
+        "가열 부족으로 기화율 저하",
+        "설계 이상 유량 인입에 의한 기화 용량 초과",
+        "기화기 내 열교환면 오염"
+      ],
+      "consequences": [
+        "후단 기상 배관·기기에서 액염소 존재로 급격 기화 및 압력 급변",
+        "액상 염소가 스크러버·후단 기기 재질 부식 유발",
+        "예기치 못한 위치에서 대량 염소 방출"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "기화기 후단 액 캐리오버 감지(온도·미스트) 설치",
+        "기화기 용량 대비 최대 인출량 제한 인터록"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-026",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Less",
+      "parameter": "준위",
+      "deviation": "톤컨테이너 내 액염소 잔량이 설계 인출 하한 이하로 낮아진다",
+      "causes": [
+        "교체 지연으로 컨테이너 과다 소진",
+        "잔량 관리 소홀"
+      ],
+      "consequences": [
+        "인출 압력 부족으로 공급 불안정 및 잦은 조작 개입",
+        "잔량 소진 인식 오류로 빈 컨테이너에서 액꼬리·불순물 농축분 이송",
+        "잔량부에 농축된 삼염화질소 등 불안정 물질 이송 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "컨테이너 중량 감시 및 잔량 하한 경보",
+        "잔량 하한 도달 시 인출 중지 절차 명문화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-027",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Less",
+      "parameter": "조성",
+      "deviation": "염소 순도가 저하되어 수분·불순물 농도가 설계보다 높아진다",
+      "causes": [
+        "컨테이너 충전 품질 편차",
+        "저압·역흡입에 의한 수분 유입",
+        "라인 개방 정비 후 수분 잔류"
+      ],
+      "consequences": [
+        "수분과 염소 반응으로 배관·연결부 부식 가속 및 누출",
+        "부식 진행에 따른 격납 건전성 저하",
+        "삼염화질소 축적 시 불안정 반응 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "염소 순도·수분 함량 관리 기준 및 입고 검사",
+        "정비 후 건조·퍼지 절차 강화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-028",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Less",
+      "parameter": "유틸리티",
+      "deviation": "기화기 가열원 또는 스크러버 가성소다 공급이 설계량 미만으로 감소한다",
+      "causes": [
+        "가열 매체 공급 감소 또는 순환 저하",
+        "가성소다 재고 저하·펌프 유량 부족",
+        "유틸리티 라인 부분 폐색"
+      ],
+      "consequences": [
+        "가열 부족으로 기화 정지·미기화 액 이송",
+        "가성소다 부족 시 스크러버 중화 능력 저하로 미처리 염소 대기 방출",
+        "방호 성능 저하로 누출 사고 완화 실패"
+      ],
+      "safeguards_before": [
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "가성소다 농도·유량·재고 하한 경보",
+        "가열 매체 유량 저하 경보 및 자동 기화 정지"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-029",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Less",
+      "parameter": "격납 건전성 상실",
+      "deviation": "부식·마모로 배관·연결부 벽 두께가 감소하여 미세 누출이 발생한다",
+      "causes": [
+        "수분 혼입에 의한 내부 부식 진행",
+        "연결부 개스킷 열화 및 체결력 감소",
+        "반복 온도·압력 변동에 의한 피로"
+      ],
+      "consequences": [
+        "염소 미세 누출에 의한 작업자 흡입 노출",
+        "누출 확대 시 대량 독성 가스 확산 및 선외·항만 영향",
+        "부식 진행으로 급격한 파단 가능성"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "배관·연결부 두께 측정 및 부식 점검 주기 설정",
+        "연결부 개스킷 교체 이력 관리"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-030",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Less",
+      "parameter": "기동정지",
+      "deviation": "컨테이너 교체·라인업 전환 시 퍼지가 불충분하여 잔류 염소가 남는다",
+      "causes": [
+        "퍼지 시간·유량 부족",
+        "밸브 조작 순서 오류",
+        "라인업 전환 절차 미준수"
+      ],
+      "consequences": [
+        "개방 작업 시 잔류 염소 노출로 작업자 흡입 피해",
+        "잔류 염소와 수분 반응에 의한 부식",
+        "재기동 시 예상치 못한 압력·유량 거동"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "교체·전환용 퍼지 완료 확인 체크리스트",
+        "밸브 조작 순서 명확화 및 이중 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-031",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Less",
+      "parameter": "유지보수",
+      "deviation": "컨테이너 연결·해체 및 기화기 정비 시 격리·퍼지가 불충분한 상태로 개방된다",
+      "causes": [
+        "격리 밸브 불완전 차단",
+        "잔류 염소 퍼지 미완료",
+        "정비 전 확인 절차 누락"
+      ],
+      "consequences": [
+        "개방부에서 잔류 염소 방출로 작업자 급성 노출",
+        "개방 계 내로 수분 유입에 의한 후속 부식",
+        "복구 후 누출 발생 가능성"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "정비 전 격리·퍼지·잔류 확인 작업허가 절차",
+        "개인보호구 착용 및 개방 작업 감시자 배치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-032",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Less",
+      "parameter": "방호계통 가용성",
+      "deviation": "누출감지기·긴급차단밸브·스크러버의 가용성이 저하되어 방호 성능이 부분적으로 상실된다",
+      "causes": [
+        "감지기 교정 이탈·감도 저하",
+        "긴급차단밸브 작동 시험 미실시로 고착",
+        "스크러버 순환·가성소다 계통 성능 저하"
+      ],
+      "consequences": [
+        "누출 감지 실패로 대응 지연 및 확산 확대",
+        "긴급차단 실패로 누출량 증대",
+        "스크러버 미작동 시 미처리 염소 대기 방출로 선외·항만 영향"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "감지기 정기 교정 및 기능 시험 주기 관리",
+        "긴급차단밸브 주기 작동 시험 및 스크러버 성능 점검"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-033",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Reverse",
+      "parameter": "유량",
+      "deviation": "기화기 또는 하류측에서 톤컨테이너 방향으로 액/기 염소가 역류함",
+      "causes": [
+        "기화기 하류 압력이 컨테이너측보다 상승(가열 과다로 기상 압력 급증)",
+        "컨테이너 잔압 저하 시 하류 고압원과 압력 역전",
+        "체크 기능 부재 또는 밸브 오조작으로 역방향 경로 형성"
+      ],
+      "consequences": [
+        "기화된 습염소·불순물이 컨테이너로 역이송되어 내부 부식 촉진",
+        "컨테이너 과압에 의한 연결부 손상 및 대량 염소 누출",
+        "역류로 인한 밸브·배관 손상 후 외부 독성 확산"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브"
+      ],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "액염소 배관에 역류방지용 체크밸브 설치",
+        "기화기 하류 압력 상한 인터록으로 긴급차단밸브 연동"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-034",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Reverse",
+      "parameter": "압력",
+      "deviation": "하류측 압력이 컨테이너측보다 높아지는 역압(back pressure) 상태가 형성됨",
+      "causes": [
+        "기화기 가열 과다로 기상측 압력이 공급측을 초과",
+        "하류 밸브 폐쇄 상태에서 열입력 지속으로 갇힌 구간 압력 상승"
+      ],
+      "consequences": [
+        "역압으로 컨테이너·연결부에 설계 초과 부하 발생",
+        "가스켓·연결부 파손을 통한 염소 외부 누출"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브"
+      ],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "기화기 출구 압력계 및 고압 경보 설치",
+        "역압 방지를 위한 압력방출장치와 스크러버 연계"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-035",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Reverse",
+      "parameter": "상 변화",
+      "deviation": "기화기에서 생성된 기상 염소가 컨테이너 방향 저온부에서 재응축되어 역방향으로 액이 회귀함",
+      "causes": [
+        "역압/역류 조건에서 기상 염소가 저온의 컨테이너측으로 유입",
+        "기화기 정지 후 잔류 기상이 냉각되며 액화·역이동"
+      ],
+      "consequences": [
+        "재응축 액이 컨테이너로 역류하며 압력·부식 문제 유발",
+        "예기치 않은 액꼬리 형성으로 하류 밸브·배관 손상 후 누출"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브"
+      ],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "기화기 하류 보온 및 역응축 방지 트레이싱 검토",
+        "역류방지 체크밸브로 재응축 액 회귀 차단"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-036",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Reverse",
+      "parameter": "기동정지",
+      "deviation": "컨테이너 교체·라인업 전환 시 밸브 개폐 순서 오류로 하류에서 잔류 염소가 역방향으로 흐름",
+      "causes": [
+        "교체 절차 중 하류 잔압 존재 상태에서 신규 컨테이너 연결",
+        "밸브 조작 순서 오류로 역방향 경로가 일시 개방"
+      ],
+      "consequences": [
+        "잔류 기상 염소가 개방부·신규 연결부로 역류하여 작업자 노출",
+        "역류 염소가 미차단 구간으로 확산되어 국소 중독"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "교체·전환 시 퍼지 및 밸브 조작 순서를 명문화한 절차 수립",
+        "라인업 전환 인터록으로 역방향 경로 개방 방지"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-037",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Reverse",
+      "parameter": "유지보수",
+      "deviation": "정비 후 재기동 시 격리 불충분으로 개방된 정비 구간으로 염소가 역류함",
+      "causes": [
+        "정비 격리(이중차단) 미흡 상태에서 하류 잔압이 개방부로 역류",
+        "연결·해체 순서 오류로 미배기 구간에 역방향 유입"
+      ],
+      "consequences": [
+        "개방 정비부로 역류한 염소가 작업자에게 직접 노출",
+        "국소 고농도 염소 흡입에 의한 중상"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브"
+      ],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "정비 전 이중차단·배기·퍼지 확인을 포함한 작업허가 절차 강화",
+        "개방 작업 시 개인 호흡보호구 착용 및 감지기 상시 감시"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-038",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Other than",
+      "parameter": "유량",
+      "deviation": "설계된 액염소 대신 다른 물질(질소·수분·잔류 기체 등)이 배관에 흐르거나, 라인업 오류로 의도하지 않은 경로로 유체가 흐른다",
+      "causes": [
+        "컨테이너 교체 시 퍼지용 질소가 완전히 배출되지 않고 기화기로 유입",
+        "밸브 라인업 오류로 다른 컨테이너/경로로 흐름 형성",
+        "연결부 결함으로 대기 수분·공기가 배관 내로 유입"
+      ],
+      "consequences": [
+        "기화기 성능 저하 및 하류 공정 염소 순도 저하",
+        "수분 혼입 시 염산 생성으로 배관·기화기 내부 부식 진행 후 누출",
+        "잘못된 경로 이송으로 밸브·설비 손상 및 국소 염소 누출"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브"
+      ],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "컨테이너 교체 후 퍼지·기밀·건조도 확인 절차 표준화",
+        "라인업 체크리스트 및 밸브 위치 표시·잠금 관리"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-039",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Other than",
+      "parameter": "압력",
+      "deviation": "설계 유체가 아닌 다른 기체(퍼지 질소, 공기)나 이물질이 밀폐계에 존재하여 예상과 다른 압력 거동을 보인다",
+      "causes": [
+        "퍼지 질소 잔류로 계내 비응축 가스 축적",
+        "공기 유입에 따른 불활성/부반응 가스 혼입"
+      ],
+      "consequences": [
+        "기화기 내 비응축 가스 축적으로 국부 과압 발생",
+        "압력 이상으로 연결부·배관 밀봉 파손 및 염소 누출"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브"
+      ],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "퍼지 후 벤트/가스 배출 절차 명확화",
+        "계내 비응축 가스 배출 라인 및 압력 확인 점검"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-040",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Other than",
+      "parameter": "온도",
+      "deviation": "기화기에 액염소가 아닌 다른 물질(질소·수분 혼입액)이 존재하여 설계와 다른 열거동이 나타난다",
+      "causes": [
+        "잔류 퍼지 가스·수분 혼입으로 기화 특성 변화",
+        "이물질로 인한 국부 결빙·열전달 불균일"
+      ],
+      "consequences": [
+        "기화 불완전으로 미기화 액 이송 및 하류 액꼬리 이송",
+        "열전달 저하로 기화기 내부 국부 응력·손상 후 누출"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브"
+      ],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "기화기 유입 유체 건조도·순도 관리",
+        "기화기 출구 온도 감시 및 이상 시 인출 정지"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-041",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Other than",
+      "parameter": "상 변화",
+      "deviation": "설계된 액→기 전환 대신 다른 상태(수분 혼입 혼상, 비응축 가스 동반 기상)가 형성된다",
+      "causes": [
+        "수분 혼입으로 습염소/염산 미스트 형성",
+        "퍼지 질소 등 비응축 가스가 기상에 동반"
+      ],
+      "consequences": [
+        "습염소에 의한 배관·기화기 심각 부식 및 격납 상실",
+        "하류 순도 저하 및 밸브·계장 손상"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브"
+      ],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "수분 유입 차단을 위한 연결부 건조·기밀 절차",
+        "건조도 상시 관리 및 습염소 검출 방안 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-042",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Other than",
+      "parameter": "준위",
+      "deviation": "컨테이너 내에 액염소가 아닌 다른 상태(과다 침전물·불순물 축적)로 인해 표시 잔량과 실제 인출 가능량이 다르다",
+      "causes": [
+        "염화철·불순물이 컨테이너 하부에 축적",
+        "삼염화질소 등 고비점 성분 잔류 농축"
+      ],
+      "consequences": [
+        "삼염화질소 축적 시 충격·열에 의한 폭발 위험",
+        "잔류 침전물 이송으로 밸브 막힘 및 조작 이상"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브"
+      ],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "컨테이너 완전 인출 방지(잔량 하한 관리)",
+        "삼염화질소 축적 방지 및 잔류물 관리 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-043",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Other than",
+      "parameter": "조성",
+      "deviation": "염소 순도가 저하되어 염화철·수분·삼염화질소 등 불순물이 규격을 초과해 혼입된다",
+      "causes": [
+        "공급 컨테이너 자체 불순물 함량 초과",
+        "수분·공기 유입으로 부식 및 부산물 생성",
+        "삼염화질소의 농축·축적"
+      ],
+      "consequences": [
+        "부식 가속으로 배관·기화기 격납 상실 및 대량 누출",
+        "삼염화질소 축적에 의한 폭발성 위험"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "입고 염소 순도·수분 기준 검수 및 이력관리",
+        "삼염화질소 축적 모니터링 및 주기적 배출 관리"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-044",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Other than",
+      "parameter": "유틸리티",
+      "deviation": "기화 가열원이나 스크러버 가성소다가 규격과 다른 유체(오염·저농도·타 매체)로 공급된다",
+      "causes": [
+        "가성소다 대신 희석/오염된 용액 충전",
+        "가열매체 오공급 또는 이물질 혼입"
+      ],
+      "consequences": [
+        "스크러버 중화 능력 저하로 누출 시 염소 미중화 배출",
+        "가열 이상으로 기화 불량 및 액이송"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "가성소다 농도·재고 정기 확인 절차",
+        "가열매체 규격 확인 및 공급 상태 감시"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-045",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Other than",
+      "parameter": "격납 건전성 상실",
+      "deviation": "부식성 불순물 또는 이종 물질 작용으로 컨테이너·배관·연결부 재질이 손상되어 격납이 상실된다",
+      "causes": [
+        "수분 혼입에 의한 습염소 부식",
+        "불순물·이종 물질에 의한 재질 침식",
+        "연결부 개스킷 부적합/열화"
+      ],
+      "consequences": [
+        "염소 외부 대량 누출로 다수 사망·항만/인접 영향",
+        "선내 인원 급성 중독"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 5,
+      "F": 2,
+      "risk_score": 10,
+      "recommendations": [
+        "재질 적합성 및 개스킷 규격 관리, 정기 두께·부식 점검",
+        "건조도 유지로 습염소 부식 예방"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-046",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Other than",
+      "parameter": "기동정지",
+      "deviation": "컨테이너 교체·라인업 전환 시 설계 유체가 아닌 잔류 염소·공기·질소가 혼재한 상태로 기동/정지가 진행된다",
+      "causes": [
+        "퍼지 불충분으로 잔류 염소와 공기 혼재",
+        "밸브 조작 순서 오류로 이종 물질 유입"
+      ],
+      "consequences": [
+        "개방부 잔류 염소 누출로 작업자 노출",
+        "공기·수분 유입으로 후속 부식·격납 상실"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "퍼지·기밀·확인을 포함한 기동정지 표준절차 수립",
+        "전환 작업 시 감지기 상시 감시 및 2인 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-047",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Other than",
+      "parameter": "유지보수",
+      "deviation": "정비 개방 시 설계와 달리 잔류 염소나 이종 물질이 계내에 남아 있는 상태로 작업이 이루어진다",
+      "causes": [
+        "개방 전 퍼지·중화 미흡",
+        "격리 불완전으로 염소 잔류"
+      ],
+      "consequences": [
+        "개방 작업자 급성 염소 노출·중독",
+        "잔류물 반응으로 국소 누출"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "개방 전 격리·퍼지·잔류가스 측정 확인 후 작업허가",
+        "보호구 착용 및 스크러버 연동 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-048",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Other than",
+      "parameter": "방호계통 가용성",
+      "deviation": "방호계통이 설계 대상 물질(염소)이 아닌 다른 조건에 맞춰져 있거나 오작동하여 실제 누출을 감지·차단·중화하지 못한다",
+      "causes": [
+        "감지기 교정 오류/대상 가스 부적합으로 미감지",
+        "긴급차단밸브 고착",
+        "스크러버 가성소다 소진·부적합"
+      ],
+      "consequences": [
+        "누출 시 완화 실패로 대량 염소 확산",
+        "선내·항만 인접 영향 확대"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 5,
+      "F": 2,
+      "risk_score": 10,
+      "recommendations": [
+        "감지기 정기 교정·기능시험 및 차단밸브 작동시험",
+        "스크러버 약액 상태 상시 확인 및 정기 성능시험"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-049",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Part of",
+      "parameter": "유량",
+      "deviation": "액염소 배관 흐름의 일부만 기화기에 도달하고 나머지는 기화 없이 액상으로 하류로 넘어가거나 부분 유로만 흐름",
+      "causes": [
+        "톤컨테이너 인출밸브 부분 개방",
+        "배관 내 부분 폐색(불순물·수화물 축적)으로 일부 유로만 통과",
+        "복수 컨테이너 병렬 라인업 중 일부만 개방되어 설계 유량의 일부만 이송"
+      ],
+      "consequences": [
+        "기화기 부하 불균형으로 미기화 액염소가 하류로 이송",
+        "설계 처리량 미달로 기화기 출구에 액꼬리 발생",
+        "부분 유량 상태가 지속되며 하류 연결부에 액염소 체류·부식 및 누출 가능성"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브"
+      ],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "밸브 완전 개폐 확인 절차 수립",
+        "배관 차압 모니터링으로 부분 폐색 조기 감지",
+        "라인업 체크리스트로 병렬 컨테이너 개방 상태 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-050",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Part of",
+      "parameter": "압력",
+      "deviation": "계 내 일부 구간만 설계압에 도달하고 다른 구간은 저압으로 유지되어 압력 프로파일 일부만 형성",
+      "causes": [
+        "부분 개방 밸브로 상류·하류 간 압력 분리",
+        "부분 폐색으로 폐색 지점 상류에만 압력 형성"
+      ],
+      "consequences": [
+        "국부 압력 격차로 특정 연결부에 응력 집중 및 미세 누출",
+        "저압 구간에서 액염소 재기화·재응축 반복으로 배관 진동·손상"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브"
+      ],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "구간별 압력 지시계 설치",
+        "폐색 감지 시 정지 인터록 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-051",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Part of",
+      "parameter": "온도",
+      "deviation": "기화기 가열이 부분적으로만 이루어져 유체의 일부만 승온되고 나머지는 저온 액상으로 잔류",
+      "causes": [
+        "기화기 가열매체 유량 부족 또는 부분 순환",
+        "기화기 전열면 일부 스케일·오염으로 열전달 저하"
+      ],
+      "consequences": [
+        "부분 기화로 액-기 혼합 유출, 하류에 미기화 액염소 이송",
+        "저온부 재응축으로 배관 내 액염소 축적 및 누출 위험"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브"
+      ],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "기화기 출구 온도 하한 인터록",
+        "가열매체 유량·온도 감시 강화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-052",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Part of",
+      "parameter": "상 변화",
+      "deviation": "기화기에서 액염소의 일부만 기상으로 전환되어 이상 혼합 상태로 하류에 이송됨",
+      "causes": [
+        "기화기 열공급 부족으로 부분 기화",
+        "설계 초과 유량으로 체류시간 부족"
+      ],
+      "consequences": [
+        "미기화 액염소가 하류 기상 설비로 넘어가 액충격·과도 압력",
+        "하류 연결부에서 액염소 누출 시 대량 증기운 형성"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "기화기 출구 액체 캐리오버 감지기 설치",
+        "출구 과열도 확보 위한 온도 제어 강화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-053",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Part of",
+      "parameter": "준위",
+      "deviation": "톤컨테이너 액염소가 일부만 인출되고 잔량 일부가 남은 상태에서 기상 인출로 전환되는 부분 인출",
+      "causes": [
+        "컨테이너 조기 교체로 잔량 액염소 존치",
+        "액꼬리 구간에서 액-기 혼합 인출"
+      ],
+      "consequences": [
+        "잔류 액염소 컨테이너의 취급·해체 시 노출 위험",
+        "액꼬리 이송으로 기화기 부하 급변 및 미기화 이송"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기"
+      ],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "컨테이너 중량 감시로 잔량 관리",
+        "잔량 확인 후 교체 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-054",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Part of",
+      "parameter": "조성",
+      "deviation": "염소에 수분·염화철·삼염화질소 등 불순물이 일부 혼입되어 순도가 설계 의도의 일부만 만족",
+      "causes": [
+        "컨테이너 충전 시 수분 혼입",
+        "장기 잔류로 삼염화질소 농축",
+        "배관 부식 생성물 유입"
+      ],
+      "consequences": [
+        "수분+염소로 습염소 부식 가속, 배관·연결부 취약화 후 누출",
+        "삼염화질소 축적 시 기화기 내 폭발성 잔사 형성"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기"
+      ],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "수분 관리 및 건조 상태 유지 절차",
+        "기화기 잔사(NCl3) 정기 배출·모니터링",
+        "입고 염소 순도 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-055",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Part of",
+      "parameter": "유틸리티",
+      "deviation": "가열원 또는 가성소다 공급 중 일부만 확보되어 기화·중화 기능이 부분적으로만 유지됨",
+      "causes": [
+        "기화기 가열매체 부분 공급 저하",
+        "스크러버 가성소다 순환 일부 정지"
+      ],
+      "consequences": [
+        "부분 가열로 미기화 액염소 이송",
+        "중화능 부족으로 누출 염소 일부만 제거되어 외부 확산"
+      ],
+      "safeguards_before": [
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "가성소다 농도·유량 감시 및 저하 경보",
+        "가열매체 저하 시 인출 정지 인터록"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-056",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Part of",
+      "parameter": "격납 건전성 상실",
+      "deviation": "컨테이너·배관·연결부 벽 두께가 부식으로 부분 감육되어 격납 완결성이 일부만 유지됨",
+      "causes": [
+        "습염소에 의한 국부 부식·공식",
+        "연결부 개스킷 부분 열화"
+      ],
+      "consequences": [
+        "미세 누출 진행 후 균열 확대로 대량 염소 방출",
+        "독성 증기운 선외 확산으로 인명 피해"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 5,
+      "F": 2,
+      "risk_score": 10,
+      "recommendations": [
+        "배관·연결부 두께 정기 점검",
+        "부식 취약부 재질 개선 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-057",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Part of",
+      "parameter": "기동정지",
+      "deviation": "컨테이너 교체·라인업 전환 시 잔류 염소 퍼지가 일부만 완료된 상태로 작업 진행",
+      "causes": [
+        "퍼지 절차 불완전 수행",
+        "밸브 조작 순서 오류로 일부 구간 미퍼지"
+      ],
+      "consequences": [
+        "잔류 염소가 개방 작업 중 방출되어 작업자 노출",
+        "라인 내 액염소 존치로 재기화 시 압력 상승"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "퍼지 완료 확인(잔류농도 측정) 절차 의무화",
+        "밸브 조작 순서 체크리스트 및 이중 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-058",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Part of",
+      "parameter": "유지보수",
+      "deviation": "기화기·연결부 정비 시 계통 격리·퍼지가 일부만 이루어진 채 개방 작업 수행",
+      "causes": [
+        "격리 밸브 일부만 차단",
+        "잔류 염소 중화·배출 불완전"
+      ],
+      "consequences": [
+        "개방부에서 잔류 염소 방출로 정비자 흡입 노출",
+        "부분 격리로 상류 염소 역유입"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이중 격리 및 맹판 설치 절차",
+        "개방 전 잔류농도 확인 및 호흡보호구 착용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-059",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "Part of",
+      "parameter": "방호계통 가용성",
+      "deviation": "누출감지기·긴급차단밸브·스크러버 중 일부만 정상 작동하여 방호기능이 부분적으로만 발휘됨",
+      "causes": [
+        "감지기 일부 센서 고장·교정 불량",
+        "긴급차단밸브 부분 작동 불능",
+        "스크러버 계통 일부 성능 저하"
+      ],
+      "consequences": [
+        "누출 감지 지연 또는 차단·중화 불완전으로 염소 외부 확산",
+        "완화 실패로 피해 규모 확대"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 5,
+      "F": 2,
+      "risk_score": 10,
+      "recommendations": [
+        "방호계통 정기 기능시험 및 가용성 관리",
+        "감지기 다중화 및 차단밸브 작동시험 주기 단축"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-060",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "As well as",
+      "parameter": "유량",
+      "deviation": "설계된 액염소 이송에 더해 컨테이너 헤드스페이스의 염소 가스가 함께 액배관으로 딸려 들어가 이상(二相) 유동이 발생한다",
+      "causes": [
+        "컨테이너 잔량 저하로 액꼬리와 함께 기상 염소가 흡입됨",
+        "인출 속도 과다로 액면 위 기체가 배관으로 동반 유입"
+      ],
+      "consequences": [
+        "기화기 부하 변동 및 배관 내 슬러그 유동으로 압력 맥동 발생",
+        "이상 유동에 의한 계량 오차로 하류 공급 불안정, 국부 진동으로 연결부 이완 시 염소 누출"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브"
+      ],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "컨테이너 액상 인출 하한 잔량 관리 절차 수립",
+        "인출 유량 상한 설정 및 액상 우선 인출 배관 배치 점검"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-061",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "As well as",
+      "parameter": "압력",
+      "deviation": "정상 운전압에 더해 외부 가열·기화 과잉에 의한 추가 압력 상승분이 밀폐계에 중첩된다",
+      "causes": [
+        "차단된 액배관 구간에 잔류 액염소가 갇힌 상태에서 주위 온도 상승으로 열팽창압 발생",
+        "기화기 과열로 발생한 과잉 기상압이 상류로 전달"
+      ],
+      "consequences": [
+        "설계압 초과로 배관·연결부·컨테이너 밸브 파손 및 대량 염소 누출",
+        "선내 독성 확산으로 다수 인원 노출"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "폐색 가능 액배관 구간에 열팽창 릴리프 설치 검토",
+        "기화기 출구 압력 상한 인터록 및 정기 검사"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-062",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "As well as",
+      "parameter": "온도",
+      "deviation": "설계 기화 온도에 더해 가열원 과잉 투입으로 국부 과열이 중첩되어 염소가 과도 팽창한다",
+      "causes": [
+        "기화기 가열 제어 이상으로 설정 초과 가열",
+        "저유량 조건에서 가열원 대비 흐름 부족으로 국부 온도 상승"
+      ],
+      "consequences": [
+        "기상 염소 과압 발생 및 하류 압력 상승으로 누출 위험 증대",
+        "고온에서 습분 존재 시 부식 가속으로 격납 약화"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "기화기 온도 상한 경보 및 가열원 차단 인터록 적용",
+        "가열 매체 온도 상한 관리 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-063",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "As well as",
+      "parameter": "상 변화",
+      "deviation": "설계된 액→기 전환에 더해 기화된 염소 일부가 저온 배관 구간에서 재응축되어 기상 중에 액적이 함께 존재한다",
+      "causes": [
+        "기화기 하류 배관의 보온 불량으로 국부 냉각",
+        "주위 온도 저하 시 포화점 이하로 냉각되어 부분 재액화"
+      ],
+      "consequences": [
+        "하류 계통에 예기치 않은 액염소 유입으로 후단 설비 손상",
+        "재응축 액의 재기화로 압력 맥동 및 연결부 피로 누출"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브"
+      ],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "기화기 하류 배관 보온·트레이싱 강화",
+        "기화기 출구 과열도 확보를 위한 온도 관리"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-064",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "As well as",
+      "parameter": "준위",
+      "deviation": "컨테이너 내 정상 액염소 외에 침전된 고형 불순물·오일 잔사가 하부에 함께 존재하여 인출 시 딸려 나온다",
+      "causes": [
+        "장기 저장·다회 사용 컨테이너 하부에 부식 슬러지·불순물 축적",
+        "액면 저하 말기 하부 잔사층까지 인출"
+      ],
+      "consequences": [
+        "밸브·배관 내 이물 축적으로 유량 폐색 및 밸브 밀폐 불량",
+        "밀폐 불량으로 잔류 염소 누출 경로 형성"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브"
+      ],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "컨테이너 하부 잔량 인출 제한 및 잔사 관리 절차",
+        "인출 라인 필터·스트레이너 설치 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-065",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "As well as",
+      "parameter": "조성",
+      "deviation": "염소 본류에 더해 수분·염화철·삼염화질소 등 불순물이 함께 혼입되어 유입된다",
+      "causes": [
+        "컨테이너 충전 이력 불량 또는 습분 침투로 수분 혼입",
+        "부식 생성물 및 축적된 삼염화질소가 액상에 동반"
+      ],
+      "consequences": [
+        "수분+염소에 의한 배관 부식 가속으로 격납 건전성 저하",
+        "삼염화질소 축적·농축 시 충격·가열에 의한 폭발 위험"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브"
+      ],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "입고 염소 순도·수분 규격 확인 절차 수립",
+        "기화기 잔류액 정기 배출로 삼염화질소 농축 방지"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-066",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "As well as",
+      "parameter": "유틸리티",
+      "deviation": "정상 공급 유틸리티에 더해 계통에 이질 유틸리티(가열매체 누설수 등)가 염소계로 함께 침입한다",
+      "causes": [
+        "기화기 가열 매체 코일 누설로 열매/온수가 염소측으로 유입",
+        "가성소다 계통 크로스 연결로 이질 유체 혼입"
+      ],
+      "consequences": [
+        "염소와 수분 접촉에 의한 급격한 부식 및 반응성 생성물 발생",
+        "격납 파손으로 염소 누출, 스크러버 계통 오염"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "기화기 가열 매체측 누설 감시 및 압력 역전 방지 설계",
+        "유틸리티 크로스 연결 방지 및 차단 밸브 관리"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-067",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "As well as",
+      "parameter": "격납 건전성 상실",
+      "deviation": "정상 격납 상태에 더해 부식·손상에 의한 미세 누출 경로가 추가로 형성되어 소량 염소가 상시 새어 나온다",
+      "causes": [
+        "습분 혼입에 의한 배관·연결부 국부 부식 진전",
+        "반복 체결·진동으로 개스킷·플랜지 밀봉 저하"
+      ],
+      "consequences": [
+        "지속적 미량 염소 누출로 밀폐 공간 내 독성 농도 상승",
+        "부식 진전으로 누출 규모 확대 시 대량 방출"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "배관·연결부 부식 정기 검사 및 개스킷 교체 주기 관리",
+        "누출감지기 배치·감도 적정성 재검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-068",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "As well as",
+      "parameter": "기동정지",
+      "deviation": "컨테이너 교체·라인업 전환 정상 절차에 더해 배관 내 잔류 염소가 퍼지되지 않고 개방 작업에 함께 남아 있다",
+      "causes": [
+        "교체 전 잔류 염소 퍼지 미흡 또는 밸브 조작 순서 오류",
+        "라인업 전환 중 차단 미완료 상태에서 연결 해제"
+      ],
+      "consequences": [
+        "개방 시 잔류 염소 방출로 작업자 급성 노출",
+        "밀폐 공간 내 독성 확산으로 다수 인원 피해"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 4,
+      "F": 4,
+      "risk_score": 16,
+      "recommendations": [
+        "컨테이너 교체 시 질소 퍼지·잔류 확인 절차 표준화",
+        "밸브 조작 순서 체크리스트 및 이중 확인 적용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-069",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "As well as",
+      "parameter": "유지보수",
+      "deviation": "정비 개방 작업에 더해 격리되지 않은 인접 활선 계통의 염소가 작업 구간으로 함께 유입된다",
+      "causes": [
+        "정비 전 격리·차단 불완전으로 상류 염소 잔압 유입",
+        "블라인드 미설치 상태에서 기화기·연결부 개방"
+      ],
+      "consequences": [
+        "정비 중 예기치 않은 염소 유입으로 작업자 노출",
+        "국소 방출로 인근 인원 급성 중독"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "정비 전 격리·블라인드·퍼지 확인(LOTO) 절차 강화",
+        "개방 작업 시 개인보호구 및 가스 측정 의무화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "p2-070",
+      "node": "P2",
+      "node_meta": {
+        "node": "P2",
+        "substance": "염소",
+        "phase": "liquid/gas",
+        "P_kPag": 500.0,
+        "T_degC": 20.0,
+        "equipment": [
+          "톤컨테이너",
+          "액염소 배관",
+          "기화기"
+        ],
+        "safeguards": [
+          "염소 누출감지기",
+          "긴급차단밸브",
+          "중화(가성소다) 스크러버"
+        ]
+      },
+      "guideword": "As well as",
+      "parameter": "방호계통 가용성",
+      "deviation": "정상 누출 사건에 더해 방호계통 자체의 동시 부작동이 겹쳐 완화 기능이 상실된다",
+      "causes": [
+        "누출감지기 교정 불량·긴급차단밸브 고착 등 미정비",
+        "스크러버 가성소다 고갈·순환 펌프 정지 등 대기 상태 불량"
+      ],
+      "consequences": [
+        "누출 발생 시 감지·차단·중화 연쇄 실패로 염소 대량 확산",
+        "선외 항만·인접선 영향 규모로 피해 확대"
+      ],
+      "safeguards_before": [
+        "염소 누출감지기",
+        "긴급차단밸브",
+        "중화(가성소다) 스크러버"
+      ],
+      "S": 5,
+      "F": 2,
+      "risk_score": 10,
+      "recommendations": [
+        "방호계통 정기 기능시험 및 가성소다 재고·농도 관리",
+        "긴급차단밸브 스트로크 시험 및 감지기 교정 주기 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    }
+  ]
+}

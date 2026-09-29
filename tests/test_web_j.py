@@ -311,9 +311,13 @@ def test_criteria_notice_only_for_non_gold_processes() -> None:
     assert service.criteria_notice(quick) == service.CRITERIA_NOTICE
 
 
-@pytest.mark.parametrize(("node", "expected"), [("N1", "F=3 비율 85%"), ("N4", "F=3 비율 95%"), ("P1", "F=3 비율 87%")])
+@pytest.mark.parametrize(
+    ("node", "expected"),
+    [("N1", "F=3 비율 93%"), ("N4", "F=3 비율 95%"), ("P1", "F=3 비율 85%"), ("P2", "F=3 비율 64%")],
+)
 def test_f_distribution_from_replays(node: str, expected: str) -> None:
-    """실무자평가 P-2 표의 값(52/61·92/97·60/69)이 그대로 나온다 — 불리한 숫자도 그대로."""
+    """재생 파일의 F 분포가 그대로 나온다 — 불리한 숫자도 그대로. N4 는 실무자평가 P-2 값(92/97),
+    N1·P1·P2 는 O-2 재캡처 값(68/73·61/72·45/70). 1차 평가 값(52/61·60/69·54/64)은 진행로그 대조표에."""
     result = load_replays()[node]
     assert service.f_distribution(result) == expected
     assert expected in service.summary_line(result)
@@ -346,10 +350,14 @@ def test_app_criteria_badge_visibility(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_provenance_marks_replays_captured_before_m01() -> None:
-    """커밋된 재생은 전부 M-01 이전 프롬프트 결과다 — 화면 출처 줄에 그렇게 적힌다. 이후 캡처엔 안 붙는다."""
+    """홀드아웃 N2~N4 재생은 M-01 이전 프롬프트 결과라 출처 줄에 그렇게 적힌다. O-2 재캡처(P1·P2)는 이후라 안 붙고
+    병렬 수가 붙는다."""
     replays = load_replays()
-    for node in ("N1", "N2", "N3", "N4", "P1", "P2"):
+    for node in ("N2", "N3", "N4"):
         assert "M-01 이전 프롬프트" in service.provenance_line(replays[node]), node
+    for node in ("P1", "P2"):
+        line = service.provenance_line(replays[node])
+        assert "M-01 이전" not in line and " · 병렬 4" in line, (node, line)
     later = service.Result(meta={**replays["P1"].meta, "captured_at": "2026-09-29T05:00:00+00:00"})
     assert "M-01 이전" not in service.provenance_line(later)
 
@@ -403,7 +411,8 @@ def test_accuracy_line_discloses_holdout_next_to_tuning_recall() -> None:
 def test_system_note_reads_model_and_cost_from_result() -> None:
     replays = load_replays()
     note = service.system_note(replays["N1"])
-    assert replays["N1"].meta["model_id"] in note and "$0.787" in note and "에스코어 드림" in note
+    cost = f"${replays['N1'].meta['cost_usd']:.3f}"  # O-2 재캡처로 $0.787 → $0.812 — 하드코딩하지 않는다
+    assert replays["N1"].meta["model_id"] in note and cost in note and "에스코어 드림" in note
     gold = service.Result(meta={"source": "gold", "model_id": None})
     assert service.system_note(gold) == "화면에는 S-Core에서 제공한 에스코어 드림 폰트가 적용되어 있습니다."
 
