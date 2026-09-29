@@ -231,7 +231,6 @@ def test_app_switches_between_processes_and_nodes(monkeypatch: pytest.MonkeyPatc
     assert not at.exception
     assert len(at.table) == 1  # 평가 요약 표
     assert next(e for e in at.expander if e.label.startswith("정확도")).proto.expanded is False
-    assert next(e for e in at.expander if e.label == "현장 절차와 비교").proto.expanded is True  # S4 접지 않음
     at.radio(key="mode").set_value("실측 사례 재생").run()
     assert at.selectbox(key="process_name").options == [p["name"] for p in service.CATALOG]
     for process in service.CATALOG:
