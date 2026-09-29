@@ -352,3 +352,38 @@ def test_provenance_marks_replays_captured_before_m01() -> None:
         assert "M-01 이전 프롬프트" in service.provenance_line(replays[node]), node
     later = service.Result(meta={**replays["P1"].meta, "captured_at": "2026-09-29T05:00:00+00:00"})
     assert "M-01 이전" not in service.provenance_line(later)
+
+
+# ── LOPA 초안 Word 다운로드 (사용자 결정 9/29) ─────────────────────────────────
+def test_lopa_download_is_docx_with_markdown_content_preserved(monkeypatch: pytest.MonkeyPatch) -> None:
+    """파일은 진짜 .docx 이고, 원본 Markdown 의 모든 줄 글자가 문단·표 칸에 그대로 들어간다."""
+    import io
+    import re
+
+    from docx import Document
+
+    from apps.web import docx_export
+    from core.export import lopa
+
+    seen: list[str] = []
+    convert = docx_export.lopa_markdown_to_docx
+    monkeypatch.setattr(service, "lopa_markdown_to_docx", lambda md: (seen.append(md), convert(md))[1])
+    name, data = service.export_files(load_replays()["P1"])["lopa"]
+    assert name == "lopa_draft.docx" and data[:2] == b"PK" and len(seen) == 1
+    doc = Document(io.BytesIO(data))
+    paragraphs = [p.text for p in doc.paragraphs]
+    cells = [c.text for t in doc.tables for row in t.rows for c in row.cells]
+    assert lopa.DISCLAIMER in paragraphs
+    assert sum(bool(re.match(r"시나리오 \d+:", p)) for p in paragraphs) == 5
+    assert all(row in cells for row in lopa.QUANT_ROWS)
+    checked = 0
+    for line in seen[0].splitlines():
+        if not line.strip() or re.match(r"^\|[\s:|-]+\|$", line.strip()):
+            continue
+        if line.startswith("|"):
+            assert all(c.replace("`", "") in cells for c in docx_export._cells(line))
+        else:
+            assert re.sub(r"^(#{1,3} |> |- )", "", line).replace("**", "").replace("`", "") in paragraphs, line
+        checked += 1
+    assert checked > 50
+    assert not any("`" in p for p in paragraphs + cells)
