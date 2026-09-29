@@ -136,7 +136,8 @@ def capture_live(
 
     client._do_converse = _observed  # type: ignore[method-assign]  # noqa: SLF001
 
-    generator = HazopGenerator(client, load_generator_config())
+    gen_config = load_generator_config()
+    generator = HazopGenerator(client, gen_config)
     started = time.perf_counter()
     records = generator.generate(NODE_METAS[node])
     latency = time.perf_counter() - started
@@ -179,6 +180,9 @@ def capture_live(
         ),
         "parameters": parameters,
         "max_tokens": max_tokens,
+        # R-10: 1 이면 순차 캡처. raw_calls 는 병렬이면 완료 순서라 가이드워드 순서가 아니다
+        # (절단 합계에만 쓰므로 순서 무관).
+        "parallel_calls": gen_config.parallel_calls,
         "raw_calls": raw_calls,
         "truncated_calls": truncated,
         "records": records,

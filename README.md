@@ -78,6 +78,7 @@ apps/web/app.py (Streamlit)         위젯 배선만 (공정 선택 → 입력·
         │
         ▼
 core/agent/generate.py   HazopGenerator: ① 파라미터 열거 → ② 가이드워드별 셀 판정 (스키마 강제·재시도·격하)
+                         가이드워드 판정은 `parallel_calls`(기본 4) 병렬 — 결과는 가이드워드 순서 보존 (R-10)
 core/agent/verify.py     규칙 verifier: 근거 없는 규격 번호·수치 → confidence="review" (LLM 호출 없음)
         │
         ▼
@@ -158,6 +159,7 @@ ID 는 각 spec 의 requirements.md·tasks.md 원문 그대로다(gold-dataset·
 | hazop-generation R-06 스키마 실패 처리 | `generate.py` | T-04·T-06 | review 가이드워드 0(9/29) |
 | hazop-generation R-07 오프라인 시험 | `tests/test_generate.py` | T-06 | 지표: 통합 테스트 통과 |
 | hazop-generation R-08 캐싱 적용 지점 | `generate.py` | T-05 | `cache_read=2186` 실측 |
+| hazop-generation R-10 가이드워드 판정 병렬화 | `generate.py` (`parallel_calls`), `config/models.yaml` | T-09 | 순차=병렬 레코드 바이트 동일(mock) |
 | hazop-generation R-09 완료 조건 | `generate.py`, `tools/capture_replay.py` | T-07·T-08 | 지연 ≤ 60초 ⚠️ / N1 recall ≥ 0.5 ✅ / holdout ≥ 0.7 ⚠️ |
 | export-formats R-01 입력 정규화 | `core/export/rows.py` | T-01 | 지표: 통합 테스트 통과 |
 | export-formats R-02~05 xlsx 5시트 | `core/export/xlsx.py` | T-02·T-03 | 헤더 12열·시트 5개·`=H*I` 수식 |
@@ -283,8 +285,8 @@ recall 0.417 을 끌어내린 것은 모델 판정이 아니라 이 절단이다
 
 ### 본선 로드맵
 
-1. **매트릭스 청크 분할·병렬 호출** — 가이드워드 호출이 서로 독립이라 병렬화로 지연을 줄인다
-   (hazop-generation R-10, [docs/지시문_G_병렬매트릭스.md](docs/지시문_G_병렬매트릭스.md) 초안 — requirements.md 미반영).
+1. **매트릭스 병렬 호출 — 예선 반영(O-1)**: 가이드워드 판정을 `parallel_calls`(기본 4)로 병렬화했다
+   (hazop-generation R-10). 파라미터 **청크 분할**(한 호출의 파라미터 수 상한, [docs/지시문_G_병렬매트릭스.md](docs/지시문_G_병렬매트릭스.md))은 본선 과제로 남는다.
 2. **평가 하네스 구현** — evaluation-harness T-01~T-05(`eval/`): 규칙 A/B 매칭, 유사도 τ, precision·S/F MAE,
    반복 실측 평균±표준편차.
 3. **FR-05 tool use** — 물질 5종(`substance_lookup`)·고장률(`failure_rate`) 조회 tool.

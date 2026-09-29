@@ -331,7 +331,8 @@ def run_live(node_text: str, replay: Result, environ: Mapping[str, str] = os.env
     client: AbstractBedrockClient = (
         MockBedrockClient(response_factory=_mock_factory(replay)) if mock else get_bedrock_client()
     )
-    generator = HazopGenerator(client, load_generator_config())
+    gen_config = load_generator_config()
+    generator = HazopGenerator(client, gen_config)
     records = generator.generate(node_meta)
     latency = time.perf_counter() - started
     meta = {
@@ -346,6 +347,7 @@ def run_live(node_text: str, replay: Result, environ: Mapping[str, str] = os.env
         "judged_cells": generator.judged_cells,
         "review_guidewords": list(generator.review_guidewords),
         "recall": None,
+        "parallel_calls": gen_config.parallel_calls,
     }
     return Result(meta=meta, records=records)
 
@@ -396,7 +398,10 @@ def run_quick(
     parameters = generator._enumerate_parameters(node_meta)  # noqa: SLF001
     if not parameters:
         raise RuntimeError("파라미터 열거 실패(응답 스키마 2회 위반) — 가이드워드 판정을 건너뛰었습니다.")
-    batch = generator._generate_batch(node_meta, parameters, guideword)  # noqa: SLF001
+    batch, batch_cost = generator._generate_batch(node_meta, parameters, guideword)  # noqa: SLF001
+    generator.total_cost_usd += batch_cost  # O-1 이후 _generate_batch 는 합산을 호출자에게 맡긴다
+    if batch is None:
+        generator.review_guidewords.append(guideword)
     records = generator._assemble(node_meta, [batch] if batch else [])  # noqa: SLF001
     latency = time.perf_counter() - started
     meta = {
@@ -597,6 +602,8 @@ def provenance_line(result: Result) -> str:
     m = result.meta
     cost = m.get("cost_usd")
     tail = f" · 모델 {m.get('model_id') or '미상'}" + (f" · 비용 ${cost:.3f}" if cost is not None else "")
+    if (m.get("parallel_calls") or 1) > 1:
+        tail += f" · 병렬 {m['parallel_calls']}"
     source = m.get("source")
     if result.is_gold:
         return f"전문가 골드셋 재생 — LLM 생성 결과 아님 ({_kst(m.get('captured_at'))} 저장)"
