@@ -406,3 +406,78 @@ def test_system_note_reads_model_and_cost_from_result() -> None:
     assert replays["N1"].meta["model_id"] in note and "$0.787" in note and "에스코어 드림" in note
     gold = service.Result(meta={"source": "gold", "model_id": None})
     assert service.system_note(gold) == "화면에는 S-Core에서 제공한 에스코어 드림 폰트가 적용되어 있습니다."
+
+
+# ── verifier 시연 토글 (지시문 O-3) ───────────────────────────────────────────
+def _review_count_in_xlsx(data: bytes) -> int:
+    import io
+
+    import openpyxl
+
+    ws = openpyxl.load_workbook(io.BytesIO(data))["신뢰도"]
+    return sum(ws.cell(row=r, column=2).value == "review" for r in range(2, ws.max_row + 1))
+
+
+def test_demo_injection_flags_one_row_and_leaves_original_untouched() -> None:
+    original = load_replays()["P1"]
+    records_before = original.records
+    first_id = id(original.records[0])
+    rec0_before = list(original.records[0].recommendations)
+
+    demo = service.demo_injected(original)
+    table = service.worksheet_table(demo)
+    red = [row for row in table if row[service.CONFIDENCE_COLUMN].startswith("🔴")]
+    assert len(red) == 1 and red[0] is table[0]
+    assert "unverified_standard: KOSHA GUIDE P-999" in red[0][service.FLAG_COLUMN]
+    assert "review 1건 (규격 1·수치 0)" in service.summary_line(demo)
+
+    # 원본은 그대로: 같은 리스트·같은 레코드 객체·같은 권고, 표에 🔴 0
+    assert original.records is records_before and id(original.records[0]) == first_id
+    assert original.records[0].recommendations == rec0_before
+    assert not any(r[service.CONFIDENCE_COLUMN].startswith("🔴") for r in service.worksheet_table(original))
+    assert "review 0건" in service.summary_line(original)
+    # 다운로드(원본으로 만든다)의 신뢰도 시트엔 review 0
+    assert _review_count_in_xlsx(service.export_files(original)["xlsx"][1]) == 0
+
+
+def test_demo_injection_is_noop_for_gold() -> None:
+    """골드 재생은 사람 작성 레코드라 검증 대상이 아니다 — 삽입하지 않는다(화면도 `is_gold` 면 토글을 안 그린다)."""
+    gold = service.Result(meta={"source": "gold"}, records=load_replays()["P1"].records)
+    assert service.demo_injected(gold) is gold
+
+
+def test_app_verifier_demo_toggle(monkeypatch: pytest.MonkeyPatch) -> None:
+    """토글 on → 🔴 1행·배너·요약 1건, 다운로드 xlsx 는 review 0 / off → 원래대로. 골드 공정엔 토글 없음."""
+    from streamlit.testing.v1 import AppTest
+
+    for key, value in _MOCK_ENV.items():
+        monkeypatch.setenv(key, value)
+    exported: list[str] = []  # 다운로드를 만든 Result 의 레코드 권고 전문 — 시연 삽입이 섞이면 안 된다
+    real_export = service.export_files
+
+    def spy(result: service.Result) -> dict[str, tuple[str, bytes]]:
+        exported.append(" ".join(t for r in result.records for t in r.recommendations))
+        return real_export(result)
+
+    monkeypatch.setattr(service, "export_files", spy)
+    at = AppTest.from_file(str(_APP), default_timeout=30).run()
+    assert not at.exception
+    at.selectbox[0].select("LPG 저장탱크 출하").run()
+    boxes = [c for c in at.checkbox if c.label == service.DEMO_TOGGLE_LABEL]
+    assert len(boxes) == 1 and boxes[0].value is False
+
+    def red_rows() -> int:
+        return sum(str(v).startswith("🔴") for v in at.dataframe[0].value[service.CONFIDENCE_COLUMN])
+
+    def banner() -> bool:
+        return any(service.DEMO_BANNER in m.value for m in at.markdown)
+
+    assert red_rows() == 0 and not banner()
+    boxes[0].check().run()
+    assert not at.exception
+    assert red_rows() == 1 and banner()
+    assert any("review 1건 (규격 1·수치 0)" in c.value for c in at.caption)
+    assert exported and "P-999" not in exported[-1]  # 토글 on 인 실행에서도 다운로드는 원본
+    boxes = [c for c in at.checkbox if c.label == service.DEMO_TOGGLE_LABEL]
+    boxes[0].uncheck().run()
+    assert red_rows() == 0 and not banner()

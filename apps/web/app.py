@@ -195,8 +195,13 @@ else:
         f"- **정확도(Recall)**: {service.accuracy_line(result, replays)}\n"
         f"- **운영 지표**: 총 {cells} 셀 판정 완료 (소요 시간: {latency} / API 호출 {calls})"
     )
-    st.caption(service.summary_line(result))
-    st.dataframe(service.worksheet_table(result), hide_index=True)
+    # verifier 시연(O-3): 표·요약 줄만 삽입 사본으로. 다운로드는 아래에서 원본 `result` 로 만든다.
+    shown = result
+    if not result.is_gold and st.checkbox(service.DEMO_TOGGLE_LABEL, key="verifier_demo"):
+        shown = service.demo_injected(result)
+        st.markdown(service.DEMO_BANNER)
+    st.caption(service.summary_line(shown))
+    st.dataframe(service.worksheet_table(shown), hide_index=True)
     files = service.export_files(result)
     mimes = {
         "xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
