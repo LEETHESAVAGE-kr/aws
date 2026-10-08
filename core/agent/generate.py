@@ -27,6 +27,7 @@ from typing import Any, Final
 
 from pydantic import BaseModel, Field, model_validator
 
+from core.criteria import GOLD_CRITERIA, Criteria, load_criteria
 from core.llm import (
     AbstractBedrockClient,
     ConfigValidationError,
@@ -37,9 +38,6 @@ from core.llm import (
 logger = logging.getLogger(__name__)
 
 _PROMPT_DIR: Final[Path] = Path(__file__).parent / "prompts"
-_RATING_SCALE_PATH: Final[Path] = (
-    Path(__file__).parent.parent.parent / "data" / "gold" / "rating_scale.json"
-)
 _USER_DELIMITER: Final[str] = "<!-- USER -->"
 _PARAM_EXAMPLES_PATH: Final[Path] = (
     Path(__file__).parent.parent.parent / "data" / "kb" / "hazop_param_examples.json"
@@ -170,9 +168,13 @@ def render_param_examples(path: Path = _PARAM_EXAMPLES_PATH) -> str:
     return "\n".join(lines)
 
 
-def _load_rating_scale() -> str:
-    """S·F 등급 정의(`data/gold/rating_scale.json`) 원문. 읽기 전용 자산이다."""
-    return _RATING_SCALE_PATH.read_text(encoding="utf-8").strip()
+def batch_schema(criteria: Criteria) -> dict[str, Any]:
+    """판정 호출 스키마 — S·F 상한을 기준의 단계 수로 좁힌다(Y-2). 골드셋 기준이면 `DEVIATION_BATCH_SCHEMA` 와 같다."""
+    schema = json.loads(json.dumps(DEVIATION_BATCH_SCHEMA))
+    cell = schema["properties"]["cells"]["items"]["properties"]
+    cell["S"]["maximum"] = criteria.s_max
+    cell["F"]["maximum"] = criteria.f_max
+    return schema
 
 
 # ── 설정 (design.md §2.3 — 클래스 카운트 제외, ModelConfig 패턴 재사용) ────────
@@ -238,21 +240,27 @@ class DeviationRecord(BaseModel):
     scenario: str = ""
     evidence: list[Any] = Field(default_factory=list)
     confidence: str = "inferred"
+    #: S·F 를 매긴 평가기준(Y-2, `data/kb/criteria/<id>.json`). 없으면 골드셋 NH3 기준(옛 레코드).
+    criteria_id: str | None = None
 
     @model_validator(mode="after")
     def _compute_risk_score(self) -> DeviationRecord:
-        """위험도는 언제나 코드가 계산한다(R-05). 입력으로 들어온 값은 덮어쓴다."""
-        object.__setattr__(self, "risk_score", self.S * self.F)
+        """위험도는 언제나 코드가 계산한다(R-05) — 기준이 곱이면 S×F, 대조표면 표 값. 입력값은 덮어쓴다."""
+        object.__setattr__(self, "risk_score", load_criteria(self.criteria_id).risk(self.S, self.F))
         return self
 
 
 # ── 생성기 (R-03~R-06) ────────────────────────────────────────────────────────
 class HazopGenerator:
     def __init__(
-        self, client: AbstractBedrockClient, config: GeneratorConfig | None = None
+        self,
+        client: AbstractBedrockClient,
+        config: GeneratorConfig | None = None,
+        criteria_id: str = GOLD_CRITERIA,
     ) -> None:
         self._client = client
         self._config = config or GeneratorConfig()
+        self.criteria = load_criteria(criteria_id)  # Y-2: S·F 등급표·위험도 산정 기준
         # 한 번의 generate() 실행 결과를 관측하기 위한 상태 (R-06 수용 기준·비용 집계)
         self.review_guidewords: list[str] = []
         self.total_cost_usd: float = 0.0
@@ -281,7 +289,7 @@ class HazopGenerator:
                 return
             # 중간 표는 묶음별로 한 번만 만든다. id 는 묶음 안 임시 번호 — 최종 id 는 아래 _assemble 이 매긴다.
             if outcome[0] is not None:
-                partial[index] = _build_records(node_meta, [outcome[0]])[0]
+                partial[index] = _build_records(node_meta, [outcome[0]], self.criteria.id)[0]
             self._notify(on_progress, "guideword", {
                 "guideword": guidewords[index],
                 "done": sum(o is not None for o in outcomes),
@@ -401,7 +409,7 @@ class HazopGenerator:
         if not parameters:
             return None, 0.0
         system_template, user_template = _split_prompt(_load_prompt("deviation_generate.md"))
-        system = _fill(system_template, {"rating_scale": _load_rating_scale()})
+        system = _fill(system_template, {"rating_scale": self.criteria.prompt_text()})
         user = _fill(
             user_template,
             {
@@ -424,7 +432,7 @@ class HazopGenerator:
             response = self._client.converse(
                 system=system,
                 messages=[Message(role="user", content=user)],
-                response_schema=DEVIATION_BATCH_SCHEMA,
+                response_schema=batch_schema(self.criteria),
                 context={"node": node_meta.node},
             )
         except Exception:
@@ -449,7 +457,7 @@ class HazopGenerator:
     def _assemble(
         self, node_meta: NodeMeta, batches: list[dict[str, Any]]
     ) -> list[DeviationRecord]:
-        records, judged = _build_records(node_meta, batches)
+        records, judged = _build_records(node_meta, batches, self.criteria.id)
         self.judged_cells += judged
         return process_order(records, self.parameters)
 
@@ -477,7 +485,7 @@ class HazopGenerator:
 
 # ── 보조 함수 ─────────────────────────────────────────────────────────────────
 def _build_records(
-    node_meta: NodeMeta, batches: list[dict[str, Any]]
+    node_meta: NodeMeta, batches: list[dict[str, Any]], criteria_id: str = GOLD_CRITERIA
 ) -> tuple[list[DeviationRecord], int]:
     """batch 목록 → (레코드, 판정 셀 수). 생성기 상태를 건드리지 않는다 — 진행 알림의 중간 표가 이걸 쓴다(AC-11-4)."""
     records: list[DeviationRecord] = []
@@ -516,6 +524,7 @@ def _build_records(
                     scenario="",
                     evidence=[],
                     confidence="inferred",
+                    criteria_id=criteria_id,
                 )
             )
     return records, judged

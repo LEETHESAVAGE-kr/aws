@@ -11,6 +11,8 @@ from typing import TYPE_CHECKING, Final
 
 from pydantic import BaseModel, Field
 
+from core.criteria import Criteria, load_criteria
+
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
@@ -32,7 +34,18 @@ PENDING_REASONS: Final[dict[str, str]] = {
 }
 
 
-def risk_band(score: int) -> str:
+def rows_criteria(rows: Sequence[WorksheetRow]) -> Criteria:
+    """산출물 1벌의 평가기준(Y-2). 기준이 섞이면 위험도·구간을 한 표로 셀 수 없으므로 거부한다."""
+    ids = {r.criteria_id or None for r in rows}
+    if len(ids) > 1:
+        raise ValueError(f"한 산출물에 평가기준이 섞였다: {sorted(map(str, ids))}")
+    return load_criteria(ids.pop() if ids else None)
+
+
+def risk_band(score: int, criteria: Criteria | None = None) -> str:
+    """위험도 구간 이름. 기준을 주면 그 기준의 구간(Y-2), 없으면 골드셋 NH3 구간."""
+    if criteria is not None:
+        return criteria.band(score)
     for low, high, name in RISK_BANDS:
         if low <= score <= high:
             return name
@@ -49,6 +62,8 @@ class ConfidenceReport(BaseModel):
     matrix_coverage: dict[str, float | int] | None
     risk_distribution: dict[str, int]
     sf_matrix: dict[str, dict[str, int]]
+    criteria_id: str | None = None
+    criteria_name: str | None = None
     pending: dict[str, str] = Field(default_factory=dict)
 
 
@@ -76,10 +91,13 @@ def build_report(
             "ratio": round(judged / expected, 4) if expected else 0.0,
         }
 
-    risk_dist = {name: 0 for _, _, name in RISK_BANDS}
-    sf: dict[str, dict[str, int]] = {str(s): {str(f): 0 for f in range(1, 6)} for s in range(1, 6)}
+    criteria = rows_criteria(rows)
+    risk_dist = {name: 0 for _, _, name, _ in criteria.bands()}
+    sf: dict[str, dict[str, int]] = {
+        str(s): {str(f): 0 for f in range(1, criteria.f_max + 1)} for s in range(1, criteria.s_max + 1)
+    }
     for r in rows:
-        risk_dist[risk_band(r.risk_score)] += 1
+        risk_dist[criteria.band(r.risk_score)] += 1
         sf[str(r.S)][str(r.F)] += 1
 
     pending = {
@@ -98,6 +116,8 @@ def build_report(
         matrix_coverage=matrix_coverage,
         risk_distribution=risk_dist,
         sf_matrix=sf,
+        criteria_id=criteria.id,
+        criteria_name=criteria.name,
         pending=pending,
     )
 

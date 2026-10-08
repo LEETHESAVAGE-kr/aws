@@ -1,0 +1,15 @@
+{
+  "id": "nh3_sts_bunkering",
+  "name": "NH3 선박 간(STS) 벙커링 평가기준 (골드셋 평가기준 시트)",
+  "short": "NH3 벙커링 골드셋",
+  "issuer": "본 프로젝트 골드셋(본인 저작물)",
+  "doc": "data/gold/rating_scale.json — 골드셋 워크시트 '평가기준' 시트",
+  "locator": "평가기준 시트",
+  "url": null,
+  "retrieved_at": null,
+  "license": "본인 저작물",
+  "scale_file": "data/gold/rating_scale.json",
+  "risk": {
+    "method": "product"
+  }
+}

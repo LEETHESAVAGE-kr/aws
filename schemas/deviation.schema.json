@@ -50,6 +50,7 @@
         "items": {},
         "maxItems": 0
       },
+      "criteria_id": { "type": ["string", "null"], "$comment": "Y-2 S·F 평가기준 id (data/kb/criteria). null/없음 = 골드셋 NH3 기준" },
       "confidence": {
         "$comment": "이 spec 은 'inferred' 만 산출한다. 'review' 는 스키마 검증 2회 실패 행에 대해 core/llm 이 격하시킨 경우이며 그 행은 레코드를 만들지 않는다. grounded 는 FR-06 소관.",
         "type": "string",

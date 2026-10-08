@@ -333,8 +333,9 @@ P1_META = NodeMeta(
     equipment=["LPG 저장탱크", "출하 펌프", "로딩암"],
     safeguards=["안전밸브", "긴급차단밸브(ESV)", "가스누출감지기"],
 )
-#: 수정 전(900f974) `deviation_generate.md` 시스템 블록의 sha256. 노드별 값이 시스템으로 새면 캐시가 깨진다(R-08).
-_SYSTEM_SHA256 = "35210ae713a27f2593b6f754fd7f63cfea3052d54c39bf7d2b364e3cd34189ee"
+#: `deviation_generate.md` 시스템 블록(템플릿)의 sha256. 노드별 값이 시스템으로 새면 캐시가 깨진다(R-08).
+#: 10/9 Y-2 로 3번 절차 문구만 바뀌었다(정수 1~5 → 등급표에 있는 정수). 이전 값 35210ae7…(900f974).
+_SYSTEM_SHA256 = "7b788a08549835c6978c52ff2c17649e62688b4b63c68a96332c0a5ca33a181a"
 
 
 def _safeguards_of(generated: list[str], meta: NodeMeta = P1_META) -> list[str]:

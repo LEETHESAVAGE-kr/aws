@@ -179,6 +179,8 @@
         "5": 0
       }
     },
+    "criteria_id": "nh3_sts_bunkering",
+    "criteria_name": "NH3 선박 간(STS) 벙커링 평가기준 (골드셋 평가기준 시트)",
     "pending": {
       "evidence_attachment_rate": "FR-04 evidence-citation 미완료 — evidence[] 가 전부 비어 있음",
       "matrix_coverage": "FR-03 HazopGenerator 관측값(expected_cells, judged_cells) 필요 — 골드셋에는 없음"
