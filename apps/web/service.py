@@ -26,6 +26,13 @@ from core.agent.generate import (
     STANDARD_GUIDEWORDS,
     load_generator_config,
 )
+from core.criteria import (  # all_criteria 는 app.py 안내 탭이 service.all_criteria 로 쓴다
+    GOLD_CRITERIA,
+    OFFICIAL_CRITERIA,
+    Criteria,
+    all_criteria,  # noqa: F401
+    load_criteria,
+)
 from core.export import export_all, normalize_rows
 from core.export.rows import HEADERS
 from core.export.xlsx import confidence_label
@@ -246,7 +253,11 @@ def _mock_factory(replay: Result) -> Callable[..., ConverseResponse]:
             parameters.append(filler)
     parameters = parameters[:12]
 
-    def make(system: str, messages: list[Message], **_: Any) -> ConverseResponse:
+    def make(system: str, messages: list[Message], **kwargs: Any) -> ConverseResponse:
+        # Y-2: 재생 레코드는 NH3 기준(S·F 1~5)이다. 공식 기준(S 1~4, F 1~3) 스키마로 부르면 상한에 맞춰 자른다 — mock 전용.
+        props = ((kwargs.get("response_schema") or {}).get("properties", {}).get("cells", {})
+                 .get("items", {}).get("properties", {}))
+        s_max, f_max = props.get("S", {}).get("maximum", 5), props.get("F", {}).get("maximum", 5)
         if "파라미터 축" in system:
             payload: dict[str, Any] = {
                 "parameters": [{"name": p, "rationale": "mock 재생"} for p in parameters]
@@ -272,8 +283,8 @@ def _mock_factory(replay: Result) -> Callable[..., ConverseResponse]:
                     "causes": record.causes,
                     "consequences": record.consequences,
                     "safeguards_before": record.safeguards_before,
-                    "S": record.S,
-                    "F": record.F,
+                    "S": min(record.S, s_max),
+                    "F": min(record.F, f_max),
                     "recommendations": record.recommendations,
                     "evidence": [],
                     "confidence": "inferred",
@@ -488,7 +499,8 @@ def run_live(
     )
     raw_calls = _observe_calls(client)
     gen_config = load_generator_config()
-    generator = HazopGenerator(client, gen_config)
+    # Y-2: 직접 입력은 골드셋 공정이 아니다 — 공식 HAZOP 기준(steering domain.md §4 적용 범위)
+    generator = HazopGenerator(client, gen_config, criteria_id=OFFICIAL_CRITERIA)
     judged: list[str] = []  # 판정한 가이드워드(완료 순서) — 결과 묶음 보기의 축
 
     def relay(event: str, payload: dict[str, Any]) -> None:
@@ -502,6 +514,7 @@ def run_live(
         raise RuntimeError("파라미터 열거 실패(응답 스키마 2회 위반) — 가이드워드 판정을 건너뛰었습니다.")
     meta = _run_meta("mock" if mock else "live-run", environ, node_meta, parsed, generator, raw_calls, started)
     meta["guidewords"] = [g for g in STANDARD_GUIDEWORDS + PROCEDURAL_GUIDEWORDS if g in judged]
+    meta["criteria_id"] = generator.criteria.id
     meta["parallel_calls"] = gen_config.parallel_calls
     return Result(meta=meta, records=records)
 
@@ -543,12 +556,13 @@ def run_quick(
         MockBedrockClient(response_factory=_mock_factory(replay)) if mock else get_bedrock_client()
     )
     raw_calls = _observe_calls(client)
-    generator = HazopGenerator(client, load_generator_config())
+    generator = HazopGenerator(client, load_generator_config(), criteria_id=OFFICIAL_CRITERIA)
     records = generator.generate_quick(node_meta, guideword, on_progress)  # R-11 AC-11-5 공개 API
     if not generator.parameters:
         raise RuntimeError("파라미터 열거 실패(응답 스키마 2회 위반) — 가이드워드 판정을 건너뛰었습니다.")
     meta = _run_meta("quick", environ, node_meta, parsed, generator, raw_calls, started)
     meta["guidewords"] = [guideword]
+    meta["criteria_id"] = generator.criteria.id
     return Result(meta=meta, records=records)
 
 
@@ -624,12 +638,23 @@ def worksheet_table(result: Result) -> list[dict[str, object]]:
     return table
 
 
-#: 골드셋 없는 공정 결과에 붙는 평가기준 불일치 배지(지시문 M-03, 실무자평가 P-3).
+#: 골드셋 없는 공정에 NH3 기준이 쓰인 결과(10/9 이전 캡처)에 붙는 불일치 배지(지시문 M-03, 실무자평가 P-3).
 CRITERIA_NOTICE = "S·F 등급 정의는 NH3 선박 벙커링 기준(선내·항만 영향)입니다 — 이 공정에는 참고용."
+#: 공식 기준으로 매긴 결과의 배지(Y-2). 〈이름〉·〈위치〉는 기준 파일에서.
+OFFICIAL_NOTICE = "이 결과의 S·F·위험도는 {name} 기준으로 매겼습니다({locator}). 공식 예시 기준이라 사업장 자체 기준이 있으면 그것이 우선합니다."
+
+
+def result_criteria(result: Result) -> Criteria:
+    """결과의 평가기준 — 메타 `criteria_id`, 없으면 레코드, 둘 다 없으면 골드셋 NH3(옛 캡처는 그 기준으로 생성됐다)."""
+    cid = result.meta.get("criteria_id") or next((r.criteria_id for r in result.records if r.criteria_id), None)
+    return load_criteria(cid)
 
 
 def criteria_notice(result: Result) -> str | None:
-    """NH3 밖의 공정(예시·직접 입력 `none`, 공개 HAZOP 대조 `external`)이면 배지 문구, NH3 골드 공정이면 None."""
+    """어떤 기준으로 매겼는지(Y-2). NH3 골드 공정이면 None, NH3 기준이 다른 공정에 쓰였으면 '참고용' 배지."""
+    criteria = result_criteria(result)
+    if criteria.id != GOLD_CRITERIA:
+        return OFFICIAL_NOTICE.format(name=criteria.name, locator=criteria.data.get("locator", ""))
     return CRITERIA_NOTICE if result.meta.get("split") in ("none", "external") else None
 
 
@@ -1095,9 +1120,12 @@ def apply_review(
 ) -> tuple[list[dict[str, Any]], list[tuple[object, ...]]]:
     """검토 표의 편집(`st.data_editor` 의 `edited_rows` — 행 인덱스 → {열: 값}) → (내보낼 레코드, 검토 기록).
 
-    기각 행은 빼고, 수정 셀은 반영한다(위험도는 내보내기가 S×F 로 다시 계산). 기록 행은
-    `core/export` 의 `REVIEW_HEADERS` 순서. 값이 원래와 같으면 수정으로 치지 않는다. S·F 는 1~5 정수만.
+    기각 행은 빼고, 수정 셀은 반영한다(위험도는 내보내기가 기준대로 다시 계산 — 곱 또는 대조표). 기록 행은
+    `core/export` 의 `REVIEW_HEADERS` 순서. 값이 원래와 같으면 수정으로 치지 않는다. S·F 는 결과 기준의
+    단계 안 정수만(골드셋 기준 1~5, C-C-37 S 1~4·F 1~3 — Y-2).
     """
+    criteria = result_criteria(result)
+    limits = {"S": criteria.s_max, "F": criteria.f_max}
     records = _display_records(result)
     table = worksheet_table(result)
     kept: list[dict[str, Any]] = []
@@ -1117,8 +1145,8 @@ def apply_review(
                 continue  # 화면은 ' · ' 로 띄워 보여 준다 — 띄어쓰기만 다르면 같은 값
             if field in ("S", "F"):
                 grade = int(value)
-                if grade != value or not 1 <= grade <= 5:
-                    raise ValueError(f"{column} 는 1~5 정수여야 합니다: {value!r}")
+                if grade != value or not 1 <= grade <= limits[field]:
+                    raise ValueError(f"{column} 는 1~{limits[field]} 정수여야 합니다({criteria.short}): {value!r}")
                 record[field] = grade
             else:
                 record[field] = _split_list(value)
@@ -1158,3 +1186,4 @@ def export_files(
     name, markdown = files["lopa"]
     files["lopa"] = (Path(name).with_suffix(".docx").name, lopa_markdown_to_docx(markdown.decode("utf-8")))
     return files
+

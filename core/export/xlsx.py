@@ -13,12 +13,15 @@ from typing import TYPE_CHECKING, Any, Final
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 
+from .report import rows_criteria
 from .rows import HEADERS, WorksheetRow
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
     from openpyxl.worksheet.worksheet import Worksheet
+
+    from core.criteria import Criteria
 
 # ── 실측 상수 (지시문 D · requirements 실측표. 추측으로 바꾸지 않는다) ─────────────
 SHEET_ORDER: Final[tuple[str, ...]] = ("HAZOP워크시트", "평가기준", "스크리닝", "근거", "신뢰도")
@@ -88,9 +91,17 @@ def risk_formula(row: int) -> str:
 
 
 # ── 시트 1: HAZOP워크시트 (R-02) ───────────────────────────────────────────────
-def _write_worksheet(ws: Worksheet, rows: Sequence[WorksheetRow]) -> int:
+def sheet_headers(criteria: Criteria) -> list[str]:
+    """12열 머리글 — S·F 열 이름에 기준의 단계 수를 적는다(Y-2). 골드셋 기준이면 원본 `HEADERS` 그대로."""
+    headers = list(HEADERS)
+    headers[HEADERS.index("S(1-5)")] = f"S(1-{criteria.s_max})"
+    headers[HEADERS.index("F(1-5)")] = f"F(1-{criteria.f_max})"
+    return headers
+
+
+def _write_worksheet(ws: Worksheet, rows: Sequence[WorksheetRow], criteria: Criteria) -> int:
     """12열 워크시트를 쓰고 마지막 데이터 행 번호를 돌려준다."""
-    _write_header(ws, HEADERS)
+    _write_header(ws, sheet_headers(criteria))
     for letter, width in COLUMN_WIDTHS.items():
         ws.column_dimensions[letter].width = width
     ws.freeze_panes = FREEZE_PANES
@@ -98,26 +109,34 @@ def _write_worksheet(ws: Worksheet, rows: Sequence[WorksheetRow]) -> int:
     r = 1
     for r, row in enumerate(rows, start=2):
         values = row.cells()
-        values[9] = risk_formula(r)  # J 열 — 값 대신 수식
+        values[9] = criteria.excel_formula(r)  # J 열 — 값 대신 수식(곱 =H*I, 대조표 =INDEX(...))
         for col, value in enumerate(values, start=1):
             cell = ws.cell(row=r, column=col, value=value)
             cell.alignment = _BODY_ALIGN
             cell.border = _BORDER
     last = r
     # 원본 레이아웃: 데이터 다음 빈 행 1 + 범례 행 1 (A열 1칸)
-    ws.cell(row=last + 2, column=1, value=LEGEND_TEXT)
+    legend = LEGEND_TEXT if criteria.method == "product" else LEGEND_TEXT.replace(
+        "위험도=수식(S×F)", f"위험도=수식(대조표, {criteria.short})"
+    )
+    ws.cell(row=last + 2, column=1, value=legend)
     return last
 
 
 # ── 시트 2: 평가기준 (R-03) ─────────────────────────────────────────────────────
-def _write_rating(ws: Worksheet, scale: dict[str, Any]) -> None:
+def _definition(item: dict[str, Any]) -> str:
+    return f"{item['label']}: {item['definition']}" if item.get("label") else str(item["definition"])
+
+
+def _write_rating(ws: Worksheet, scale: dict[str, Any], criteria: Criteria | None = None) -> None:
+    """골드셋 기준은 예전 배치 그대로. 공식 기준(Y-2)은 끝에 대조표·위험관리기준·출처를 덧붙인다."""
     ws.column_dimensions["A"].width = 12
     ws.column_dimensions["C"].width = 60
     ws.append(["구분", "등급", "정의"])
     for item in scale["severity"]:
-        ws.append(["S 강도", int(item["grade"]), item["definition"]])
+        ws.append(["S 강도", int(item["grade"]), _definition(item)])
     for item in scale["frequency"]:
-        ws.append(["F 빈도", int(item["grade"]), item["definition"]])
+        ws.append(["F 빈도", int(item["grade"]), _definition(item)])
     ws.append([None, None, None])
     ws.append(["위험도 구간", "판정", "조치"])
     for band in scale["risk_bands"]:
@@ -125,6 +144,20 @@ def _write_rating(ws: Worksheet, scale: dict[str, Any]) -> None:
     ws.append([None, None, None])
     for note in scale.get("notes", []):
         ws.append([note, None, None])
+    if criteria is None or "scale_file" in criteria.data:
+        return
+    if criteria.method == "lookup":
+        ws.append([None, None, None])
+        ws.append(["위험도 대조표", "S＼F", *[f"F{f}" for f in range(1, criteria.f_max + 1)]])
+        for s in range(criteria.s_max, 0, -1):
+            ws.append([None, f"S{s}", *[criteria.risk(s, f) for f in range(1, criteria.f_max + 1)]])
+    for level in scale.get("risk_levels", []):
+        ws.append([f"위험도 {level['level']}", level["label"], level["management"]])
+    ws.append([None, None, None])
+    ws.append(["기준", criteria.short, criteria.name])
+    ws.append(["출처", scale.get("issuer"), f"{scale.get('doc')} — {scale.get('locator')}"])
+    ws.append(["URL", scale.get("retrieved_at"), scale.get("url")])
+    ws.append(["이용 조건", None, scale.get("license")])
 
 
 # ── 시트 3: 스크리닝 — 5×5 매트릭스만 (R-03) ────────────────────────────────────
@@ -132,13 +165,13 @@ def screening_formula(s: int, f: int, last_row: int) -> str:
     return f"=COUNTIFS(HAZOP워크시트!$H$2:$H${last_row},{s},HAZOP워크시트!$I$2:$I${last_row},{f})"
 
 
-def _write_screening(ws: Worksheet, last_row: int) -> None:
+def _write_screening(ws: Worksheet, last_row: int, s_max: int = 5, f_max: int = 5) -> None:
     last = max(last_row, 2)  # 데이터 0건이어도 수식 범위가 깨지지 않게
     ws.column_dimensions["A"].width = 12
-    ws.append(["5×5 매트릭스 (이탈 건수 분포, COUNTIFS로 워크시트와 자동 연동)"])
-    ws.append(["S＼F", "F1", "F2", "F3", "F4", "F5"])
-    for s in range(5, 0, -1):
-        ws.append([f"S{s}", *[screening_formula(s, f, last) for f in range(1, 6)]])
+    ws.append([f"{s_max}×{f_max} 매트릭스 (이탈 건수 분포, COUNTIFS로 워크시트와 자동 연동)"])
+    ws.append(["S＼F", *[f"F{f}" for f in range(1, f_max + 1)]])
+    for s in range(s_max, 0, -1):
+        ws.append([f"S{s}", *[screening_formula(s, f, last) for f in range(1, f_max + 1)]])
 
 
 # ── 시트 4: 근거 (R-04) ─────────────────────────────────────────────────────────
@@ -186,13 +219,19 @@ def export_xlsx(
 
     `review_log`(R-10)가 비지 않으면 `검토 기록` 시트를 덧붙인다 — 행은 `REVIEW_HEADERS` 순서의 값.
     """
-    scale = rating_scale if rating_scale is not None else _load_rating_scale()
+    criteria = rows_criteria(rows)  # Y-2 — 레코드의 기준(섞이면 ValueError)
+    if rating_scale is not None:
+        scale = rating_scale
+    elif "scale_file" in criteria.data:
+        scale = _load_rating_scale()
+    else:
+        scale = criteria.data
     wb = Workbook()
     ws_main = wb.active
     ws_main.title = SHEET_ORDER[0]
-    last_row = _write_worksheet(ws_main, rows)
-    _write_rating(wb.create_sheet(SHEET_ORDER[1]), scale)
-    _write_screening(wb.create_sheet(SHEET_ORDER[2]), last_row)
+    last_row = _write_worksheet(ws_main, rows, criteria)
+    _write_rating(wb.create_sheet(SHEET_ORDER[1]), scale, criteria)
+    _write_screening(wb.create_sheet(SHEET_ORDER[2]), last_row, criteria.s_max, criteria.f_max)
     _write_evidence(wb.create_sheet(SHEET_ORDER[3]), rows)
     _write_confidence(wb.create_sheet(SHEET_ORDER[4]), rows)
     if review_log:

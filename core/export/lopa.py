@@ -11,6 +11,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
+from core.criteria import load_criteria
+
 from .report import risk_band
 
 if TYPE_CHECKING:
@@ -41,6 +43,7 @@ def select_top(rows: Sequence[WorksheetRow], top_n: int = DEFAULT_TOP_N) -> list
 
 
 def _section(k: int, r: WorksheetRow) -> list[str]:
+    criteria = load_criteria(r.criteria_id)  # Y-2 — 곱이면 'S×F', 대조표면 '대조표(S·F 조합)'
     lines = [
         f"## 시나리오 {k}: No.{r.no} {r.guideword_label} — {r.deviation}",
         "",
@@ -49,7 +52,7 @@ def _section(k: int, r: WorksheetRow) -> list[str]:
         f"| 노드 | {r.node_label} |",
         f"| 가이드워드 | {r.guideword_label} |",
         f"| S / F | {r.S} / {r.F} |",
-        f"| 위험도(S×F) | {r.risk_score} — {risk_band(r.risk_score)} |",
+        f"| 위험도({criteria.method_text()}) | {r.risk_score} — {risk_band(r.risk_score, criteria)} |",
         f"| 시나리오 연계 | {r.scenario or '-'} |",
         "",
         "### 시나리오 서술",
