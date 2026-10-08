@@ -14,3 +14,6 @@ results/
 
 # 로컬 Claude Code 설정 (2026-09-29 지시문 O)
 .claude/
+
+# Y-3 임베딩 모델 (118MB, GitHub 100MB 한도 초과 — 실행 시 내려받는다)
+models/

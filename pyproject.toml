@@ -12,6 +12,9 @@ dependencies = [
     "anthropic==1.7.0", # provider=anthropic 경로 (REQ-12). 대회 계정에 Bedrock 권한이 없어 개발 기간 대체 경로로 쓴다. 정확한 버전 고정 — 메시지/usage 스키마가 마이너 릴리스에서 바뀌면 파싱이 조용히 어긋난다.
     "python-docx>=1.1", # LOPA 초안 Word(.docx) 다운로드 (사용자 결정 9/29 — apps/web/docx_export.py)
     "streamlit>=1.38",  # FR-10 재생 데모 UI (apps/web). 1.38+ 는 streamlit.testing.v1.AppTest 로 오프라인 시험 가능
+    "numpy>=2.0",            # Y-3 임베딩 벡터 연산·코퍼스 인덱스(data/kb/embeddings.npz)
+    "onnxruntime==1.30.0",   # Y-3 다국어 임베딩(multilingual-e5-small ONNX) 추론 — torch 없이. 없으면 BM25 만
+    "tokenizers==0.23.2",    # Y-3 e5 토크나이저(tokenizer.json) — transformers 없이
 ]
 
 [project.optional-dependencies]

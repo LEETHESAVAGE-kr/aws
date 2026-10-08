@@ -2,7 +2,14 @@
 
 LLM 을 호출하지 않는 순수 함수다(`core/llm` 임포트 금지). 근거(`evidence[]`) 없이 본문에 적힌
 규격·문헌 번호(R-01)와 단위 붙은 수치(R-02)를 플래그하고, 플래그가 있는 레코드만
-`confidence="review"` 로 격하한 **사본**을 돌려준다(R-03). `grounded` 는 부여하지 않는다.
+`confidence="review"` 로 격하한 **사본**을 돌려준다(R-03).
+
+Y-4(10/9): 신뢰도 4단계를 여기서 매긴다 — 전부 코드 판정, 모델 자기평가 아님.
+  review        검증 플래그(근거 없는 규격·수치, 인용 검사에서 지운 가짜 인용) 1건 이상
+  grounded      플래그 0 + 서로 다른 문서 2건 이상 인용(같은 법령의 다른 조는 1건으로 센다)
+  single_source 플래그 0 + 문서 1건 인용
+  inferred      플래그 0 + 인용 없음
+근거가 붙었다고 내용이 맞는 것은 아니다 — "공식 문서가 같은 위험을 다룬다"는 뜻이다.
 """
 
 from __future__ import annotations
@@ -18,7 +25,8 @@ if TYPE_CHECKING:
 
     from .generate import NodeMeta
 
-Rule = Literal["unverified_standard", "unsupported_number"]
+Rule = Literal["unverified_standard", "unsupported_number", "fabricated_citation"]
+RULES: Final[tuple[str, ...]] = ("unverified_standard", "unsupported_number", "fabricated_citation")
 
 #: R-01 규격·문헌 번호. 대소문자 무시·공백 유연. 각 줄 주석은 매치 예시.
 STANDARD_PATTERNS: Final[tuple[re.Pattern[str], ...]] = tuple(
@@ -104,7 +112,13 @@ def _record_flags(record: DeviationRecord) -> list[Flag]:
             seen.add((rule, _norm(matched)))
             flags.append(Flag(record.id, rule, field, matched))
 
-    evidence = _norm(" ".join(map(str, record.evidence)))
+    for i, dropped in enumerate(record.citation_flags):
+        add("fabricated_citation", f"evidence[{i}]", dropped)
+    # 인용 문서 "제목 위치" 를 이어 붙인다 — 본문의 "산업안전보건기준에 관한 규칙 제261조" 가 인용과 맞물리게(Y-3)
+    evidence = _norm(" ".join(
+        f"{e.get('doc_title', '')} {e.get('locator', '')} {e.get('quote', '')}" if isinstance(e, dict) else str(e)
+        for e in record.evidence
+    ))
     for field, text in _iter_text_fields(record, _STANDARD_FIELDS):
         for m in _STANDARD_RE.finditer(text):
             if _norm(m.group(0)) not in evidence:
@@ -115,6 +129,19 @@ def _record_flags(record: DeviationRecord) -> list[Flag]:
             if _num(m.group(1)) not in allowed:
                 add("unsupported_number", field, m.group(0))
     return flags
+
+
+def cited_documents(record: DeviationRecord) -> set[str]:
+    """인용한 문서 집합 — chunk id `<문서 코드>#<n>` 의 문서 코드."""
+    return {str(e.get("source_id", "")).split("#")[0] for e in record.evidence if isinstance(e, dict)}
+
+
+def confidence_tier(record: DeviationRecord, flagged: bool) -> str:
+    """Y-4 4단계(모듈 설명). 이미 review 인 레코드(스키마 2회 실패)는 그대로 review."""
+    if flagged or record.confidence == "review":
+        return "review"
+    docs = len(cited_documents(record))
+    return "grounded" if docs >= 2 else "single_source" if docs == 1 else "inferred"
 
 
 def verify(
@@ -132,9 +159,11 @@ def verify(
         flags = _record_flags(record)
         if flags:
             flagged += 1
-            record = record.model_copy(update={"confidence": "review"})
+        tier = confidence_tier(record, bool(flags))
+        if tier != record.confidence:
+            record = record.model_copy(update={"confidence": tier})
         out.append(record)
         all_flags.extend(flags)
-    by_rule = {rule: sum(f.rule == rule for f in all_flags) for rule in ("unverified_standard", "unsupported_number")}
+    by_rule = {rule: sum(f.rule == rule for f in all_flags) for rule in RULES}
     missing = expected_cells - judged_cells if expected_cells is not None and judged_cells is not None else None
     return out, VerifySummary(len(out), flagged, by_rule, missing, tuple(all_flags))

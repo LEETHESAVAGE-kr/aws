@@ -191,7 +191,7 @@ def test_confidence_sheet_shows_labels(tmp_path: Path) -> None:
     gold[1] = {**gold[1], "confidence": "review"}
     gold[2] = {**gold[2], "confidence": "grounded"}
     ws = _wb(tmp_path, normalize_rows(gold))["신뢰도"]
-    assert [ws.cell(row=r, column=2).value for r in (2, 3, 4)] == ["inferred", "review", "grounded"]
+    assert [ws.cell(row=r, column=2).value for r in (2, 3, 4)] == ["추론", "검토 필요", "근거 다수"]  # Y-4 표기
 
 
 # ── R-06 리포트 ───────────────────────────────────────────────────────────────
@@ -201,6 +201,7 @@ def test_report_gold_fields() -> None:
     assert rep.nodes == ["N1", "N2", "N3", "N4"]
     assert rep.confidence_distribution == {
         "grounded": 0,
+        "single_source": 0,
         "inferred": 0,
         "review": 0,
         "unassigned": 34,
@@ -291,9 +292,7 @@ def test_fr03_mock_output_exports_through_same_path(tmp_path: Path) -> None:
     ws = wb[SHEET_ORDER[0]]
     assert ws.max_row == len(records) + 3
     assert ws["J2"].value == "=H2*I2"
-    assert {wb["신뢰도"].cell(row=r, column=2).value for r in range(2, len(records) + 2)} == {
-        "inferred"
-    }
+    assert {wb["신뢰도"].cell(row=r, column=2).value for r in range(2, len(records) + 2)} == {"추론"}
     assert wb["근거"]["A2"].value == EVIDENCE_EMPTY_NOTE
     rep = json.loads(paths["report"].read_text(encoding="utf-8"))
     assert rep["confidence_distribution"]["inferred"] == len(records)

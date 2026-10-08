@@ -90,9 +90,11 @@ SECRET_KEYS: Final[tuple[str, ...]] = (
 DEFAULT_ENDPOINT_LABEL: Final[str] = "대회 제공 API"
 DIRECT_BASE_URL: Final[str] = "https://api.anthropic.com"
 LIVE_SCOPES: Final[tuple[str, ...]] = ("quick", "full")
-BADGES: Final[dict[str | None, str]] = {"grounded": "🟢", "inferred": "🟡", "review": "🔴"}
+#: 신뢰도 4단계(Y-4) — 판정은 core/agent/verify.py `confidence_tier`(코드 규칙, 모델 자기평가 아님).
+BADGES: Final[dict[str | None, str]] = {"grounded": "🟢", "single_source": "🔵", "inferred": "🟡", "review": "🔴"}
 CONFIDENCE_COLUMN: Final[str] = "신뢰도"
 FLAG_COLUMN: Final[str] = "검증 플래그"
+EVIDENCE_COLUMN: Final[str] = "근거"
 #: 공정 카탈로그(J-01, `data/presets.json`). 노드 id → 노드(+ `process`).
 CATALOG: Final[list[dict[str, Any]]] = load_catalog()
 NODES: Final[dict[str, dict[str, Any]]] = nodes_by_id(CATALOG)
@@ -620,6 +622,34 @@ def _display_records(result: Result) -> list[dict[str, Any]]:
     return dumps
 
 
+def evidence_label(evidence: list[Any]) -> str:
+    """'근거' 열(Y-3) — "문서 2건 · 산업안전보건기준에 관한 규칙 제261조(…) 외 1". 인용이 없으면 빈칸."""
+    items = [e for e in evidence if isinstance(e, dict)]
+    if not items:
+        return ""
+    docs = {str(e.get("source_id", "")).split("#")[0] for e in items}
+    first = f"{items[0].get('doc_title', '')} {items[0].get('locator', '')}".strip()
+    more = f" 외 {len(items) - 1}" if len(items) > 1 else ""
+    return f"문서 {len(docs)}건 · {first}{more}"
+
+
+def evidence_rows(result: Result) -> list[dict[str, object]]:
+    """근거 발췌 원문 표(Y-3) — 워크시트 No·문서·위치·인용 구절. 화면 접힘 영역과 Excel '근거' 시트가 같은 내용."""
+    records, _ = verified(result)
+    return [
+        {"No": no, "문서": e.get("doc_title", ""), "위치": e.get("locator", ""), "인용 구절(원문 그대로)": e.get("quote", "")}
+        for no, r in enumerate(records, start=1)
+        for e in r.evidence
+        if isinstance(e, dict)
+    ]
+
+
+def confidence_counts(result: Result) -> str:
+    """신뢰도 단계 분포 한 줄(Y-G4 — 한 단계로 몰려도 그대로 적는다)."""
+    counts = Counter(r.confidence for r in verified(result)[0])
+    return " · ".join(f"{BADGES[k]} {confidence_label(k)[0]} {counts.get(k, 0)}" for k in BADGES)
+
+
 def worksheet_table(result: Result) -> list[dict[str, object]]:
     """워크시트 12열(`core/export/rows.py::HEADERS` 순서) + 신뢰도 배지 열 + 검증 플래그 열."""
     records, summary = verified(result)
@@ -634,6 +664,7 @@ def worksheet_table(result: Result) -> list[dict[str, object]]:
         entry: dict[str, object] = dict(zip(HEADERS, values, strict=True))
         entry[CONFIDENCE_COLUMN] = f"{BADGES.get(row.confidence, '⚪')} {label}"
         entry[FLAG_COLUMN] = "; ".join(flags.get(record.id, []))
+        entry[EVIDENCE_COLUMN] = evidence_label(record.evidence)
         table.append(entry)
     return table
 
@@ -1056,14 +1087,14 @@ EDITABLE_COLUMNS: Final[dict[str, str]] = {
 REVIEW_PINNED: Final[tuple[str, ...]] = (REVIEW_COLUMN, "No", "가이드워드")
 #: 고정 열 다음에 오는 판단 열 — 우선순위(위험도·S·F·신뢰도)가 가로 스크롤 없이 보이게 이탈 바로 뒤에 둔다.
 #: 화면 순서일 뿐이다. 다운로드 xlsx 는 표준 12열 순서(R-02) 그대로.
-REVIEW_FRONT: Final[tuple[str, ...]] = ("이탈", "위험도", "S(1-5)", "F(1-5)", CONFIDENCE_COLUMN)
+REVIEW_FRONT: Final[tuple[str, ...]] = ("이탈", "위험도", "S(1-5)", "F(1-5)", CONFIDENCE_COLUMN, EVIDENCE_COLUMN)
 #: 글 열 너비(px) — 'large' 는 열 4개가 화면을 다 먹어 숫자 열이 밀려난다(10/8 1440px 캡처).
 REVIEW_WIDTHS: Final[dict[str, int]] = {
     "가이드워드": 130, "이탈": 300, "원인": 300, "결과": 300, "기존 안전장치(Before)": 220, "권고": 300,
 }
 REVIEW_ROW_HEIGHT: Final[int] = 84
 _LIST_COLUMNS: Final[tuple[str, ...]] = ("원인", "결과", "기존 안전장치(Before)", "권고")
-_HIDE_IF_UNIFORM: Final[tuple[str, ...]] = ("노드", "시나리오 연계", FLAG_COLUMN)
+_HIDE_IF_UNIFORM: Final[tuple[str, ...]] = ("노드", "시나리오 연계", FLAG_COLUMN, EVIDENCE_COLUMN)
 
 
 def _split_list(value: object) -> list[str]:

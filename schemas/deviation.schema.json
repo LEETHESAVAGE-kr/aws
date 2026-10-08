@@ -45,16 +45,25 @@
       "recommendations": { "type": "array", "items": { "type": "string" } },
       "scenario": { "type": "string" },
       "evidence": {
-        "$comment": "이 spec 에서는 항상 빈 배열. 근거 인용은 FR-04(evidence-citation) 소관이다.",
+        "$comment": "Y-3: 코퍼스(data/kb/law 등) 발췌 인용. quote 는 그 문단 원문의 부분 문자열(코드가 검사). 근거 인용을 끄면 빈 배열.",
         "type": "array",
-        "items": {},
-        "maxItems": 0
+        "maxItems": 3,
+        "items": {
+          "type": "object",
+          "required": ["source_id", "doc_title", "locator", "quote"],
+          "properties": {
+            "source_id": { "type": "string" }, "doc_title": { "type": "string" }, "issuer": { "type": "string" },
+            "locator": { "type": "string" }, "quote": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
       },
+      "citation_flags": { "type": "array", "items": { "type": "string" }, "$comment": "Y-3 인용 검사에서 지운 인용" },
       "criteria_id": { "type": ["string", "null"], "$comment": "Y-2 S·F 평가기준 id (data/kb/criteria). null/없음 = 골드셋 NH3 기준" },
       "confidence": {
-        "$comment": "이 spec 은 'inferred' 만 산출한다. 'review' 는 스키마 검증 2회 실패 행에 대해 core/llm 이 격하시킨 경우이며 그 행은 레코드를 만들지 않는다. grounded 는 FR-06 소관.",
+        "$comment": "Y-4 4단계: grounded(서로 다른 문서 2건 이상 인용)·single_source(1건)·inferred(인용 없음)·review(검증 플래그). 전부 코드 판정(core/agent/verify.py).",
         "type": "string",
-        "enum": ["inferred", "review"]
+        "enum": ["grounded", "single_source", "inferred", "review"]
       }
     },
     "additionalProperties": false

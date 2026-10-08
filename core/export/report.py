@@ -27,9 +27,9 @@ RISK_BANDS: Final[tuple[tuple[int, int, str], ...]] = (
     (8, 14, "중간(ALARP)"),
     (1, 7, "낮음"),
 )
-CONFIDENCE_KEYS: Final[tuple[str, ...]] = ("grounded", "inferred", "review", "unassigned")
+CONFIDENCE_KEYS: Final[tuple[str, ...]] = ("grounded", "single_source", "inferred", "review", "unassigned")
 PENDING_REASONS: Final[dict[str, str]] = {
-    "evidence_attachment_rate": "FR-04 evidence-citation 미완료 — evidence[] 가 전부 비어 있음",
+    "evidence_attachment_rate": "근거 인용 0건 — evidence[] 가 전부 비어 있음(근거 인용을 끈 실행·골드셋 포함)",
     "matrix_coverage": "FR-03 HazopGenerator 관측값(expected_cells, judged_cells) 필요 — 골드셋에는 없음",
 }
 

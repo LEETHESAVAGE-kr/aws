@@ -582,6 +582,13 @@ else:
                         st.dataframe(rows, **kwargs)
                     else:
                         st.caption("이 묶음은 결과 행이 없습니다.")
+        if not result.is_gold:
+            st.caption("신뢰도 " + service.confidence_counts(shown)
+                       + " — 근거가 붙었다는 것은 '공식 문서가 같은 위험을 다룬다'는 뜻이지 내용이 맞다는 보증이 아닙니다.")
+        cited = service.evidence_rows(shown)
+        if cited:
+            with st.expander(f"근거 발췌 원문 — {len(cited)}건 (법령·고시 원문 그대로, 인용 검사 통과분만)", expanded=False):
+                st.dataframe(cited, hide_index=True, row_height=60)
         if review_log:
             counts = {v: sum(e[1] == v for e in review_log) for v in ("채택", "수정", "기각")}
             st.caption(" · ".join(f"{k} {n}건" for k, n in counts.items()) + " — 다운로드에 반영됨")

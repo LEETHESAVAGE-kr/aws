@@ -45,7 +45,7 @@ LEGEND_TEXT: Final[str] = "범례: S·F=입력 점수, 위험도=수식(S×F). h
 
 EVIDENCE_HEADERS: Final[tuple[str, ...]] = ("No", "source_id", "doc_title", "locator", "quote")
 EVIDENCE_EMPTY_NOTE: Final[str] = (
-    "근거 없음 — FR-04(evidence-citation) 미완료. evidence[] 가 채워지면 이 시트가 자동으로 채워진다."
+    "근거 인용 없음 — 이 결과는 공식 문서 발췌를 인용하지 않았다(근거 인용을 끈 실행·골드셋·인용 0건)."
 )
 CONFIDENCE_HEADERS: Final[tuple[str, ...]] = ("No", "confidence", "사유")
 #: R-10 검토 기록 — 검토가 있을 때만 6번째 시트로 붙는다(AC-10-1). "원 No" 는 검토 전 화면 번호.
@@ -54,9 +54,10 @@ REVIEW_HEADERS: Final[tuple[str, ...]] = ("원 No", "검토", "가이드워드",
 CONFIDENCE_UNASSIGNED: Final[str] = "미부여"
 # R-05 표. 이 spec 은 판정하지 않고 표시만 한다(판정은 FR-06).
 CONFIDENCE_REASONS: Final[dict[str | None, tuple[str, str]]] = {
-    "grounded": ("grounded", "근거 인용 첨부·검증 통과 (FR-04/FR-06)"),
-    "inferred": ("inferred", "모델 추론 — 근거 미첨부(FR-04)·검증 미수행(FR-06)"),
-    "review": ("review", "스키마 검증 2회 실패 행 — 사람 검토 필요"),
+    "grounded": ("근거 다수", "서로 다른 공식 문서 2건 이상 인용 · 인용 원문 대조 통과 · 검증 플래그 0 (Y-4)"),
+    "single_source": ("근거 1건", "공식 문서 1건 인용 · 인용 원문 대조 통과 · 검증 플래그 0 (Y-4)"),
+    "inferred": ("추론", "인용 없음 — 모델 추론 · 검증 플래그 0"),
+    "review": ("검토 필요", "검증 플래그(근거 없는 규격·수치, 원문과 다른 인용) 또는 스키마 2회 실패 — 사람 검토 필요"),
     None: (CONFIDENCE_UNASSIGNED, "입력에 confidence 필드 없음(골드셋 등 사람 작성 레코드)"),
 }
 
