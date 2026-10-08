@@ -419,7 +419,16 @@ else:
     for column, (label, value) in zip(st.columns(len(tiles)), tiles, strict=True):
         column.metric(label, value)
 
-    files = service.export_files(result)
+    # 검토 표(export-formats R-10): 편집 상태를 표보다 먼저 읽어 다운로드에 반영한다. 키에 결과 식별을 넣어
+    # 새 결과가 오면 이전 편집이 엉뚱한 행에 붙지 않게 한다. 골드 재생은 사람 작성이라 검토 대상이 아니다.
+    review_key = f"review_{result.meta.get('node')}_{result.meta.get('captured_at')}_{len(result.records)}"
+    edits = {} if result.is_gold else (state.get(review_key) or {}).get("edited_rows", {})
+    try:
+        files = service.export_files(result, edits)
+        review_log = service.apply_review(result, edits)[1] if edits else []
+    except ValueError as exc:  # S·F 범위 밖 값 — 표의 열 설정이 막지만 서비스가 한 번 더 막는다
+        st.error(f"검토 값 오류: {exc}")
+        files, review_log = service.export_files(result), []
     mimes = {
         "xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         "lopa": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -444,7 +453,31 @@ else:
             shown = service.demo_injected(result)
             st.markdown(service.DEMO_BANNER)
         st.caption(service.summary_line(shown))
-        st.dataframe(service.worksheet_table(shown), hide_index=True)
+        if result.is_gold or shown is not result:
+            st.dataframe(service.worksheet_table(shown), hide_index=True)
+        else:
+            st.caption(
+                "검토: 행마다 채택·기각을 고르고 원인·결과·권고·S·F 를 고칠 수 있습니다(목록은 · 로 구분). "
+                "위 다운로드 3종에 바로 반영됩니다 — 기각 행은 빠지고, Excel 에 '검토 기록' 시트가 붙습니다."
+            )
+            table = [{service.REVIEW_COLUMN: service.REVIEW_CHOICES[0], **row} for row in service.worksheet_table(result)]
+            st.data_editor(
+                table,
+                key=review_key,
+                hide_index=True,
+                disabled=[c for c in table[0] if c != service.REVIEW_COLUMN and c not in service.EDITABLE_COLUMNS]
+                if table else True,
+                column_config={
+                    service.REVIEW_COLUMN: st.column_config.SelectboxColumn(
+                        options=list(service.REVIEW_CHOICES), required=True, width="small"
+                    ),
+                    "S(1-5)": st.column_config.NumberColumn(min_value=1, max_value=5, step=1, required=True),
+                    "F(1-5)": st.column_config.NumberColumn(min_value=1, max_value=5, step=1, required=True),
+                },
+            )
+            if review_log:
+                counts = {v: sum(e[1] == v for e in review_log) for v in ("채택", "수정", "기각")}
+                st.caption(" · ".join(f"{k} {n}건" for k, n in counts.items()) + " — 다운로드에 반영됨")
     with process_tab:
         calls = "—" if view["api_calls"] is None else f"{view['api_calls']}회"
         st.markdown(f"**정확도** {service.accuracy_line(result, replays)} · API 호출 {calls}")

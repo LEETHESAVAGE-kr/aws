@@ -45,6 +45,9 @@ EVIDENCE_EMPTY_NOTE: Final[str] = (
     "근거 없음 — FR-04(evidence-citation) 미완료. evidence[] 가 채워지면 이 시트가 자동으로 채워진다."
 )
 CONFIDENCE_HEADERS: Final[tuple[str, ...]] = ("No", "confidence", "사유")
+#: R-10 검토 기록 — 검토가 있을 때만 6번째 시트로 붙는다(AC-10-1). "원 No" 는 검토 전 화면 번호.
+REVIEW_SHEET: Final[str] = "검토 기록"
+REVIEW_HEADERS: Final[tuple[str, ...]] = ("원 No", "검토", "가이드워드", "이탈", "수정한 열")
 CONFIDENCE_UNASSIGNED: Final[str] = "미부여"
 # R-05 표. 이 spec 은 판정하지 않고 표시만 한다(판정은 FR-06).
 CONFIDENCE_REASONS: Final[dict[str | None, tuple[str, str]]] = {
@@ -177,8 +180,12 @@ def export_xlsx(
     path: Path,
     *,
     rating_scale: dict[str, Any] | None = None,
+    review_log: Sequence[Sequence[object]] | None = None,
 ) -> Path:
-    """시트 5개(`SHEET_ORDER`)를 가진 통합문서를 `path` 에 쓴다."""
+    """시트 5개(`SHEET_ORDER`)를 가진 통합문서를 `path` 에 쓴다.
+
+    `review_log`(R-10)가 비지 않으면 `검토 기록` 시트를 덧붙인다 — 행은 `REVIEW_HEADERS` 순서의 값.
+    """
     scale = rating_scale if rating_scale is not None else _load_rating_scale()
     wb = Workbook()
     ws_main = wb.active
@@ -188,6 +195,11 @@ def export_xlsx(
     _write_screening(wb.create_sheet(SHEET_ORDER[2]), last_row)
     _write_evidence(wb.create_sheet(SHEET_ORDER[3]), rows)
     _write_confidence(wb.create_sheet(SHEET_ORDER[4]), rows)
+    if review_log:
+        ws_review = wb.create_sheet(REVIEW_SHEET)
+        _write_header(ws_review, REVIEW_HEADERS)
+        for entry in review_log:
+            ws_review.append(list(entry))
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     wb.save(path)
@@ -203,6 +215,8 @@ __all__ = [
     "CONFIDENCE_HEADERS",
     "FREEZE_PANES",
     "LEGEND_TEXT",
+    "REVIEW_HEADERS",
+    "REVIEW_SHEET",
     "SHEET_ORDER",
     "confidence_label",
     "export_xlsx",
