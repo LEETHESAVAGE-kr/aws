@@ -1,0 +1,283 @@
+{
+  "_comment": "외부 공개 HAZOP 대조 기준(골드셋 아님). 출처 워크시트의 (가이드워드, 파라미터) 쌍만 옮김 — 원인·결과 문장 없음.",
+  "source": "IOCL LPG Bottling Plant Risk Assessment (2014), Annex A HAZOP worksheets N1~N4 — https://environmentclearance.nic.in/writereaddata/online/RiskAssessment/231020176U2UDUPXAnnexure-documentofRiskAssessment.pdf",
+  "license": "인도 환경허가 공개 제출물(저작권 표시 미확인) — 가이드워드·파라미터 이름(사실)만 옮김",
+  "mapping": {
+    "High": "More",
+    "Low": "Less",
+    "Less / No": "Less (보수적 — No 로만 생성하면 불일치)",
+    "Flow": "유량",
+    "Pressure": "압력",
+    "Temperature": "온도",
+    "Level": "준위",
+    "Composition": "조성"
+  },
+  "excluded": "원문 점검표의 Start-up/shut down·Maintenance·Corrosion/Erosion·Drawing Errors 는 가이드워드 칸이 비어 있어 (가이드워드, 파라미터) 매칭 규칙으로 잴 수 없다 — 대조 기준에서 뺐다",
+  "caveat": "4노드 모두 같은 공정변수 점검표 11행이다. 모델이 기본으로 내는 축(유량·압력·온도·조성·준위)과 겹쳐 recall 이 후하게 나온다 — NH3 골드셋(설비·절차형 파라미터 다수)과 같은 난이도의 대조가 아니다",
+  "records": [
+    {
+      "node": "I1",
+      "source_node": "N1",
+      "guideword": "More",
+      "parameter": "유량"
+    },
+    {
+      "node": "I1",
+      "source_node": "N1",
+      "guideword": "Less",
+      "parameter": "유량"
+    },
+    {
+      "node": "I1",
+      "source_node": "N1",
+      "guideword": "Reverse",
+      "parameter": "유량"
+    },
+    {
+      "node": "I1",
+      "source_node": "N1",
+      "guideword": "Other than",
+      "parameter": "유량"
+    },
+    {
+      "node": "I1",
+      "source_node": "N1",
+      "guideword": "More",
+      "parameter": "압력"
+    },
+    {
+      "node": "I1",
+      "source_node": "N1",
+      "guideword": "Less",
+      "parameter": "압력"
+    },
+    {
+      "node": "I1",
+      "source_node": "N1",
+      "guideword": "More",
+      "parameter": "온도"
+    },
+    {
+      "node": "I1",
+      "source_node": "N1",
+      "guideword": "Less",
+      "parameter": "온도"
+    },
+    {
+      "node": "I1",
+      "source_node": "N1",
+      "guideword": "More",
+      "parameter": "준위"
+    },
+    {
+      "node": "I1",
+      "source_node": "N1",
+      "guideword": "Less",
+      "parameter": "준위"
+    },
+    {
+      "node": "I1",
+      "source_node": "N1",
+      "guideword": "Other than",
+      "parameter": "조성"
+    },
+    {
+      "node": "I2",
+      "source_node": "N2",
+      "guideword": "More",
+      "parameter": "유량"
+    },
+    {
+      "node": "I2",
+      "source_node": "N2",
+      "guideword": "Less",
+      "parameter": "유량"
+    },
+    {
+      "node": "I2",
+      "source_node": "N2",
+      "guideword": "Reverse",
+      "parameter": "유량"
+    },
+    {
+      "node": "I2",
+      "source_node": "N2",
+      "guideword": "Other than",
+      "parameter": "유량"
+    },
+    {
+      "node": "I2",
+      "source_node": "N2",
+      "guideword": "More",
+      "parameter": "압력"
+    },
+    {
+      "node": "I2",
+      "source_node": "N2",
+      "guideword": "Less",
+      "parameter": "압력"
+    },
+    {
+      "node": "I2",
+      "source_node": "N2",
+      "guideword": "More",
+      "parameter": "온도"
+    },
+    {
+      "node": "I2",
+      "source_node": "N2",
+      "guideword": "Less",
+      "parameter": "온도"
+    },
+    {
+      "node": "I2",
+      "source_node": "N2",
+      "guideword": "More",
+      "parameter": "준위"
+    },
+    {
+      "node": "I2",
+      "source_node": "N2",
+      "guideword": "Less",
+      "parameter": "준위"
+    },
+    {
+      "node": "I2",
+      "source_node": "N2",
+      "guideword": "Other than",
+      "parameter": "조성"
+    },
+    {
+      "node": "I3",
+      "source_node": "N3",
+      "guideword": "More",
+      "parameter": "유량"
+    },
+    {
+      "node": "I3",
+      "source_node": "N3",
+      "guideword": "Less",
+      "parameter": "유량"
+    },
+    {
+      "node": "I3",
+      "source_node": "N3",
+      "guideword": "Reverse",
+      "parameter": "유량"
+    },
+    {
+      "node": "I3",
+      "source_node": "N3",
+      "guideword": "Other than",
+      "parameter": "유량"
+    },
+    {
+      "node": "I3",
+      "source_node": "N3",
+      "guideword": "More",
+      "parameter": "압력"
+    },
+    {
+      "node": "I3",
+      "source_node": "N3",
+      "guideword": "Less",
+      "parameter": "압력"
+    },
+    {
+      "node": "I3",
+      "source_node": "N3",
+      "guideword": "More",
+      "parameter": "온도"
+    },
+    {
+      "node": "I3",
+      "source_node": "N3",
+      "guideword": "Less",
+      "parameter": "온도"
+    },
+    {
+      "node": "I3",
+      "source_node": "N3",
+      "guideword": "More",
+      "parameter": "준위"
+    },
+    {
+      "node": "I3",
+      "source_node": "N3",
+      "guideword": "Less",
+      "parameter": "준위"
+    },
+    {
+      "node": "I3",
+      "source_node": "N3",
+      "guideword": "Other than",
+      "parameter": "조성"
+    },
+    {
+      "node": "I4",
+      "source_node": "N4",
+      "guideword": "More",
+      "parameter": "유량"
+    },
+    {
+      "node": "I4",
+      "source_node": "N4",
+      "guideword": "Less",
+      "parameter": "유량"
+    },
+    {
+      "node": "I4",
+      "source_node": "N4",
+      "guideword": "Reverse",
+      "parameter": "유량"
+    },
+    {
+      "node": "I4",
+      "source_node": "N4",
+      "guideword": "Other than",
+      "parameter": "유량"
+    },
+    {
+      "node": "I4",
+      "source_node": "N4",
+      "guideword": "More",
+      "parameter": "압력"
+    },
+    {
+      "node": "I4",
+      "source_node": "N4",
+      "guideword": "Less",
+      "parameter": "압력"
+    },
+    {
+      "node": "I4",
+      "source_node": "N4",
+      "guideword": "More",
+      "parameter": "온도"
+    },
+    {
+      "node": "I4",
+      "source_node": "N4",
+      "guideword": "Less",
+      "parameter": "온도"
+    },
+    {
+      "node": "I4",
+      "source_node": "N4",
+      "guideword": "More",
+      "parameter": "준위"
+    },
+    {
+      "node": "I4",
+      "source_node": "N4",
+      "guideword": "Less",
+      "parameter": "준위"
+    },
+    {
+      "node": "I4",
+      "source_node": "N4",
+      "guideword": "Other than",
+      "parameter": "조성"
+    }
+  ]
+}

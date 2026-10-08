@@ -33,10 +33,10 @@ def _reset_daily_counter() -> None:
 # ── J-01 공정 카탈로그 ─────────────────────────────────────────────────────────
 def test_catalog_loads_validated_unique_nodes() -> None:
     catalog = load_catalog()
-    assert [p["id"] for p in catalog] == ["nh3_sts", "lpg_loading", "cl2_unloading"]
-    assert [p["gold"] for p in catalog] == [True, False, False]
+    assert [p["id"] for p in catalog] == ["nh3_sts", "lpg_loading", "cl2_unloading", "lpg_iocl"]
+    assert [p["gold"] for p in catalog] == [True, False, False, False]  # 공개 HAZOP 대조는 골드셋이 아니다
     ids = [n["id"] for p in catalog for n in p["nodes"]]
-    assert ids == ["N1", "N2", "N3", "N4", "P1", "P2"]
+    assert ids == ["N1", "N2", "N3", "N4", "P1", "P2", "I1", "I2", "I3", "I4"]
     assert all(isinstance(n["node_meta"], NodeMeta) for p in catalog for n in p["nodes"])
     # NH3 는 I-1 의 하드코딩 값 그대로(J-01 "추측 금지") — PRESETS 도 예전 dict 와 같다.
     assert {k: service.PRESETS[k] for k in ("N1", "N2", "N3", "N4")} == {
@@ -102,7 +102,7 @@ def test_run_quick_makes_two_calls_for_one_guideword() -> None:
     assert (m["source"], m["mock"], m["guidewords"], m["recall"]) == ("quick", True, ["More"], None)
     assert m["expected_cells"] == len(m["parameters"]) == m["judged_cells"]
     assert {r.node for r in result.records} == {"X1"}
-    assert "X1 골드셋 없음" in service.summary_line(result)
+    assert "X1 정성 검토용 — 대조 기준 없음" in service.summary_line(result)
     assert set(service.export_files(result)) == {"xlsx", "lopa", "report"}
     assert service.process_view(result)["api_calls"] == 2
 
@@ -717,3 +717,44 @@ def test_app_passes_review_edits_to_downloads(monkeypatch: pytest.MonkeyPatch) -
     at.run()
     assert seen[-1] == {0: {service.REVIEW_COLUMN: "기각"}}
     assert any("기각 1건" in c.value for c in at.caption)
+
+# ── 지시문 W 외부 공개 HAZOP 대조 (LPG 충전소, IOCL 2014) ─────────────────────
+def test_external_reference_is_pairs_only_and_split_external() -> None:
+    from tools import capture_replay
+
+    ref = json.loads((REPLAY_DIR.parents[1] / "data" / "reference" / "iocl_lpg_2014.json").read_text(encoding="utf-8"))
+    assert {tuple(sorted(r)) for r in ref["records"]} == {("guideword", "node", "parameter", "source_node")}  # 문장 없음
+    for node in ("I1", "I2", "I3", "I4"):
+        assert capture_replay.default_split(node) == "external"
+        assert len(capture_replay._gold_rows(node, "external")) == 11
+    with pytest.raises(ValueError, match="골드셋이 없는"):
+        capture_replay.capture_gold("I1", "external")  # 대조 기준은 레코드가 아니다 — 골드 재생 불가
+
+
+def test_external_result_is_labelled_and_kept_out_of_nh3_table() -> None:
+    replays = load_replays()
+    meta = {**replays["N2"].meta, "node": "I2", "split": "external",
+            "recall": {"recall": 9 / 11, "matched": 9, "total": 11}}
+    result = service.Result(meta=meta, records=replays["N2"].records)
+    assert "외부 공개 HAZOP 대비 recall 0.818 (9/11)" in service.summary_line(result)
+    line = service.accuracy_line(result, replays)
+    assert "외부 공개 HAZOP 대비" in line and "후하게" in line  # 쉬운 기준이라는 고지가 함께 붙는다
+    assert service.criteria_notice(result) == service.CRITERIA_NOTICE
+    table = service.evaluation_table({**replays, "I2": result})
+    assert not any("I2" in str(row["노드"]) for row in table)  # NH3 골드셋 표와 섞지 않는다
+    assert service.holdout_recall({**replays, "I2": result}) == service.holdout_recall(replays)
+
+
+def test_app_shows_external_badge_instead_of_no_gold(monkeypatch: pytest.MonkeyPatch) -> None:
+    from streamlit.testing.v1 import AppTest
+
+    for key, value in _MOCK_ENV.items():
+        monkeypatch.setenv(key, value)
+    at = AppTest.from_file(str(_APP), default_timeout=30).run()
+    at.radio(key="mode").set_value(_CASES).run()
+    at.selectbox(key="process_name").select("LPG 충전소 (공개 HAZOP 대조)").run()
+    shown = " ".join(m.value for m in at.markdown)
+    assert "공개 HAZOP 대조 · 외부 팀 작성" in shown and "골드셋 없음" not in shown
+    at.selectbox(key="process_name").select("LPG 저장탱크 출하").run()
+    shown = " ".join(m.value for m in at.markdown)
+    assert "예시 공정 · 정성 검토용" in shown and "골드셋 없음" not in shown

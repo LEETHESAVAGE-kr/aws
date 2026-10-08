@@ -13,6 +13,7 @@ Streamlit 데모의 기본 모드는 실호출이 아니라 재생이다(노드 
 - `--source gold`: 골드셋의 해당 노드 레코드를 그대로 넣는다(PRD §9 Plan B). 생성 결과 아님.
 - `--split {tune,holdout}`: 골드 파일 선택. 기본은 N1 이면 tune, 나머지는 holdout(`data/gold/split_node.json`).
   골드셋이 없는 공정(`data/presets.json` 의 `gold: false`)의 노드는 항상 `split: "none"`, recall `null`.
+  단 공정에 `reference`(외부 공개 HAZOP 대조 기준 파일)가 있으면 `split: "external"` 로 그 파일과 recall 을 잰다(지시문 W).
 
 records 가 `schemas/deviation.schema.json` 을 통과하지 못하면 저장하지 않고 종료코드 1.
 """
@@ -65,7 +66,15 @@ GOLD_NODES: Final[frozenset[str]] = frozenset(
 )
 
 
+#: 외부 공개 HAZOP 대조 기준이 있는 노드 → 그 파일(지시문 W). 골드셋이 아니다 — recall 은 `split: "external"` 로 따로 보고한다.
+REFERENCE_PATHS: Final[dict[str, Path]] = {
+    nid: REPO_ROOT / n["process"]["reference"] for nid, n in _CATALOG_NODES.items() if n["process"].get("reference")
+}
+
+
 def default_split(node: str) -> str:
+    if node in REFERENCE_PATHS:
+        return "external"
     if node not in GOLD_NODES:
         return "none"
     return "tune" if node == "N1" else "holdout"
@@ -74,6 +83,9 @@ def default_split(node: str) -> str:
 def _gold_rows(node: str, split: str) -> list[dict[str, Any]]:
     if split == "none":
         return []
+    if split == "external":
+        rows = json.loads(REFERENCE_PATHS[node].read_text(encoding="utf-8"))["records"]
+        return [g for g in rows if g["node"] == node]
     rows = json.loads(GOLD_PATHS[split].read_text(encoding="utf-8"))
     return [g for g in rows if g["node"] == node]
 
@@ -96,7 +108,7 @@ def _enumerated(contents: list[str | None]) -> list[str]:
 
 def capture_gold(node: str, split: str) -> dict[str, Any]:
     """골드셋 재생. 지연·비용·recall 은 의미가 없으므로 `null`."""
-    if split == "none":
+    if split in ("none", "external"):
         raise ValueError(f"{node} 는 골드셋이 없는 공정의 노드다 — --source gold 불가")
     records = [DeviationRecord.model_validate(g) for g in _gold_rows(node, split)]
     return {
@@ -197,7 +209,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--split", choices=sorted(GOLD_PATHS), default=None,
                         help="골드 파일 선택(기본: N1=tune, 그 외 골드 노드=holdout). 골드 없는 노드는 항상 none")
     args = parser.parse_args(argv)
-    split = "none" if args.node not in GOLD_NODES else (args.split or default_split(args.node))
+    split = (args.split or default_split(args.node)) if args.node in GOLD_NODES else default_split(args.node)
     logging.basicConfig(
         level=logging.INFO, format="%(asctime)s | %(levelname)-8s | %(name)s | %(message)s"
     )
