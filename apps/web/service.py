@@ -603,8 +603,8 @@ CRITERIA_NOTICE = "S·F 등급 정의는 NH3 선박 벙커링 기준(선내·항
 
 
 def criteria_notice(result: Result) -> str | None:
-    """예시 공정·직접 입력(`split == "none"`)이면 배지 문구, 골드 공정이면 None."""
-    return CRITERIA_NOTICE if result.meta.get("split") == "none" else None
+    """NH3 밖의 공정(예시·직접 입력 `none`, 공개 HAZOP 대조 `external`)이면 배지 문구, NH3 골드 공정이면 None."""
+    return CRITERIA_NOTICE if result.meta.get("split") in ("none", "external") else None
 
 
 def f_distribution(result: Result) -> str:
@@ -630,7 +630,13 @@ def accuracy_line(result: Result, replays: Mapping[str, Result]) -> str:
     """화면 ③ '정확도' 한 줄. 튜닝 노드 수치만 내세우지 않도록 홀드아웃 합계를 같이 적는다(NFR-03)."""
     recall = result.meta.get("recall")
     if result.meta.get("split") == "none":
-        return "골드셋이 없는 공정이라 정확도는 측정하지 않았습니다(정성 검토용)."
+        return "정성 검토용 예시라 대조할 기준이 없어 정확도는 측정하지 않았습니다."
+    if result.meta.get("split") == "external" and recall:
+        return (
+            f"외부 공개 HAZOP 대비 **{recall['recall']:.1%}** ({recall['matched']}/{recall['total']}, 1회 실행) — "
+            "인도 IOCL 충전소 워크시트(2014, 외부 팀 작성)의 공정변수 점검표 11행과 대조. 모델이 기본으로 내는 축과 겹쳐 "
+            "후하게 나오는 기준이며, NH3 골드셋과 같은 난이도가 아닙니다."
+        )
     if not recall:
         return "골드셋 재생 화면이라 정확도는 해당 없음."
     line = f"전문가 결과물 대비 **{recall['recall']:.1%}** ({recall['matched']}/{recall['total']}, 1회 실행)"
@@ -678,12 +684,16 @@ def summary_line(result: Result) -> str:
     parts.append(f"비용 ${cost:.3f}" if cost is not None else "비용 해당 없음")
     recall = m.get("recall")
     node, split = m.get("node", "N1"), m.get("split", "—")
-    if recall:
+    if recall and split == "external":
+        parts.append(
+            f"{node} 외부 공개 HAZOP 대비 recall {recall['recall']:.3f} ({recall['matched']}/{recall['total']})"
+        )
+    elif recall:
         parts.append(
             f"{node}({split}) recall {recall['recall']:.3f} ({recall['matched']}/{recall['total']})"
         )
     elif split == "none":
-        parts.append(f"{node} 골드셋 없음 — recall 해당 없음")
+        parts.append(f"{node} 정성 검토용 — 대조 기준 없음")
     else:
         parts.append(f"{node}({split}) recall 해당 없음")
     return " · ".join(parts)
@@ -770,8 +780,8 @@ def evaluation_table(results: Mapping[str, Result]) -> list[dict[str, str]]:
     matched = gold = records = truncated = judged_sum = expected_sum = 0
     cost = latency = 0.0
     measured: list[str] = []
-    # 골드셋이 없는 예시 공정(split "none")은 recall 표 대상이 아니다(J-01).
-    results = {n: r for n, r in results.items() if r.meta.get("split") != "none"}
+    # NH3 골드셋 표다. 예시 공정(`none`)·외부 공개 HAZOP 대조(`external`, 지시문 W)는 섞지 않는다 — 기준이 다르다.
+    results = {n: r for n, r in results.items() if r.meta.get("split") not in ("none", "external")}
     for node in sorted(results, key=lambda n: (n not in PRESETS, n)):
         m = results[node].meta
         recall = m.get("recall")
