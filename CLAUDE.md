@@ -65,5 +65,5 @@ python -m eval.run --split holdout --repeats 5 --seed 42
 
 - HAZOP 가이드워드: No / More / Less / Reverse / Other than / Part of / As well as. 파라미터: 유량·압력·온도·준위·조성·상(phase)·시간 등.
 - 워크시트 12열: `No, 노드, 가이드워드, 이탈, 원인, 결과, 기존 안전장치(Before), S(1-5), F(1-5), 위험도(=S×F), 권고, 시나리오 연계`.
-- S·F 등급 정의는 골드셋 `평가기준` 시트를 그대로 사용.
+- S·F 등급 정의: 골드셋 노드(NH3 N1~N4)는 골드셋 `평가기준` 시트를 그대로 사용. 그 밖의 공정은 `data/kb/criteria/` 의 공식 기준(출처·쪽 확인된 것만) — 10/9 사용자 결정(지시문 Y Q5). steering `domain.md` §4 개정은 사용자가 Kiro 에서.
 - LOPA 용어: IE(개시사건), IPL(독립방호계층), PFD, SIL. 형식은 NH3 `LOPA_S1_C1.md` 준용.
