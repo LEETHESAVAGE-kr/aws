@@ -29,7 +29,8 @@ def _reset_daily_counter() -> None:
 
 
 def _write(path: Path, source: str, captured_at: str) -> None:
-    payload = json.loads(next(REPLAY_DIR.glob("*.json")).read_text(encoding="utf-8"))
+    # 첫 파일(glob 순서)이 아니라 N1 파일을 명시 — 10/8 i1_*.json 이 n1_ 보다 앞에 정렬돼 노드가 I1 로 바뀌었다.
+    payload = json.loads((REPLAY_DIR / "n1_20260929.json").read_text(encoding="utf-8"))
     payload.update(source=source, captured_at=captured_at)
     path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
 
