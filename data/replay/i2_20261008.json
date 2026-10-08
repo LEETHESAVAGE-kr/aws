@@ -1,0 +1,2487 @@
+{
+  "schema_version": 1,
+  "source": "live",
+  "captured_at": "2026-10-08T13:11:37+00:00",
+  "node": "I2",
+  "split": "external",
+  "provider": "anthropic",
+  "model_id": "claude-opus-4-8",
+  "node_meta": {
+    "node": "I2",
+    "substance": "LPG(프로판·부탄)",
+    "phase": "liquid",
+    "P_kPag": null,
+    "T_degC": null,
+    "equipment": [
+      "불릿형 저장탱크",
+      "구형 저장탱크",
+      "LPG 충전 펌프",
+      "충전기 공급 배관"
+    ],
+    "safeguards": []
+  },
+  "latency_s": 136.2,
+  "cost_usd": 0.7415,
+  "expected_cells": 70,
+  "judged_cells": 61,
+  "review_guidewords": [],
+  "recall": {
+    "recall": 0.6363636363636364,
+    "matched": 7,
+    "total": 11
+  },
+  "parameters": [
+    "유량",
+    "압력",
+    "온도",
+    "준위",
+    "상(phase)",
+    "기동정지",
+    "유지보수",
+    "누출·기밀",
+    "충전 작업",
+    "방출·과압보호"
+  ],
+  "max_tokens": 16384,
+  "parallel_calls": 4,
+  "raw_calls": [
+    {
+      "tokens_out": 735,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3328,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3357,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3556,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 4286,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 4285,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 4229,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 4102,
+      "stop_reason": "tool_use"
+    }
+  ],
+  "truncated_calls": 0,
+  "records": [
+    {
+      "id": "i2-001",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "유량",
+      "deviation": "충전 펌프 가동에도 공급 배관으로 LPG 액 이송이 전혀 일어나지 않음",
+      "causes": [
+        "펌프 토출측 밸브 닫힘 상태에서 기동",
+        "흡입 배관 막힘·필터 폐색",
+        "펌프 기계적 고장 또는 전원 상실",
+        "탱크 출구 밸브 폐쇄"
+      ],
+      "consequences": [
+        "데드헤드 운전으로 펌프 과열 및 밀봉부 손상",
+        "밀봉부 손상 시 가연성 LPG 누출·증기운 형성",
+        "충전 작업 지연으로 인한 반복 조작·오조작 유발"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "펌프 최소유량 재순환(미니플로) 라인 설치",
+        "토출측 압력·무유량 검출 인터록으로 펌프 자동정지",
+        "기동 전 밸브 정렬 확인 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-002",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "압력",
+      "deviation": "충전 계통에 설계 이송 압력이 전혀 형성되지 않음(펌프 토출 무압)",
+      "causes": [
+        "펌프 캐비테이션으로 양정 상실",
+        "흡입측 공기·증기 유입",
+        "펌프 임펠러 손상",
+        "흡입 밸브 폐쇄로 흡입 압력 상실"
+      ],
+      "consequences": [
+        "충전 불가로 작업 중단",
+        "무압 상태에서 반복 기동 시 펌프 손상 가속",
+        "손상 밀봉부를 통한 LPG 누출 가능"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "펌프 토출 압력계 및 저압 경보 설치",
+        "흡입측 압력 모니터링으로 캐비테이션 조기 검출",
+        "운전 절차에 압력 확인 단계 추가"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-003",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "준위",
+      "deviation": "저장탱크 내 LPG 액 준위가 전혀 없음(완전 공탱크)",
+      "causes": [
+        "이송·충전으로 전량 배출",
+        "출구 밸브 고착 개방으로 의도치 않은 배출",
+        "준위 지시 오류로 공탱크 인지 실패"
+      ],
+      "consequences": [
+        "공탱크 상태 펌프 흡입으로 캐비테이션·공회전",
+        "펌프 밀봉부 손상 및 LPG 누출",
+        "탱크 내 증기만 잔류하여 후속 투입 시 급격한 압력 변동"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "저준위 경보 및 펌프 흡입 저준위 인터록 설치",
+        "준위계 신뢰성 확보(이중화)",
+        "최소 운전 준위 운전 절차 명시"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-004",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "상(phase)",
+      "deviation": "펌프 입구에서 액상이 전혀 없이 증기만 유입됨(완전 기화)",
+      "causes": [
+        "흡입측 압력 저하로 LPG 플래싱",
+        "흡입 배관 과열(일사·단열 미비)",
+        "저준위로 증기 흡입"
+      ],
+      "consequences": [
+        "펌프 완전 공회전으로 이송 불가",
+        "펌프 과열·베어링 및 밀봉부 손상",
+        "밀봉부 손상 시 가연성 증기 누출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "흡입측 충분한 NPSH 확보 및 배관 단열",
+        "펌프 흡입부 증기 검출·자동정지 로직",
+        "저준위 흡입 방지 인터록"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-005",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "기동정지",
+      "deviation": "기동 지령에도 충전 펌프가 전혀 기동되지 않음",
+      "causes": [
+        "전원·제어 회로 고장",
+        "인터록 미해제",
+        "모터 과부하 트립"
+      ],
+      "consequences": [
+        "충전 작업 불가로 지연",
+        "반복 재기동 시도로 모터·펌프 손상",
+        "작업자 임의 우회 조작 유발 위험"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 3,
+      "risk_score": 6,
+      "recommendations": [
+        "기동 실패 경보 및 원인 진단 표시",
+        "안전한 재기동 절차 수립",
+        "전원·제어 신뢰성 점검 주기화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-006",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "유지보수",
+      "deviation": "정비 전 격리·퍼지 절차가 전혀 수행되지 않은 채 펌프·배관 개방",
+      "causes": [
+        "격리 밸브 확인 누락",
+        "잔류 LPG 배출·퍼지 절차 부재",
+        "격리·태그아웃 체계 미비"
+      ],
+      "consequences": [
+        "개방 시 잔류 LPG 급격 방출 및 증기운 형성",
+        "점화원 접촉 시 화재·폭발",
+        "정비 작업자 동상·질식·화상"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "격리·배출·퍼지·가스농도 측정을 포함한 LOTO 절차 수립",
+        "정비 전 불활성 퍼지 및 가연성 가스 측정 의무화",
+        "이중 격리 또는 블라인드 설치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-007",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "누출·기밀",
+      "deviation": "플랜지·펌프 실·연결부 기밀이 전혀 유지되지 않아 LPG가 외부로 누출됨",
+      "causes": [
+        "펌프 기계밀봉 열화·파손",
+        "플랜지 개스킷 손상·체결 이완",
+        "커플링 연결부 밀봉 불량"
+      ],
+      "consequences": [
+        "가연성 LPG 대기 방출 및 증기운 형성",
+        "점화 시 화재·증기운 폭발",
+        "저지대 체류 가스에 의한 광역 확산"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 4,
+      "risk_score": 16,
+      "recommendations": [
+        "가연성 가스 검지기 및 경보 설치",
+        "펌프 이중 밀봉 적용 및 누설 모니터링",
+        "정기 기밀 점검·누설 순찰 체계 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-008",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "충전 작업",
+      "deviation": "커플링 연결 불량으로 차량 충전 시 LPG 이송이 전혀 이루어지지 않음",
+      "causes": [
+        "충전 커플링 미체결·오체결",
+        "충전기 측 밸브 폐쇄",
+        "분리형 커플러 작동 불량"
+      ],
+      "consequences": [
+        "연결부 불완전 체결 상태에서 압력 인가 시 커플링 탈락·누출",
+        "분출 LPG에 의한 작업자 동상·화재",
+        "충전 지연으로 반복 조작 중 오작동 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "체결 확인 인터록(미체결 시 이송 불가) 적용",
+        "긴급 분리 커플러(브레이크어웨이) 설치",
+        "충전 절차서 및 작업자 교육 강화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-009",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "방출·과압보호",
+      "deviation": "저장탱크 과압 시 릴리프 경로가 전혀 존재하지 않음(과압보호 부재)",
+      "causes": [
+        "안전밸브·릴리프 장치 미설치",
+        "외부 화재·일사에 의한 증기압 상승 시 방출 경로 없음",
+        "과충전에 의한 액팽창 공간 상실"
+      ],
+      "consequences": [
+        "과압 지속으로 탱크 구조 파손",
+        "대량 LPG 급방출 및 BLEVE 가능성",
+        "항만·인접 구역에 미치는 광역 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "저장탱크 안전밸브 설치 및 적정 방출용량 산정",
+        "화재 시 열부하 대응 수살비·방호 설비 설치",
+        "안전밸브 토출 안전 위치로의 방출 경로 확보"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-010",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "유량",
+      "deviation": "충전 펌프 토출 및 공급 배관의 LPG 액 이송량이 설계 의도보다 과대하게 흐른다",
+      "causes": [
+        "충전 펌프 과속 또는 토출측 밸브 전개 상태로 운전",
+        "하류 충전기측 저저항으로 과유량 발생",
+        "유량 제어·인터록 부재로 수동 운전 과잉"
+      ],
+      "consequences": [
+        "과유량에 의한 배관·커플링 압력 상승과 수격",
+        "충전 중 과충전 유발로 액팽창 공간 상실",
+        "연결부 기밀 상실 시 LPG 대량 누출·증기운 형성 및 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "충전 배관에 유량 제한 오리피스 또는 과유량 차단밸브 설치",
+        "펌프 토출 유량·압력 감시 및 고유량 경보/인터록 도입",
+        "충전 시작 전 유량 설정 확인 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-011",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "유량",
+      "deviation": "충전 펌프·공급 배관을 통한 LPG 액 이송량이 설계 의도보다 적어 충전 시간이 지연되고 펌프가 저유량 영역에서 운전된다",
+      "causes": [
+        "공급 배관 부분 막힘 또는 밸브 개도 부족",
+        "펌프 흡입측 스트레이너 폐색",
+        "펌프 성능 저하·캐비테이션",
+        "탱크 액위 저하로 흡입 압력 부족"
+      ],
+      "consequences": [
+        "저유량 운전으로 펌프 과열·실 손상",
+        "토출 저하 지속 시 펌프 데드헤드 유사 상태로 발열·LPG 기화",
+        "펌프 실 열화로 LPG 누출 및 증기운 형성·화재 가능"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "펌프 최소유량 보호(미니멈 플로우 라인) 설치",
+        "흡입 스트레이너 차압 감시 및 정기 점검",
+        "펌프 저유량·과열 트립 인터록 설치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-012",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "압력",
+      "deviation": "펌프 토출부·공급 배관의 압력이 설계 의도보다 낮아 이송 추진력이 부족하고 액이 기화되기 쉬운 상태가 된다",
+      "causes": [
+        "펌프 흡입 압력 저하",
+        "배관 누출로 계통 압력 손실",
+        "탱크 내 압력 저하(저온)"
+      ],
+      "consequences": [
+        "배관 내 LPG 부분 기화로 이송 불안정",
+        "압력 부족 누출부에서 공기 혼입 가능성(정지 시)",
+        "이송 중단으로 충전 작업 차질"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "토출 압력 지시·저압 경보 설치",
+        "계통 압력 저하 시 펌프 정지 인터록",
+        "누출 조기 탐지 체계 마련"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-013",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "온도",
+      "deviation": "저장·이송 LPG 온도가 설계 의도보다 낮아 증기압이 떨어지고 펌프 흡입 추진력이 저하된다",
+      "causes": [
+        "급속 인출·플래싱에 의한 자가냉각(오토리프리지레이션)",
+        "저온 외기 노출",
+        "압력 저하에 따른 증발 냉각"
+      ],
+      "consequences": [
+        "탱크 내압 저하로 펌프 흡입 압력 부족·캐비테이션",
+        "설계 최저온도 이탈 시 재질 취성 우려",
+        "저온으로 탱크 부압 발생 시 좌굴 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "저장탱크 온도·압력 감시",
+        "급속 인출 제한 운전 절차 수립",
+        "최저 설계온도 대비 재질 적합성 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-014",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "준위",
+      "deviation": "불릿형·구형 저장탱크의 액 준위가 설계 의도보다 낮아 펌프 흡입 조건이 악화된다",
+      "causes": [
+        "과다 인출·공급 과잉",
+        "보충 지연",
+        "준위 지시 오류로 저준위 미인지"
+      ],
+      "consequences": [
+        "펌프 흡입 저하로 캐비테이션·공회전",
+        "펌프 실 손상 및 LPG 누출",
+        "흡입 기화로 이송 불능"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "저준위 경보 및 펌프 자동정지 인터록",
+        "준위 지시 이중화",
+        "최소 운전 준위 운전 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-015",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "상(phase)",
+      "deviation": "액상이어야 할 펌프 입구에서 압력·온도 감소로 LPG가 부분 기화하여 기액 혼상이 된다",
+      "causes": [
+        "흡입 압력 저하로 증기압 이하 도달",
+        "흡입 배관 압력손실 과다",
+        "급속 인출에 따른 플래싱"
+      ],
+      "consequences": [
+        "펌프 캐비테이션·진동으로 실 손상",
+        "실 열화로 LPG 누출·증기운 화재",
+        "이송 중단 및 반복 손상"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "충분한 흡입 헤드(NPSH) 확보 설계 검토",
+        "흡입 배관 단순화·저압손 설계",
+        "펌프 진동·캐비테이션 감시"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-016",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "기동정지",
+      "deviation": "충전 펌프 기동 시 흡입 조건이 불충분하거나 정지 과도 중 유량·압력이 급감하여 불안정 운전이 발생한다",
+      "causes": [
+        "기동 전 흡입 밸브 미개방·부분 개방",
+        "펌프 프라이밍 부족",
+        "정지 시 급격한 유량 차단"
+      ],
+      "consequences": [
+        "기동 직후 저유량·공회전으로 펌프 손상",
+        "흡입측 기화로 캐비테이션",
+        "펌프 실 손상 시 LPG 누출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "기동 전 흡입 밸브 개방·프라이밍 확인 절차",
+        "흡입 압력 허용 시에만 기동 허용 인터록",
+        "순차 기동정지 절차 표준화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-017",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "유지보수",
+      "deviation": "펌프·배관 정비 시 잔류 LPG 배출·퍼지가 불충분하여 잔류량이 적게 제거된 채 개방된다",
+      "causes": [
+        "격리·블리드 미비",
+        "퍼지 불충분",
+        "잔류 압력·액 확인 절차 부재"
+      ],
+      "consequences": [
+        "개방 시 잔류 LPG 급격 방출·증기운 형성",
+        "작업자 저온 동상·화재·폭발 노출",
+        "밀폐공간 가스 축적"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "격리·배출·퍼지·가스농도 확인 포함 정비 허가 절차 수립",
+        "이중 차단·블리드(DBB) 적용",
+        "가스검지기 사용 및 환기 확보"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-018",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "누출·기밀",
+      "deviation": "플랜지·펌프 실·연결부의 기밀이 부분적으로 상실되어 소량의 LPG가 지속 누출된다",
+      "causes": [
+        "가스켓·실 열화",
+        "체결 불량·진동 이완",
+        "안전장치 부재로 누출 조기 미감지"
+      ],
+      "consequences": [
+        "저속 누출 누적으로 증기운 형성",
+        "점화원 접촉 시 화재·폭발",
+        "펌프 실 미세누출의 점진 확대"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 4,
+      "risk_score": 16,
+      "recommendations": [
+        "가스검지기·화재감지 설치",
+        "플랜지·실 정기 기밀점검 및 토크 관리",
+        "누출 감지 시 자동 격리 체계"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-019",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "충전 작업",
+      "deviation": "충전기 공급·차량 충전 커플링 연결/분리 시 이송량이 의도보다 적거나 충전이 조기 중단된다",
+      "causes": [
+        "커플링 체결 불완전로 유량 저하",
+        "분리 전 잔압 미해소",
+        "작업자 조작 오류"
+      ],
+      "consequences": [
+        "커플링부 LPG 누출·분출",
+        "작업자 저온 동상 및 화재 노출",
+        "증기운 형성·점화 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "브레이크어웨이 커플링·체크밸브 적용",
+        "연결·분리 체크리스트 및 잔압 해소 절차",
+        "충전 구역 가스검지·비상차단 설치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-020",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "방출·과압보호",
+      "deviation": "저장탱크의 과압 방출 경로가 설계상 요구보다 부족하여 방출 용량이 모자라는 상태이다",
+      "causes": [
+        "기존 안전장치(릴리프 경로) 부재",
+        "방출 계통 미설치",
+        "화재·과온 시 방출 능력 부족"
+      ],
+      "consequences": [
+        "과압 발생 시 릴리프 불가로 탱크 파열",
+        "BLEVE 등 대량 LPG 방출·광역 화재·폭발",
+        "항만·인접 설비 영향"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "저장탱크 안전밸브·릴리프 경로 신설 및 용량 산정",
+        "화재 시 요구 방출량 평가",
+        "방출 계통 정기 점검 체계 구축"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-021",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "유량",
+      "deviation": "충전 펌프 정지·토출압 저하 시 공급 배관 하류에서 저장탱크 방향으로 LPG 액이 역류하여 흐른다",
+      "causes": [
+        "충전 펌프 정지 또는 트립으로 토출압 소실",
+        "하류 충전측 압력이 탱크측보다 높아지는 역압 발생",
+        "펌프 토출부 체크밸브 부재 또는 고착",
+        "충전 후 배관 내 가압 잔압에 의한 되돌림"
+      ],
+      "consequences": [
+        "펌프 역회전으로 펌프 임펠러·축 손상 및 기계적 실(seal) 파손",
+        "펌프 실 파손부를 통한 LPG 액 누출 및 증기운 형성",
+        "역류 충격으로 플랜지·연결부 기밀 상실 및 가연성 가스 확산·발화 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "펌프 토출배관에 체크밸브 설치 및 주기 작동점검",
+        "펌프 트립 시 자동 격리밸브 연동",
+        "역류 감지를 위한 흐름·압력 모니터링 및 경보 설정"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-022",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "압력",
+      "deviation": "하류측 압력이 펌프·탱크측보다 역전되어 토출 배관에 설계와 반대 방향의 역압이 작용한다",
+      "causes": [
+        "충전측 밀폐 상태에서 온도상승으로 하류 압력 상승",
+        "펌프 정지 후 하류 잔압이 상류로 전파",
+        "체크밸브 부재로 역압 차단 불가"
+      ],
+      "consequences": [
+        "펌프 실·토출부 역압에 의한 손상 및 누출",
+        "배관 연결부 기밀 상실로 LPG 누출 및 화재·폭발 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "토출부 체크밸브 및 역압 방지 설계 적용",
+        "하류 과압 시 릴리프 경로 확보",
+        "압력 모니터링 및 역압 경보 설치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-023",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "준위",
+      "deviation": "충전 라인에서 저장탱크로 LPG가 역류하여 비충전 탱크 준위가 의도치 않게 상승한다",
+      "causes": [
+        "펌프 정지 시 하류 역압으로 탱크측으로 액 되돌림",
+        "체크밸브 고착으로 역류 차단 실패",
+        "다수 탱크 공용 배관에서 압력 불균형"
+      ],
+      "consequences": [
+        "대상 탱크 과충전으로 액팽창 공간 상실",
+        "온도상승 시 액팽창 수용 불가로 탱크 과압 및 손상·방출",
+        "LPG 대량 방출 시 증기운 폭발 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "탱크 입구 체크밸브 및 역류 방지 설치",
+        "탱크별 고준위 경보 및 자동 차단",
+        "공용 배관 압력 균형 관리 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-024",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "기동정지",
+      "deviation": "펌프 정지 과도상태에서 하류 가압 액이 상류로 역류·역압을 일으킨다",
+      "causes": [
+        "펌프 정지 시 토출압 급감으로 하류→상류 압력 역전",
+        "정지 시퀀스에서 토출밸브 차단 지연",
+        "체크밸브 부재로 역류 억제 실패"
+      ],
+      "consequences": [
+        "펌프 역회전 및 기계적 손상",
+        "역류·서지로 배관·연결부 기밀 상실 및 LPG 누출·발화 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "정지 시퀀스에 토출밸브 선차단·체크밸브 연동",
+        "펌프 역회전 방지 장치 적용",
+        "기동정지 절차서에 역류 방지 단계 명시"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-025",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "유지보수",
+      "deviation": "정비 중 격리 미비로 가압 상태의 인접 라인에서 정비 구간으로 LPG가 역류·역류입된다",
+      "causes": [
+        "이중 격리·블리드 미설치로 역방향 유입 차단 실패",
+        "체크밸브 신뢰 의존으로 물리적 격리 생략",
+        "공용 배관 가압 상태에서 정비 구간 개방"
+      ],
+      "consequences": [
+        "정비 작업자에게 LPG 분출·동상·질식 위험",
+        "개방부에서 가연성 가스 누출 및 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "정비 전 이중 블록·블리드 격리 및 가스 프리 확인",
+        "체크밸브에만 의존 금지, 맹판(블라인드) 삽입",
+        "LPG 안전작업허가 및 가스감지 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-026",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "누출·기밀",
+      "deviation": "역류·역압이 평소 반대 방향으로 응력을 가해 펌프 실·플랜지의 기밀이 설계 외 조건에서 상실된다",
+      "causes": [
+        "펌프 정지 시 역압이 실(seal) 반대측에 작용",
+        "역류 충격으로 플랜지 가스켓 이완",
+        "역방향 압력 변동 반복에 의한 연결부 피로"
+      ],
+      "consequences": [
+        "펌프 실·플랜지부를 통한 LPG 누출 및 증기운 형성",
+        "점화원 접촉 시 화재·증기운 폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "역압에 견디는 실·가스켓 사양 적용 및 체크밸브 설치",
+        "가스감지기 설치 및 누출 경보",
+        "연결부 기밀 주기 점검"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-027",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "충전 작업",
+      "deviation": "충전 커플링 연결 상태에서 차량·용기측 압력이 높아 공급 배관으로 LPG가 역류한다",
+      "causes": [
+        "차량 탱크 압력이 공급측보다 높은 상태에서 연결",
+        "충전 라인 체크밸브 부재·고착",
+        "충전 완료 후 분리 전 역방향 압력 잔존"
+      ],
+      "consequences": [
+        "역류로 공급 배관 과압 및 펌프 손상",
+        "커플링 분리 시 잔압 역분출로 작업자 LPG 분사·동상·누출 발화 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "충전 라인 체크밸브 및 역류 방지 커플링 적용",
+        "충전 전후 압력 확인 및 블리드 절차 수립",
+        "브레이크어웨이 커플링 및 작업자 교육"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-028",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "유량",
+      "deviation": "LPG 액 대신 증기(기상) 또는 이종 물질이 충전 펌프·공급 배관으로 이송되어 설계된 액 이송 유량이 성립하지 않음",
+      "causes": [
+        "저장탱크 액 고갈 상태에서 펌프 흡입으로 증기만 유입",
+        "공급 배관에 프로판과 부탄이 설계 조성과 다르게 혼입",
+        "타 제품 배관과의 오접속으로 이종 물질 유입"
+      ],
+      "consequences": [
+        "펌프 증기 흡입으로 캐비테이션·공회전 발생 및 실(seal) 과열 손상",
+        "실 손상부로 LPG 누출되어 가연성 증기운 형성 및 점화 시 화재·폭발",
+        "조성 이탈 제품 충전으로 차량 탱크 과압 또는 품질 이상"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "펌프 흡입측 최소 액위 인터록 및 저유량·저압 트립 설치",
+        "제품별 배관 식별·오접속 방지 커플링 적용",
+        "충전 전 조성·밀도 확인 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-029",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "압력",
+      "deviation": "설계 물질(LPG 액)이 아닌 증기상 또는 이종 물질 유입으로 배관·펌프 토출부가 설계 외 압력 거동을 보임",
+      "causes": [
+        "증기 유입에 따른 펌프 토출 압력 불안정·맥동",
+        "이종 물질(증기압이 다른 물질) 혼입으로 운전 압력이 설계 기준과 상이"
+      ],
+      "consequences": [
+        "압력 맥동·서지로 배관 연결부·플랜지 피로 손상 및 누출",
+        "증기압이 높은 물질 혼입 시 상시 과압 상태로 완결성 위협",
+        "누출된 LPG 증기운 점화 시 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "펌프 토출 압력 지시·고압 경보 설치",
+        "이종 물질 혼입 방지 및 수입 제품 사양 관리",
+        "배관 서지 방지 설계 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-030",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "온도",
+      "deviation": "설계 조성과 다른 저비점 물질 혼입으로 동일 온도에서도 증기압이 상승하는 상태",
+      "causes": [
+        "프로판 함량이 설계보다 높은 제품 수입",
+        "경질 성분 혼입으로 동일 저장온도에서 증기압 증가"
+      ],
+      "consequences": [
+        "일사·외기 온도 상승 시 증기압이 설계치를 초과하여 저장탱크 과압",
+        "과압 보호 경로 부재 상황에서 탱크·배관 완결성 위협 및 누출",
+        "누출 시 가연성 증기운 형성"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "수입 제품 증기압·조성 수입검사 절차 수립",
+        "저장온도·증기압 모니터링",
+        "저장탱크 과압 보호(안전밸브) 설치 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-031",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "준위",
+      "deviation": "설계 제품이 아닌 물·이종 액체가 탱크 하부에 축적되어 실제 LPG 준위가 지시치와 다르게 나타남",
+      "causes": [
+        "수입 제품에 수분·이종 액체 혼입",
+        "조성이 다른 제품 혼적으로 층 분리 발생"
+      ],
+      "consequences": [
+        "하부 축적 물질로 준위 오지시 유발, 실제 과충전 상태 인지 실패",
+        "액팽창 공간 상실로 열팽창 시 탱크 과압 및 누출",
+        "펌프로 이종 액체 흡입 시 이송 이상"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "탱크 하부 드레인 및 정기 수분 제거 절차",
+        "독립 준위 측정 수단 이중화",
+        "수입 제품 수분·이물 검사"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-032",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "상(phase)",
+      "deviation": "액상 운전 의도와 달리 펌프 입구에서 LPG가 기화(플래싱)하여 기액 혼상으로 이송됨",
+      "causes": [
+        "펌프 흡입측 NPSH 부족 및 압력 강하로 플래싱",
+        "흡입 배관 가열(일사·단열 미비)로 액 기화",
+        "저장탱크 액위 저하로 증기 유입"
+      ],
+      "consequences": [
+        "펌프 캐비테이션으로 임펠러·실 손상 및 진동",
+        "실 손상부 LPG 누출로 증기운 형성 및 점화 시 화재·폭발",
+        "충전 유량 불안정으로 작업 중단"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "흡입측 충분한 NPSH 확보 및 배관 단열",
+        "펌프 저압·캐비테이션 보호 트립 설치",
+        "최소 액위 인터록 적용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-033",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "기동정지",
+      "deviation": "기동·정지 과도상태에서 배관 내 설계 의도와 다른 상태(증기 포켓·잔압 물질)로 인한 충격 발생",
+      "causes": [
+        "정지 후 재기동 시 배관 내 잔류 증기 포켓 존재",
+        "기동 시 밸브 순서 오류로 비정상 유로 형성"
+      ],
+      "consequences": [
+        "증기 포켓 압축·응축에 따른 수격·압력 충격으로 배관 손상",
+        "연결부 피로·이완으로 LPG 누출",
+        "누출 증기운 점화 시 화재"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "기동·정지 밸브 조작 순서 절차화",
+        "재기동 전 배관 벤트·충액 절차 수립",
+        "서지 완화 설계 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-034",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "유지보수",
+      "deviation": "정비 중 배관·펌프 내에 설계 의도와 다른 잔류 LPG가 남아 있거나 공기·이종 물질이 유입된 상태",
+      "causes": [
+        "정비 전 퍼지·배출·격리 미비로 LPG 잔류",
+        "개방 중 공기 유입으로 가연성 혼합기 형성",
+        "안전장치가 없어 격리 확인 수단 부재"
+      ],
+      "consequences": [
+        "개방 작업 중 잔류 LPG 누출로 작업자 노출·화재",
+        "LPG-공기 혼합기 점화 시 폭발",
+        "재조립 후 잔류 공기로 이상 운전"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "정비 전 격리·배출·불활성 퍼지 절차 수립",
+        "가스 농도 측정 후 작업 허가제 운영",
+        "이중 차단·블라인드 설치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-035",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "누출·기밀",
+      "deviation": "플랜지·펌프 실·연결부에서 LPG가 설계 경계를 벗어나 외부로 방출됨",
+      "causes": [
+        "펌프 기계실 마모·열화",
+        "플랜지 가스켓 열화·체결 이완",
+        "안전장치·가스감지기 부재로 조기 인지 실패"
+      ],
+      "consequences": [
+        "LPG 액·증기 외부 누출로 가연성 증기운 형성",
+        "점화원 접촉 시 화재·증기운 폭발로 다수 인명 피해",
+        "저지대 체류 시 광범위 확산"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "가연성 가스 감지기 및 경보 설치",
+        "펌프 실 이중화 및 플랜지 정기 누출 점검",
+        "긴급차단밸브·비상정지 체계 구축"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-036",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "충전 작업",
+      "deviation": "커플링 연결/분리 등 충전 절차 중 설계 의도와 다른 물질(증기 분출·잔류 LPG)이 대기로 방출됨",
+      "causes": [
+        "충전 완료 전 커플링 조기 분리",
+        "충전기 공급 호스·커플링 결함 또는 오결합",
+        "잔압 상태에서 분리하여 LPG 분출"
+      ],
+      "consequences": [
+        "분리 시 LPG 액·증기 분출로 작업자 동상·노출",
+        "증기운 점화 시 충전구역 화재·폭발",
+        "커플링 손상으로 지속 누출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "브레이크어웨이 커플링 및 잔압 배출 절차 적용",
+        "충전 완료·격리 확인 후 분리하는 작업 표준 수립",
+        "충전구역 가스감지·비상정지 설치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-037",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "방출·과압보호",
+      "deviation": "과압 발생 시 설계된 릴리프 경로가 아닌 취약부 파손으로 LPG가 방출됨",
+      "causes": [
+        "기존 안전장치(안전밸브·릴리프 경로)가 없어 과압 시 방출구 부재",
+        "외부 화재·과충전·조성 이탈로 과압 발생",
+        "과압이 가장 약한 연결부·실로 집중"
+      ],
+      "consequences": [
+        "릴리프 경로 부재로 탱크·배관 파열(BLEVE 포함) 가능",
+        "대량 LPG 순간 방출로 증기운 폭발 및 다수 사망",
+        "인접 설비·항만 영향 확대"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "저장탱크·배관 안전밸브 및 안전한 방출 경로 설치",
+        "화재 대비 살수·냉각 설비 및 긴급차단 체계 구축",
+        "과충전 방지 인터록 적용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-038",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "유량",
+      "deviation": "충전 펌프·공급 배관을 통해 이송되는 LPG가 설계 조성(프로판·부탄 혼합비)의 일부만 흐르거나, 기액 혼상 중 일부 성분만 선택적으로 이송되어 의도한 전량이 전달되지 않는 상태",
+      "causes": [
+        "저장탱크 내 프로판·부탄 성분 분리로 경질 성분만 우선 펌프 흡입",
+        "펌프 입구 부분 플래싱으로 액 일부만 이송",
+        "공급 배관 분기부 부분 폐색으로 유량 일부만 전달"
+      ],
+      "consequences": [
+        "충전 차량에 설계 조성과 다른 LPG가 공급되어 하류 연소기기 이상·불완전연소 위험",
+        "펌프 유량 저하로 캐비테이션·과열 및 실(seal) 손상에 의한 LPG 누출",
+        "누출 LPG 체류 시 증기운 형성 및 점화 시 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "펌프 흡입측 조성·유량 모니터링 및 저유량 보호(흐름 저하 시 펌프 트립) 도입",
+        "충전 배관 주기 점검으로 부분 폐색 조기 발견",
+        "펌프 입구 과냉 확보(흡입 두 유지) 설계 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-039",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "압력",
+      "deviation": "탱크·배관·펌프 토출부 압력이 설계 운전압의 일부만 형성되어 계통 일부 구간에서만 정상 가압되고 다른 구간은 저압이 되는 불균일 압력 상태",
+      "causes": [
+        "펌프 부분 성능 저하로 토출압이 설계치의 일부만 형성",
+        "배관 분기부 부분 폐색으로 하류 일부 구간 압력 저하",
+        "저장탱크 증기압 저하로 흡입 압력 일부만 공급"
+      ],
+      "consequences": [
+        "일부 구간 저압으로 LPG 플래싱·기화 발생 및 펌프 캐비테이션",
+        "펌프 과열·실 손상으로 LPG 누출",
+        "누출 증기운 점화 시 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "펌프 토출압 지시·저압 경보 설치",
+        "계통 구간별 압력 모니터링 및 운전범위 관리",
+        "펌프 보호용 저압/저유량 트립 로직 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-040",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "준위",
+      "deviation": "저장탱크로의 충전이 설계 충전 목표의 일부만 달성되거나, 다수 탱크 중 일부 탱크에만 편중 충전되어 의도한 분배 준위가 형성되지 않는 상태",
+      "causes": [
+        "충전 라인 분기 밸브 일부 오개방으로 특정 탱크에만 유입",
+        "준위 지시 오류로 일부 탱크만 선택 충전",
+        "펌프 유량 부족으로 목표 준위까지 도달 못함"
+      ],
+      "consequences": [
+        "특정 탱크 편중 충전 시 해당 탱크 과충전·액팽창 공간 상실 위험",
+        "준위 관리 혼선으로 운전원 과충전 오판 및 방출",
+        "방출된 LPG 증기운 점화 시 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "각 탱크 독립 준위 지시 및 고준위 경보 설치",
+        "탱크별 충전 분배 절차 및 밸브 정렬 점검 체크리스트 운영",
+        "고고준위 자동 충전 차단 인터록 도입 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-041",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "상(phase)",
+      "deviation": "펌프 입구·공급 배관에서 LPG가 액상 단일상이 아니라 액과 증기가 혼재한 기액 2상으로 흘러 설계 액상 운전이 부분적으로만 달성되는 상태",
+      "causes": [
+        "펌프 흡입 두 부족으로 입구 플래싱",
+        "흡입 배관 과열(일사·단열 부족)로 부분 기화",
+        "저장탱크 저압 시 흡입 LPG 일부 증발"
+      ],
+      "consequences": [
+        "펌프 캐비테이션·공회전으로 펌프 손상 및 실 누출",
+        "충전 유량 불안정 및 계량 오차",
+        "누출 LPG 증기운 점화 시 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "펌프 흡입 두(NPSH) 여유 확보 설계 검토",
+        "흡입 배관 단열·차양 설치로 입열 저감",
+        "펌프 저유량/캐비테이션 보호 트립 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-042",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "기동정지",
+      "deviation": "충전 펌프 기동·정지 시 계통의 일부 밸브만 정렬·개방된 상태에서 기동되어 설계 기동 순서의 일부만 수행되는 과도 상태",
+      "causes": [
+        "기동 전 흡입·토출 밸브 일부 미개방",
+        "충전 커플링 연결 전 펌프 선기동",
+        "정지 시 일부 구간만 격리되어 잔압 갇힘"
+      ],
+      "consequences": [
+        "데드헤드 운전·수격으로 배관·펌프 손상 및 누출",
+        "잔압 갇힌 구간 열팽창 과압",
+        "누출 LPG 점화 시 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "기동·정지 밸브 정렬 체크리스트 및 순서 인터록 도입",
+        "펌프 토출측 최소유량 바이패스 설치 검토",
+        "갇힌 구간 열팽창 보호(릴리프) 설치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-043",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "유지보수",
+      "deviation": "펌프·배관 정비 시 계통 격리·배출이 일부만 수행되어 잔류 LPG가 남은 상태에서 개방되는 상태",
+      "causes": [
+        "격리 밸브 일부만 차단(단일 격리)",
+        "퍼지·배출 절차 일부 생략으로 잔류 LPG 존재",
+        "잔압 확인 없이 플랜지 개방"
+      ],
+      "consequences": [
+        "정비 중 잔류 LPG 분출·작업자 직접 노출 및 동상·화상",
+        "체류 증기운 점화 시 화재·폭발",
+        "작업자 사상"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이중 격리·블라인드 삽입 및 퍼지 완료 확인 절차 수립",
+        "개방 전 잔압·가스농도 측정 의무화",
+        "LPG 작업허가(PTW) 및 격리 검증 체계 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-044",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "누출·기밀",
+      "deviation": "플랜지·펌프 실·커플링 연결부의 기밀이 부분적으로 상실되어 계통 완결성이 일부만 유지되는 미소 연속 누출 상태",
+      "causes": [
+        "펌프 기계실 마모로 부분 누출",
+        "플랜지 가스켓 열화·조임 불량",
+        "충전 커플링 실링 손상"
+      ],
+      "consequences": [
+        "LPG 액/증기 지속 누출로 증기운 형성",
+        "점화원 접촉 시 화재·폭발",
+        "작업자·인근 노출 및 사상"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "가스 검지기 및 가스 누출 경보 설치",
+        "펌프 실 상태 모니터링 및 플랜지 주기 점검",
+        "누출 조기차단 긴급차단밸브(ESD) 설치 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-045",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "충전 작업",
+      "deviation": "차량 충전 커플링 연결·분리 절차가 일부만 수행되어 불완전 체결 또는 잔압 미해소 상태로 충전/분리가 진행되는 상태",
+      "causes": [
+        "커플링 불완전 체결 상태에서 충전 개시",
+        "분리 전 배관 잔압·배출 절차 일부 생략",
+        "충전 차단 미완료 상태에서 호스 분리"
+      ],
+      "consequences": [
+        "체결 불량부·분리 시점 LPG 액 분출로 작업자 직접 노출",
+        "체류 증기운 점화 시 화재·폭발",
+        "작업자 사상"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "체결 확인·순서 준수 충전 절차 및 교육 강화",
+        "브레이크어웨이 커플링·충전 완료 차단 인터록 도입",
+        "충전 구역 가스검지 및 점화원 관리"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-046",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "방출·과압보호",
+      "deviation": "저장탱크 과압 시 릴리프 보호 경로가 일부만 작동하거나 일부 설비에만 존재하여 설계 과압보호 의도가 부분적으로만 달성되는 상태",
+      "causes": [
+        "기존 안전장치 부재로 과압보호 경로 자체 미비",
+        "일부 탱크에만 방출 경로가 있고 다른 탱크는 보호 없음",
+        "방출 경로 일부 폐색·차단"
+      ],
+      "consequences": [
+        "탱크 과압 미해소로 용기 변형·파열",
+        "대량 LPG 방출 및 증기운/BLEVE",
+        "다수 사상 및 인접 설비 영향"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "모든 저장탱크·갇힘 구간에 안전밸브 설치 및 방출계통 구성",
+        "방출 경로 상시 개방 확인 및 차단밸브 봉인 관리",
+        "과압보호 용량 적정성 평가 수행"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-047",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "유량",
+      "deviation": "설계 의도인 LPG 액 이송에 더해 증기(기상) 성분이 함께 유입되어 액+기 2상 유동이 배관·펌프를 통과한다",
+      "causes": [
+        "펌프 입구에서 액 플래싱 발생으로 기상이 동반됨",
+        "탱크 저준위 상태에서 흡입구로 기상 혼입",
+        "배관 상부 고점에 잔류한 증기 포켓이 유동과 함께 밀려 나감"
+      ],
+      "consequences": [
+        "펌프 캐비테이션으로 임펠러·실 손상 및 토출 맥동",
+        "2상 유동으로 충전 계량 오차 및 충전량 부정확",
+        "펌프 실 손상 시 LPG 누출→가연성 증기운 형성·화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "펌프 입구 서브쿨링 확보를 위한 탱크 최소 운전준위 설정",
+        "펌프 흡입측 기상 벤트/가스 방출 라인 검토",
+        "저준위 인터록으로 펌프 자동 정지"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-048",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "압력",
+      "deviation": "정상 운전압에 더해 펌프 토출 맥동·수격에 의한 추가 압력 파동이 배관·플랜지에 중첩된다",
+      "causes": [
+        "충전 밸브 급폐로 인한 수격",
+        "펌프 기동 시 체절운전에 따른 토출압 상승 중첩",
+        "2상 유동에 기인한 토출 맥동"
+      ],
+      "consequences": [
+        "플랜지·배관 연결부 피로·누출",
+        "안전장치 부재로 과도압 해소 경로 없이 배관 손상 진전",
+        "LPG 누출→증기운 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "충전 라인 서지 완화(완폐밸브·서지 흡수) 검토",
+        "펌프 토출측 릴리프/바이패스 설치",
+        "토출압 고압 경보 및 인터록 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-049",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "온도",
+      "deviation": "정상 저장 온도에 더해 외부 화재·일사로 인한 추가 입열이 저장 LPG에 가해진다",
+      "causes": [
+        "인접 설비 화재로 인한 탱크 외벽 복사·전도 입열",
+        "강한 일사에 의한 탱크 표면 온도 상승",
+        "단열/살수 설비 부재"
+      ],
+      "consequences": [
+        "증기압 상승으로 저장탱크 과압",
+        "안전장치 부재로 릴리프 경로 없이 탱크 변형·파열 진전(BLEVE 위험)",
+        "대량 LPG 방출로 선외·항만까지 영향 확대 가능"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "탱크 수냉살수 설비 설치",
+        "화재감지 및 긴급차단(ESD) 체계 도입",
+        "압력안전밸브 설치로 과압 해소 경로 확보"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-050",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "준위",
+      "deviation": "설계 충전준위에 더해 추가 액이 유입되어 과충전 상태가 된다",
+      "causes": [
+        "준위 지시·고준위 경보 부재로 충전 종료 시점 오판",
+        "충전 중 감시 소홀",
+        "온도 변화에 따른 액팽창 여유 미확보 상태에서 충전 지속"
+      ],
+      "consequences": [
+        "액팽창 공간 상실로 열팽창 시 액만수 과압",
+        "안전장치 부재로 과압 해소 불가→배관·탱크 손상",
+        "LPG 액 방출로 증기운 형성·화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "고준위 경보 및 고고준위 충전 차단 인터록 설치",
+        "독립 준위 지시계 이중화",
+        "최대 허용 충전율 기준 수립 및 운전 절차화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-051",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "상(phase)",
+      "deviation": "액상 운전에 더해 기상(증기)이 함께 존재하여 배관·펌프 내 2상 혼재가 발생한다",
+      "causes": [
+        "펌프 입구 압력 저하로 플래싱",
+        "흡입 배관 고점 증기 축적",
+        "주위 입열로 배관 내 국부 기화"
+      ],
+      "consequences": [
+        "펌프 캐비테이션·실 손상",
+        "충전 계량 오차 및 하역 지연",
+        "실 누출 시 LPG 증기 누출·화재"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "흡입측 서브쿨링 확보 및 배관 경사·벤트 설계",
+        "펌프 흡입압 저압 경보",
+        "기상 벤트 회수 라인 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-052",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "기동정지",
+      "deviation": "정상 기동/정지 절차에 더해 압력·유량 충격이 동반되어 과도상태가 발생한다",
+      "causes": [
+        "펌프 급기동/급정지",
+        "토출밸브 폐쇄 상태 기동(체절)",
+        "충전 커플링 연결 전 라인 가압 상태에서의 기동"
+      ],
+      "consequences": [
+        "수격·맥동으로 배관·플랜지 손상",
+        "펌프 과열·실 손상으로 누출",
+        "LPG 누출→증기운 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "기동/정지 순서 절차화(밸브 정렬 확인)",
+        "펌프 미니멈플로우 바이패스 설치",
+        "저유량/체절 보호 인터록"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-053",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "유지보수",
+      "deviation": "정비 작업에 더해 격리·배출되지 않은 잔류 LPG가 함께 존재하는 상태에서 개방이 이루어진다",
+      "causes": [
+        "펌프·배관 격리 밸브 불완전 차단",
+        "잔류 LPG 배출(드레인·퍼지) 절차 미비",
+        "격리 확인 수단 부재"
+      ],
+      "consequences": [
+        "개방 작업 중 잔류 LPG 누출→작업자 노출",
+        "점화원 존재 시 화재·폭발",
+        "정비 인원 동결·화상·질식 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이중 차단 및 블라인드 삽입(격리) 절차 수립",
+        "드레인·불활성 퍼지 후 가스농도 측정 의무화",
+        "작업허가(PTW) 및 LOTO 체계 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-054",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "누출·기밀",
+      "deviation": "정상 밀폐 운전에 더해 플랜지·펌프 실·연결부를 통한 미소 누출이 추가로 발생한다",
+      "causes": [
+        "펌프 기계실 마모·열화",
+        "플랜지 가스켓 열화·체결 이완",
+        "충전 커플링 연결부 실링 불량"
+      ],
+      "consequences": [
+        "LPG 증기 누출로 바닥 근처 가연성 증기운 체류",
+        "점화 시 화재·폭발",
+        "안전장치·가스감지 부재로 조기 인지 지연에 따른 피해 확대"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 4,
+      "risk_score": 16,
+      "recommendations": [
+        "가연성 가스 감지기 및 경보 설치",
+        "저누출형 펌프 실/이중 실 적용",
+        "정기 기밀 점검 및 누출 모니터링"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-055",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "충전 작업",
+      "deviation": "정상 충전 절차에 더해 커플링 연결/분리 과정에서 잔류 LPG 방출·조기 분리가 함께 발생한다",
+      "causes": [
+        "충전 완료 전 커플링 조기 분리",
+        "연결부 잔압 미해소 상태 분리",
+        "차량 미고정·오접속 등 인적 오류"
+      ],
+      "consequences": [
+        "분리 시점 LPG 액/증기 분출로 작업자 노출·동상",
+        "증기운 형성 및 점화 시 화재·폭발",
+        "브레이크어웨이/긴급분리 부재로 차량 이탈 시 배관 파단"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 4,
+      "risk_score": 16,
+      "recommendations": [
+        "브레이크어웨이 커플링 및 긴급차단밸브 설치",
+        "충전 전 차량 고정·접지 확인 절차",
+        "잔압 해소 후 분리 절차 및 교육"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i2-056",
+      "node": "I2",
+      "node_meta": {
+        "node": "I2",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "불릿형 저장탱크",
+          "구형 저장탱크",
+          "LPG 충전 펌프",
+          "충전기 공급 배관"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "방출·과압보호",
+      "deviation": "정상 저장 상태에 더해 과압 상황이 발생해도 릴리프 경로가 없어 과압이 설비에 축적된다",
+      "causes": [
+        "압력안전밸브 등 과압보호장치 부재",
+        "화재·일사·과충전으로 증기압 상승이 중첩됨",
+        "과압 해소 벤트 경로 없음"
+      ],
+      "consequences": [
+        "탱크·배관 과압으로 변형·파열",
+        "대량 LPG 급속 방출(BLEVE 포함)로 대형 화재·폭발",
+        "선외·항만 및 인접선까지 영향 확대"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "탱크·배관 압력안전밸브 설치 및 안전 방출 경로 확보",
+        "열팽창 구간 릴리프(배관 블록 구간) 설치",
+        "과압보호 체계 전반의 설계 적정성 검토(설계 재검토)"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    }
+  ]
+}

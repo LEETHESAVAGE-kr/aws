@@ -1,0 +1,2757 @@
+{
+  "schema_version": 1,
+  "source": "live",
+  "captured_at": "2026-10-08T13:16:31+00:00",
+  "node": "I4",
+  "split": "external",
+  "provider": "anthropic",
+  "model_id": "claude-opus-4-8",
+  "node_meta": {
+    "node": "I4",
+    "substance": "LPG(프로판·부탄)",
+    "phase": "liquid/gas",
+    "P_kPag": null,
+    "T_degC": null,
+    "equipment": [
+      "회수 용기",
+      "회수 압축기",
+      "구형 저장탱크",
+      "불릿형 저장탱크"
+    ],
+    "safeguards": []
+  },
+  "latency_s": 135.1,
+  "cost_usd": 0.7172,
+  "expected_cells": 70,
+  "judged_cells": 70,
+  "review_guidewords": [],
+  "recall": {
+    "recall": 1.0,
+    "matched": 11,
+    "total": 11
+  },
+  "parameters": [
+    "유량",
+    "압력",
+    "온도",
+    "준위",
+    "조성",
+    "상(phase)",
+    "기동정지",
+    "용기 기밀건전성",
+    "압력방호 부재",
+    "유지보수"
+  ],
+  "max_tokens": 16384,
+  "parallel_calls": 4,
+  "raw_calls": [
+    {
+      "tokens_out": 795,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3285,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3566,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3736,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3361,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 4098,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3730,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 4257,
+      "stop_reason": "tool_use"
+    }
+  ],
+  "truncated_calls": 0,
+  "records": [
+    {
+      "id": "i4-001",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "유량",
+      "deviation": "회수 압축기–저장탱크 이송 경로에서 LPG 흐름이 전혀 형성되지 않아 회수가 중단된다",
+      "causes": [
+        "압축기 트립 또는 미기동",
+        "이송 라인 밸브 전폐 또는 차단밸브 오조작",
+        "흡입측 막힘·필터 폐색",
+        "라인 내 하이드레이트·동결로 유로 폐쇄"
+      ],
+      "consequences": [
+        "회수 용기측 LPG 적체로 압력 상승 및 방출 위험",
+        "압축기 무유량 운전에 따른 과열·베어링 손상",
+        "회수 불능으로 LPG가 다른 경로로 방산되어 가연성 증기운 형성 가능"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "압축기 토출측 저유량 검출 및 자동 트립 인터록 설치",
+        "이송 라인 주요 밸브 개폐상태 표시 및 운전원 확인 절차 수립",
+        "무유량 보호(최소유량 바이패스) 설치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-002",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "압력",
+      "deviation": "압축기 토출 및 저장탱크 계통에서 설계 압력이 전혀 유지되지 않아 가압 기능이 상실된다",
+      "causes": [
+        "압축기 정지 또는 토출밸브 폐쇄",
+        "대형 누출로 계통 압력 급강하",
+        "흡입측 기밀 상실로 승압 불능"
+      ],
+      "consequences": [
+        "계통 저압화로 외부 공기 혼입 시 탱크 내 가연성 혼합기 형성",
+        "LPG 이송 정지로 회수 공정 전면 중단",
+        "급격한 압력 상실이 누출을 동반할 경우 대량 가연성 증기 확산"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "계통 저압 경보 및 압축기 흡입 저압 트립 설치",
+        "탱크 저압 시 공기 혼입 방지를 위한 불활성 패드가스 공급 검토",
+        "압력 지시·기록계 설치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-003",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "준위",
+      "deviation": "저장탱크 또는 회수 용기에 액 준위가 전혀 형성되지 않아(공탱크) 흡입 액원이 없다",
+      "causes": [
+        "저장탱크 완전 배출 상태에서 압축기 흡입",
+        "준위 지시 오류로 공탱크 인지 실패",
+        "상류 공급 중단"
+      ],
+      "consequences": [
+        "압축기 액 흡입 불가로 가스만 흡입되어 캐비테이션·건식 운전 손상",
+        "펌프/압축기 과열 및 기계적 파손",
+        "손상부 누출 시 가연성 LPG 방출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "탱크·용기 저준위 경보 및 압축기 저준위 트립 인터록 설치",
+        "준위계 이중화 및 정기 교정",
+        "흡입측 저준위 차단밸브 설치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-004",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "기동정지",
+      "deviation": "회수 압축기의 기동 또는 정지 시퀀스가 전혀 수행되지 않아 간헐 운전 전환이 성립하지 않는다",
+      "causes": [
+        "기동 인터록 미충족 또는 제어 로직 실패",
+        "운전원의 시퀀스 미실행",
+        "전원 상실로 정지 시퀀스 미이행"
+      ],
+      "consequences": [
+        "정지 시퀀스 미실행 시 잔류 가압 상태로 격리되어 후속 과압·누출 위험",
+        "기동 불능으로 회수 LPG 적체 및 방산",
+        "비정상 정지 시 서지·역류로 설비 손상"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "정상·비상 정지 시퀀스 자동화 및 체크리스트 수립",
+        "전원 상실 시 안전측 정지(fail-safe) 설계",
+        "기동 전 인터록 조건 명문화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-005",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "용기 기밀건전성",
+      "deviation": "저장탱크·용기·연결부의 기밀이 전혀 유지되지 않아 LPG가 대기로 직접 누출된다",
+      "causes": [
+        "연결부 가스켓·플랜지 열화 및 체결 불량",
+        "부식·피로에 의한 모재 균열",
+        "밸브 스템·실 누설",
+        "안전장치 부재로 조기 검출 수단 없음"
+      ],
+      "consequences": [
+        "가연성 LPG 증기운 형성 및 점화 시 증기운 폭발·화재",
+        "저지대 체류 가스에 의한 질식·중독",
+        "다수 인명 피해 및 인접 설비 파급"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "가연성 가스 검지기 및 경보 설치",
+        "주요 연결부 정기 기밀시험 및 누출 점검 절차 수립",
+        "비상차단밸브(ESD) 및 긴급 격리 체계 구축"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-006",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "압력방호 부재",
+      "deviation": "과압 방출·릴리프 경로가 전혀 존재하지 않아 압력 방호 기능이 완전히 상실된 상태다",
+      "causes": [
+        "저장탱크·용기에 안전밸브·릴리프 장치 미설치",
+        "방출 헤더·플레어 연결 경로 부재",
+        "기존 안전장치 전무"
+      ],
+      "consequences": [
+        "외기 가열·과충전·압축열에 의한 과압 발생 시 완화 수단 없이 용기 파열",
+        "구형·불릿 탱크 파열에 따른 BLEVE 및 대량 LPG 방출",
+        "다수 사망 및 항만·인접선 영향"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "모든 압력용기·탱크에 안전밸브 설치 및 용량 검증",
+        "안전밸브 방출물의 안전 처리 경로(플레어·벤트) 확보",
+        "과압 보호 설계 전반 재검토 및 즉시 보완"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-007",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "유지보수",
+      "deviation": "정비·개방 작업 시 잔류 LPG 격리·치환 절차가 전혀 수행되지 않은 채 설비가 개방된다",
+      "causes": [
+        "격리(LOTO)·퍼지 절차 미수립 또는 미이행",
+        "치환 확인(가스농도 측정) 생략",
+        "안전장치 부재로 잔류압 확인 수단 없음"
+      ],
+      "consequences": [
+        "개방부에서 잔류 LPG 분출로 작업자 직접 노출 및 화재·폭발",
+        "가연성 증기 체류에 의한 점화원 접촉 시 화재",
+        "작업자 다수 피해"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "정비 전 격리·감압·불활성 퍼지·가스농도 측정을 포함한 작업허가 절차 수립",
+        "개방 전 잔류압·잔류가스 확인 체크리스트 의무화",
+        "퍼지용 불활성가스 공급 설비 마련"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-008",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "유량",
+      "deviation": "회수 압축기에서 저장탱크로의 LPG 이송유량이 설계치를 초과하여 과대 유입된다",
+      "causes": [
+        "압축기 토출 과대 운전 또는 용량제어 실패",
+        "이송라인 밸브 전개 상태에서의 급속 이송",
+        "하류 탱크 압력 저하로 인한 유량 급증"
+      ],
+      "consequences": [
+        "저장탱크 급속 충전으로 액면 급상승 및 과충전 진행",
+        "탱크 내 증기 압축에 의한 과압 전개",
+        "유속 과대로 배관 진동·침식 및 연결부 피로 손상 후 LPG 누출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송라인 유량계 및 고유량 경보 설치",
+        "압축기 용량제어 및 탱크 준위 연동 정지 로직 구성"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-009",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "압력",
+      "deviation": "압축기 토출 및 저장탱크 내압이 설계압을 초과하여 과압 상태가 된다",
+      "causes": [
+        "압축기 토출측 차단밸브 폐쇄 상태에서의 가압(데드헤드)",
+        "외기 가열로 인한 LPG 증기압 상승",
+        "과충전에 따른 증기공간 축소"
+      ],
+      "consequences": [
+        "안전장치가 없는 조건에서 용기·탱크 과압 파열",
+        "대량 LPG 순간 방출에 의한 증기운 형성 및 BLEVE 위험",
+        "구형·불릿 저장탱크 손상 및 선외 영향"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "각 용기·탱크에 안전밸브 및 릴리프 경로 설치",
+        "압축기 토출 고압 경보 및 자동 정지 인터록 구성",
+        "토출라인 차단밸브 폐쇄 감지 연동"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-010",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "온도",
+      "deviation": "외기 가열 및 압축열로 LPG 온도가 상승하여 증기압이 과도하게 높아진다",
+      "causes": [
+        "하절기 외기 복사열에 의한 저장탱크 가열",
+        "압축기 다단 압축열 축적 및 냉각 부족",
+        "직사광 노출 구형·불릿 탱크 표면 온도 상승"
+      ],
+      "consequences": [
+        "증기압 상승에 의한 탱크 내압 과압",
+        "안전장치 부재로 과압이 파열로 직결",
+        "액 열팽창에 의한 과충전 탱크 액압 급상승"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "저장탱크 외부 살수냉각 또는 차양 설비 설치",
+        "탱크·압축기 토출 온도계 및 고온 경보 설치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-011",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "준위",
+      "deviation": "구형·불릿 저장탱크의 액 충전율이 허용치를 초과하여 과충전된다",
+      "causes": [
+        "회수 이송 지속 중 준위 감시 실패",
+        "유량 과대에 의한 급속 충전",
+        "고준위 차단수단 부재"
+      ],
+      "consequences": [
+        "증기공간 상실로 액 열팽창 시 액만수 과압",
+        "안전장치 부재로 탱크 과압 파열 및 LPG 대량 방출",
+        "증기운 형성 및 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "독립 고고준위 경보 및 이송 자동차단 설치",
+        "최대 허용 충전율 관리 및 준위 이중 측정"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-012",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "조성",
+      "deviation": "비응축 가스 또는 부탄 대비 프로판 비율이 과다하여 증기압이 설계 기준보다 높아진다",
+      "causes": [
+        "회수원에서 프로판 함량 또는 비응축 가스 혼입 증가",
+        "조성 분석 없이 혼합비 변동 수용"
+      ],
+      "consequences": [
+        "탱크 운전 증기압 상승으로 설계압 초과",
+        "안전장치 부재 조건에서 과압 위험 증대",
+        "압축기 토출압 상승 및 효율 저하"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "회수 LPG 조성 모니터링 및 비응축 가스 벤트 관리",
+        "증기압 기준 탱크 운전범위 설정"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-013",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "상(phase)",
+      "deviation": "회수 용기에서 액상 비율이 과다하여 압축기로 액동반(liquid carryover)이 증가한다",
+      "causes": [
+        "회수 용기 기액분리 성능 부족",
+        "과대 유입으로 분리기 액면 상승",
+        "저온 응축으로 액상 증가"
+      ],
+      "consequences": [
+        "압축기 액압축에 의한 밸브·실린더 손상",
+        "압축기 케이싱 파손 및 LPG 누출",
+        "진동 증가로 연결부 피로 손상"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "압축기 입구 녹아웃드럼 및 고액면 트립 설치",
+        "액동반 방지용 흡입측 액면 감시"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-014",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "기동정지",
+      "deviation": "회수 압축기 기동 과도상태에서 토출압·서지가 과도하게 급상승한다",
+      "causes": [
+        "토출라인 차단 상태에서의 기동",
+        "간헐 운전 반복에 따른 압력 급변",
+        "기동 시퀀스 미흡"
+      ],
+      "consequences": [
+        "급격한 압력 상승으로 배관·연결부 충격 손상",
+        "서지에 의한 압축기 및 하류 설비 손상",
+        "안전장치 부재로 과압 방출 경로 없음"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "기동 전 토출라인 개방 확인 인터록",
+        "안티서지 또는 리사이클 경로 구성 및 기동절차 표준화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-015",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "용기 기밀건전성",
+      "deviation": "운전압 상승으로 연결부·실링을 통한 LPG 누출량이 증가한다",
+      "causes": [
+        "과압·과온에 따른 연결부 응력 증가",
+        "진동 반복에 의한 가스켓·플랜지 이완",
+        "안전장치 부재로 과압 지속 노출"
+      ],
+      "consequences": [
+        "가연성 LPG 증기운 형성 및 확산",
+        "점화원 접촉 시 화재·폭발",
+        "선외 영향 및 다수 인명 피해"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "가스감지기 및 긴급차단밸브 설치",
+        "플랜지·연결부 정기 기밀점검 및 토크 관리"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-016",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "압력방호 부재",
+      "deviation": "과압 방출·릴리프 경로가 전무하여 과압 발생 시 방호 여유가 전혀 없다",
+      "causes": [
+        "안전밸브·릴리프 경로 미설치",
+        "과압 방출 설계 자체 부재"
+      ],
+      "consequences": [
+        "유량·압력·온도·준위 어느 원인의 과압이든 직접 용기 파열로 전개",
+        "LPG 대량 방출 및 BLEVE",
+        "항만·인접선 영향의 대형 재해"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "모든 용기·탱크에 안전밸브 설치 및 안전한 방출경로(플레어/벤트) 구성",
+        "과압 방호 체계 전반 설계 수립 및 검증"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-017",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "유지보수",
+      "deviation": "정비·개방 작업 전 잔류 LPG 격리·치환이 불충분하여 잔류량이 과다한 상태로 작업한다",
+      "causes": [
+        "퍼지·치환 절차 미흡 또는 생략",
+        "격리밸브 신뢰성 저하 및 잔압 확인 누락",
+        "압축기 개방 시 잔류 액 미배출"
+      ],
+      "consequences": [
+        "개방 시 잔류 LPG 분출 및 증기운 형성",
+        "작업자 노출 및 화재·폭발",
+        "밀폐공간 가연성 분위기 형성"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "정비 전 격리·배출·퍼지·가스검지 절차(LOTO) 수립",
+        "개방 전 잔압·가스농도 확인 체크리스트 운영"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-018",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "유량",
+      "deviation": "회수 압축기와 저장탱크 간 LPG 이송 유량이 설계치보다 감소하여 회수 처리량이 미달한다",
+      "causes": [
+        "흡입측 필터·스트레이너 막힘",
+        "밸브 부분 폐쇄 또는 고착",
+        "압축기 흡입 캐비테이션에 의한 토출 저하",
+        "배관 내 액체 베이퍼록으로 유효 단면 축소"
+      ],
+      "consequences": [
+        "회수되지 못한 LPG 증기가 회수 용기측에 적체되어 상류 압력 상승",
+        "회수 효율 저하로 LPG 증기 방산·국소 가연성 분위기 형성",
+        "압축기 저유량 운전으로 과열·손상"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "흡입측 차압 지시·경보 설치",
+        "최소유량 재순환(미니플로우) 라인 검토",
+        "유량 저하 시 압축기 자동 트립 로직 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-019",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "압력",
+      "deviation": "압축기 토출 또는 저장탱크 내 압력이 설계 증기압 평형보다 낮아진다",
+      "causes": [
+        "외기 저온으로 LPG 증기압 저하",
+        "흡입측 과도 인출로 탱크 저압화",
+        "압축기 흡입 부족·용량 미달"
+      ],
+      "consequences": [
+        "탱크 저압화로 대기압 이하 도달 시 외부 공기 혼입 가능성",
+        "공기 혼입 시 탱크 내 가연성 혼합기 형성 위험",
+        "압축기 흡입 저압에 의한 캐비테이션·효율 저하"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "저압 경보 및 진공 방지(브리더/질소 패드) 검토",
+        "흡입 저압 트립 설정",
+        "탱크 최소 운전압 관리 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-020",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "온도",
+      "deviation": "LPG 온도가 설계 운전온도보다 낮아져 증기압과 회수 거동이 저하된다",
+      "causes": [
+        "동절기 외기 저온",
+        "액 LPG 급속 증발에 의한 자기냉각(autorefrigeration)",
+        "저온 유입물 혼입"
+      ],
+      "consequences": [
+        "증기압 저하로 회수 압축기 흡입 부족·유량 감소",
+        "국부 저온으로 탄소강 재질 저온취성 위험",
+        "저온부 접촉 시 동상 등 인체 영향"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "저온 운전 한계 설정 및 저온 경보",
+        "저온취성 고려 재질·운전범위 확인",
+        "급속 감압 방지 운전 절차"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-021",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "준위",
+      "deviation": "구형·불릿 저장탱크의 액 준위가 정상보다 낮아진다(저준위)",
+      "causes": [
+        "과도 인출 또는 회수량 부족",
+        "준위 지시 오차로 인한 과도 배출",
+        "탱크 간 이송 불균형"
+      ],
+      "consequences": [
+        "저준위로 하류 펌프·압축기 흡입측 기상 유입 및 캐비테이션",
+        "흡입 유로로 가스 동반 시 압축기 손상",
+        "준위 과소로 액봉 상실·증기 유입 경로 형성"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "저준위 경보 및 인출 자동 차단 설치",
+        "준위계 이중화 검토",
+        "저준위 연동 흡입 차단 로직"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-022",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "조성",
+      "deviation": "프로판 대비 부탄 비율이 과소해지거나 경질분 비율이 변동하여 혼합 조성이 설계치보다 벗어난다",
+      "causes": [
+        "공급원 조성 변동",
+        "비응축 가스 혼입으로 유효 조성 희석",
+        "분리 불량으로 경질·중질 비율 변화"
+      ],
+      "consequences": [
+        "증기압 상승으로 탱크 운전압 초과 경향",
+        "회수 효율 저하 및 비응축분 적체",
+        "조성 기준 미달 제품 품질·후속 공정 영향"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 3,
+      "risk_score": 6,
+      "recommendations": [
+        "조성 분석·모니터링 주기 수립",
+        "비응축 가스 벤트·퍼지 경로 검토",
+        "조성 변동 시 운전조건 재설정 절차"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-023",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "상(phase)",
+      "deviation": "회수 압축기 흡입측에 기상 비율이 과다하고 액상 비율이 부족하여 기상 편중 흡입이 발생한다",
+      "causes": [
+        "저준위 운전으로 기상 유입",
+        "상류 플래시 과다로 액분 감소",
+        "기액 분리기 분리 불량"
+      ],
+      "consequences": [
+        "압축기 흡입 기상 과다로 토출 능력 변동·과열",
+        "불안정 운전으로 서지·진동 발생",
+        "회수 액 회수율 저하"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "흡입측 기액 분리기(녹아웃 드럼) 설치 검토",
+        "분리기 준위 연동 흡입 제어",
+        "기상 동반 감시 계측 추가"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-024",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "기동정지",
+      "deviation": "회수 압축기 기동·정지 과도상태에서 흡입 유량·압력이 설계 이하로 부족해진다",
+      "causes": [
+        "기동 초기 흡입 미확보",
+        "정지 시 유량 급감으로 역류·서지",
+        "간헐 운전 전환 과도구간 제어 미흡"
+      ],
+      "consequences": [
+        "저유량 과도상태에서 압축기 서지·손상",
+        "과도구간 압력 급변으로 연결부 피로·누출 유발",
+        "불완전 회수로 증기 방산"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 4,
+      "risk_score": 12,
+      "recommendations": [
+        "기동·정지 시퀀스 절차 표준화",
+        "안티서지 재순환 라인 검토",
+        "정지 시 역류 방지 체크밸브 점검 주기화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-025",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "용기 기밀건전성",
+      "deviation": "연결부·실(seal) 열화로 미세 누출이 발생하여 기밀 성능이 점진적으로 저하된다",
+      "causes": [
+        "가스켓·실 경화·열화",
+        "진동·반복 하중에 의한 플랜지 이완",
+        "부식·마모로 인한 밀봉면 손상"
+      ],
+      "consequences": [
+        "LPG 가연성 증기 누출로 증기운 형성",
+        "점화원 접촉 시 화재·폭발",
+        "안전장치 부재로 누출 조기 감지 불가"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "가연성 가스 검지기 설치",
+        "플랜지·실 정기 누설 점검 프로그램",
+        "압축기 실 모니터링 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-026",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "유지보수",
+      "deviation": "정비·개방 전 LPG 격리·퍼지 치환이 불충분하여 잔류 농도 저감이 미달한 상태로 작업한다",
+      "causes": [
+        "퍼지·치환 시간 부족",
+        "격리 밸브 불완전 차단으로 잔류 유입",
+        "불활성 치환 절차 미준수"
+      ],
+      "consequences": [
+        "개방부 잔류 LPG 방출로 가연성 분위기 형성",
+        "용접·화기 작업 시 화재·폭발",
+        "작업자 질식·중독 노출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "작업 전 가스 농도 측정·치환 기준 수립",
+        "격리(이중 차단·블라인드) 절차 표준화",
+        "퍼지 완료 확인 체크리스트 운용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-027",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "유량",
+      "deviation": "회수 압축기 정지 또는 토출압 저하 시 저장탱크 측 고압 LPG가 이송 경로를 거슬러 압축기·회수 용기 쪽으로 역류한다.",
+      "causes": [
+        "회수 압축기 정전·트립으로 토출압이 탱크 증기압보다 낮아짐",
+        "압축기 토출측 체크밸브 부재 또는 고착",
+        "저장탱크와 회수측 간 압력 역전"
+      ],
+      "consequences": [
+        "고압 LPG가 저압 회수 용기·압축기로 역류하여 과압·용기 파열",
+        "압축기 역회전 및 기계적 손상",
+        "역류 과압에 의한 연결부 파손으로 가연성 증기운 누출·화재폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "압축기 토출측 체크밸브 설치 및 주기 점검",
+        "압축기 정지 시 자동 격리밸브 연동",
+        "역류 감지 가능한 차압·유량 모니터링 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-028",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "압력",
+      "deviation": "저장탱크 증기압이 압축기 토출압을 상회하여 압력이 역방향으로 작용, 저압측 설비가 설계압 초과 상태가 된다.",
+      "causes": [
+        "압축기 정지 중 외기 가열로 탱크 증기압 상승",
+        "토출측 역압 차단 수단 부재",
+        "회수 용기와 탱크 간 압력 평형 붕괴"
+      ],
+      "consequences": [
+        "저압 설계된 회수 용기·압축기 흡입측 과압 파손",
+        "밀봉부·플랜지 손상에 의한 LPG 누출",
+        "가연성 증기 확산 및 점화 시 폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "흡입측·회수 용기 과압 방출장치 설치",
+        "역압 차단용 체크밸브 및 압력 인터록 적용",
+        "압력 모니터링·경보 구축"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-029",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "상(phase)",
+      "deviation": "역류 발생 시 저장탱크의 액상 LPG가 가스를 다루도록 설계된 압축기 흡입·회수 용기로 거꾸로 밀려 들어온다.",
+      "causes": [
+        "압축기 정지 중 탱크 액상이 역방향 유동",
+        "토출측 체크밸브 미작동으로 액 역류 허용",
+        "탱크-회수측 압력 역전으로 액 이동"
+      ],
+      "consequences": [
+        "압축기 내 액동반(liquid slugging)에 의한 밸브·실린더 파손",
+        "비압축성 액 유입으로 수격·용기 손상",
+        "손상부 누출을 통한 LPG 증기운 형성·화재폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "흡입측 녹아웃 드럼(기액분리기) 설치",
+        "토출측 체크밸브 및 액면 감지 트립 연동",
+        "정지 시 흡입 라인 자동 격리"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-030",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "기동정지",
+      "deviation": "압축기 정지 과도상태에서 토출압이 급락하여 하류 고압 유체가 역류하는 서지·역방향 유동이 발생한다.",
+      "causes": [
+        "정지 시 토출압 급락과 하류 역압 차",
+        "체크밸브 응답 지연·고착",
+        "간헐 운전 특성상 기동정지 반복"
+      ],
+      "consequences": [
+        "압축기 역회전 및 서지로 인한 기계 손상",
+        "역류 과압에 의한 저압측 설비 파손·누출",
+        "LPG 누출로 화재폭발 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "정지 시퀀스에 토출 격리밸브 자동 폐쇄 연동",
+        "체크밸브 주기 점검 및 역회전 방지장치 적용",
+        "안티서지 운전 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-031",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "용기 기밀건전성",
+      "deviation": "역류·역압이 용기·연결부에 설계와 반대 방향 하중을 가해 기밀이 깨지고 LPG가 누출된다.",
+      "causes": [
+        "역류 과압으로 플랜지·실링부 역방향 하중 발생",
+        "안전장치 전무로 역압 완화 수단 부재",
+        "체크밸브 부재로 반복적 역압 피로"
+      ],
+      "consequences": [
+        "연결부 누출로 가연성 LPG 증기운 형성",
+        "점화 시 화재·증기운 폭발",
+        "선내·인접 설비로 피해 확산"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "역압 방지 체크밸브 및 과압 방출 경로 설치",
+        "플랜지·연결부 기밀 점검 주기화",
+        "가스 감지기 설치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-032",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "압력방호 부재",
+      "deviation": "릴리프 경로가 전무한 상태에서 역류로 발생한 과압이 방출되지 못하고 저압측 설비에 그대로 누적된다.",
+      "causes": [
+        "기존 안전장치 전무로 과압 방출 수단 없음",
+        "역류·역압 발생 시 완화 경로 부재",
+        "저압측 설비의 역압 내성 한계 초과"
+      ],
+      "consequences": [
+        "방출 불가 과압에 의한 용기·배관 파열",
+        "대량 LPG 순간 방출 및 증기운 폭발",
+        "다수 사상 및 항만·인접선 영향"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "모든 저압측 용기에 안전밸브·파열판 설치",
+        "역압을 안전 위치로 유도하는 방출 경로 구축",
+        "과압 경보 및 자동 격리 인터록 적용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-033",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "유지보수",
+      "deviation": "정비·개방 작업 중 격리 불완전으로 인접 가압 설비에서 LPG가 작업 구역으로 역류·역유입된다.",
+      "causes": [
+        "체크밸브 등 역류 차단 수단 부재로 단일 격리 의존",
+        "격리밸브 내부 누설로 가압 LPG 역유입",
+        "개방 전 치환·퍼지 절차 미흡"
+      ],
+      "consequences": [
+        "개방부로 LPG 역유입되어 작업자 노출·질식",
+        "개방 설비 내 가연성 혼합기 형성·점화 시 폭발",
+        "작업자 중상·사망"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이중 차단·블리드(double block & bleed) 적용",
+        "개방 전 불활성 퍼지 및 가스 농도 확인 절차 수립",
+        "정비 중 상류 가압 설비 물리적 격리·맹판 설치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-034",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "유량",
+      "deviation": "설계된 LPG 이송 유체와 다른 물질(물·슬러지·비응축 가스)이 이송 경로에 섞여 흐른다",
+      "causes": [
+        "회수 용기 내 수분·오일 등 이물질이 LPG와 함께 이송됨",
+        "전 작업 잔류 물질이 세정·퍼지 미비로 경로에 남음",
+        "다른 제품 라인과의 교차연결로 이종 물질 혼입"
+      ],
+      "consequences": [
+        "압축기에 이종 액 유입으로 수격·손상",
+        "탱크 내 오염물 축적으로 이송 성능 저하",
+        "LPG 순도 저하로 하류 품질·운전조건 이상"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "이송 전 라인 식별·교차연결 차단 확인 절차 수립",
+        "회수 용기 하부 드레인·수분 분리 설비 설치",
+        "이송 유체 샘플링·조성 확인 절차 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-035",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "압력",
+      "deviation": "계통에 LPG 증기가 아닌 다른 가스(공기·질소 등)가 존재하여 비정상 압력 거동을 보인다",
+      "causes": [
+        "저압 흡입부로 공기 혼입",
+        "퍼지용 질소가 과잉 잔류하여 분압 형성",
+        "비응축 가스가 계통에 축적"
+      ],
+      "consequences": [
+        "공기 혼입 시 LPG와 가연성 혼합기 형성 → 내부 폭발 위험",
+        "비응축 가스 축적으로 탱크 압력 왜곡·과압 오판",
+        "압축 효율 저하 및 토출 압력 불안정"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "계통 산소농도·비응축가스 모니터링 도입",
+        "흡입측 저압 알람 및 공기유입 방지 설계",
+        "비응축 가스 배출(벤트) 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-036",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "온도",
+      "deviation": "설계 온도와 다른 극저온·고온 유체가 계통에 유입되어 금속 건전성 또는 증기압이 비정상이 된다",
+      "causes": [
+        "저온 플래싱 LPG 유입으로 설계 미달 저온 노출",
+        "외부 열원·화재 노출로 비정상 고온 유체 유입",
+        "조성 변화에 따른 증기압·온도 거동 변화"
+      ],
+      "consequences": [
+        "저온 취성으로 재질 균열·파단 위험",
+        "고온으로 증기압 급상승 → 과압·파열",
+        "상변화 가속으로 계통 압력 불안정"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "저온 노출 가능 부위 저온용 재질 검토",
+        "외부 열원·화재 대비 차열·방류벽 검토",
+        "온도 모니터링 및 고온 알람 설치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-037",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "준위",
+      "deviation": "탱크 내 지시 준위가 실제 저장 물질(물층·이종 액)과 달라 오측된다",
+      "causes": [
+        "LPG 하부에 수분층 축적으로 실제 LPG 준위 오판",
+        "이종 액 혼입으로 밀도 변화에 의한 준위계 오차",
+        "비응축 가스로 액면 지시 왜곡"
+      ],
+      "consequences": [
+        "준위 오측으로 과충전 → 액팽창 과압 위험",
+        "수분층으로 저온 동결·부식 진행",
+        "펌프·압축기 흡입측 이종 액 유입으로 캐비테이션·손상"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "탱크 하부 수분 드레인 정기 점검",
+        "준위계 다중화 및 밀도보정 검토",
+        "과충전 방지 고준위 알람·인터록 설치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-038",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "조성",
+      "deviation": "설계 프로판·부탄 혼합비와 다른 조성(이종 탄화수소·비응축 가스 과다)이 계통에 존재한다",
+      "causes": [
+        "회수 용기별 조성 편차·오염 유입",
+        "비응축 가스(공기·질소) 혼입",
+        "프로판/부탄 비율 관리 실패"
+      ],
+      "consequences": [
+        "증기압 설계치 초과 → 과압 위험",
+        "회수 효율 저하 및 제품 규격 이탈",
+        "조성 변화로 탱크 운전조건 불일치"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "입고·회수 LPG 조성 분석 절차 도입",
+        "비응축 가스 배출 경로 마련",
+        "조성별 최대 충전·운전압력 기준 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-039",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "상(phase)",
+      "deviation": "압축기가 설계된 가스상이 아닌 액상을 흡입하거나, 액 이송부에 가스가 동반된다",
+      "causes": [
+        "회수 용기에서 액동반(liquid carryover) 발생",
+        "흡입측 녹아웃 드럼 미비로 액적 유입",
+        "저준위 운전 시 가스 흡입으로 캐비테이션"
+      ],
+      "consequences": [
+        "압축기 액압축으로 수격·밸브·로드 손상",
+        "기계 파손에 따른 LPG 누출·증기운 형성",
+        "가스 흡입으로 압축기 과열·효율 저하"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "흡입측 녹아웃 드럼 및 액면 트립 설치",
+        "액동반 감지 및 압축기 보호 인터록 도입",
+        "회수 용기 상분리 운전 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-040",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "기동정지",
+      "deviation": "기동·정지 과도 중 계통에 잔류 공기·퍼지 가스 등 설계 외 물질이 남은 상태로 운전된다",
+      "causes": [
+        "기동 전 공기 퍼지·치환 미완료",
+        "정지 중 역류로 이종 가스 유입",
+        "간헐 운전 반복으로 잔류 가스 축적"
+      ],
+      "consequences": [
+        "LPG와 공기 혼합으로 압축기 내부 폭발 위험",
+        "서지·역류로 기계 손상 및 누출",
+        "압력 급변으로 연결부 피로·누출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "기동 전 질소 치환·산소농도 확인 절차 수립",
+        "정지 시 역류방지 밸브 설치",
+        "안전 기동/정지 시퀀스 및 인터록 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-041",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "용기 기밀건전성",
+      "deviation": "용기 내에 설계 외 부식성·오염 물질이 혼입되어 재질 열화로 기밀이 상실된다",
+      "causes": [
+        "수분·황화합물 등 부식성 이종 물질 혼입",
+        "연결부·가스켓이 이종 유체로 열화",
+        "안전장치 부재로 이상 조건 조기 감지 불가"
+      ],
+      "consequences": [
+        "부식·열화로 연결부 누출 → 가연성 증기운 형성",
+        "증기운 점화 시 화재·폭발",
+        "누출 확대로 선내 다수 인명 피해"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 2,
+      "risk_score": 10,
+      "recommendations": [
+        "가스 감지기·누출 모니터링 설치",
+        "부식성 물질 제거 및 재질 적합성 검토",
+        "정기 기밀시험·연결부 점검 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-042",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "압력방호 부재",
+      "deviation": "방출경로가 없는 상태에서 설계 외 물질·상 혼입으로 비정상 과압이 발생해도 방호가 전무하다",
+      "causes": [
+        "릴리프·안전밸브 등 과압 방출경로 미설치",
+        "이종 물질·비응축 가스 혼입으로 예측 외 과압",
+        "방호 부재로 과압 방출 수단 없음"
+      ],
+      "consequences": [
+        "과압 시 용기 파열 → 대량 LPG 순간 방출",
+        "증기운 폭발(BLEVE 포함)로 선외·항만 영향",
+        "다수 사망 등 중대재해"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "모든 용기·탱크에 안전밸브·릴리프 경로 설치",
+        "방출물 안전 처리(플레어·벤트) 계통 마련",
+        "과압 방호 완결성 평가 및 정량평가(QRA) 수행"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-043",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "유지보수",
+      "deviation": "정비·개방 작업 시 치환 불량으로 설계 외 상태(잔류 LPG·공기 혼합)의 계통이 개방된다",
+      "causes": [
+        "잔류 LPG 격리·치환 절차 미비",
+        "퍼지·불활성화 불완전으로 가연성 혼합기 잔류",
+        "개방 전 가스농도 확인 누락"
+      ],
+      "consequences": [
+        "개방 중 LPG 방출·점화로 화재·폭발",
+        "작업자 질식·중독 노출",
+        "잔류 혼합기 점화로 다수 인명 피해"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "정비 전 격리·퍼지·치환 표준절차 수립",
+        "작업 전 가스·산소농도 측정 의무화",
+        "작업허가(PTW) 및 LOTO 절차 적용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-044",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "유량",
+      "deviation": "이송 LPG 중 일부 성분만 회수 경로로 흐르고 경질분(프로판)이 우선 이동하여 설계 혼합 유량의 일부만 탱크로 전달됨",
+      "causes": [
+        "압축기 흡입측 기액 분리 불완전으로 가스상 경질분만 선택 이송",
+        "병렬 이송라인 중 일부 밸브 부분 개도로 전체 유량의 일부만 통과",
+        "회수 용기 내 성분 편중으로 특정 성분만 우선 흡입"
+      ],
+      "consequences": [
+        "탱크 수용 조성 편중으로 저장탱크 증기압 상승 → 과압 경로",
+        "회수 효율 저하로 회수 용기측 잔류 LPG 누적 및 간접 방출 위험",
+        "부탄 잔류 농축으로 저온시 흡입 캐비테이션 가속"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이송 전후 조성·유량 모니터링 및 성분별 물질수지 확인",
+        "기액 분리기 효율 점검 및 흡입측 유량 밸런싱 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-045",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "압력",
+      "deviation": "압축기 토출압이 설계 평형압의 일부에만 도달하여 일부 성분만 승압·응축되고 나머지는 미응축으로 잔류",
+      "causes": [
+        "압축기 단수·용량 저하로 목표 토출압의 일부만 형성",
+        "경질·중질 성분 혼재로 부분 응축만 발생하는 중간 압력 유지"
+      ],
+      "consequences": [
+        "미응축 가스가 탱크 기상부에 누적되어 탱크 내압 상승",
+        "불완전 회수로 회수 용기측 잔압 증가 및 누출 구동력 증가"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "압축기 토출압 설계치 대비 감시 및 저토출압 경보 설치",
+        "비응축 가스 벤트·재순환 경로 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-046",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "온도",
+      "deviation": "혼합 LPG 중 일부 성분만 응축 온도에 도달하고 나머지 성분은 기상으로 잔류하는 부분 응축 상태",
+      "causes": [
+        "압축열 또는 외기 가열로 토출 온도가 부분적으로만 냉각됨",
+        "프로판·부탄 비점 차이로 특정 성분만 선택적 응축"
+      ],
+      "consequences": [
+        "미응축 경질분이 탱크 기상부에 축적되어 증기압·내압 상승",
+        "성분 분리로 저장탱크 운전조건 설계 벗어남"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "토출 냉각 온도 관리 및 응축 완결 여부 확인",
+        "기상부 조성·온도 감시 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-047",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "준위",
+      "deviation": "탱크 액 충전이 설계 목표 준위의 일부까지만 되고 나머지 공간에 미응축 가스가 점유되어 유효 저장량 미달",
+      "causes": [
+        "부분 회수로 액상 전달량 부족",
+        "기상부 미응축 가스 점유로 액 충전 공간 축소"
+      ],
+      "consequences": [
+        "압축기 흡입측 저준위 지속 시 캐비테이션 및 기계 손상",
+        "기상 점유로 유효 수용능력 저하 및 기상압 상승"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "액면·기상압 동시 감시로 충전 진행 상태 확인",
+        "저준위 흡입 보호 로직 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-048",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "조성",
+      "deviation": "회수된 LPG가 설계 프로판·부탄 혼합비의 일부만 반영하고 비응축 가스가 혼입된 조성 편중 상태",
+      "causes": [
+        "회수원별 성분 변동 및 비응축 가스 유입",
+        "부분 응축으로 경질·중질 성분 분리"
+      ],
+      "consequences": [
+        "비응축 가스 혼입으로 탱크 기상압 과대 → 과압 경로",
+        "증기압 설계조건 이탈로 저장탱크 운전 안전여유 감소"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "조성 분석 및 비응축 가스 함량 관리 기준 수립",
+        "비응축 가스 분리·퍼지 경로 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-049",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "상(phase)",
+      "deviation": "회수 용기·압축기 흡입에 액과 가스가 공존하여 설계 기상 흡입 중 일부가 액상으로 동반되는 이상 유동",
+      "causes": [
+        "기액 분리 불완전으로 액적 동반(liquid carryover)",
+        "저온·고준위 조건에서 흡입측 액 유입"
+      ],
+      "consequences": [
+        "압축기 액압축으로 밸브·실린더 손상 및 기밀 파손 → LPG 누출",
+        "손상 누출시 가연성 증기운 형성"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "흡입측 녹아웃 드럼·액면 보호 설치 검토",
+        "액동반 감지 및 압축기 보호 트립 로직 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-050",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "기동정지",
+      "deviation": "압축기 기동·정지 과도구간에서 설계 운전조건의 일부만 형성되어 서지·부분 역류·압력 급변이 간헐 발생",
+      "causes": [
+        "기동시 토출압 미달로 역류 발생",
+        "정지시 잔압 불균형으로 부분 역류·서지"
+      ],
+      "consequences": [
+        "반복 서지·압력급변으로 연결부 피로 및 기밀 저하 → 누출",
+        "역류로 회수 용기측 과압"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "기동·정지 순차 제어 및 역류 방지 밸브 적용 검토",
+        "과도구간 압력 감시 및 운전 절차 정비"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-051",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "용기 기밀건전성",
+      "deviation": "저장탱크·용기·연결부 기밀이 부분적으로만 유지되어 일부 연결부에서 미세·간헐 누출이 발생",
+      "causes": [
+        "연결부 가스켓·플랜지 부분 열화 및 체결 불량",
+        "반복 압력변동으로 일부 씰 기밀 저하"
+      ],
+      "consequences": [
+        "LPG 가연성 증기운 형성 및 점화시 화재·폭발",
+        "안전장치 부재로 누출 조기 감지 불가"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "가스 검지기 및 정기 기밀시험 도입",
+        "연결부 점검 및 씰 관리 프로그램 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-052",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "압력방호 부재",
+      "deviation": "방출·릴리프 경로가 설계 요구의 일부도 갖춰지지 않아 과압 발생시 방호 기능이 결여됨",
+      "causes": [
+        "저장탱크·용기에 릴리프·벤트 경로 미설치",
+        "기존 안전장치 전무로 과압 방출 수단 부재"
+      ],
+      "consequences": [
+        "증기압 상승·부분 응축 미응축 가스 누적시 용기 파열",
+        "대량 LPG 급속 방출로 다수 사망·인접 영향"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "안전밸브·파열판 및 방출 경로 설치 즉시 검토",
+        "과압 시나리오별 릴리프 용량 산정 및 방출처리 계통 구축"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-053",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "유지보수",
+      "deviation": "정비·개방·퍼지 작업시 잔류 LPG 격리·치환이 일부만 완료되어 잔류 가연성 가스가 남은 상태",
+      "causes": [
+        "퍼지·치환 불완전으로 잔류 LPG 잔존",
+        "격리 밸브 부분 차단 및 안전장치 부재로 격리 확인 수단 미비"
+      ],
+      "consequences": [
+        "개방 작업 중 잔류 LPG 누출·점화로 화재·폭발",
+        "작업자 노출 및 질식 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "격리·퍼지·가스프리 확인 절차 및 가스측정 의무화",
+        "작업허가 및 이중 격리 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-054",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "유량",
+      "deviation": "의도한 LPG 이송에 더해 비응축 가스나 다른 물질 흐름이 동반되어 회수 경로로 함께 유입된다",
+      "causes": [
+        "회수 용기 내 비응축 가스(공기·질소 등)가 LPG와 함께 압축기로 흡입됨",
+        "서로 다른 회수원에서 원치 않는 추가 유체가 공통 이송 라인으로 합류",
+        "상류 밸브 오조작으로 설계 외 흐름이 병합됨"
+      ],
+      "consequences": [
+        "비응축 가스 누적으로 압축기 토출압 상승 및 효율 저하",
+        "탱크 내 비응축분 축적으로 증기압 왜곡 및 과압 경향",
+        "이물 동반으로 압축기·밸브 손상"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "회수 용기 상부 비응축 가스 벤트/퍼지 경로 설치",
+        "이송 라인 합류부에 역류방지 및 격리밸브 명확화",
+        "비응축 가스 축적 감시를 위한 토출압 추이 모니터링"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-055",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "압력",
+      "deviation": "설계 운전압에 더해 비응축 가스 분압이 가산되어 전체 계통 압력이 추가로 상승한다",
+      "causes": [
+        "흡입측으로 공기·불활성 가스 혼입되어 LPG 증기압에 분압이 합산",
+        "압축기 토출측 비응축분 누적",
+        "탱크 기상부에 설계 외 가스 축적"
+      ],
+      "consequences": [
+        "방호장치 전무 상태에서 증기압+분압 합산 과압으로 용기 파열 위험",
+        "압력 상승에 따른 연결부 누출 확대",
+        "대량 가연성 증기운 형성 및 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "릴리프밸브 및 과압 방출 경로 신설(압력방호 축과 연계)",
+        "흡입측 공기 혼입 차단 및 비응축 가스 분리",
+        "압력 고압 경보 및 인터록 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-056",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "온도",
+      "deviation": "정상 공정열에 더해 외부 화재·인접 열원으로 인한 추가 입열이 계통에 가해진다",
+      "causes": [
+        "인접 설비 화재 복사열 또는 직사광 과열이 압축열에 더해짐",
+        "압축기 토출 고온 가스가 저장탱크로 유입되며 외기 가열이 가산",
+        "단열 손상부 국부 가열"
+      ],
+      "consequences": [
+        "LPG 증기압 추가 상승으로 탱크 내압 급증",
+        "방호 부재 시 BLEVE 등 파국적 파열 위험",
+        "상변화 가속으로 과압 전개"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "저장탱크 살수냉각 설비 및 화재방호 도입",
+        "토출가스 냉각(after-cooler) 및 고온 경보",
+        "복사열 차단 및 방화 이격 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-057",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "준위",
+      "deviation": "의도한 액 준위에 더해 수분·침전물 등 이상(異相) 층이 탱크 하부에 추가로 축적된다",
+      "causes": [
+        "회수 LPG에 동반된 수분·오일 등 이물이 탱크 하부에 상 분리 축적",
+        "조성 외 성분 유입으로 바닥 슬러지 형성",
+        "배수 미실시로 하부 축적 지속"
+      ],
+      "consequences": [
+        "유효 수용 용량 감소로 실질 과충전·액팽창 과압 유발",
+        "준위계 지시 왜곡으로 과충전 감지 실패",
+        "압축기 흡입측 이물 동반 손상"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "탱크 하부 드레인 및 정기 배수 절차 수립",
+        "준위계 다중화 및 교정 관리",
+        "회수 LPG 수분 제거 설비 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-058",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "조성",
+      "deviation": "설계 프로판·부탄 혼합에 더해 비응축 가스나 이종 성분이 추가로 혼입된다",
+      "causes": [
+        "회수 공정에서 공기·불활성 가스·황화합물 등이 LPG에 동반 혼입",
+        "복수 회수원의 성분이 설계 사양을 벗어나 합류",
+        "전처리 미비로 불순물 유입"
+      ],
+      "consequences": [
+        "증기압 특성 변화로 탱크 운전조건 이탈 및 과압",
+        "공기 혼입 시 탱크 내 가연성 혼합기 형성 위험",
+        "회수 효율 저하 및 제품 규격 이탈"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "회수 전 조성·산소 농도 분석 및 관리기준 설정",
+        "비응축 가스 분리 및 불순물 제거 설비 도입",
+        "이종 성분 혼입 경보 체계 마련"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-059",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "상(phase)",
+      "deviation": "의도한 가스 흡입에 더해 액상 LPG가 함께 압축기로 동반 유입된다(액동반)",
+      "causes": [
+        "회수 용기 기액분리 불충분으로 액적이 가스와 함께 흡입",
+        "고준위 운전 시 액면이 흡입 노즐까지 상승",
+        "급격한 압력 변동으로 액 플래싱 동반"
+      ],
+      "consequences": [
+        "압축기 액압축으로 밸브·로드 손상 및 기계적 파손",
+        "파손부를 통한 LPG 누출 및 가연성 증기운 형성",
+        "운전 중단 및 2차 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "흡입측 녹아웃 드럼/액분리기 설치",
+        "흡입 라인 액동반 감지 및 압축기 보호 인터록",
+        "회수 용기 고준위 경보 연동"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-060",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "기동정지",
+      "deviation": "기동·정지 과도상태에서 정상 운전에 더해 서지·압력급변이 추가로 발생한다",
+      "causes": [
+        "압축기 간헐 운전 기동 시 서지 및 역류 발생",
+        "정지 과도기 토출측 역압으로 압력 급변",
+        "과도상태 밸브 시퀀스 오류"
+      ],
+      "consequences": [
+        "서지·압력급변으로 압축기 및 배관 피로·손상",
+        "역류에 의한 연결부 누출 및 LPG 방출",
+        "반복 과도로 기밀건전성 저하"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "안티서지 제어 및 토출 역지밸브 적용",
+        "기동·정지 시퀀스 절차 표준화 및 인터록",
+        "과도상태 압력 감시 및 자동정지 로직"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-061",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "용기 기밀건전성",
+      "deviation": "정상 밀폐에 더해 연결부·실(seal)을 통한 LPG 누출이 추가로 발생한다",
+      "causes": [
+        "압축기 실·플랜지·밸브 글랜드 열화에 따른 누설",
+        "과도운전 반복으로 연결부 피로",
+        "방호장치 부재로 미세 누출 조기 감지 실패"
+      ],
+      "consequences": [
+        "LPG 가연성 증기운 형성 및 점화 시 화재·폭발",
+        "밀폐공간 축적 시 질식·폭발 위험",
+        "대량 누출 시 선외·인접 영향"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "가연성 가스 검지기 및 경보 설치",
+        "연결부 실 정기 점검·누출 시험 프로그램",
+        "비상차단밸브(ESD) 및 격리 체계 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-062",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "압력방호 부재",
+      "deviation": "설계 압력 유지에 더해 과압 상황이 발생해도 방출 경로가 추가로 존재하지 않는다",
+      "causes": [
+        "릴리프밸브·방출 경로 등 압력방호 설비 전무",
+        "과압 발생원(화재·비응축분·과충전)에 대한 방출 수단 미비",
+        "방호 설계 자체의 공백"
+      ],
+      "consequences": [
+        "과압 시 저장탱크·용기 파열로 대량 LPG 방출",
+        "파국적 증기운 폭발 및 다수 사망 가능",
+        "항만·인접 설비 영향"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "구형·불릿 탱크 및 토출측 릴리프밸브/안전밸브 설치",
+        "방출 유체 처리(플레어·안전위치 방출) 경로 마련",
+        "과압 시나리오별 방출용량 산정 및 설계 반영"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i4-063",
+      "node": "I4",
+      "node_meta": {
+        "node": "I4",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "회수 용기",
+          "회수 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "유지보수",
+      "deviation": "정비 작업 시 격리·치환에 더해 잔류 LPG가 작업 공간에 추가로 존재한다",
+      "causes": [
+        "압축기 정비·탱크 개방 전 잔류 LPG 퍼지·치환 불충분",
+        "격리 절차 미비로 인접 계통에서 LPG 역유입",
+        "방호장치 부재로 잔류 확인 수단 미비"
+      ],
+      "consequences": [
+        "개방 작업 중 잔류 LPG 방출로 화재·폭발·질식",
+        "작업자 노출 및 중상·사망",
+        "점화 시 인접 설비 파급"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "정비 전 격리·방출·불활성 퍼지 절차(LOTO) 수립",
+        "개방 전 가스농도 측정 및 작업허가 체계",
+        "잔류 LPG 확인용 검지 및 환기 조치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    }
+  ]
+}
