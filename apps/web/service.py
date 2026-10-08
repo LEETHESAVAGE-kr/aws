@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import contextlib
 import json
+import logging
 import os
 import shutil
 import tempfile
@@ -47,6 +48,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable, Mapping, MutableMapping
 
     from core.agent import DeviationRecord
+    from core.agent.generate import ProgressCallback
     from core.llm import AbstractBedrockClient
 
 LIVE_NOTE: Final[str] = "약 7~9분 · 약 $0.75~1.01 소요(9/29 실측 4노드)"
@@ -54,6 +56,8 @@ QUICK_NOTE: Final[str] = "약 1분 · API 호출 3회(입력 해석 1 + 파라�
 #: 자연어 입력 길이 상한 — 해석 호출 비용·남용 방지.
 NODE_TEXT_LIMIT: Final[int] = 600
 _PARSE_PROMPT: Final[Path] = Path(__file__).parent / "prompts" / "node_parse.md"
+logger = logging.getLogger(__name__)
+
 #: 실호출 상한 — Streamlit Cloud 는 최상위 Secrets 를 프로세스 환경변수로 넣은 뒤 스크립트를 import 하므로
 #: import 시점에 읽어도 Secrets 값이 반영된다(U-1). 기본값은 세션 1회·일 5회.
 SESSION_LIMIT: Final[int] = int(os.environ.get("HAZOP_SESSION_LIMIT", 1))
@@ -354,20 +358,38 @@ def parse_node_text(
     }
 
 
-def run_live(node_text: str, replay: Result, environ: Mapping[str, str] = os.environ) -> Result:
+def _parse_and_notify(
+    node_text: str, environ: Mapping[str, str], on_progress: ProgressCallback | None
+) -> tuple[NodeMeta, dict[str, Any]]:
+    """입력 해석 + `"parsed"` 알림. 해석은 웹 소관이라 생성기 대신 여기서 알린다(design §10)."""
+    node_meta, parsed = parse_node_text(node_text, environ)
+    if on_progress is not None:
+        try:
+            on_progress("parsed", {"node_meta": node_meta, "parsed_by": parsed["parsed_by"]})
+        except Exception:  # noqa: BLE001 — 표시 실패는 생성 실패가 아니다(AC-11-3)
+            logger.warning("진행 알림 콜백 예외(event=parsed) — 생성은 계속한다", exc_info=True)
+    return node_meta, parsed
+
+
+def run_live(
+    node_text: str,
+    replay: Result,
+    environ: Mapping[str, str] = os.environ,
+    on_progress: ProgressCallback | None = None,
+) -> Result:
     """노드 1건 생성. mock 모드면 재생 레코드를 돌려주는 모의 클라이언트로 끝까지 돈다(H-02 ⑦).
 
     `node_text` 는 NodeMeta JSON 또는 자연어 공정 설명(`parse_node_text`).
     """
     started = time.perf_counter()
-    node_meta, parsed = parse_node_text(node_text, environ)
+    node_meta, parsed = _parse_and_notify(node_text, environ, on_progress)
     mock = is_mock(environ)
     client: AbstractBedrockClient = (
         MockBedrockClient(response_factory=_mock_factory(replay)) if mock else get_bedrock_client()
     )
     gen_config = load_generator_config()
     generator = HazopGenerator(client, gen_config)
-    records = generator.generate(node_meta)
+    records = generator.generate(node_meta, on_progress)
     latency = time.perf_counter() - started
     meta = {
         "source": "mock" if mock else "live-run",
@@ -402,18 +424,23 @@ def _observe_calls(client: AbstractBedrockClient) -> list[dict[str, Any]]:
 
 
 def run_quick(
-    node_text: str, guideword: str, replay: Result, environ: Mapping[str, str] = os.environ
+    node_text: str,
+    guideword: str,
+    replay: Result,
+    environ: Mapping[str, str] = os.environ,
+    on_progress: ProgressCallback | None = None,
 ) -> Result:
     """직접 입력 빠른 실호출(J-03): 파라미터 열거 1회 + 가이드워드 1종 판정 1회 = `converse` 2회.
 
     `node_text` 가 자연어면 그 앞에 입력 해석 1회(저비용 모델)가 붙어 3회다. JSON 이면 2회.
     노드 전체(가이드워드 7~10종, 약 8분)를 돌지 않고 한 행만 채운다. mock 모드면 `replay` 레코드를
     돌려주는 모의 클라이언트로 같은 경로를 돈다. 입력이 스키마를 어기면 생성 호출 전에 `ValueError`.
+    `on_progress` 는 해석(`"parsed"`)·열거·판정이 끝날 때마다 불린다(R-11).
     """
     if guideword not in GUIDEWORD_DEFINITIONS:
         raise ValueError(f"알 수 없는 가이드워드: {guideword}")
     started = time.perf_counter()
-    node_meta, parsed = parse_node_text(node_text, environ)
+    node_meta, parsed = _parse_and_notify(node_text, environ, on_progress)
     mock = is_mock(environ)
     client: AbstractBedrockClient = (
         MockBedrockClient(response_factory=_mock_factory(replay)) if mock else get_bedrock_client()
@@ -428,16 +455,9 @@ def run_quick(
             config.provider, config.generation.model_id, config.generation.max_tokens
         )
     generator = HazopGenerator(client, load_generator_config())
-    # 비공개 메서드 의존 3곳(_enumerate_parameters·_generate_batch·_assemble) — core/ 무수정을 위해
-    # 지시문 J 에 한해 허용. 본선에서 HazopGenerator.generate_quick() 공개 API 로 승격(docs/backlog.md).
-    parameters = generator._enumerate_parameters(node_meta)  # noqa: SLF001
-    if not parameters:
+    records = generator.generate_quick(node_meta, guideword, on_progress)  # R-11 AC-11-5 공개 API
+    if not generator.parameters:
         raise RuntimeError("파라미터 열거 실패(응답 스키마 2회 위반) — 가이드워드 판정을 건너뛰었습니다.")
-    batch, batch_cost = generator._generate_batch(node_meta, parameters, guideword)  # noqa: SLF001
-    generator.total_cost_usd += batch_cost  # O-1 이후 _generate_batch 는 합산을 호출자에게 맡긴다
-    if batch is None:
-        generator.review_guidewords.append(guideword)
-    records = generator._assemble(node_meta, [batch] if batch else [])  # noqa: SLF001
     latency = time.perf_counter() - started
     meta = {
         "source": "quick",
@@ -451,10 +471,10 @@ def run_quick(
         "node_meta": node_meta.model_dump(),
         **{k: parsed[k] for k in ("parsed_by", "node_text", "parse_model") if k in parsed},
         "guidewords": [guideword],
-        "parameters": [p["name"] for p in parameters],
+        "parameters": list(generator.parameters),
         "latency_s": round(latency, 1),
         "cost_usd": round(generator.total_cost_usd + parsed["cost_usd"], 4),
-        "expected_cells": len(parameters),
+        "expected_cells": generator.expected_cells,
         "judged_cells": generator.judged_cells,
         "review_guidewords": list(generator.review_guidewords),
         "recall": None,
