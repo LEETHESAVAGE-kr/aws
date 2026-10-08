@@ -627,3 +627,13 @@ def test_booth_ignores_session_limit_but_keeps_daily_limit(monkeypatch: pytest.M
     at = _booth_app(monkeypatch, booth=True)
     next(b for b in at.button if b.label == "아파트 LPG 공급").click().run()
     assert _cta(at).disabled  # 일 상한 = 비용 상한은 부스에서도 건다
+
+def test_booth_pool_chip_selects_as_well_as(monkeypatch: pytest.MonkeyPatch) -> None:
+    """V-6: 수영장 칩은 As well as 를 고른다(More 로는 산 혼입→염소가스 행이 안 나온다, 10/8 실측)."""
+    at = _booth_app(monkeypatch, booth=True)
+    assert at.selectbox[0].value == "More"
+    next(b for b in at.button if b.label == "수영장 염소 소독").click().run()
+    assert at.selectbox[0].value == "As well as"
+    at.selectbox[0].select("Reverse").run()
+    next(b for b in at.button if b.label == "아파트 LPG 공급").click().run()
+    assert at.selectbox[0].value == "Reverse"  # 가이드워드를 지정하지 않은 칩은 사용자의 선택을 건드리지 않는다
