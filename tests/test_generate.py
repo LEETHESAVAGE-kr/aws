@@ -617,16 +617,16 @@ def test_parallel_exception_in_one_row_degrades_only_that_row() -> None:
 
 
 def test_parallel_calls_config_default_and_validation(tmp_path: Path) -> None:
-    assert load_model_config().parallel_calls == 4  # config/models.yaml
-    assert load_generator_config().parallel_calls == 4
+    assert load_model_config().parallel_calls == 7  # config/models.yaml (X-G7 10/8 실측으로 4 → 7)
+    assert load_generator_config().parallel_calls == 7
     assert GeneratorConfig().parallel_calls == 1  # 직접 생성은 순차(응답 목록 mock 호환)
     base = (_ROOT / "config" / "models.yaml").read_text(encoding="utf-8")
     absent = tmp_path / "absent.yaml"
-    absent.write_text(base.replace("  parallel_calls: 4", "  # (없음)"), encoding="utf-8")
+    absent.write_text(base.replace("  parallel_calls: 7", "  # (없음)"), encoding="utf-8")
     assert load_model_config(absent).parallel_calls == 4  # 필드 없는 옛 yaml 호환
     for bad in ("0", "true", "2.5"):
         broken = tmp_path / f"bad_{bad}.yaml"
-        broken.write_text(base.replace("  parallel_calls: 4", f"  parallel_calls: {bad}"), encoding="utf-8")
+        broken.write_text(base.replace("  parallel_calls: 7", f"  parallel_calls: {bad}"), encoding="utf-8")
         with pytest.raises(ConfigValidationError, match="parallel_calls"):
             load_model_config(broken)
 

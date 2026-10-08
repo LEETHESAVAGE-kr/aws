@@ -51,9 +51,9 @@ if TYPE_CHECKING:
     from core.agent.generate import ProgressCallback
     from core.llm import AbstractBedrockClient
 
-#: 기본 실행(지시문 X-1) 안내 — 노드 전체, 병렬 4. 값은 README §6 노드 실측 범위(9/29·10/8).
-LIVE_NOTE: Final[str] = "가이드워드 전체 · 약 2~3분 · 약 $0.8"
-LIVE_BUTTON: Final[str] = "HAZOP 초안 생성 (가이드워드 전체 · 약 2–3분)"
+#: 기본 실행(지시문 X-1) 안내 — 노드 전체, 병렬 7. X-G7 실측 3회 79~126초 · $0.73~0.78 (results/xg7_20261008_2350).
+LIVE_NOTE: Final[str] = "가이드워드 전체 · 약 1.5~2분 · 약 $0.75"
+LIVE_BUTTON: Final[str] = "HAZOP 초안 생성 (가이드워드 전체 · 약 1.5–2분)"
 QUICK_NOTE: Final[str] = "약 1분 · API 호출 3회(입력 해석 1 + 파라미터 열거 1 + 가이드워드 1, JSON 입력이면 2회)"
 #: 보조 실행 "가이드워드 하나만 빠르게"(지시문 X-1b) 문구 — 실무 기능이다. 이 묶음에 '부스'·'관람객' 을 쓰지 않는다(시험).
 QUICK_EXPANDER: Final[str] = "가이드워드 하나만 빠르게 보기 — 특정 이탈 방향만 먼저 확인할 때 (약 1분)"

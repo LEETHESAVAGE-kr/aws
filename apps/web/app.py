@@ -18,7 +18,7 @@ from typing import Any  # noqa: E402
 import streamlit as st  # noqa: E402
 import streamlit.components.v1 as components  # noqa: E402
 
-from apps.web import service  # noqa: E402
+from apps.web import guide, service  # noqa: E402
 from apps.web.replay import load_replays  # noqa: E402
 from core.agent.generate import PROCEDURAL_GUIDEWORDS, STANDARD_GUIDEWORDS  # noqa: E402
 
@@ -303,7 +303,7 @@ with tool.container(border=True, key="tool"):
                 state.live_runs += 1
                 mock_source = replays.get("N1") or next(iter(replays.values()))
                 # 진행 표시는 버튼 바로 아래 — 결과 영역은 첫 화면 밖이라 거기 두면 "아무 일도 없다"로 보인다(9/29 23:05).
-                expected = "약 1분" if clicked_quick else "약 2~3분"
+                expected = "약 1분" if clicked_quick else "약 1.5~2분"
                 with st.status(
                     f"HAZOP 초안 생성 중 · {expected} — 이 화면에서 기다려 주세요", expanded=True
                 ) as status:
@@ -361,7 +361,7 @@ with tool.container(border=True, key="tool"):
             st.button("실측 사례 보기", on_click=_to_cases, width="stretch")
         elif BOOTH:
             st.caption(
-                f"부스 모드 · 오늘 남은 {service.daily_left()}회 · 생성 약 2~3분 — "
+                f"부스 모드 · 오늘 남은 {service.daily_left()}회 · 생성 약 1.5~2분 — "
                 "가이드워드 판정이 끝날 때마다 표가 채워집니다."
             )
         else:
@@ -429,7 +429,7 @@ st.html('<div id="result" class="hz-section">분석 결과</div>')
 if result is None:
     st.html(
         '<div class="hz-empty"><strong>아직 결과가 없습니다</strong>'
-        '위에서 예시를 누르고 "HAZOP 초안 생성"을 누르면 가이드워드 판정이 끝날 때마다 여기에 워크시트가 채워집니다(전체 약 2~3분).<br>'
+        '위에서 예시를 누르고 "HAZOP 초안 생성"을 누르면 가이드워드 판정이 끝날 때마다 여기에 워크시트가 채워집니다(전체 약 1.5~2분).<br>'
         '기다리기 싫다면 "실측 사례 재생"에서 완성된 결과를 바로 볼 수 있습니다.</div>'
     )
 else:
@@ -607,16 +607,22 @@ else:
             )
 
 # ── HAZOP 이 처음이라면 ──────────────────────────────────────────────────────
-st.html('<div id="intro" class="hz-section">HAZOP 이 처음이라면</div>')
+st.html(
+    '<div id="intro" class="hz-section">HAZOP 이 처음이라면</div>'
+    '<p class="hz-sub" style="margin-bottom:18px">HAZOP(위험과 운전 분석)은 화학공장·가스설비에서 '
+    "<b>“이 설비가 원래 하려던 일에서 벗어나면 무슨 일이 생기나?”</b>를 빠짐없이 묻는 방법입니다. "
+    "설비를 구간으로 나누고, 구간마다 유량·압력·온도 같은 값에 ‘없음·많음·적음·거꾸로…’를 하나씩 대입해 "
+    "생길 수 있는 사고를 표(워크시트)로 정리합니다. 아래 3장은 요약, 그 아래 탭은 한 줄이 만들어지는 과정과 용어 설명입니다.</p>"
+)
 #: (제목, 핵심 한 줄, [(항목, 내용)...]) — 줄글 대신 한눈에 읽히는 행. 마크다운을 거치지 않는다(`~` 가 취소선이 된다).
 INTRO_CARDS: tuple[tuple[str, str, tuple[tuple[str, str], ...]], ...] = (
     (
         "HAZOP 이란",
         "설계 의도에서 벗어나는 경우를 빠짐없이 찾는 위험성평가",
         (
-            ("대상", "공정 구간(노드) — 배관·설비"),
-            ("방법", "유량·압력·온도 × No·More·Less·Reverse…"),
-            ("근거", "PSM 표준 기법 · KOSHA GUIDE P-82"),
+            ("대상", "공정 구간(노드) — 배관·설비를 나눈 한 토막"),
+            ("방법", "유량·압력·온도 × No·More·Less·Reverse… 를 칸마다 대입"),
+            ("근거", "공정안전관리(PSM) 표준 기법 · KOSHA GUIDE P-82"),
         ),
     ),
     (
@@ -644,16 +650,52 @@ for column, (title, headline, rows) in zip(st.columns(3), INTRO_CARDS, strict=Tr
         + "".join(f"<div class='hz-info-r'><span>{k}</span><b>{v}</b></div>" for k, v in rows)
         + "</div>"
     )
-with st.expander("현장 절차와 한눈에 비교", expanded=False):
-    st.markdown(
-        "| 단계 | 기존 HAZOP 회의 | 이 앱 |\n|---|---|---|\n"
-        "| 노드 정의 | 사람 (P&ID) | 사람 — 문장 한 문단 또는 JSON |\n"
-        "| 파라미터 도출 | 팀 브레인스토밍 | AI 1회 호출, 노드당 8–12개 |\n"
-        "| 가이드워드 전 셀 판정 | 셀마다 토론, 누락 위험 | AI 가이드워드별 병렬 호출, 셀 누락 0 |\n"
-        "| 원인·결과·안전장치·S×F·권고 | 서기가 회의 중 기록 | 초안 자동, 신뢰도 배지 + 규칙 verifier |\n"
-        "| 워크시트·LOPA 문서화 | 회의 후 수일 | 즉시 xlsx(5시트)·LOPA docx·신뢰도 JSON |"
+st.html('<div style="height:14px"></div>')
+example_tab, gw_tab, risk_tab, read_tab, compare_tab = st.tabs(
+    ["① 한 줄이 만들어지는 과정", "② 가이드워드 7종", "③ 위험도 S×F", "④ 결과 화면 읽는 법", "⑤ 회의와 비교"]
+)
+with example_tab:
+    st.caption("워크시트 한 줄은 아래 순서로 채워집니다. 값은 이해를 돕는 설명용 예시입니다(실제 생성 결과 아님).")
+    example_tab.html(
+        '<div class="hz-info">'
+        + "".join(
+            f"<div class='hz-info-r'><span style='width:110px'>{i}. {step}</span>"
+            f"<b style='flex:1'>{value}<br><small style='color:var(--muted);font-weight:400'>{question}</small></b></div>"
+            for i, (step, question, value) in enumerate(guide.WORKED_EXAMPLE, start=1)
+        )
+        + "</div>"
     )
-    st.caption("실측: 노드 1건 약 2–2.5분 · 약 $0.8 (2026-09-29, 병렬 4).")
+    st.caption(
+        "AI 는 2단계(파라미터)를 스스로 세우고, 파라미터 × 가이드워드의 모든 칸에 대해 4~9단계를 채웁니다. "
+        "뜻이 성립하지 않는 칸(예: 온도 + Reverse — 온도에는 '거꾸로'가 없다)은 '해당 없음'과 그 이유를 남깁니다."
+    )
+with gw_tab:
+    st.caption("가이드워드는 '어느 방향으로 벗어나는가'를 가리키는 정해진 단어입니다. 파라미터와 붙여 읽습니다(More + 압력 = 압력 과다).")
+    st.table(guide.guideword_rows(), hide_index=True, border="horizontal")
+    st.caption("절차(기동·정지·운전 순서)가 있는 노드에는 Too early · Too late · Wrong action 3종이 더 붙습니다.")
+with risk_tab:
+    scale = guide.load_rating_scale()
+    st.caption(
+        "S(심각도)와 F(빈도)를 1~5 로 매기고 곱한 값이 위험도입니다. 위험도가 높은 줄부터 대책을 세웁니다. "
+        "아래 정의는 이 앱의 골드셋(NH3 선박 벙커링) 평가기준 그대로라 다른 공정에는 참고용입니다."
+    )
+    st.table(guide.rating_rows(scale), hide_index=True, border="horizontal")
+    st.table(guide.band_rows(scale), hide_index=True, border="horizontal")
+with read_tab:
+    read_tab.html(
+        '<div class="hz-info">'
+        + "".join(
+            f"<div class='hz-info-r'><span style='width:170px'>{k}</span><b style='flex:1'>{v}</b></div>"
+            for k, v in guide.READING_GUIDE
+        )
+        + "</div>"
+    )
+with compare_tab:
+    st.markdown(guide.PROCESS_TABLE)
+    st.caption(
+        "실측: 노드 1건 약 1.5–2분 · 약 $0.75 (2026-10-08, 가이드워드 7종 동시 판정, 3회 79–126초). "
+        "회의 시간 단축을 잰 것은 아닙니다 — 이 앱이 만드는 것은 회의에서 검토할 초안입니다."
+    )
 
 # ── 정확도 (기본 접힘) ───────────────────────────────────────────────────────
 st.html('<div id="eval"></div>')
