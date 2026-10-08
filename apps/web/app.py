@@ -417,7 +417,8 @@ else:
         ("비용", "—" if view["cost_usd"] is None else f"${view['cost_usd']:.2f}"),
     ]
     if recall:
-        tiles.append(("전문가 대비 recall", f"{recall['recall']:.3f}"))
+        external = result.meta.get("split") == "external"  # 지시문 W — 골드셋이 아니라 외부 공개 워크시트
+        tiles.append(("외부 공개 HAZOP 대비 recall" if external else "전문가 대비 recall", f"{recall['recall']:.3f}"))
     for column, (label, value) in zip(st.columns(len(tiles)), tiles, strict=True):
         column.metric(label, value)
 
