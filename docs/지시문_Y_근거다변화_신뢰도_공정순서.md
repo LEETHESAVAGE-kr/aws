@@ -39,4 +39,17 @@ Kiro spec 반영(§7)은 사용자 몫. 이 지시문은 손 작성 수용 기�
 결함 재삽입: C-C-37 대조표 1칸(S4·F1 3→4)을 바꾸면 시험 2건 실패(10/9). 판정 템플릿 3번 문구가 바뀌어 `_SYSTEM_SHA256` 갱신(이전 35210ae7…).
 **남은 것**: 직접 입력 실호출 1회로 C-C-37 등급 분포 확인(Y-G5 재측정에 포함). 재생 P1·P2·I1~I4 는 NH3 기준 캡처라 '참고용' 배지 유지 — 재캡처하면 C-C-37 로 바뀐다.
 
-## Y-3·Y-4·Y-G5 — PRD §3·§8 그대로. 측정 전 사전 등록 커밋.
+## Y-3 근거 인용(RAG) · Y-4 신뢰도 4단계 — 코드 완료 10/9, 기본 꺼짐(`evidence_k: 0`)
+
+| # | 구현 | 시험 |
+|---|---|---|
+| Y-3a | 코퍼스 `data/kb/law/` 법령·고시 9종 186문단(원문 대조 186/186), `data/kb/manifest.csv`(steering §7 형식). KOSHA 지침 제외(공공누리 없음, 10/9 사용자 결정) | `test_corpus_is_laws_and_notices_only_with_manifest` |
+| Y-3b | `core/retrieval.py` — BM25(한글 2-gram) + multilingual-e5-small ONNX 임베딩, RRF 융합. 모델 없으면 BM25. 코퍼스 벡터 미리 계산(`embeddings.npz`). 메모리 실측 +386MB(상주 460MB, 최고 544MB — streamlit 포함 프로세스) | 검색 스모크 |
+| Y-3c | 판정 호출: 파라미터마다 질의 → 상위 k → 호출당 최대 10문단을 사용자 턴 끝에(`prompts/evidence_block.md`). 시스템 블록 불변(캐시·sha). 모델은 `{source_id, quote}` 만, 제목·위치는 코드가 채운다 | `test_evidence_off_keeps_prompt_and_schema` |
+| Y-3d | 인용 계약: 이번 호출에 보낸 발췌 id + 원문 부분 문자열(공백 정규화, 8자 이상)만 남기고 나머지는 지워 `citation_flags` | 결함 재삽입 3종(바꿔 쓴 구절·없는 id·안 보낸 발췌) → 🔴. 검사기를 무력화하면 3건 실패 |
+| Y-4 | `verify.confidence_tier`: 🟢 grounded(서로 다른 **문서** 2건↑) · 🔵 single_source · 🟡 inferred · 🔴 review. PRD 의 "issuer 2곳"을 **문서 2건**으로 바꿨다 — 코퍼스 대부분이 고용노동부 소관이라 issuer 기준이면 🟢 가 구조적으로 불가능 | `test_two_documents_make_grounded` |
+| 화면·내보내기 | 검토 표 '근거' 열, "근거 발췌 원문" 접힘 표, 신뢰도 분포 줄 + "근거 ≠ 정답" 고지, Excel '근거' 시트·'신뢰도' 사유 4단계, 리포트 `single_source` 키 | 스냅숏 |
+
+## Y-G5 재측정 — 사전 등록 전(다음)
+
+비용이 드는 실호출이라 사용자 승인 뒤 사전 등록 커밋 → 측정. 측정 전 고정할 것: 코퍼스 커밋 해시, `evidence_k`(후보 2), 노드(NH3 N1~N4 · LPG I1~I4 · 직접 입력 3회), 판정 규칙(노드당 비용 +30% 넘으면 k 축소), 보고 항목(recall·비용·지연·신뢰도 분포·🟢 행의 골드 일치율).

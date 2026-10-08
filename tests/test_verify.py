@@ -56,7 +56,7 @@ def test_injected_defects_flagged() -> None:
     log.info("결함 삽입 10건 중 review %d건 · by_rule=%s", sum(reviewed), summary.by_rule)
     assert sum(reviewed) >= 9
     assert sum(reviewed[:5]) >= 4 and sum(reviewed[5:]) >= 4  # R-01·R-02 각각
-    assert summary.by_rule == {"unverified_standard": 5, "unsupported_number": 5}
+    assert summary.by_rule == {"unverified_standard": 5, "unsupported_number": 5, "fabricated_citation": 0}
 
 
 def test_node_meta_numbers_not_flagged() -> None:  # AC-02-1
