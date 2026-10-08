@@ -50,3 +50,25 @@ claude-haiku-4-5: # $1.00 / $5.00 per 1M
   output: 0.005
   cache_read: 0.0001
   cache_write: 0.00125
+
+# ── 본선 대회 제공 API 키 모델 ID (PRD_본선_고도화 F-01-3, 2026-10-08 선등재) ─────────────
+# 출처: 10/8 API 신청서의 신청 모델명. **게이트웨이가 실제로 받는 ID 인지는 키 수령 후 확인.**
+# 단가는 **추정** — 대회 고지 단가가 없어 대응 Anthropic 모델 단가(위 표)를 그대로 옮겼다.
+# 등재 이유: 빠지면 비용이 조용히 $0 으로 기록된다(9/28 haiku 날짜 ID 사례). 고지 단가가 오면 교체.
+bedrock-claude-opus-4-8: # = claude-opus-4-8 추정
+  input: 0.005
+  output: 0.025
+  cache_read: 0.0005
+  cache_write: 0.00625
+
+bedrock-claude-sonnet-5: # = claude-sonnet-5 추정
+  input: 0.003
+  output: 0.015
+  cache_read: 0.0003
+  cache_write: 0.00375
+
+bedrock-haiku: # = claude-haiku-4-5 추정 (신청서 표기 그대로 — 버전 미상)
+  input: 0.001
+  output: 0.005
+  cache_read: 0.0001
+  cache_write: 0.00125
