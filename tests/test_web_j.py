@@ -994,3 +994,42 @@ def test_spacing_only_is_not_an_edit() -> None:
     kept, log = service.apply_review(result, {row: {"원인": shown[row]["원인"], service.REVIEW_COLUMN: "채택"}})
     assert log == [(shown[row]["No"], "채택", shown[row]["가이드워드"], shown[row]["이탈"], "")]
     assert kept[row]["causes"] == service._display_records(result)[row]["causes"]
+
+# ── 'HAZOP 이 처음이라면' 안내 (10/8 사용자 요청) ─────────────────────────────────
+def test_guide_reuses_existing_definitions() -> None:
+    """뜻·등급은 새로 쓰지 않고 생성 프롬프트·골드셋 평가기준에서 읽는다."""
+    from apps.web import guide
+    from core.agent.generate import GUIDEWORD_DEFINITIONS, STANDARD_GUIDEWORDS
+
+    rows = guide.guideword_rows()
+    assert [r["가이드워드"] for r in rows] == STANDARD_GUIDEWORDS
+    assert all(r["뜻"] == GUIDEWORD_DEFINITIONS[r["가이드워드"]] for r in rows)
+    scale = guide.load_rating_scale()
+    assert [r["등급"] for r in guide.rating_rows(scale)] == [1, 2, 3, 4, 5]
+    assert [b["판정"] for b in guide.band_rows(scale)] == ["높음", "중간(ALARP)", "낮음"]
+
+
+def test_worked_example_risk_matches_band() -> None:
+    """설명용 예시의 S×F 와 판정이 평가기준 구간과 맞는다(예시만 고치고 구간을 안 보는 실수 방지)."""
+    import re
+
+    from apps.web import guide
+
+    value = {s: v for s, _, v in guide.WORKED_EXAMPLE}["S × F = 위험도"]
+    s, f, risk, verdict = re.match(r"S (\d) × F (\d) = (\d+) → (\S+)", value).groups()  # type: ignore[union-attr]
+    assert int(s) * int(f) == int(risk)
+    band = next(b for b in guide.band_rows(guide.load_rating_scale())
+                if int(b["위험도 (S×F)"].split("~")[0]) <= int(risk) <= int(b["위험도 (S×F)"].split("~")[1]))
+    assert band["판정"].startswith(verdict)
+
+
+def test_app_renders_intro_tabs(monkeypatch: pytest.MonkeyPatch) -> None:
+    from streamlit.testing.v1 import AppTest
+
+    for key, value in _MOCK_ENV.items():
+        monkeypatch.setenv(key, value)
+    at = AppTest.from_file(str(_APP), default_timeout=30).run()
+    assert not at.exception
+    labels = [t.label for t in at.tabs]
+    assert {"① 한 줄이 만들어지는 과정", "② 가이드워드 7종", "③ 위험도 S×F", "④ 결과 화면 읽는 법", "⑤ 회의와 비교"} <= set(labels)
+    assert len(at.table) >= 3 and len(at.dataframe) == 0  # 안내 표는 st.table — 결과 표 시험과 섞이지 않는다
