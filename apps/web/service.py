@@ -837,7 +837,7 @@ def failed_guidewords_line(result: Result) -> str | None:
 
 
 def partial_rows(records: list[DeviationRecord]) -> list[dict[str, object]]:
-    """생성 중 부분 표(X-1c) — 가볍게 6열. 레코드는 생성기가 축 순서로 준다."""
+    """생성 중 부분 표(X-1c) — 가볍게 6열. 레코드는 생성기가 공정 순서(Y-1)로 준다."""
     return [
         {"가이드워드": r.guideword, "파라미터": r.parameter, "이탈": r.deviation, "S": r.S, "F": r.F, "위험도": r.S * r.F}
         for r in records

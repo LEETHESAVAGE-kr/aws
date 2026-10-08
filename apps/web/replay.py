@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any, Final
 
 from core.agent import DeviationRecord, VerifySummary
+from core.agent.generate import process_order
 
 REPLAY_DIR: Final[Path] = Path(__file__).resolve().parents[2] / "data" / "replay"
 _SOURCE_PRIORITY: Final[dict[str, int]] = {"live": 0, "gold": 1}
@@ -40,6 +41,10 @@ def _to_result(payload: dict[str, Any]) -> Result:
     meta.pop("recall_n1", None)
     # I-1 이전 파일엔 split 키가 없다 — data/gold/split_node.json(N1=tune, N2~N4=holdout) 기준으로 채운다.
     meta.setdefault("split", "tune" if meta.get("node", "N1") == "N1" else "holdout")
+    # Y-1: 10/9 이전 캡처는 가이드워드 축 순서로 저장됐다 — 파일은 그대로 두고 불러올 때 공정 순서로.
+    # 골드 재생은 전문가가 쓴 순서 그대로다(사람 작성 순서를 바꾸지 않는다).
+    if meta.get("source") != "gold":
+        records = process_order(records, list(meta.get("parameters") or []), renumber=False)
     return Result(meta=meta, records=records)
 
 

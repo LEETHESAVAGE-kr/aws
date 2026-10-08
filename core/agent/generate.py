@@ -275,7 +275,7 @@ class HazopGenerator:
         partial: list[list[DeviationRecord]] = [[] for _ in guidewords]
 
         def collect(index: int, outcome: tuple[dict[str, Any] | None, float]) -> None:
-            # 완료 순서로 알리고(R-11), 결과는 축 인덱스 자리에 둔다 — 최종 조립은 축 순서(AC-10-1).
+            # 완료 순서로 알리고(R-11), 결과는 축 인덱스 자리에 둔다 — 최종 조립은 공정 순서(Y-1, process_order).
             outcomes[index] = outcome
             if on_progress is None:
                 return
@@ -286,7 +286,7 @@ class HazopGenerator:
                 "guideword": guidewords[index],
                 "done": sum(o is not None for o in outcomes),
                 "total": len(guidewords),
-                "records": [r for rows in partial for r in rows],
+                "records": process_order([r for rows in partial for r in rows], self.parameters, renumber=False),
             })
 
         workers = max(1, self._config.parallel_calls)
@@ -451,7 +451,7 @@ class HazopGenerator:
     ) -> list[DeviationRecord]:
         records, judged = _build_records(node_meta, batches)
         self.judged_cells += judged
-        return records
+        return process_order(records, self.parameters)
 
     # -- 사후 점검 -----------------------------------------------------------
     def _check_coverage(self, node_meta: NodeMeta) -> None:
@@ -519,6 +519,33 @@ def _build_records(
                 )
             )
     return records, judged
+
+
+def process_order(
+    records: list[DeviationRecord], parameters: list[str], *, renumber: bool = True
+) -> list[DeviationRecord]:
+    """공정 순서(지시문 Y-1): 노드(등장 순서) → 파라미터(열거 순서) → 가이드워드 축 순서. 안정 정렬.
+
+    같은 파라미터의 No·More·Less… 가 붙어 나온다. 열거 목록에 없는 파라미터는 뒤에 등장 순서로,
+    축에 없는 가이드워드는 축 뒤에. `renumber` 면 노드별로 id 를 1번부터 다시 매긴다(새 생성 결과) —
+    재생 파일을 불러올 때는 파일과 대조할 수 있게 id 를 그대로 둔다.
+    """
+    axis = STANDARD_GUIDEWORDS + PROCEDURAL_GUIDEWORDS
+    nodes = list(dict.fromkeys(r.node for r in records))
+    params = list(dict.fromkeys([*parameters, *(r.parameter for r in records)]))
+    ordered = sorted(records, key=lambda r: (
+        nodes.index(r.node),
+        params.index(r.parameter),
+        axis.index(r.guideword) if r.guideword in axis else len(axis),
+    ))
+    if not renumber:
+        return ordered
+    seq: dict[str, int] = {}
+    out: list[DeviationRecord] = []
+    for r in ordered:
+        seq[r.node] = seq.get(r.node, 0) + 1
+        out.append(r.model_copy(update={"id": f"{(r.node or 'node').lower()}-{seq[r.node]:03d}"}))
+    return out
 
 
 def _select_guidewords(node_meta: NodeMeta) -> list[str]:
