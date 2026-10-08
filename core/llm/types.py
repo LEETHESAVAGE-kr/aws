@@ -90,3 +90,5 @@ class ModelConfig:
     parallel_calls: int = 4
     # R-12: 열거 프롬프트에 공개 HAZOP 예시(data/kb/hazop_param_examples.json)를 덧붙일지. 기본 false.
     enumerate_examples: bool = False
+    # Y-3: 판정 호출에 넣는 공식 문서 발췌 — 파라미터당 검색 수. 0 이면 근거 인용 끔(프롬프트 바이트 불변).
+    evidence_k: int = 0

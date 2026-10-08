@@ -34,6 +34,7 @@ from core.llm import (
     Message,
     load_model_config,
 )
+from core.retrieval import Passage, Retriever, check_citation, default_retriever
 
 logger = logging.getLogger(__name__)
 
@@ -168,12 +169,20 @@ def render_param_examples(path: Path = _PARAM_EXAMPLES_PATH) -> str:
     return "\n".join(lines)
 
 
-def batch_schema(criteria: Criteria) -> dict[str, Any]:
+def batch_schema(criteria: Criteria, with_evidence: bool = False) -> dict[str, Any]:
     """판정 호출 스키마 — S·F 상한을 기준의 단계 수로 좁힌다(Y-2). 골드셋 기준이면 `DEVIATION_BATCH_SCHEMA` 와 같다."""
     schema = json.loads(json.dumps(DEVIATION_BATCH_SCHEMA))
     cell = schema["properties"]["cells"]["items"]["properties"]
     cell["S"]["maximum"] = criteria.s_max
     cell["F"]["maximum"] = criteria.f_max
+    if with_evidence:  # Y-3: 발췌 id + 원문 구절만. 제목·위치는 코드가 코퍼스에서 채운다
+        cell["evidence"] = {
+            "type": "array", "maxItems": 3,
+            "items": {
+                "type": "object", "required": ["source_id", "quote"], "additionalProperties": False,
+                "properties": {"source_id": {"type": "string"}, "quote": {"type": "string"}},
+            },
+        }
     return schema
 
 
@@ -187,6 +196,8 @@ class GeneratorConfig:
     parallel_calls: int = 1
     # R-12: 열거 시스템 프롬프트에 공개 HAZOP 예시를 덧붙인다. 기본 false — 프롬프트 바이트 불변(AC-12-1).
     enumerate_examples: bool = False
+    # Y-3: 파라미터당 공식 문서 발췌 검색 수. 0 이면 근거 인용 끔 — 판정 프롬프트·스키마가 Y-3 이전과 같다.
+    evidence_k: int = 0
 
 
 def load_generator_config() -> GeneratorConfig:
@@ -205,6 +216,7 @@ def load_generator_config() -> GeneratorConfig:
         cost_limit_usd=cfg.cost_limit_usd,
         parallel_calls=cfg.parallel_calls,
         enumerate_examples=cfg.enumerate_examples,
+        evidence_k=cfg.evidence_k,
     )
 
 
@@ -242,6 +254,8 @@ class DeviationRecord(BaseModel):
     confidence: str = "inferred"
     #: S·F 를 매긴 평가기준(Y-2, `data/kb/criteria/<id>.json`). 없으면 골드셋 NH3 기준(옛 레코드).
     criteria_id: str | None = None
+    #: Y-3 인용 검사에서 지운 인용(가짜·변형 구절). 비어 있지 않으면 검증기가 review 로 내린다.
+    citation_flags: list[str] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def _compute_risk_score(self) -> DeviationRecord:
@@ -257,10 +271,12 @@ class HazopGenerator:
         client: AbstractBedrockClient,
         config: GeneratorConfig | None = None,
         criteria_id: str = GOLD_CRITERIA,
+        retriever: Retriever | None = None,
     ) -> None:
         self._client = client
         self._config = config or GeneratorConfig()
         self.criteria = load_criteria(criteria_id)  # Y-2: S·F 등급표·위험도 산정 기준
+        self._retriever = retriever  # Y-3: evidence_k > 0 일 때만 쓴다(없으면 프로세스 공용 검색기)
         # 한 번의 generate() 실행 결과를 관측하기 위한 상태 (R-06 수용 기준·비용 집계)
         self.review_guidewords: list[str] = []
         self.total_cost_usd: float = 0.0
@@ -428,11 +444,17 @@ class HazopGenerator:
                 ),
             },
         )
+        passages = self._passages_for(node_meta, parameters, guideword)
+        if passages:
+            block = _split_prompt(_load_prompt("evidence_block.md"))[0]
+            user += "\n\n" + _fill(block, {"passages": "\n\n".join(
+                f"[{p.chunk_id}] {p.doc_title} {p.locator}\n{p.text}" for p in passages
+            )})
         try:
             response = self._client.converse(
                 system=system,
                 messages=[Message(role="user", content=user)],
-                response_schema=batch_schema(self.criteria),
+                response_schema=batch_schema(self.criteria, with_evidence=bool(passages)),
                 context={"node": node_meta.node},
             )
         except Exception:
@@ -451,7 +473,26 @@ class HazopGenerator:
             return None, response.cost_usd
         batch: dict[str, Any] = json.loads(response.content)
         batch["guideword"] = guideword  # 모델이 다른 값을 넣어도 호출한 축을 정본으로 삼는다
+        batch["_passages"] = {p.chunk_id: p for p in passages}  # 인용 검사의 허용 집합(이번 호출에 보낸 발췌)
         return batch, response.cost_usd
+
+    def _passages_for(
+        self, node_meta: NodeMeta, parameters: list[dict[str, str]], guideword: str
+    ) -> list[Passage]:
+        """Y-3: 파라미터마다 (물질·설비·파라미터·가이드워드 뜻) 질의로 상위 k, 중복 제거, 호출당 최대 10문단."""
+        k = self._config.evidence_k
+        if k <= 0:
+            return []
+        retriever = self._retriever or default_retriever()
+        seen: dict[str, Passage] = {}
+        for p in parameters:
+            query = " ".join([
+                node_meta.substance, " ".join(node_meta.equipment), p["name"], guideword,
+                GUIDEWORD_DEFINITIONS.get(guideword, ""),
+            ])
+            for passage in retriever.search(query, k):
+                seen.setdefault(passage.chunk_id, passage)
+        return list(seen.values())[:10]
 
     # -- 결과 조립 (R-02·R-05) -----------------------------------------------
     def _assemble(
@@ -493,6 +534,7 @@ def _build_records(
     prefix = (node_meta.node or "node").lower()
     for batch in batches:
         guideword = str(batch.get("guideword", ""))
+        allowed: dict[str, Passage] = batch.get("_passages") or {}
         for cell in batch.get("cells", []):
             judged += 1
             if not cell.get("applicable", False):
@@ -522,7 +564,7 @@ def _build_records(
                     F=int(cell["F"]),
                     recommendations=list(cell.get("recommendations", [])),
                     scenario="",
-                    evidence=[],
+                    **_checked_evidence(cell.get("evidence") or [], allowed),
                     confidence="inferred",
                     criteria_id=criteria_id,
                 )
@@ -555,6 +597,23 @@ def process_order(
         seq[r.node] = seq.get(r.node, 0) + 1
         out.append(r.model_copy(update={"id": f"{(r.node or 'node').lower()}-{seq[r.node]:03d}"}))
     return out
+
+
+def _checked_evidence(raw: list[Any], allowed: dict[str, Passage]) -> dict[str, list[Any]]:
+    """인용 계약(Y-3-3): 이번 호출에 보낸 발췌의 id 이고 구절이 그 원문의 부분 문자열인 것만 남긴다.
+
+    어긋난 인용은 지우고 `citation_flags` 에 남긴다 — 검증기가 그 행을 review 로 내린다(조용히 통과 금지).
+    """
+    evidence: list[Any] = []
+    flags: list[str] = []
+    for item in raw:
+        sid, quote = str(item.get("source_id", "")), str(item.get("quote", ""))
+        passage = check_citation(sid, quote, allowed)
+        if passage is None:
+            flags.append(f"{sid}: {quote[:40]}")
+        elif all(e["source_id"] != sid or e["quote"] != quote for e in evidence):
+            evidence.append(passage.evidence(quote))
+    return {"evidence": evidence, "citation_flags": flags}
 
 
 def _select_guidewords(node_meta: NodeMeta) -> list[str]:

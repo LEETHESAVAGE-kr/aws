@@ -85,6 +85,7 @@ def _parse(raw: dict[str, Any]) -> ModelConfig:
         provider=_read_provider(raw),  # type: ignore[arg-type]
         parallel_calls=_read_parallel_calls(raw["generation"]),
         enumerate_examples=_read_flag(raw["generation"], "enumerate_examples"),
+        evidence_k=_read_evidence_k(raw["generation"]),
     )
 
 
@@ -93,6 +94,14 @@ def _read_flag(section: dict[str, Any], name: str) -> bool:
     value = section.get(name, False)
     if not isinstance(value, bool):
         raise ConfigValidationError(f"generation.{name} must be true/false: {value!r}")
+    return value
+
+
+def _read_evidence_k(section: dict[str, Any]) -> int:
+    """Y-3. 누락 시 0(근거 인용 끔). 0~5 정수만."""
+    value = section.get("evidence_k", 0)
+    if isinstance(value, bool) or not isinstance(value, int) or not 0 <= value <= 5:
+        raise ConfigValidationError(f"generation.evidence_k must be an integer 0-5: {value!r}")
     return value
 
 
