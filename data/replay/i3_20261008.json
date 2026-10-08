@@ -1,0 +1,3161 @@
+{
+  "schema_version": 1,
+  "source": "live",
+  "captured_at": "2026-10-08T13:14:05+00:00",
+  "node": "I3",
+  "split": "external",
+  "provider": "anthropic",
+  "model_id": "claude-opus-4-8",
+  "node_meta": {
+    "node": "I3",
+    "substance": "LPG(프로판·부탄)",
+    "phase": "liquid",
+    "P_kPag": null,
+    "T_degC": null,
+    "equipment": [
+      "캐러셀 공급 배관",
+      "캐러셀 충전기",
+      "LPG 용기"
+    ],
+    "safeguards": []
+  },
+  "latency_s": 146.7,
+  "cost_usd": 0.7989,
+  "expected_cells": 84,
+  "judged_cells": 84,
+  "review_guidewords": [],
+  "recall": {
+    "recall": 1.0,
+    "matched": 11,
+    "total": 11
+  },
+  "parameters": [
+    "유량",
+    "압력",
+    "온도",
+    "조성",
+    "준위",
+    "상",
+    "충전량 계량",
+    "용기 건전성",
+    "연결부 밀봉",
+    "기동정지",
+    "유지보수",
+    "점화원 관리"
+  ],
+  "max_tokens": 16384,
+  "parallel_calls": 4,
+  "raw_calls": [
+    {
+      "tokens_out": 891,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3938,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 4073,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 4092,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 4468,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3560,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 4429,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 4549,
+      "stop_reason": "tool_use"
+    }
+  ],
+  "truncated_calls": 0,
+  "records": [
+    {
+      "id": "i3-001",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "유량",
+      "deviation": "캐러셀 공급 배관에 LPG 유동이 전혀 없어 충전기로 액상이 공급되지 않음",
+      "causes": [
+        "공급 배관 상류 차단밸브 오폐쇄 또는 미개방",
+        "공급펌프 정지·고장",
+        "배관 내 이물·슬러지에 의한 완전 폐색",
+        "상류 LPG 저장탱크 공급 소진"
+      ],
+      "consequences": [
+        "충전기에 LPG 미공급으로 용기 미충전·공충전 발생",
+        "공정 정지 및 재기동 반복",
+        "펌프 데드헤드 운전 시 과열·캐비테이션으로 펌프 손상",
+        "미충전 용기 유통 시 하류 사용처 공급 중단"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 3,
+      "risk_score": 6,
+      "recommendations": [
+        "공급 배관 저유량·무유량 경보 및 인터록 설치",
+        "펌프 토출측 압력·유량 감시 계장 추가",
+        "충전 개시 전 공급라인 유무 확인 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-002",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "압력",
+      "deviation": "공급 배관 압력이 LPG 증기압 이하로 저하되어 충전에 필요한 이송 압력이 전혀 형성되지 않음",
+      "causes": [
+        "공급펌프 정지로 가압 상실",
+        "상류 밸브 폐쇄로 압력원 차단",
+        "배관 대량 누출로 압력 유지 불가"
+      ],
+      "consequences": [
+        "증기압 이하에서 배관 내 LPG 기화·플래싱 발생",
+        "충전 정량성 상실 및 용기 미충전",
+        "누출 경로 발생 시 LPG 증기운 형성 및 화재·폭발 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "공급 배관 저압 경보 및 자동 차단 인터록 설치",
+        "펌프 운전 상태 연동 감시",
+        "압력 유지 실패 시 충전 사이클 정지 로직 적용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-003",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "준위",
+      "deviation": "충전 대상 용기에 액 충전이 전혀 이루어지지 않아 용기 액면이 형성되지 않음",
+      "causes": [
+        "충전 커넥터 미결합 또는 결합 불량",
+        "충전밸브 미개방",
+        "공급 무유량으로 액 유입 없음"
+      ],
+      "consequences": [
+        "공용기 또는 미충전 용기 유통",
+        "하류 수요처 공급 차질",
+        "충전 완료 오인 시 품질·거래 신뢰성 저하"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 3,
+      "risk_score": 6,
+      "recommendations": [
+        "충전 전후 용기 중량 검증(계근) 절차 도입",
+        "미충전 용기 자동 선별 및 배출 로직",
+        "충전량 미달 경보 설치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-004",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "상",
+      "deviation": "배관 내 LPG가 전량 기화하여 설계 의도인 액상 이송이 전혀 유지되지 않음",
+      "causes": [
+        "공급 압력 상실로 플래싱 기화",
+        "펌프 캐비테이션 지속",
+        "상류 액 공급 소진 후 증기만 유입"
+      ],
+      "consequences": [
+        "증기 상태 이송으로 충전 정량성 완전 상실",
+        "용기에 증기만 충전되어 사실상 미충전",
+        "펌프 공회전 및 캐비테이션 손상"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 3,
+      "risk_score": 6,
+      "recommendations": [
+        "공급라인 액상 확인용 압력·온도 감시",
+        "펌프 흡입측 NPSH 확보 설계 검토",
+        "기화 감지 시 충전 중단 인터록"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-005",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "충전량 계량",
+      "deviation": "충전기 계량 기능이 작동하지 않아 정량 충전 제어가 전혀 수행되지 않음",
+      "causes": [
+        "계량기·중량센서 고장 또는 신호 상실",
+        "충전 컨트롤러 정지",
+        "교정 오류로 계측값 미출력"
+      ],
+      "consequences": [
+        "충전량 제어 불능으로 과충전 또는 미충전 발생",
+        "과충전 시 액팽창 공간 상실로 용기 과압·파열 및 LPG 대량 누출",
+        "누출 LPG 증기운 화재·폭발로 다수 인명 피해 가능"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "독립적 2중 계량(중량+체적) 및 상호 검증 로직",
+        "계량 신호 상실 시 충전 자동 차단 인터록",
+        "충전 후 계근 재확인 절차",
+        "과충전 방지 자동 정지 기능 신설"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-006",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "용기 건전성",
+      "deviation": "용기의 압력 경계 건전성이 전혀 확보되지 않은 결함 용기가 충전 라인에 투입됨",
+      "causes": [
+        "밸브·씰 노후·손상된 용기 선별 실패",
+        "용기 재질 부식·균열 미검출",
+        "반복 착탈로 인한 밸브 시트 마모"
+      ],
+      "consequences": [
+        "충전 중 또는 충전 후 용기에서 LPG 누출",
+        "증기운 형성 및 점화 시 화재·폭발",
+        "선내 다수 인명 중상·사망 가능"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "충전 전 용기 외관·밸브 기밀 검사 절차 의무화",
+        "결함 용기 자동 격리·배출 체계",
+        "용기 정기 재검사 이력 관리"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-007",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "연결부 밀봉",
+      "deviation": "충전 커넥터·호스 연결부 밀봉이 전혀 이루어지지 않아 결합 즉시 LPG가 누설됨",
+      "causes": [
+        "커넥터 씰·오링 손상 또는 탈락",
+        "용기와 커넥터 체결 불량",
+        "반복 착탈로 인한 밀봉면 마모·이물"
+      ],
+      "consequences": [
+        "충전 개시 시 가압 LPG 분출 누출",
+        "증기운 형성 및 점화 시 화재·폭발",
+        "작업자 동상·질식 및 중상·사망 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 4,
+      "risk_score": 16,
+      "recommendations": [
+        "결합 완료·밀봉 확인 후 충전 개시 인터록",
+        "커넥터 씰 정기 교체 주기 설정",
+        "누출 감지기(가스검지기) 설치 및 충전 중단 연동"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-008",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "기동정지",
+      "deviation": "캐러셀 회전 인덱싱 및 충전 사이클이 전혀 시작되지 않거나 정지 시퀀스가 작동하지 않음",
+      "causes": [
+        "캐러셀 구동부 고장·전원 상실",
+        "충전 사이클 컨트롤러 정지",
+        "비상정지 신호 오동작"
+      ],
+      "consequences": [
+        "충전 미수행으로 공용기 배출",
+        "정지 실패 시 충전 지속으로 과충전·누출",
+        "비정상 정지 중 커넥터 결합 상태에서 LPG 잔류 방출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "안전 정지 시 커넥터 자동 분리·격리 시퀀스 확립",
+        "기동·정지 상태 감시 및 경보",
+        "비상정지 시 충전밸브 자동 폐쇄 로직"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-009",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "유지보수",
+      "deviation": "정비 시 설비 격리·퍼지가 전혀 이루어지지 않아 잔류 LPG가 방출됨",
+      "causes": [
+        "정비 전 배관·충전기 격리 절차 부재",
+        "잔류 LPG 배출·퍼지 미실시",
+        "안전장치 미비로 격리 확인 수단 없음"
+      ],
+      "consequences": [
+        "정비 중 잔류 LPG 누출로 증기운 형성",
+        "점화 시 화재·폭발로 작업자 사망·다수 중상",
+        "밀폐공간 작업 시 질식 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "정비 전 격리·배출·퍼지 LOTO 절차 수립",
+        "잔류가스 확인용 가스검지 측정 의무화",
+        "격리밸브 및 벤트 설비 신설 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-010",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "No",
+      "parameter": "점화원 관리",
+      "deviation": "용기 착탈 구역의 점화원 통제가 전혀 이루어지지 않아 누출 LPG가 점화원에 노출됨",
+      "causes": [
+        "정전기 제거(본딩·접지) 미시행",
+        "방폭 미인증 전기설비 사용",
+        "작업구역 화기·마찰 점화원 통제 부재"
+      ],
+      "consequences": [
+        "누출 LPG 증기운이 점화원과 접촉해 화재·폭발",
+        "선내 다수 인명 사망 및 인접 설비 피해",
+        "항만·인접선으로 영향 확대 가능"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "충전 구역 본딩·접지 체계 구축",
+        "방폭 전기설비 적용 및 화기작업 통제",
+        "가스검지기 연동 점화원 차단 및 환기 강화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-011",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "유량",
+      "deviation": "캐러셀 공급 배관을 통한 LPG 공급 유량이 설계치보다 과다하게 증가한다",
+      "causes": [
+        "공급 펌프 토출 과다 또는 조절 기능 상실",
+        "공급 배관 압력 상승에 따른 유량 증가",
+        "충전기 유량 제어 밸브 개도 과다"
+      ],
+      "consequences": [
+        "충전 시간당 이송량 증가로 용기 과충전 진행",
+        "충전기 노즐·커넥터 급속 유동으로 연결부 이탈 시 다량 LPG 누출",
+        "누출 LPG 증기운 형성 및 점화 시 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "공급 배관 유량 제한 오리피스 또는 유량 조절 밸브 설치",
+        "충전기별 유량 상한 설정 및 과유량 경보·차단 로직 적용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-012",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "압력",
+      "deviation": "공급 배관·충전기·용기 내 압력이 설계 상한을 초과하여 상승한다",
+      "causes": [
+        "공급 펌프 과압 또는 압력 제어 상실",
+        "밸브 닫힘 상태에서의 액봉(liquid blocking) 후 외부 입열로 인한 압력 상승",
+        "고온 환경에서 액상 LPG 열팽창"
+      ],
+      "consequences": [
+        "배관·충전 호스·커넥터 파열로 LPG 대량 누출",
+        "용기 내압 초과 시 용기 변형·파열",
+        "누출 LPG 점화 시 화재·폭발로 작업자 사망 가능"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "공급 배관 및 충전 라인에 안전밸브 설치",
+        "액봉 구간 열팽창 릴리프 밸브 설치",
+        "압력 상한 경보 및 자동 차단 계장 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-013",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "온도",
+      "deviation": "LPG 및 용기 온도가 설계 기준보다 높게 상승한다",
+      "causes": [
+        "하절기 외기·직사광선 노출",
+        "인접 열원 또는 화재 복사열",
+        "충전 작업장 환기 부족에 따른 축열"
+      ],
+      "consequences": [
+        "증기압 상승으로 용기·배관 과압",
+        "충전 밀도 저하 상태에서 충전 후 냉각 시 상대 과충전 및 액팽창 공간 부족",
+        "용기 과압 파열 및 LPG 방출로 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "충전장 차양·냉각 및 환기 강화",
+        "온도 보정 충전 제어 적용",
+        "용기·배관 표면 온도 모니터링"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-014",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "조성",
+      "deviation": "혼합 LPG 중 부탄 대비 프로판 비율이 설계 기준보다 높아져 증기압이 증가한다",
+      "causes": [
+        "원료 LPG 혼합비 관리 미흡",
+        "계절용 배합 전환 오류",
+        "공급원 성상 변동"
+      ],
+      "consequences": [
+        "동일 온도에서 증기압 상승으로 용기 과압 위험 증대",
+        "충전 기준(충전밀도) 불일치로 과충전 유발",
+        "용기 건전성 한계 초과 시 누출·파열"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "공급 LPG 조성 주기적 분석 및 기록",
+        "조성 기준 벗어남 시 충전 밀도 기준 재설정 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-015",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "준위",
+      "deviation": "용기 내 충전 액면이 허용 충전량을 초과하여 과충전된다",
+      "causes": [
+        "충전 정지 기준 액면 초과",
+        "액면·중량 감지 기능 부재 또는 오류",
+        "충전 사이클 종료 지연"
+      ],
+      "consequences": [
+        "액팽창 공간 부족으로 온도 상승 시 액봉·과압",
+        "용기 밸브·안전장치 통한 LPG 방출",
+        "방출 LPG 점화 시 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "과충전 방지용 충전량 상한 감지 및 자동 정지",
+        "충전 후 중량 검수 공정 추가"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-016",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "충전량 계량",
+      "deviation": "캐러셀 충전기의 계량값이 실제보다 적게 나와 용기에 기준 초과량이 충전된다",
+      "causes": [
+        "계량 센서 드리프트·교정 불량",
+        "충전 정지 신호 지연",
+        "온도·조성 보정 미반영 계량"
+      ],
+      "consequences": [
+        "용기 과충전으로 액팽창 공간 부족",
+        "운반·보관 중 온도 상승 시 용기 과압·파열",
+        "LPG 누출·화재"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "계량 장치 정기 교정 및 기준기 대조",
+        "충전 후 중량 2차 검수 및 과충전 자동 선별"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-017",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "용기 건전성",
+      "deviation": "충전 압력·충전량 증가가 용기 밸브·씰·재질 건전성 한계를 초과하는 수준으로 가해진다",
+      "causes": [
+        "과압·과충전 상태에서의 반복 충전",
+        "노후·손상 용기에 대한 선별 없는 충전",
+        "밸브·씰 열화 상태 미확인"
+      ],
+      "consequences": [
+        "용기 밸브·씰 파손으로 LPG 누출",
+        "재질 피로·손상 부위 파열",
+        "누출 LPG 점화 시 화재·폭발로 중상·사망"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "충전 전 용기 외관·밸브 건전성 점검 절차 도입",
+        "내압 기준 초과 용기 격리 및 재검사 체계 구축"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-018",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "연결부 밀봉",
+      "deviation": "충전 커넥터·호스 연결부에 설계 이상의 압력·유량이 작용하여 밀봉 한계를 초과한다",
+      "causes": [
+        "공급 과압·과유량으로 연결부 부하 증가",
+        "반복 착탈로 인한 씰 마모 상태에서의 고압 충전",
+        "커넥터 체결 불완전"
+      ],
+      "consequences": [
+        "연결부 LPG 누설·분출",
+        "누출 증기운 형성",
+        "점화 시 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 4,
+      "risk_score": 16,
+      "recommendations": [
+        "커넥터 씰 주기 교체 및 착탈 횟수 관리",
+        "충전 전 연결부 가압 누설 확인 절차 적용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-019",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "기동정지",
+      "deviation": "충전 사이클 시작·정지 과정에서 충전량이 기준을 초과하여 들어간다",
+      "causes": [
+        "인덱싱·정지 타이밍 오차로 충전 정지 지연",
+        "밸브 닫힘 지연에 따른 과주입",
+        "사이클 중복 동작"
+      ],
+      "consequences": [
+        "용기 과충전",
+        "정지 지연 중 커넥터 이탈 시 LPG 분출",
+        "누출·화재"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "충전 종료 시 신속 차단 밸브 및 인터록 적용",
+        "인덱싱·충전 동기화 로직 검증"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-020",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "유지보수",
+      "deviation": "정비 시 격리·퍼지 미흡으로 설비 내 잔류 LPG가 기준 이상으로 남은 상태에서 작업한다",
+      "causes": [
+        "안전장치·격리 수단 부재",
+        "충전 라인 잔압·잔류액 방출 절차 미비",
+        "반복 착탈 설비 분해 전 퍼지 미실시"
+      ],
+      "consequences": [
+        "정비 중 잔류 LPG 다량 방출",
+        "작업 공간 가연성 증기 축적",
+        "점화 시 화재·폭발로 작업자 사망"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "정비 전 격리·감압·퍼지 절차 수립 및 LOTO 적용",
+        "잔류 가스 측정 후 작업 허가제 운용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-021",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "More",
+      "parameter": "점화원 관리",
+      "deviation": "충전·착탈 구역에 통제 기준을 초과하는 점화원(정전기 포함)이 존재한다",
+      "causes": [
+        "반복 착탈 중 정전기 축적 및 미방전",
+        "비방폭 전기기기·공구 사용",
+        "본딩·접지 미흡"
+      ],
+      "consequences": [
+        "누출 LPG 증기운과 점화원 접촉",
+        "화재·폭발 발생",
+        "다수 작업자 사망 및 인접 설비 피해"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "충전 구역 본딩·접지 및 정전기 제거 체계 구축",
+        "방폭 전기설비 적용 및 화기 통제·가스 감지 경보 설치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-022",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "유량",
+      "deviation": "캐러셀 공급 배관을 통한 LPG 공급 유량이 설계치보다 감소하여 충전기에 충분한 LPG가 공급되지 않는다",
+      "causes": [
+        "공급 배관 밸브 부분 폐쇄",
+        "배관 내 이물질·슬러지에 의한 부분 막힘",
+        "상류 펌프 성능 저하",
+        "필터 막힘"
+      ],
+      "consequences": [
+        "용기 충전량 부족으로 미충전·부족충전 발생",
+        "충전 사이클 지연 및 재충전 반복으로 착탈 횟수 증가에 따른 누출 기회 증가",
+        "유량 저하로 인한 배관 내 부분 기화 유발"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 3,
+      "risk_score": 6,
+      "recommendations": [
+        "공급 배관에 유량 지시·저유량 경보 설치",
+        "필터 차압 감시 및 정기 세척 절차 수립",
+        "충전량 검증을 위한 중량 재확인 절차 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-023",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "압력",
+      "deviation": "액상 LPG 이송 압력이 증기압 이하로 저하되어 배관·충전기 내에서 압력 유지에 실패한다",
+      "causes": [
+        "상류 공급 압력 저하",
+        "배관 누설로 인한 압력 손실",
+        "펌프 토출 압력 부족"
+      ],
+      "consequences": [
+        "증기압 이하 저압에서 LPG 기화로 배관 내 2상 유동 발생",
+        "충전 정량성 훼손 및 캐비테이션에 의한 설비 손상",
+        "충전량 부족으로 재작업 증가"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 3,
+      "risk_score": 6,
+      "recommendations": [
+        "공급 배관에 압력 지시·저압 경보 설치",
+        "증기압 이상 유지를 위한 최소 압력 관리 기준 설정",
+        "누설 점검 정기화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-024",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "온도",
+      "deviation": "LPG 온도가 설계 기준보다 낮아 증기압이 저하되고 충전 밀도 기준과 달라진다",
+      "causes": [
+        "동절기 외기온 저하",
+        "저온 LPG 공급",
+        "급속 감압에 따른 자기냉각"
+      ],
+      "consequences": [
+        "증기압 저하로 이송 압력 유지 곤란 및 유량 저하",
+        "저온 상태 과충전 후 상온 복귀 시 액팽창으로 용기 과압 위험",
+        "충전 밀도 오차로 정량 충전 실패"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "온도 보정 충전 기준 적용",
+        "온도 지시계 설치 및 온도-충전량 보정 절차 수립",
+        "저온 과충전 방지를 위한 충전 상한 관리"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-025",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "조성",
+      "deviation": "혼합 LPG 중 프로판 비율이 설계보다 낮아(부탄 과다) 증기압이 기준보다 감소한다",
+      "causes": [
+        "공급 원료 조성 변동",
+        "분리·블렌딩 공정 이상",
+        "저장탱크 성층화"
+      ],
+      "consequences": [
+        "낮은 증기압으로 이송 압력·유량 저하 및 기화 경향 변화",
+        "충전량 기준 불일치로 용기 적합성 훼손",
+        "저온 시 기화 불량으로 사용 성능 저하"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 3,
+      "risk_score": 6,
+      "recommendations": [
+        "공급 LPG 조성 정기 분석 절차 수립",
+        "조성 변동 시 충전 기준 조정 지침 마련",
+        "저장탱크 성층화 방지 순환 관리"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-026",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "준위",
+      "deviation": "용기 충전 액면이 목표치보다 낮아 과소 충전 상태가 된다",
+      "causes": [
+        "충전 사이클 조기 종료",
+        "공급 유량·압력 부족",
+        "계량 오류로 조기 정지"
+      ],
+      "consequences": [
+        "충전량 부족으로 상품성 저하 및 재충전 필요",
+        "재착탈 반복으로 연결부 누출 기회 증가",
+        "미충전 용기 유통 위험"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 3,
+      "risk_score": 6,
+      "recommendations": [
+        "충전 후 중량 검사 공정 도입",
+        "액면·중량 기준 재검증 절차 수립",
+        "저충전 용기 자동 선별 장치 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-027",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "상",
+      "deviation": "액상 유지가 설계 의도이나 배관 내 압력·온도 변화로 액상 분율이 감소하고 기상이 증가한다",
+      "causes": [
+        "이송 압력 저하로 증기압 이하 운전",
+        "자기냉각·플래싱",
+        "배관 내 열입력에 의한 부분 기화"
+      ],
+      "consequences": [
+        "2상 유동으로 충전 정량성 훼손",
+        "캐비테이션에 의한 펌프·충전기 손상",
+        "용기 충전 부족 및 사이클 반복"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 3,
+      "risk_score": 6,
+      "recommendations": [
+        "증기압 이상 압력 유지 관리",
+        "배관 단열 및 열입력 관리",
+        "충전 라인 압력 감시 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-028",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "충전량 계량",
+      "deviation": "계량값이 실제보다 적게 측정되어 정량보다 과소 충전된다",
+      "causes": [
+        "계량기 교정 오차·드리프트",
+        "저유량 조건에서 계량 정밀도 저하",
+        "계량 센서 오작동"
+      ],
+      "consequences": [
+        "충전량 부족으로 품질 미달 및 재충전",
+        "반복 착탈로 누출 기회 증가",
+        "계량 신뢰성 저하로 전반적 충전 관리 부실"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 3,
+      "risk_score": 6,
+      "recommendations": [
+        "계량기 정기 교정·검증 절차 수립",
+        "충전 후 독립 중량 확인 도입",
+        "계량 이상 감지 경보 설치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-029",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "용기 건전성",
+      "deviation": "용기 재질·벽두께의 열화로 내압 보유 성능이 감소한다",
+      "causes": [
+        "반복 사용에 따른 부식·마모",
+        "밸브·씰 노후화",
+        "손상 용기의 선별 미흡"
+      ],
+      "consequences": [
+        "보유 내압 저하로 정상 충전 압력에서도 변형·파열 위험",
+        "LPG 누출 및 체류 시 화재·폭발",
+        "용기 파손으로 인적 피해"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "충전 전 용기 외관·재검사 이력 확인 절차 수립",
+        "손상·기한 초과 용기 격리 공정 도입",
+        "용기 재검사 주기 관리"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-030",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "연결부 밀봉",
+      "deviation": "충전 커넥터·호스 연결부의 밀봉력이 감소하여 체결이 불완전해진다",
+      "causes": [
+        "씰·오링 마모 및 노후",
+        "반복 착탈에 의한 체결면 손상",
+        "이물질 끼임으로 밀착 불량"
+      ],
+      "consequences": [
+        "충전 중 LPG 누출로 증기운 형성",
+        "점화 시 화재·폭발",
+        "누설로 충전 압력 손실 및 충전 부족"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 4,
+      "risk_score": 16,
+      "recommendations": [
+        "연결부 씰 정기 교체 주기 설정",
+        "누설 감지(가스 검지기) 설치 검토",
+        "체결 상태 확인 체크리스트 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-031",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "기동정지",
+      "deviation": "캐러셀 인덱싱·충전 사이클이 정상보다 짧게 종료되어 충전이 불완전하게 중단된다",
+      "causes": [
+        "사이클 타이머·인터록 오설정",
+        "기동정지 과도기 유량 불안정",
+        "비상정지 오동작"
+      ],
+      "consequences": [
+        "미충전·부족충전 용기 발생",
+        "충전 중 조기 분리로 누출",
+        "재기동 반복에 따른 누출·오충전 증가"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "기동정지 시퀀스 인터록 검증",
+        "불완전 사이클 용기 자동 식별·격리",
+        "충전 완료 확인 전 분리 방지 로직 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-032",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "유지보수",
+      "deviation": "정비 전 배관·충전기의 LPG 배출·퍼지가 불충분하여 잔류량이 완전히 제거되지 않는다",
+      "causes": [
+        "격리·배출 절차 미흡",
+        "안전장치 부재로 잔류 확인 수단 없음",
+        "퍼지 미시행"
+      ],
+      "consequences": [
+        "정비 중 잔류 LPG 방출로 증기운 형성",
+        "점화 시 화재·폭발 및 작업자 피해",
+        "작업자 질식·동상 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "정비 전 격리·배출·퍼지·가스농도 확인 절차 수립",
+        "작업허가제 도입",
+        "잔류 가스 측정기 비치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-033",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Less",
+      "parameter": "점화원 관리",
+      "deviation": "용기 착탈 구역의 점화원 통제 수준이 미흡하여 정전기·점화원 관리가 불충분하다",
+      "causes": [
+        "접지·본딩 미흡",
+        "방폭 미인증 설비 사용",
+        "점화원 통제 절차 부재"
+      ],
+      "consequences": [
+        "착탈 중 누출된 LPG 증기운 점화",
+        "화재·폭발로 다수 인명·설비 피해",
+        "인접 설비·구역 확산"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "작업구역 접지·본딩 체계 구축",
+        "방폭 전기설비 적용 및 점검",
+        "점화원 통제 및 가스검지 연동 관리 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-034",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "유량",
+      "deviation": "충전기 측에서 공급 배관 방향으로 LPG가 역류한다",
+      "causes": [
+        "충전 완료 후 용기 내 증기압이 공급 압력보다 높아 역방향 압력 발생",
+        "공급 펌프 정지·트립 시 하류 압력에 의한 역류",
+        "체크밸브 부재 또는 다수 용기 동시 연결 시 압력 불균형"
+      ],
+      "consequences": [
+        "역류한 LPG가 공급 배관으로 유입되어 이물·역압 축적",
+        "펌프 역회전 및 기계적 손상",
+        "배관 내 고압 역압으로 연결부 이완·누출로 이어져 가연성 증기 확산 및 화재·폭발 가능"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "공급 배관에 역류 방지용 체크밸브 설치",
+        "펌프 정지 시 자동 차단밸브 연동 구성",
+        "충전기-공급 배관 간 압력 모니터링 및 역압 경보 설치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-035",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "압력",
+      "deviation": "용기 측 압력이 공급 측보다 높아져 역압이 걸린다",
+      "causes": [
+        "충전된 용기의 증기압이 주변 온도 상승으로 공급 압력 초과",
+        "공급 펌프 정지로 공급측 압력 급감",
+        "충전 완료 용기를 격리하지 않고 라인에 연결 유지"
+      ],
+      "consequences": [
+        "역방향 압력이 공급 배관·펌프 씰에 부하를 주어 손상",
+        "연결부 누설 경로 형성으로 액상 LPG 분출",
+        "급격 기화·증기운 형성에 따른 화재·폭발 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "충전 완료 후 용기 측 자동 격리밸브 설치",
+        "공급-용기 간 차압 감시 및 고차압 인터록",
+        "역류 방지밸브 적용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-036",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "준위",
+      "deviation": "충전 중 용기에서 공급 라인으로 액이 역류해 용기 액면이 의도와 반대로 감소한다",
+      "causes": [
+        "충전 사이클 종료 직후 라인 감압으로 용기 내 액이 역흡입",
+        "공급측 압력 소실로 용기-라인 간 압력 역전",
+        "연결부 분리 전 라인 잔압 해소 절차 부재"
+      ],
+      "consequences": [
+        "미충전·충전량 미달 용기 출하로 품질 이탈",
+        "역류 액이 커넥터 분리 시점에 방출되어 액상 LPG 누출",
+        "저온 동상·화재 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "충전 완료 후 용기측 격리밸브 자동 폐쇄",
+        "분리 전 라인 잔압 회수(벤트-리커버리) 절차 수립",
+        "역류 방지 체크밸브 설치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-037",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "상",
+      "deviation": "역압으로 용기 내 증기가 액상 공급 배관으로 역류하여 라인 내 기상이 유입된다",
+      "causes": [
+        "충전 완료 용기의 증기 공간 압력이 공급 액압보다 높을 때 증기 역류",
+        "공급 중단으로 라인 감압 시 용기측 증기 역방향 이동",
+        "체크밸브 부재"
+      ],
+      "consequences": [
+        "공급 배관 내 기상 유입으로 펌프 캐비테이션·계량 불안정",
+        "후속 용기 충전 정량성 훼손",
+        "증기-액 교대로 인한 압력 맥동 및 연결부 피로·누출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "공급 라인 체크밸브 및 기액 분리 설비 적용",
+        "펌프 흡입측 압력 감시로 캐비테이션 방지",
+        "충전 후 용기 격리"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-038",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "충전량 계량",
+      "deviation": "역류로 계량기가 역방향 유량을 기록해 실제 충전량과 계량값이 어긋난다",
+      "causes": [
+        "충전 후 역류 발생 시 유량계가 역방향 흐름을 계측하거나 비계측",
+        "공급 정지 시 라인 역류로 적산값 오차",
+        "역류 보정 기능 없는 계량기 사용"
+      ],
+      "consequences": [
+        "실제 충전량과 계량값 불일치로 과충전/미충전 판별 실패",
+        "과충전 용기 미검출 시 액팽창 공간 부족으로 용기 과압 파열",
+        "대량 LPG 방출 및 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "역류 미계측(단방향) 계량기 또는 역류 보정 로직 적용",
+        "계량기 상류 체크밸브 설치",
+        "중량 검증(저울) 교차 확인 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-039",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "용기 건전성",
+      "deviation": "역압·역류 하중이 용기 밸브·씰에 반대 방향으로 작용해 밀봉 건전성이 저하된다",
+      "causes": [
+        "충전 완료 후 라인 역압이 용기 충전밸브에 역방향 부하 인가",
+        "반복 착탈 용기 밸브 씰의 방향성 열화",
+        "역류에 의한 압력 맥동으로 밸브 시트 손상"
+      ],
+      "consequences": [
+        "용기 충전밸브 내부 누설 경로 형성",
+        "출하 후 지속 미세 누출로 사용처 화재 위험",
+        "밸브 파손 시 액상 LPG 급방출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "용기 착탈 후 밸브 기밀 시험 절차 도입",
+        "역압 차단용 체크밸브로 밸브 역부하 방지",
+        "반복 착탈 용기 밸브 주기 점검·교체 기준 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-040",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "연결부 밀봉",
+      "deviation": "충전 커넥터·호스 연결부에 역류 압력이 걸려 분리 시점·운전 중 역방향 누설이 발생한다",
+      "causes": [
+        "충전 종료 후 라인 잔압·역압이 커넥터에 작용",
+        "역류로 커넥터 체결면에 반대 방향 부하 인가",
+        "잔압 해소 전 용기 분리"
+      ],
+      "consequences": [
+        "커넥터·호스 연결부에서 액상 LPG 분출",
+        "작업자 인근 가연성 증기운 형성",
+        "점화 시 플래시 화재·폭발로 인명 피해"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "분리 전 라인 역압·잔압 자동 해소 인터록",
+        "커넥터 상류 체크밸브 및 브레이크어웨이 커플링 적용",
+        "연결부 누출 감지기 설치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-041",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "기동정지",
+      "deviation": "충전 사이클 정지·펌프 트립 시 라인이 역방향으로 흐르며 비정상 역류 상태로 정지한다",
+      "causes": [
+        "펌프 급정지로 하류 압력이 상류보다 높아져 순간 역류",
+        "인덱싱 정지 중 충전 용기 격리 미실시",
+        "정지 시퀀스에 역류 차단 단계 부재"
+      ],
+      "consequences": [
+        "정지 시 역류로 공급 라인·펌프 손상",
+        "정지 중 라인 역압 잔류로 재기동 시 서지·누출",
+        "액 방출에 따른 화재·폭발 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "펌프 정지 연동 자동 차단밸브 및 체크밸브 적용",
+        "정지 시퀀스에 용기 격리·역류 차단 단계 포함",
+        "재기동 전 라인 압력 확인 인터록"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-042",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "유지보수",
+      "deviation": "정비·격리 중 잔류 역압으로 LPG가 반대 방향으로 역류·방출된다",
+      "causes": [
+        "정비 격리 시 하류 용기·라인 잔압이 작업 구간으로 역류",
+        "안전장치 없는 상태에서 격리·퍼지 절차 미흡",
+        "역류 방지 수단 부재로 복수 경로 잔압 유입"
+      ],
+      "consequences": [
+        "정비 작업 중 예상치 못한 액상 LPG 역방출",
+        "개방 배관에서 증기운 형성 및 작업자 노출",
+        "점화 시 화재·동상·질식 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이중 격리·블리드(double block and bleed) 절차 수립",
+        "정비 전 양방향 잔압 확인 및 퍼지 절차 도입",
+        "작업허가 및 격리 확인 체크리스트 운영"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-043",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Reverse",
+      "parameter": "점화원 관리",
+      "deviation": "역류로 인한 예기치 못한 누출이 점화원 통제 구역 밖에서 발생한다",
+      "causes": [
+        "역류 누출 발생 위치가 평상시 누출 예상 구역과 달라 점화원 통제 범위를 벗어남",
+        "역류로 인한 증기운이 비방폭 구역으로 확산",
+        "착탈 작업 중 역방향 방출과 정전기 중첩"
+      ],
+      "consequences": [
+        "통제되지 않은 구역의 점화원과 역류 증기운 접촉",
+        "플래시 화재·폭발 발생",
+        "다수 인명 피해 및 인접 설비 손상"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 2,
+      "risk_score": 10,
+      "recommendations": [
+        "역류 누출 가능 위치 포함 방폭 구역 재설정",
+        "본딩·접지 및 정전기 제거 설비 설치",
+        "가스 감지기·점화원 통제 절차 확대"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-044",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "유량",
+      "deviation": "설계 의도된 LPG가 아닌 다른 유체(이종 가스·불활성 퍼지가스·오염물)가 공급 배관을 통해 충전기로 흐름",
+      "causes": [
+        "공용 설비·배관 오접속으로 이종 가스가 공급 라인에 유입",
+        "퍼지·치환용 불활성가스 밸브 미격리로 공급 라인 혼입",
+        "상류 공급원 오선정"
+      ],
+      "consequences": [
+        "규격 외 유체가 용기에 충전되어 사용처에서 이상 연소·실화",
+        "불활성가스 혼입 시 충전 중단·재작업, 라인 내 잔류 LPG와 혼합되어 오충전 용기 유통",
+        "오염 유체로 용기 내부 부식·밸브 손상"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "공급원별 라인 전용화 및 오접속 방지 커플링 적용",
+        "충전 전 공급 유체 식별·분석 절차 수립",
+        "이종 라인 간 교차 연결 차단밸브·블라인드 설치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-045",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "조성",
+      "deviation": "설계 기준(프로판·부탄 지정 혼합비)과 다른 조성의 LPG 또는 규격 외 탄화수소·불순물이 충전됨",
+      "causes": [
+        "공급 LPG 로트의 프로판/부탄 비율 이탈",
+        "이전 유종 잔류물이 배관·용기에 남아 혼합",
+        "중질분·수분 등 불순물 유입"
+      ],
+      "consequences": [
+        "증기압 기준 불일치로 충전량 설정 오류 및 과충전",
+        "프로판 과다 시 증기압 상승으로 용기 과압·릴리프 작동·방출",
+        "사용처에서 이상 연소, 불순물에 의한 밸브 막힘·부식"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "입고 LPG 조성 분석 및 로트별 증기압 확인 절차",
+        "조성별 충전량·압력 기준표 운영",
+        "배관·용기 이종 유종 전환 시 치환·세정 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-046",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "상",
+      "deviation": "액상 LPG가 아닌 기상(증기)이 배관·충전기로 유입되어 설계 의도와 다른 상으로 충전 진행됨",
+      "causes": [
+        "배관 내 압력 저하·온도 상승으로 LPG 플래싱·기화",
+        "공급 탱크 액위 저하로 기상 흡입",
+        "라인 내 잔류 증기 미제거"
+      ],
+      "consequences": [
+        "기상 충전으로 계량 정량성 상실·과소충전 용기 유통",
+        "캐비테이션·2상 유동으로 펌프·충전기 손상",
+        "기상 유입에 따른 압력 변동으로 커넥터 누설·방출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "공급 라인 서브쿨링 유지 및 기액분리 설비 적용",
+        "충전 전 라인 액상 확인(기상 검출) 수단 도입",
+        "공급 탱크 최소 액위 관리 기준 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-047",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "용기 건전성",
+      "deviation": "설계 규격과 다른 용기(재질·내압등급 불일치, 비인증·이종 용기)가 충전 대상으로 투입됨",
+      "causes": [
+        "캐러셀에 규격 외·타 용도 용기 혼입",
+        "용기 식별 오류로 부적합 재질 용기 충전",
+        "내압등급 미달 노후·개조 용기 투입"
+      ],
+      "consequences": [
+        "증기압을 견디지 못하는 용기 파열·대량 LPG 방출·화재폭발",
+        "부적합 재질 용기 부식·균열로 유통 후 누출",
+        "밸브 규격 불일치로 연결부 누설"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "충전 전 용기 규격·각인·검사이력 확인 절차",
+        "비인증·이종 용기 식별 및 반입 차단",
+        "용기 재검사 기한 관리 체계 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-048",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "연결부 밀봉",
+      "deviation": "충전 커넥터·호스에 설계와 다른 규격·재질의 씰·개스킷이 적용되어 밀봉 성능이 설계 의도와 어긋남",
+      "causes": [
+        "정비 시 비호환 씰·개스킷 대체 사용",
+        "LPG 비적합 재질(경화·팽윤 재질) 씰 오사용",
+        "커넥터 규격 불일치 부품 혼용"
+      ],
+      "consequences": [
+        "반복 착탈 중 밀봉 불량으로 LPG 누출·증기운 형성",
+        "점화원 접촉 시 화재·폭발",
+        "누설 지속에 따른 작업자 질식·동상 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "LPG 적합 인증 씰·커넥터 전용 자재 관리",
+        "정비용 소모품 규격 표준화 및 오사용 방지",
+        "착탈 후 연결부 기밀 확인 절차 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-049",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "유지보수",
+      "deviation": "정비·격리 시 LPG 대신 설계 외 유체(규격 외 세정제·불활성가스)가 라인에 잔류·주입되어 이후 운전에 혼입됨",
+      "causes": [
+        "정비 후 비승인 세정·치환 유체 사용",
+        "불활성가스 퍼지 후 미배출 잔류",
+        "격리 미흡으로 정비 유체가 공급 라인에 남음"
+      ],
+      "consequences": [
+        "재가동 시 잔류 이종 유체가 용기에 혼입되어 오충전",
+        "불활성가스 혼입으로 충전 중단·재작업",
+        "세정제 잔류에 의한 용기 내부 오염·부식"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "승인된 치환·세정 유체 목록 관리 및 정비 절차서 명문화",
+        "정비 후 라인 잔류물 배출·확인 체크리스트",
+        "격리 블라인드·태그아웃 적용으로 교차 유입 차단"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-050",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Other than",
+      "parameter": "점화원 관리",
+      "deviation": "방폭 구역에 설계 의도와 다른 비방폭 기기·점화성 도구가 반입되어 잠재 점화원이 존재함",
+      "causes": [
+        "착탈 작업 시 비방폭 공구·전기기기 반입",
+        "정전기 대책 미비 상태의 비규격 복장·장비 사용",
+        "방폭 미인증 임시 조명·기기 투입"
+      ],
+      "consequences": [
+        "누출 LPG 증기운과 점화원 접촉 시 화재·폭발",
+        "다수 용기 밀집 구역 연쇄 파열로 대규모 피해",
+        "선내·인접 설비 확산 피해"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "방폭 구역 기기·공구 인증 관리 및 반입 통제",
+        "정전기 접지·본딩 및 대전방지 복장 의무화",
+        "작업허가제로 비방폭 장비 반입 차단"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-051",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "유량",
+      "deviation": "충전 사이클 중 일부 용기에만 유량이 전달되거나 설계 유량의 일부만 이송되어 부분 충전 상태로 캐러셀을 빠져나감",
+      "causes": [
+        "캐러셀 공급 배관 분기부 일부 막힘·부분 폐색",
+        "일부 충전 노즐의 밸브 부분 개방 또는 고착",
+        "인덱싱 위치 어긋남으로 일부 스테이션에만 유량 전달"
+      ],
+      "consequences": [
+        "부분 충전 용기 출하로 품질 미달",
+        "충전 불균일로 일부 용기 반복 재충전 시 취급 중 LPG 누출·확산 가능성",
+        "충전 공정 혼선으로 미확인 용기 유통"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "스테이션별 유량·충전 완료 확인 계측 도입",
+        "충전 완료 전후 중량 검증 단계 추가",
+        "분기 배관 차압 모니터링"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-052",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "압력",
+      "deviation": "공급 압력이 증기압을 일부만 상회하여 설계 압력에 미달한 상태로 충전이 진행됨",
+      "causes": [
+        "공급 펌프 성능 저하로 토출 압력 부분 부족",
+        "배관 부분 폐색에 의한 압력 강하",
+        "다수 스테이션 동시 충전 시 압력 분배 불균형"
+      ],
+      "consequences": [
+        "증기압 부근 운전으로 배관 내 부분 기화·캐비테이션 유발",
+        "충전 정량성 저하 및 충전 시간 지연",
+        "불안정 운전 반복에 따른 설비 손상 누적"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 3,
+      "risk_score": 6,
+      "recommendations": [
+        "공급 압력 하한 경보 및 인터록 설치",
+        "펌프 토출 압력 상시 감시",
+        "동시 충전 대수에 따른 압력 관리 기준 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-053",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "온도",
+      "deviation": "LPG의 일부 성분만 설계 온도 범위에 들어 혼합물 전체 온도가 기준 일부만 충족한 상태로 충전됨",
+      "causes": [
+        "옥외 배관·용기의 부분적 일사·외기 노출로 국부 온도 편차",
+        "저온 조건에서 부탄 성분의 증기압 저하로 부분 이송"
+      ],
+      "consequences": [
+        "저온 시 충전 밀도 과다로 과충전·액팽창 공간 부족",
+        "고온 시 용기 내압 상승으로 과압 위험",
+        "충전 정량성 오차"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "충전 라인 온도 감시 및 온도 보정 충전 로직 적용",
+        "옥외 배관·용기 차양·단열 보완",
+        "고온·저온 시 충전량 보정 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-054",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "조성",
+      "deviation": "프로판·부탄 혼합비가 설계 기준의 일부만 충족하여 성분 일부가 과다·과소한 조성으로 충전됨",
+      "causes": [
+        "원료 저장측 혼합비 관리 불량",
+        "저온에서 부탄 성분의 선택적 잔류로 프로판 편중 이송",
+        "배관 내 성분 분리"
+      ],
+      "consequences": [
+        "증기압 기준 초과로 용기 과압 위험",
+        "용기 적합성 미달 및 품질 규격 위반",
+        "충전량 기준 오적용에 따른 과충전"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "공급측 조성 분석·관리 강화",
+        "증기압 기반 조성 검증 절차 도입",
+        "혼합비 변동 시 충전 기준 재설정"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-055",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "준위",
+      "deviation": "용기 충전 액면이 목표의 일부만 도달하거나 목표를 넘어서는 부분 미달·초과 상태로 종료됨",
+      "causes": [
+        "충전 종료 판정 계측 오차",
+        "유량 부족으로 액면 미달 상태 조기 종료",
+        "충전 과정 중단으로 중간 액면 상태 출하"
+      ],
+      "consequences": [
+        "액팽창 공간 부족 시 온도 상승으로 용기 과압·릴리프 작동·누출",
+        "미달 충전 용기 재처리 반복으로 취급 위험 증가"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "충전 상한 중량 기준 관리 및 과충전 방지 계량 인터록",
+        "충전 후 중량 검수 100% 실시",
+        "미달 용기 식별·격리 절차"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-056",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "상",
+      "deviation": "액상 LPG 중 일부가 기화하여 액·기 혼상 상태로 충전기에 도달함",
+      "causes": [
+        "공급 압력이 증기압 부근으로 저하",
+        "배관 국부 온도 상승에 의한 부분 기화",
+        "펌프 흡입측 캐비테이션"
+      ],
+      "consequences": [
+        "기상 혼입으로 충전 정량성 저하 및 과소 충전",
+        "캐비테이션에 의한 펌프·배관 손상",
+        "충전 불균일로 용기 품질 편차"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "공급 라인 서브쿨링 확보 및 압력 하한 관리",
+        "펌프 흡입조건 개선",
+        "기상 혼입 감지 수단 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-057",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "충전량 계량",
+      "deviation": "계량기가 목표 충전량의 일부만 반영하거나 일부 구간을 누락 계측하여 실제와 다른 양으로 충전 종료됨",
+      "causes": [
+        "중량·유량 계량기 교정 오차·드리프트",
+        "계량 신호 일부 누락·지연",
+        "기상 혼입으로 체적 계량 오차"
+      ],
+      "consequences": [
+        "과충전 시 액팽창 공간 부족으로 용기 과압·누출",
+        "과소 충전 시 재처리 반복으로 취급 중 누출 위험",
+        "제품 품질 규격 위반"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "계량기 정기 교정 및 상한 인터록 연동",
+        "독립 2중 계량(중량 검증) 도입",
+        "계량 이상 자동 충전 정지 로직"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-058",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "용기 건전성",
+      "deviation": "용기 밸브·씰·몸체 중 일부 요소만 건전성을 유지하여 일부 결함을 가진 용기가 충전에 투입됨",
+      "causes": [
+        "교체식 용기의 밸브·씰 노후·부분 손상",
+        "용기 재질 부식·변형 일부 진행",
+        "충전 전 검사 누락"
+      ],
+      "consequences": [
+        "충전 중 또는 충전 후 결함부에서 LPG 누출",
+        "누출 LPG 체류 시 화재·폭발 위험",
+        "용기 파열 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "충전 전 용기 밸브·씰·외관 검사 절차 의무화",
+        "내압·기밀 검사 주기 관리",
+        "불량 용기 격리·폐기 체계 구축"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-059",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "연결부 밀봉",
+      "deviation": "충전 커넥터·호스 연결부가 부분적으로만 밀봉되어 체결 완료 상태에서도 미세 누설 경로가 남음",
+      "causes": [
+        "반복 착탈에 의한 커넥터 씰 마모",
+        "용기 밸브와 커넥터 정렬 불량으로 부분 체결",
+        "이물질 개재로 밀봉면 불완전 접촉"
+      ],
+      "consequences": [
+        "충전 중 LPG 누출·확산",
+        "누출 가스 체류 시 점화원 접촉으로 화재·폭발",
+        "작업자 가스 노출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 4,
+      "risk_score": 16,
+      "recommendations": [
+        "연결부 기밀 확인 후 충전 개시 인터록",
+        "커넥터 씰 교체 주기 관리",
+        "가스 감지기 설치 및 환기 확보"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-060",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "기동정지",
+      "deviation": "충전 사이클이 일부 단계만 수행된 채 인덱싱이 진행되어 미완료 충전·미확정 상태로 다음 단계로 넘어감",
+      "causes": [
+        "인덱싱 타이밍과 충전 완료 신호 불일치",
+        "사이클 중간 정지·재기동 시 단계 건너뜀",
+        "제어 시퀀스 오류"
+      ],
+      "consequences": [
+        "미충전·과충전 용기 혼입",
+        "충전 중 커넥터 분리 시 LPG 누출",
+        "공정 혼선으로 불량 용기 유통"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "충전 완료 확인 전 인덱싱 금지 인터록",
+        "사이클 중단 시 안전 정지 로직 및 재개 절차 명확화",
+        "각 스테이션 상태 가시화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-061",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "유지보수",
+      "deviation": "정비 시 배관·설비 일부만 격리·퍼지되어 잔류 LPG가 남은 상태로 작업이 진행됨",
+      "causes": [
+        "격리 밸브·구간 일부 누락",
+        "퍼지 불완전으로 배관 내 잔류 LPG 존재",
+        "반복 착탈 설비 정비 절차 미흡"
+      ],
+      "consequences": [
+        "정비 중 잔류 LPG 방출로 화재·폭발 위험",
+        "작업자 가스 노출·질식",
+        "설비 재기동 시 조건 불량"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "격리·배출·퍼지 LOTO 절차 수립 및 검증",
+        "잔류 가스 측정 후 작업 허가제 도입",
+        "정비 범위별 격리 체크리스트 운영"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-062",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "Part of",
+      "parameter": "점화원 관리",
+      "deviation": "작업 구역 점화원 통제가 일부만 이행되어 일부 점화원이 통제 범위 밖에 남음",
+      "causes": [
+        "용기 반복 착탈 시 정전기 축적·방지 조치 일부 누락",
+        "비방폭 기기·전기설비 일부 혼재",
+        "작업 중 발화원 반입 통제 미흡"
+      ],
+      "consequences": [
+        "누출 LPG와 점화원 접촉 시 화재·폭발",
+        "다수 용기 밀집 환경에서 연쇄 폭발로 대형 피해"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "본딩·접지 등 정전기 방지 조치 의무화",
+        "구역 방폭 등급화 및 비방폭 기기 제거",
+        "화기작업 통제 및 가스 감지 연동 경보"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-063",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "유량",
+      "deviation": "의도한 LPG 이송에 더해 비응축성 가스(공기·질소 등) 또는 다른 유체가 함께 공급 배관으로 유입되어 혼입된 상태로 충전기에 도달한다",
+      "causes": [
+        "퍼지·치환 작업 후 잔류 질소/공기가 배관에 남아 LPG와 함께 이송",
+        "유지보수 복구 시 배관 내 공기 미배출",
+        "상류 교차 연결로 이종 유체 동반 유입"
+      ],
+      "consequences": [
+        "비응축 가스 혼입으로 충전 계량 오차 및 과충전 유발",
+        "용기 내 이상 승압으로 안전밸브 작동 또는 액팽창 공간 부족",
+        "충전 품질 저하 및 사용 단계 불완전 연소 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "충전 전 배관 퍼지·배기 절차 수립 및 완료 확인",
+        "공급 배관에 기체 분리/벤트 설비 설치 검토",
+        "복구 작업 후 배관 내 가스 조성 점검 체크리스트 운용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-064",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "압력",
+      "deviation": "정상 이송 압력에 더해 외부 열원·펌프 맥동 등 추가 압력 요인이 중첩되어 배관·용기에 설계 초과 압력이 가해진다",
+      "causes": [
+        "외기 가열·햇빛 노출로 액상 LPG 열팽창 압력 중첩",
+        "펌프 맥동·수격이 정상 공급압에 추가로 가중",
+        "밸브 급폐로 인한 서지 압력 발생"
+      ],
+      "consequences": [
+        "배관·연결부 파열로 LPG 대량 누출",
+        "용기 과압에 의한 변형·파열",
+        "누출 LPG 증기운 형성 및 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "공급 배관에 안전밸브·릴리프 설치",
+        "일광 차폐 및 배관 열팽창 완화 설계 검토",
+        "펌프 토출측 맥동·서지 완화 장치 적용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-065",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "온도",
+      "deviation": "정상 운전 온도에 더해 인접 설비·외부 열원으로부터의 추가 입열이 중첩되어 LPG 온도가 상승한다",
+      "causes": [
+        "인접 열원·직사광선에 의한 추가 입열",
+        "충전 사이클 반복에 따른 마찰·압축열 축적"
+      ],
+      "consequences": [
+        "증기압 상승으로 배관·용기 과압",
+        "충전 밀도 저하로 계량 혼란 및 과충전 위험",
+        "액팽창 공간 잠식으로 용기 안전밸브 작동"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "충전 구역 온도 모니터링 및 차광 설치",
+        "고온 시 충전 중지 운전 기준 설정"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-066",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "조성",
+      "deviation": "설계 혼합비 LPG에 더해 규격 외 성분(중질 잔류분, 수분, 이종 탄화수소)이 함께 섞여 공급된다",
+      "causes": [
+        "상류 공급원 변경·오염으로 이종 성분 혼입",
+        "배관 내 수분·이물 잔류가 LPG에 동반",
+        "프로판·부탄 외 성분이 혼입된 원료 수급"
+      ],
+      "consequences": [
+        "증기압 기준 이탈로 충전량 산정 오류 및 과충전",
+        "수분 혼입 시 밸브 동결·부식 유발",
+        "용기 적합성 미달로 사용 단계 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "입고 LPG 조성·수분 분석 및 수입 검사",
+        "건조·여과 설비 설치 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-067",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "준위",
+      "deviation": "목표 충전량에 더해 추가로 LPG가 유입되어 용기 액면이 규정 상한을 초과한다(과충전)",
+      "causes": [
+        "계량 종료 후 배관 잔압에 의한 추가 유입",
+        "차단밸브 누설로 충전 정지 후 지속 유입"
+      ],
+      "consequences": [
+        "액팽창 공간 부족으로 온도 상승 시 용기 과압·파열",
+        "용기 안전밸브 작동으로 LPG 방출 및 화재 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "충전 완료 후 신속 차단되는 밸브 및 백체크 설치",
+        "과충전 방지용 중량·액면 상한 인터록 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-068",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "상",
+      "deviation": "액상 LPG에 더해 기상(증기) 기포가 동반되어 배관 내 2상 흐름 상태로 충전기에 도달한다",
+      "causes": [
+        "온도 상승·압력 저하로 배관 내 부분 기화",
+        "펌프 흡입측 캐비테이션으로 기포 발생"
+      ],
+      "consequences": [
+        "체적 계량식 충전 시 정량성 훼손 및 과/미충전",
+        "캐비테이션으로 펌프·배관 손상 및 누출 가능성"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "충전 전 배관 가압·기포 배제 절차 적용",
+        "흡입측 압력 확보 및 기액 분리 설비 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-069",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "충전량 계량",
+      "deviation": "정상 계량에 더해 잔압 유입·추가 사이클로 인해 계량값을 초과하는 충전이 발생한다",
+      "causes": [
+        "계량 완료 신호 후 밸브 폐쇄 지연으로 추가 충전",
+        "용기 내 잔류 LPG가 반영되지 않아 실제 충전량 초과"
+      ],
+      "consequences": [
+        "과충전으로 액팽창 공간 부족 및 용기 과압",
+        "안전밸브 작동 방출 또는 용기 파열에 의한 화재"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "충전 전 공용기 중량 확인(태어링) 절차 도입",
+        "계량 완료 즉시 차단 인터록 및 과충전 경보 설치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-070",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "용기 건전성",
+      "deviation": "정상 용기에 더해 결함·이물·잔류 내용물이 있는 용기가 함께 충전 라인에 투입된다",
+      "causes": [
+        "밸브·씰 결함, 재질 열화 용기가 선별 없이 혼입",
+        "이종 가스 잔류 용기가 선별 없이 충전 투입"
+      ],
+      "consequences": [
+        "충전 중 결함부 누출로 LPG 증기운 형성",
+        "이종 잔류물과의 혼합으로 이상 반응·압력 상승",
+        "화재·폭발 및 작업자 상해"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "충전 전 용기 외관·밸브·내압 검사 및 선별 절차",
+        "잔류 가스 검지 및 부적합 용기 격리 체계 구축"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-071",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "연결부 밀봉",
+      "deviation": "정상 연결에 더해 이물·마모 씰이 개재된 상태로 커넥터가 체결되어 충전 중 추가 누설 경로가 형성된다",
+      "causes": [
+        "반복 착탈로 커넥터 씰 마모·손상 후 교체 누락",
+        "연결면 이물·먼지 개재로 밀봉 불완전"
+      ],
+      "consequences": [
+        "충전 중 연결부 LPG 누출 및 증기 확산",
+        "점화원 접촉 시 화재·폭발",
+        "작업자 노출·동상 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "커넥터 씰 정기 교체 및 체결 전 누설 점검",
+        "가스 검지기 및 긴급 차단 연동 설치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-072",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "기동정지",
+      "deviation": "정상 충전 사이클에 더해 인덱싱 중 예기치 않은 추가 충전 동작이 겹쳐 발생한다",
+      "causes": [
+        "캐러셀 회전 인덱싱 위치 어긋남 중 밸브 추가 개방",
+        "사이클 재기동 시 이전 미완료 충전과 중첩"
+      ],
+      "consequences": [
+        "용기 미정렬 상태 충전으로 누출·분사",
+        "중복 충전에 의한 과충전 및 용기 과압",
+        "작업자 상해 및 화재 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "인덱싱 위치 확인 후에만 충전 허용하는 연동 설치",
+        "재기동 시 사이클 상태 리셋·확인 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-073",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "유지보수",
+      "deviation": "정비 대상 외에 인접 가압 라인·충전 설비가 격리되지 않은 채로 함께 작업 범위에 노출된다",
+      "causes": [
+        "안전장치 부재로 격리·배출 절차 미비",
+        "정비 중 인접 라인 잔류 LPG 미방출"
+      ],
+      "consequences": [
+        "정비 중 잔류 LPG 방출로 작업자 노출·동상",
+        "증기 확산 및 점화 시 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "정비 전 격리·감압·퍼지 및 LOTO 절차 수립",
+        "작업 구역 가스 측정 및 통풍 확보"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    },
+    {
+      "id": "i3-074",
+      "node": "I3",
+      "node_meta": {
+        "node": "I3",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid",
+        "P_kPag": null,
+        "T_degC": null,
+        "equipment": [
+          "캐러셀 공급 배관",
+          "캐러셀 충전기",
+          "LPG 용기"
+        ],
+        "safeguards": []
+      },
+      "guideword": "As well as",
+      "parameter": "점화원 관리",
+      "deviation": "충전 작업에 더해 통제되지 않은 점화원(정전기·전기 스파크·열원)이 누출 가능 구역에 함께 존재한다",
+      "causes": [
+        "용기 착탈 중 정전기 축적 및 미접지",
+        "비방폭 전기기기·휴대 점화원이 구역 내 혼재"
+      ],
+      "consequences": [
+        "누출 LPG 증기운 점화로 화재·폭발",
+        "다수 인명 피해 및 인접 설비 손상"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "충전 구역 본딩·접지 및 방폭 전기설비 적용",
+        "화기·점화원 반입 통제 및 가스 검지 경보 설치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred"
+    }
+  ]
+}
