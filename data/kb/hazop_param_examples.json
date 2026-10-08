@@ -1,0 +1,88 @@
+{
+  "_comment": "spec:hazop-generation R-12. 공개 HAZOP 워크시트 3건의 설비·절차형 파라미터 이름(직역). 원문 문장 없음. 선정 규칙·누출 차단은 requirements.md R-12 사전 등록(2ac788e). 원문 PDF 는 리포 밖(../참고자료/공개_HAZOP_워크시트/).",
+  "excluded_sources": {
+    "NSW HIPAP 8 (2011)": "워크시트 예시 5노드가 공정 변수만 사용 — 규칙상 뽑을 항목 0",
+    "EGPC-PSM-GL-005 (2022)": "워크시트 예시(부속서 C)가 이미지라 텍스트 없음, 설비·절차형 항목은 일반 목록(워크시트 아님)뿐 — 규칙상 제외"
+  },
+  "blocked_by_holdout_filter": [],
+  "preamble": "## 참고: 공개 HAZOP 워크시트에서 실제 팀이 쓴 설비·절차형 파라미터\n아래는 다른 공정의 예다. 이 노드에 실재하는 설비·절차에 해당하는 관점만 참고해 이 노드에 맞는 이름으로 만들고, 해당하지 않는 것은 쓰지 마라.",
+  "examples": [
+    {
+      "process": "해상 유류 터미널 — 선박→육상 탱크 하역·탱크로리 출하(절차 노드 16개)",
+      "source": "Brkić et al., IJERPH 2017, 표 3·4 — https://pmc.ncbi.nlm.nih.gov/articles/PMC5551143/",
+      "license": "CC-BY 4.0",
+      "parameters_en": [
+        "Connection",
+        "Electrical Isolation",
+        "Static Electricity",
+        "Corrosion",
+        "Maintenance",
+        "Collision",
+        "Element",
+        "Mooring",
+        "Direction",
+        "Movement",
+        "Safety",
+        "Cleaning",
+        "Entry into the loading bay",
+        "Manoeuvrability at the loading bay",
+        "Loading position",
+        "Stop filled"
+      ],
+      "parameters": [
+        "연결부",
+        "전기적 절연",
+        "정전기",
+        "부식",
+        "유지보수",
+        "충돌",
+        "구성 요소",
+        "계류",
+        "이동 방향",
+        "로딩암 이동",
+        "작업 안전",
+        "배관 세정",
+        "하역장 진입",
+        "하역장 내 조종",
+        "적재 위치",
+        "충전 정지"
+      ]
+    },
+    {
+      "process": "LPG 충전소 — 탱크로리 LPG 인수·충전 펌프(노드 4개 공통 점검표)",
+      "source": "IOCL LPG Bottling Plant Risk Assessment 2014, 부록 A — https://environmentclearance.nic.in/writereaddata/online/RiskAssessment/231020176U2UDUPXAnnexure-documentofRiskAssessment.pdf",
+      "license": "인도 환경허가 공개 제출물(저작권 표시 미확인) — 파라미터 이름(사실)만 옮김",
+      "parameters_en": [
+        "Corrosion / Erosion",
+        "Maintenance",
+        "Start-up / shut down",
+        "Drawing Errors"
+      ],
+      "parameters": [
+        "부식·침식",
+        "유지보수",
+        "기동·정지",
+        "도면 오류"
+      ]
+    },
+    {
+      "process": "암모니아 연료 시스템 — 이송 배관(What-if)·유틸리티 노드",
+      "source": "ORNL 2023 (Pub196547), 노드 F·G — https://info.ornl.gov/sites/publications/Files/Pub196547.pdf",
+      "license": "미국 정부 연구소 공개 보고서 — 파라미터 이름(사실)만 옮김. 홀드아웃과 물질(NH3)이 같다",
+      "parameters_en": [
+        "Ammonia gas release",
+        "Electricity",
+        "Process water",
+        "Chiller",
+        "Compressed air"
+      ],
+      "parameters": [
+        "암모니아 가스 누출",
+        "전력",
+        "공정 용수",
+        "냉각기",
+        "압축 공기"
+      ]
+    }
+  ]
+}

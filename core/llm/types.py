@@ -88,3 +88,5 @@ class ModelConfig:
     provider: Literal["bedrock", "anthropic"] = "bedrock"
     # R-10: 가이드워드 판정 동시 호출 수(`generation.parallel_calls`). 1 이면 순차.
     parallel_calls: int = 4
+    # R-12: 열거 프롬프트에 공개 HAZOP 예시(data/kb/hazop_param_examples.json)를 덧붙일지. 기본 false.
+    enumerate_examples: bool = False

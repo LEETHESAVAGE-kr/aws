@@ -743,3 +743,41 @@ def test_generate_quick_skips_judgement_when_enumeration_fails() -> None:
     assert generator.generate_quick(N1_META, "More") == []
     assert generator.parameters == []
     assert client.calls and all(_is_enumeration(c["system"]) for c in client.calls)  # 열거(+재시도)뿐, 판정 0회
+
+
+
+# ── R-12 공개 HAZOP 예시 (본선 T-13) ──────────────────────────────────────────
+from core.agent.generate import (  # noqa: E402
+    _PARAM_EXAMPLES_PATH,
+    _split_prompt,
+    render_param_examples,
+)
+from tools._replay import normalize_parameter  # noqa: E402
+
+
+def _enumeration_system(enumerate_examples: bool) -> str:
+    client = MockBedrockClient(response_factory=_factory())
+    HazopGenerator(client, GeneratorConfig(enumerate_examples=enumerate_examples))._enumerate_parameters(N1_META)
+    return str(client.calls[0]["system"])
+
+
+def test_examples_off_keeps_enumeration_prompt_bytes() -> None:
+    original = _split_prompt((_ROOT / "core" / "agent" / "prompts" / "matrix_enumerate.md").read_text(encoding="utf-8"))[0]
+    assert _enumeration_system(False) == original  # AC-12-1
+    on = _enumeration_system(True)
+    assert on.startswith(original) and on.endswith(render_param_examples())
+
+
+def test_examples_never_contain_holdout_gold_parameters() -> None:
+    gold = json.loads((_ROOT / "data" / "gold" / "hazop_nh3_eval.json").read_text(encoding="utf-8"))
+    blocked = {normalize_parameter(g["parameter"]) for g in gold}
+    data = json.loads(_PARAM_EXAMPLES_PATH.read_text(encoding="utf-8"))
+    names = [n for ex in data["examples"] for n in ex["parameters"]]
+    assert names and not {normalize_parameter(n) for n in names} & blocked  # AC-12-2
+
+
+def test_examples_carry_source_and_license_without_prose() -> None:
+    data = json.loads(_PARAM_EXAMPLES_PATH.read_text(encoding="utf-8"))
+    for ex in data["examples"]:
+        assert ex["source"].count("http") == 1 and ex["license"]  # AC-12-3
+        assert all(len(n.split()) <= 4 for n in ex["parameters"])  # 이름만 — 프롬프트 제약과 같은 4어절
