@@ -52,21 +52,26 @@ EXAMPLES: tuple[tuple[str, str], ...] = (
     ),
 )
 #: 부스 모드 예시 칩(지시문 V-2) — 관람객이 아는 장소의 공정. 물질·설비·안전장치를 넣어 해석이 비지 않게.
-BOOTH_EXAMPLES: tuple[tuple[str, str], ...] = (
+#: 세 번째 값은 칩이 함께 고르는 가이드워드(V-6). 수영장은 More 로는 산 혼입→염소가스가 안 나온다(10/8 실측,
+#: As well as 에서 No.4·5 행으로 나옴).
+BOOTH_EXAMPLES: tuple[tuple[str, str, str | None], ...] = (
     (
         "학교 실험실 수소",
         "학교 화학 실험실에서 수소 실린더(약 15 MPa)를 감압밸브로 낮춰 가스 분석기에 공급한다. "
         "다 쓴 실린더는 사람이 직접 교체한다. 안전장치는 가스누출감지기와 긴급차단밸브.",
+        None,
     ),
     (
         "아파트 LPG 공급",
         "아파트 단지의 LPG 저장탱크에서 기화기를 거쳐 배관으로 각 세대 가스레인지에 공급한다. "
         "안전장치는 가스누출경보기, 긴급차단밸브, 안전밸브.",
+        None,
     ),
     (
         "수영장 염소 소독",
         "수영장 기계실에서 차아염소산나트륨 용액을 정량펌프로 순환 배관에 주입해 소독한다. "
         "바로 옆에 pH 조정용 산 탱크가 있다. 안전장치는 유량 인터록과 누출 받침대.",
+        "As well as",
     ),
 )
 GUIDEWORD_HELP = (
@@ -168,10 +173,13 @@ state.setdefault("quick_result", None)
 state.setdefault("node", None)
 state.setdefault("quick_text", "")
 state.setdefault("mode", MODE_NL)
+state.setdefault("guideword", "More")
 
 
-def _fill(text: str) -> None:
+def _fill(text: str, guideword: str | None = None) -> None:
     state.quick_text = text
+    if guideword:  # 부스 칩이 지정한 가이드워드(V-6)
+        state.guideword = guideword
 
 
 def _to_cases() -> None:
@@ -236,10 +244,10 @@ with tool.container(border=True, key="tool"):
             '<p class="hz-q-step">STEP 1 / 2</p><p class="hz-q">어떤 공정을 분석할까요?</p>'
             '<p class="hz-q-help">물질·설비·압력·온도·안전장치를 적을수록 정확해집니다. 예시를 눌러도 됩니다.</p>'
         )
-        for i, (column, (label, text)) in enumerate(
+        for i, (column, (label, text, *chip_guideword)) in enumerate(
             zip(st.columns(len(EXAMPLES)), BOOTH_EXAMPLES if BOOTH else EXAMPLES, strict=True)
         ):
-            column.button(label, key=f"chip_{i}", on_click=_fill, args=(text,), width="stretch")
+            column.button(label, key=f"chip_{i}", on_click=_fill, args=(text, *chip_guideword), width="stretch")
         st.text_area(
             "공정 설명",
             key="quick_text",
@@ -255,7 +263,7 @@ with tool.container(border=True, key="tool"):
         guideword = st.selectbox(
             "가이드워드",
             GUIDEWORDS,
-            index=GUIDEWORDS.index("More"),
+            key="guideword",  # 기본 More(state.setdefault) — 부스 칩이 바꿀 수 있게 상태로 둔다(V-6)
             format_func=lambda g: f"{g} — {GUIDEWORD_MEANING[g]}" if g in GUIDEWORD_MEANING else g,
             label_visibility="collapsed",
         )
