@@ -14,7 +14,7 @@ from .rows import HEADERS, WorksheetRow, normalize_rows
 from .xlsx import SHEET_ORDER, export_xlsx
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Iterable, Sequence
 
 XLSX_NAME = "hazop.xlsx"
 REPORT_NAME = "confidence_report.json"
@@ -28,17 +28,19 @@ def export_all(
     generated_at: str | None = None,
     coverage: tuple[int, int] | None = None,
     top_n: int = DEFAULT_TOP_N,
+    review_log: Sequence[Sequence[object]] | None = None,
 ) -> dict[str, Path]:
     """골드셋 dict 목록이든 `DeviationRecord` 목록이든 같은 경로로 세 산출물을 쓴다.
 
     `generated_at` 은 재현성을 위해 호출자가 주입한다(R-08). 기본 `None` → 산출물에 시각 없음.
     `coverage=(expected_cells, judged_cells)` 는 FR-03 생성기 관측값(없으면 리포트에 `null`).
+    `review_log`(R-10): 기각·수정은 호출자가 `records` 에 이미 반영해 넘기고, 여기선 기록 시트만 덧붙인다.
     """
     rows = normalize_rows(records)
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     paths = {
-        "xlsx": export_xlsx(rows, out_dir / XLSX_NAME),
+        "xlsx": export_xlsx(rows, out_dir / XLSX_NAME, review_log=review_log),
         "report": write_report(
             build_report(rows, generated_at=generated_at, coverage=coverage),
             out_dir / REPORT_NAME,

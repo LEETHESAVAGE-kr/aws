@@ -12,6 +12,7 @@ from apps.web import service
 from apps.web.catalog import CATALOG_PATH, load_catalog
 from apps.web.replay import REPLAY_DIR, load_replays
 from core.agent import NodeMeta
+from core.export.xlsx import REVIEW_HEADERS, REVIEW_SHEET, SHEET_ORDER
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -468,9 +469,9 @@ def test_app_verifier_demo_toggle(monkeypatch: pytest.MonkeyPatch) -> None:
     exported: list[str] = []  # 다운로드를 만든 Result 의 레코드 권고 전문 — 시연 삽입이 섞이면 안 된다
     real_export = service.export_files
 
-    def spy(result: service.Result) -> dict[str, tuple[str, bytes]]:
+    def spy(result: service.Result, edits: Any = None) -> dict[str, tuple[str, bytes]]:
         exported.append(" ".join(t for r in result.records for t in r.recommendations))
-        return real_export(result)
+        return real_export(result, edits)
 
     monkeypatch.setattr(service, "export_files", spy)
     at = AppTest.from_file(str(_APP), default_timeout=30).run()
@@ -637,3 +638,82 @@ def test_booth_pool_chip_selects_as_well_as(monkeypatch: pytest.MonkeyPatch) -> 
     at.selectbox[0].select("Reverse").run()
     next(b for b in at.button if b.label == "아파트 LPG 공급").click().run()
     assert at.selectbox[0].value == "Reverse"  # 가이드워드를 지정하지 않은 칩은 사용자의 선택을 건드리지 않는다
+
+# ── export-formats R-10 검토 반영 (본선 T-07·T-08) ─────────────────────────────
+def _quick_result() -> service.Result:
+    return service.run_quick(_SENTENCE, "More", load_replays()["N1"], _MOCK_ENV)
+
+
+def _sheets(files: dict[str, tuple[str, bytes]]) -> Any:
+    import io
+
+    from openpyxl import load_workbook
+
+    return load_workbook(io.BytesIO(files["xlsx"][1]))
+
+
+def test_export_without_review_is_unchanged() -> None:
+    result = _quick_result()
+    plain, empty = service.export_files(result), service.export_files(result, {})
+    assert _sheets(plain).sheetnames == _sheets(empty).sheetnames == list(SHEET_ORDER)  # AC-10-1
+    only_pending = service.export_files(result, {0: {service.REVIEW_COLUMN: "미검토"}})
+    assert _sheets(only_pending).sheetnames == list(SHEET_ORDER)
+
+
+def test_reject_removes_row_everywhere_and_logs_it() -> None:
+    result = _quick_result()
+    table = service.worksheet_table(result)
+    top = max(range(len(table)), key=lambda i: table[i]["위험도"])  # LOPA 1순위 후보를 기각
+    kept, log = service.apply_review(result, {top: {service.REVIEW_COLUMN: "기각"}})
+    assert len(kept) == len(table) - 1 and log == [
+        (table[top]["No"], "기각", table[top]["가이드워드"], table[top]["이탈"], "")
+    ]
+    wb = _sheets(service.export_files(result, {top: {service.REVIEW_COLUMN: "기각"}}))
+    main = [r for r in wb["HAZOP워크시트"].iter_rows(min_row=2, values_only=True) if isinstance(r[0], int)]
+    assert len(main) == len(table) - 1 and table[top]["이탈"] not in [r[3] for r in main]  # AC-10-4
+    review = list(wb[REVIEW_SHEET].iter_rows(values_only=True))
+    assert review[0] == REVIEW_HEADERS and review[1][1] == "기각"
+
+
+def test_edit_changes_values_and_risk_formula_inputs() -> None:
+    result = _quick_result()
+    table = service.worksheet_table(result)
+    original_s = table[0]["S(1-5)"]
+    new_s = 1 if original_s != 1 else 2
+    edits = {0: {"S(1-5)": new_s, "권고": "인터록 추가 · 절차서 개정", "결과": table[0]["결과"]}}  # 결과는 같은 값
+    kept, log = service.apply_review(result, edits)
+    assert kept[0]["S"] == new_s and kept[0]["recommendations"] == ["인터록 추가", "절차서 개정"]
+    assert log == [(1, "수정", table[0]["가이드워드"], table[0]["이탈"], "권고, S(1-5)")]  # 같은 값은 수정 아님
+    first = next(_sheets(service.export_files(result, edits))["HAZOP워크시트"].iter_rows(min_row=2, max_row=2))
+    assert first[7].value == new_s and first[9].value == "=H2*I2"  # AC-10-3 위험도는 수식이 다시 계산
+
+
+@pytest.mark.parametrize("bad", [0, 6, 2.5])
+def test_edit_rejects_out_of_range_grade(bad: float) -> None:
+    with pytest.raises(ValueError, match="1~5"):
+        service.apply_review(_quick_result(), {0: {"F(1-5)": bad}})
+
+
+def test_app_passes_review_edits_to_downloads(monkeypatch: pytest.MonkeyPatch) -> None:
+    from streamlit.testing.v1 import AppTest
+
+    for key, value in _MOCK_ENV.items():
+        monkeypatch.setenv(key, value)
+    seen: list[Any] = []
+    real_export = service.export_files
+
+    def spy(result: service.Result, edits: Any = None) -> dict[str, tuple[str, bytes]]:
+        seen.append(edits)
+        return real_export(result, edits)
+
+    monkeypatch.setattr(service, "export_files", spy)
+    at = AppTest.from_file(str(_APP), default_timeout=30).run()
+    at.text_area[0].input(_SENTENCE).run()
+    next(b for b in at.button if b.label.startswith(_GENERATE)).click().run()
+    assert at.dataframe and list(at.dataframe[0].value.columns)[0] == service.REVIEW_COLUMN  # 검토 열이 맨 앞
+    result = at.session_state["quick_result"]
+    key = f"review_{result.meta.get('node')}_{result.meta.get('captured_at')}_{len(result.records)}"
+    at.session_state[key] = {"edited_rows": {0: {service.REVIEW_COLUMN: "기각"}}, "added_rows": [], "deleted_rows": []}
+    at.run()
+    assert seen[-1] == {0: {service.REVIEW_COLUMN: "기각"}}
+    assert any("기각 1건" in c.value for c in at.caption)
