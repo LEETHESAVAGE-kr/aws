@@ -41,6 +41,9 @@ _RATING_SCALE_PATH: Final[Path] = (
     Path(__file__).parent.parent.parent / "data" / "gold" / "rating_scale.json"
 )
 _USER_DELIMITER: Final[str] = "<!-- USER -->"
+_PARAM_EXAMPLES_PATH: Final[Path] = (
+    Path(__file__).parent.parent.parent / "data" / "kb" / "hazop_param_examples.json"
+)
 
 #: 진행 알림(R-11, design §10). `(event, payload)` — event 는 "parameters" | "guideword".
 ProgressCallback = Callable[[str, dict[str, Any]], None]
@@ -158,6 +161,15 @@ def _fill(template: str, values: dict[str, str]) -> str:
     return out
 
 
+def render_param_examples(path: Path = _PARAM_EXAMPLES_PATH) -> str:
+    """R-12: 공개 HAZOP 예시 → 열거 시스템 프롬프트 꼬리. 머리말 문구는 `data/kb` 파일이 갖는다(코드에 프롬프트 금지)."""
+    data = json.loads(path.read_text(encoding="utf-8"))
+    lines = [data["preamble"]]
+    for ex in data["examples"]:
+        lines.append(f"- {ex['process']}: {' · '.join(ex['parameters'])}")
+    return "\n".join(lines)
+
+
 def _load_rating_scale() -> str:
     """S·F 등급 정의(`data/gold/rating_scale.json`) 원문. 읽기 전용 자산이다."""
     return _RATING_SCALE_PATH.read_text(encoding="utf-8").strip()
@@ -171,6 +183,8 @@ class GeneratorConfig:
     # 가이드워드 판정 동시 호출 수(R-10). 1 이면 순차 경로. 직접 생성한 설정의 기본값은 1 —
     # 응답 목록을 순서대로 소비하는 mock 시험이 흔들리지 않게. models.yaml 로더 기본은 4.
     parallel_calls: int = 1
+    # R-12: 열거 시스템 프롬프트에 공개 HAZOP 예시를 덧붙인다. 기본 false — 프롬프트 바이트 불변(AC-12-1).
+    enumerate_examples: bool = False
 
 
 def load_generator_config() -> GeneratorConfig:
@@ -188,6 +202,7 @@ def load_generator_config() -> GeneratorConfig:
         prompt_caching=cfg.generation.prompt_caching,
         cost_limit_usd=cfg.cost_limit_usd,
         parallel_calls=cfg.parallel_calls,
+        enumerate_examples=cfg.enumerate_examples,
     )
 
 
@@ -348,6 +363,8 @@ class HazopGenerator:
     # -- 1단: 파라미터 축 도출 (R-03) ----------------------------------------
     def _enumerate_parameters(self, node_meta: NodeMeta) -> list[dict[str, str]]:
         system, user_template = _split_prompt(_load_prompt("matrix_enumerate.md"))
+        if self._config.enumerate_examples:
+            system = system + "\n\n" + render_param_examples()
         user = _fill(
             user_template,
             {

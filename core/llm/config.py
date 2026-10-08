@@ -84,7 +84,16 @@ def _parse(raw: dict[str, Any]) -> ModelConfig:
         cost_limit_usd=float(raw.get("cost_limit_usd", 0.30)),
         provider=_read_provider(raw),  # type: ignore[arg-type]
         parallel_calls=_read_parallel_calls(raw["generation"]),
+        enumerate_examples=_read_flag(raw["generation"], "enumerate_examples"),
     )
+
+
+def _read_flag(section: dict[str, Any], name: str) -> bool:
+    """R-12 등 켜고 끄는 설정. 누락 시 false, bool 이 아니면 거부('false' 문자열이 참으로 읽히는 사고 방지)."""
+    value = section.get(name, False)
+    if not isinstance(value, bool):
+        raise ConfigValidationError(f"generation.{name} must be true/false: {value!r}")
+    return value
 
 
 def _read_parallel_calls(section: dict[str, Any]) -> int:
