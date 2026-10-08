@@ -361,13 +361,15 @@ with tool.container(border=True, key="tool"):
         names = [p["name"] for p in service.CATALOG]
         choice = st.selectbox("공정", names, key="process_name", label_visibility="collapsed")
         process = next(p for p in service.CATALOG if p["name"] == choice)
-        if process["gold"]:
+        if process.get("reference"):  # 지시문 W — 외부 공개 HAZOP 대조(골드셋 아님)
+            st.markdown(f":blue-background[공개 HAZOP 대조 · 외부 팀 작성] {process['description']}")
+        elif process["gold"]:
             st.markdown(
                 ":green-background[골드셋 34건 · recall 실측] 액체 암모니아(NH3) 이송 — "
                 "전문가가 직접 수행한 HAZOP 34건과 대조합니다."
             )
         else:
-            st.markdown(f":orange-background[예시 공정 · 골드셋 없음] {process['description']}")
+            st.markdown(f":orange-background[예시 공정 · 정성 검토용] {process['description']}")
         node_ids = [n["id"] for n in process["nodes"]]
         if state.node not in node_ids:  # 공정을 바꾸면 그 공정의 첫 캡처 노드를 연다
             state.node = next((n for n in node_ids if n in replays), node_ids[0])
@@ -558,7 +560,7 @@ with st.expander("현장 절차와 한눈에 비교", expanded=False):
 st.html('<div id="eval"></div>')
 with st.expander("정확도 — 골드셋 대비 recall (n=1), 불리한 값까지 공개", expanded=False):
     st.caption(
-        "NH3 벙커링 4노드만 해당(예시 공정은 골드셋 없음). 하네스 미구현 — `tools/capture_replay.py` 로 "
+        "NH3 벙커링 4노드만 해당(공개 HAZOP 대조 LPG 공정은 기준이 달라 각 결과 화면에 따로 표시, 예시 공정은 대조 기준 없음). 하네스 미구현 — `tools/capture_replay.py` 로 "
         f"노드별 1회 실측. 규칙·해석은 [README §6]({README_EVAL})."
     )
     st.table(service.evaluation_table(replays))
