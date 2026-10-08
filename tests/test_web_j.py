@@ -809,8 +809,9 @@ def _full_result() -> service.Result:
     return service.run_live(_SENTENCE, load_replays()["N1"], _MOCK_ENV)
 
 
-def test_run_live_streams_partial_records_in_axis_order() -> None:
-    """X-1c: 가이드워드 판정이 끝날 때마다 부분 레코드가 오고, 늘기만 하며, 축 순서다."""
+def test_run_live_streams_partial_records_in_process_order() -> None:
+    """X-1c·Y-1: 가이드워드 판정이 끝날 때마다 부분 레코드가 오고, 늘기만 하며, 공정 순서
+    (파라미터 열거 순서 → 가이드워드 축 순서)다. 최종 결과도 같은 순서."""
     from core.agent.generate import STANDARD_GUIDEWORDS
 
     seen: list[dict[str, Any]] = []
@@ -823,8 +824,11 @@ def test_run_live_streams_partial_records_in_axis_order() -> None:
     assert [p["done"] for p in seen] == list(range(1, 8)) and all(p["total"] == 7 for p in seen)
     sizes = [len(p["records"]) for p in seen]
     assert sizes == sorted(sizes) and sizes[-1] == len(result.records)
-    order = [STANDARD_GUIDEWORDS.index(r.guideword) for r in seen[-1]["records"]]
-    assert order == sorted(order)
+    params = result.meta["parameters"]
+    for records in (seen[-1]["records"], result.records):
+        order = [(params.index(r.parameter), STANDARD_GUIDEWORDS.index(r.guideword)) for r in records]
+        assert order == sorted(order)
+    assert [r.id for r in result.records] == [f"x1-{i:03d}" for i in range(1, len(result.records) + 1)]
     m = result.meta
     assert m["guidewords"] == STANDARD_GUIDEWORDS and len(m["raw_calls"]) == 9 and m["parameters"]
     assert service.cells_label(result) == f"{m['judged_cells']}/{m['expected_cells']}"
@@ -1033,3 +1037,41 @@ def test_app_renders_intro_tabs(monkeypatch: pytest.MonkeyPatch) -> None:
     labels = [t.label for t in at.tabs]
     assert {"① 한 줄이 만들어지는 과정", "② 가이드워드 7종", "③ 위험도 S×F", "④ 결과 화면 읽는 법", "⑤ 회의와 비교"} <= set(labels)
     assert len(at.table) >= 3 and len(at.dataframe) == 0  # 안내 표는 st.table — 결과 표 시험과 섞이지 않는다
+
+
+# ── 지시문 Y-1 No 공정 순서 ───────────────────────────────────────────────────
+def _process_key_ok(records: list[Any], params: list[str]) -> bool:
+    from core.agent.generate import PROCEDURAL_GUIDEWORDS, STANDARD_GUIDEWORDS
+
+    axis = STANDARD_GUIDEWORDS + PROCEDURAL_GUIDEWORDS
+    names = list(dict.fromkeys([*params, *(r.parameter for r in records)]))
+    keys = [(names.index(r.parameter), axis.index(r.guideword)) for r in records]
+    return keys == sorted(keys)
+
+
+def test_replays_load_in_process_order_and_gold_untouched() -> None:
+    """Y-1: 생성 재생은 불러올 때 파라미터 → 가이드워드 순. 파일 id 는 그대로(대조용), 골드는 원래 순서."""
+    on_disk = {p.stem: json.loads(p.read_text(encoding="utf-8")) for p in REPLAY_DIR.glob("*.json")}
+    replays = load_replays()
+    for node, result in replays.items():
+        raw = next(v for v in on_disk.values() if v.get("node") == node and v.get("captured_at") == result.meta.get("captured_at"))
+        if result.is_gold:
+            assert [r.id for r in result.records] == [r["id"] for r in raw["records"]]
+            continue
+        assert _process_key_ok(result.records, result.meta.get("parameters") or [])
+        assert sorted(r.id for r in result.records) == sorted(r["id"] for r in raw["records"])
+
+
+def test_screen_xlsx_review_index_share_process_order() -> None:
+    """Y-G1: 화면 '워크시트 순서'·Excel No·검토 편집 인덱스가 같은 공정 순서."""
+    result = _full_result()
+    assert _process_key_ok(result.records, result.meta["parameters"])
+    table = service.worksheet_table(result)
+    wb = _sheets(service.export_files(result))
+    main = [r for r in wb["HAZOP워크시트"].iter_rows(min_row=2, values_only=True) if isinstance(r[0], int)]
+    assert [r[0] for r in main] == [t["No"] for t in table] == list(range(1, len(table) + 1))
+    assert [(r[2], r[3]) for r in main] == [(t["가이드워드"], t["이탈"]) for t in table]
+    assert [t["이탈"] for t in table] == [r.deviation for r in result.records]
+    # 검토 편집 인덱스 0 = 화면 첫 행 = xlsx 첫 행
+    kept, _ = service.apply_review(result, {0: {service.REVIEW_COLUMN: "기각"}})
+    assert table[0]["이탈"] not in [k["deviation"] for k in kept]
