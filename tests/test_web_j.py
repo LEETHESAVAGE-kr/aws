@@ -202,34 +202,71 @@ def test_live_scope(value: str | None, scope: str) -> None:
 
 
 # ── J-04 화면 — 직접 입력 mock 경로·상한 공용·HAZOP_LIVE_SCOPE 분기 ─────────────
-@pytest.mark.parametrize("scope", ["quick", "full"])
-def test_app_direct_input_quick_run_on_mock(monkeypatch: pytest.MonkeyPatch, scope: str) -> None:
+def _guidewords_in(frame: Any) -> set[str]:
+    return {v.split(" (")[0] for v in frame.value["가이드워드"]}  # "More (압력)" 형식
+
+
+@pytest.mark.parametrize("scope", ["quick", "full"])  # 옛 HAZOP_LIVE_SCOPE 값은 화면을 바꾸지 않는다(X-1)
+def test_app_default_run_covers_all_guidewords(monkeypatch: pytest.MonkeyPatch, scope: str) -> None:
     from streamlit.testing.v1 import AppTest
 
     for key, value in {**_MOCK_ENV, "HAZOP_LIVE_SCOPE": scope}.items():
         monkeypatch.setenv(key, value)
-    at = AppTest.from_file(str(_APP), default_timeout=30).run()
+    at = AppTest.from_file(str(_APP), default_timeout=60).run()
     assert not at.exception
     assert len(at.dataframe) == 0
-    assert any("노드 전체" in b.label for b in at.button) is (scope == "full")
+    assert not any("노드 전체" in b.label for b in at.button)
+    assert not any("어떤 이탈" in m.value for m in at.markdown)  # X-G5 — 선택 질문 블록이 없다
     # 기본 = 문장 모드. 입력 칸은 비어 있고 예시는 칩이 맡는다 — 비어 있으면 버튼이 막힌다.
     assert at.radio(key="mode").value == "문장으로 새 공정 분석"
     assert at.text_area[0].value == "" and "예시" in at.text_area[0].placeholder
-    assert next(b for b in at.button if b.label.startswith(_GENERATE)).disabled is True
+    assert _cta(at).label == service.LIVE_BUTTON and _cta(at).disabled is True
     at.text_area[0].input(_SENTENCE).run()
-    quick = next(b for b in at.button if b.label.startswith(_GENERATE))
-    assert quick.disabled is False
-    quick.click().run()
+    assert _cta(at).disabled is False
+    _cta(at).click().run()
     assert not at.exception
     assert len(at.dataframe) == 1
-    assert {v.split(" (")[0] for v in at.dataframe[0].value["가이드워드"]} == {"More"}  # "More (압력)" 형식
-    assert any("API 호출 3회" in m.value for m in at.markdown)  # 해석 1 + 열거 1 + 판정 1
+    from core.agent.generate import STANDARD_GUIDEWORDS
+
+    assert _guidewords_in(at.dataframe[0]) == set(STANDARD_GUIDEWORDS)  # X-G1 표준 7종 전부
+    assert any("API 호출 9회" in m.value for m in at.markdown)  # 해석 1 + 열거 1 + 판정 7
     assert any(_SENTENCE in c.value for c in at.code)  # 입력 문장이 해석 결과 옆에 보인다
-    # 상한은 공용 — 초안 생성 1회 뒤엔 노드 전체 버튼도 막히고, 사례 모드로 안내한다.
-    assert all(b.disabled for b in at.button if b.label.startswith((_GENERATE, "노드 전체")))
+    assert not any("1종" in m.value for m in at.metric)
+    # 상한은 공용 — 1회 뒤엔 보조 실행 버튼도 막히고, 사례 모드로 안내한다.
+    assert _cta(at).disabled and at.button(key="run_quick").disabled
     assert any("세션" in c.value for c in at.caption)
     next(b for b in at.button if b.label == "실측 사례 보기").click().run()
     assert not at.exception and at.radio(key="mode").value == _CASES
+
+
+def test_app_quick_run_is_one_guideword_and_says_so(monkeypatch: pytest.MonkeyPatch) -> None:
+    """X-1b 보조 실행: 고른 가이드워드 1종만, 요약 줄·출처 줄·판정 셀 타일에 '1종' 이 보인다."""
+    from streamlit.testing.v1 import AppTest
+
+    for key, value in _MOCK_ENV.items():
+        monkeypatch.setenv(key, value)
+    at = AppTest.from_file(str(_APP), default_timeout=30).run()
+    assert at.expander[0].label == service.QUICK_EXPANDER and at.selectbox(key="guideword").label == (
+        service.QUICK_QUESTION
+    )
+    at.text_area[0].input(_SENTENCE).run()
+    at.selectbox(key="guideword").select("Less").run()
+    at.button(key="run_quick").click().run()
+    assert not at.exception
+    assert _guidewords_in(at.dataframe[0]) == {"Less"}
+    assert any("API 호출 3회" in m.value for m in at.markdown)  # 해석 1 + 열거 1 + 판정 1
+    scope = service.QUICK_SCOPE.format(guideword="Less")
+    assert any(scope in c.value for c in at.caption)  # 요약 줄·출처 줄
+    assert any(m.value.endswith("(1종)") for m in at.metric)
+
+
+def test_quick_feature_copy_has_no_booth_words() -> None:
+    """X-1b 금지어 — 보조 실행은 실무 기능이다. 이 기능의 문구에 '부스'·'관람객' 이 없다(사용자 결정 10/8)."""
+    quick = service.run_quick(_SENTENCE, "More", load_replays()["N1"], _MOCK_ENV)
+    texts = [service.QUICK_EXPANDER, service.QUICK_QUESTION, service.QUICK_BUTTON, service.QUICK_SCOPE,
+             service.summary_line(quick), service.provenance_line(quick)]
+    for text in texts:
+        assert "부스" not in text and "관람객" not in text, text
 
 
 def test_app_direct_input_disabled_without_allow(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -295,7 +332,7 @@ def test_app_shows_key_hint_on_auth_error(monkeypatch: pytest.MonkeyPatch) -> No
     def _reject(*_: object, **__: object) -> None:
         raise AuthenticationError("Error code: 401 - API key is invalid.")
 
-    monkeypatch.setattr(service, "run_quick", _reject)
+    monkeypatch.setattr(service, "run_live", _reject)
     at = AppTest.from_file(str(_APP), default_timeout=30).run()
     at.text_area[0].input(_SENTENCE).run()
     next(b for b in at.button if b.label.startswith(_GENERATE)).click().run()
@@ -577,7 +614,7 @@ def test_app_writes_stages_as_they_finish(monkeypatch: pytest.MonkeyPatch) -> No
     monkeypatch.setattr(service, "run_quick", partial_then_fail)
     at = AppTest.from_file(str(_APP), default_timeout=30).run()
     at.text_area[0].input(_SENTENCE).run()
-    next(b for b in at.button if b.label.startswith(_GENERATE)).click().run()
+    at.button(key="run_quick").click().run()
     shown = [m.value for m in at.markdown]
     assert "✅ 1/3 입력 해석 — 수소 · gas · 설비 압축기" in shown
     assert "✅ 2/3 파라미터 2개 — 유량, 압력" in shown
@@ -712,7 +749,7 @@ def test_app_passes_review_edits_to_downloads(monkeypatch: pytest.MonkeyPatch) -
     next(b for b in at.button if b.label.startswith(_GENERATE)).click().run()
     assert at.dataframe and list(at.dataframe[0].value.columns)[0] == service.REVIEW_COLUMN  # 검토 열이 맨 앞
     result = at.session_state["quick_result"]
-    key = f"review_{result.meta.get('node')}_{result.meta.get('captured_at')}_{len(result.records)}"
+    key = service.review_key(result)
     at.session_state[key] = {"edited_rows": {0: {service.REVIEW_COLUMN: "기각"}}, "added_rows": [], "deleted_rows": []}
     at.run()
     assert seen[-1] == {0: {service.REVIEW_COLUMN: "기각"}}
@@ -760,3 +797,200 @@ def test_app_shows_external_badge_instead_of_no_gold(monkeypatch: pytest.MonkeyP
     at.selectbox(key="process_name").select("LPG 저장탱크 출하").run()
     shown = " ".join(m.value for m in at.markdown)
     assert "예시 공정 · 정성 검토용" in shown and "골드셋 없음" not in shown
+
+
+# ── 지시문 X 전체 가이드워드 · 보기 전환 · 공정 전체 · 검토 표 가독성 ─────────────────
+def _view(at: Any) -> Any:
+    """결과 보기 radio — 키가 view_<n> 으로 바뀐다(칩이 보기를 정하면 새 위젯)."""
+    return next(r for r in at.radio if (r.key or "").startswith("view_"))
+
+
+def _full_result() -> service.Result:
+    return service.run_live(_SENTENCE, load_replays()["N1"], _MOCK_ENV)
+
+
+def test_run_live_streams_partial_records_in_axis_order() -> None:
+    """X-1c: 가이드워드 판정이 끝날 때마다 부분 레코드가 오고, 늘기만 하며, 축 순서다."""
+    from core.agent.generate import STANDARD_GUIDEWORDS
+
+    seen: list[dict[str, Any]] = []
+
+    def spy(event: str, payload: dict[str, Any]) -> None:
+        if event == "guideword":
+            seen.append(payload)
+
+    result = service.run_live(_SENTENCE, load_replays()["N1"], _MOCK_ENV, spy)
+    assert [p["done"] for p in seen] == list(range(1, 8)) and all(p["total"] == 7 for p in seen)
+    sizes = [len(p["records"]) for p in seen]
+    assert sizes == sorted(sizes) and sizes[-1] == len(result.records)
+    order = [STANDARD_GUIDEWORDS.index(r.guideword) for r in seen[-1]["records"]]
+    assert order == sorted(order)
+    m = result.meta
+    assert m["guidewords"] == STANDARD_GUIDEWORDS and len(m["raw_calls"]) == 9 and m["parameters"]
+    assert service.cells_label(result) == f"{m['judged_cells']}/{m['expected_cells']}"
+
+
+def test_app_draws_partial_table_per_guideword(monkeypatch: pytest.MonkeyPatch) -> None:
+    from streamlit.testing.v1 import AppTest
+
+    for key, value in _MOCK_ENV.items():
+        monkeypatch.setenv(key, value)
+    calls: list[int] = []
+    real = service.partial_rows
+
+    def spy(records: list[Any]) -> list[dict[str, object]]:
+        calls.append(len(records))
+        return real(records)
+
+    monkeypatch.setattr(service, "partial_rows", spy)
+    at = AppTest.from_file(str(_APP), default_timeout=60).run()
+    at.text_area[0].input(_SENTENCE).run()
+    _cta(at).click().run()
+    assert not at.exception and len(calls) == 7 and calls == sorted(calls)
+
+
+def test_failed_guideword_line() -> None:
+    result = _full_result()
+    assert service.failed_guidewords_line(result) is None
+    broken = service.Result(meta={**result.meta, "review_guidewords": ["Reverse"]}, records=result.records)
+    line = service.failed_guidewords_line(broken)
+    assert line is not None and line.startswith("가이드워드 Reverse 판정 실패(review) — 나머지 6종은 정상")
+    quick = service.Result(meta={**broken.meta, "source": "quick"}, records=result.records)
+    assert service.failed_guidewords_line(quick) is None
+
+
+@pytest.mark.parametrize("view", service.VIEWS)
+def test_views_only_reorder_rows(view: str) -> None:
+    """X-2b: 어느 보기든 같은 행 집합을 정확히 한 번씩 가리킨다."""
+    result = _full_result()
+    groups = service.view_groups(result, view)
+    indices = [i for _, _, idx in groups for i in idx]
+    assert sorted(indices) == list(range(len(result.records)))
+    records = service.verified(result)[0]
+    if view == service.VIEWS[1]:
+        assert [g[0] for g in groups] == result.meta["guidewords"]
+        assert all(records[i].guideword == name for name, _, idx in groups for i in idx)
+        n_params = len(result.meta["parameters"])
+        for name, head, idx in groups:
+            skipped = n_params - len({records[i].parameter for i in idx})
+            assert head == f"{name} — {len(idx)}건" + (f" (해당 없음 {skipped}셀)" if skipped else "")
+    if view == service.VIEWS[2]:
+        params = [p for p in result.meta["parameters"] if any(r.parameter == p for r in records)]
+        assert [g[0] for g in groups] == params
+        assert all(records[i].parameter == name for name, _, idx in groups for i in idx)
+
+
+def test_app_view_switch_keeps_edits_in_worksheet_view_only(monkeypatch: pytest.MonkeyPatch) -> None:
+    """X-2b: 편집은 워크시트 순서에서만. 가이드워드별은 읽기 전용 묶음이고 검토 결과가 같은 행에 붙는다."""
+    from streamlit.testing.v1 import AppTest
+
+    for key, value in _MOCK_ENV.items():
+        monkeypatch.setenv(key, value)
+    at = AppTest.from_file(str(_APP), default_timeout=60).run()
+    at.text_area[0].input(_SENTENCE).run()
+    _cta(at).click().run()
+    result = at.session_state["quick_result"]
+    table = service.worksheet_table(result)
+    target = len(table) - 1  # 마지막 행을 기각 — 묶음 보기에서 같은 No 에 붙어야 한다
+    key = service.review_key(result)
+    at.session_state[key] = {"edited_rows": {target: {service.REVIEW_COLUMN: "기각"}}, "added_rows": [], "deleted_rows": []}
+    at.run()
+    _view(at).set_value(service.VIEWS[1]).run()
+    assert not at.exception
+    frames = at.dataframe
+    assert len(frames) == len([g for g in service.view_groups(result, service.VIEWS[1]) if g[2]])
+    rejected = [
+        f.value["No"].iloc[j] for f in frames for j, v in enumerate(f.value[service.REVIEW_COLUMN]) if v == "기각"
+    ]
+    assert rejected == [table[target]["No"]]
+    assert any("워크시트 순서" in c.value for c in at.caption)
+    assert any("기각 1건" in c.value for c in at.caption)  # 다운로드 반영은 보기와 무관
+    # 돌아오면 편집 표가 저장본으로 다시 그려진다 — 보기를 오가도 검토가 사라지지 않는다.
+    # 그려지지 않은 편집 표의 위젯 상태는 Streamlit 이 지운다 — 그래도 저장본으로 반영된다.
+    at.run()
+    assert key not in at.session_state
+    assert any("기각 1건" in c.value for c in at.caption)
+    _view(at).set_value(service.VIEWS[0]).run()
+    assert not at.exception
+    assert list(at.dataframe[0].value[service.REVIEW_COLUMN]).count("기각") == 1
+    assert at.dataframe[0].value[service.REVIEW_COLUMN].iloc[target] == "기각"
+    assert any("기각 1건" in c.value for c in at.caption)
+
+
+def test_merge_and_with_edits() -> None:
+    merged = service.merge_edits({0: {"검토": "기각"}}, {"0": {"S(1-5)": 2}, "3": {"검토": "채택"}})
+    assert merged == {0: {"검토": "기각", "S(1-5)": 2}, 3: {"검토": "채택"}}
+    table = [{"검토": "미검토", "S(1-5)": 4}, {"검토": "미검토", "S(1-5)": 5}]
+    assert service.with_edits(table, {1: {"검토": "기각", "없는 열": 1}}) == [
+        {"검토": "미검토", "S(1-5)": 4}, {"검토": "기각", "S(1-5)": 5},
+    ]
+    assert table[1]["검토"] == "미검토"  # 원본은 그대로
+
+
+def test_combine_replays_keeps_node_order_and_split_recalls() -> None:
+    replays = load_replays()
+    nh3 = next(p for p in service.CATALOG if p["id"] == "nh3_sts")
+    combined = service.combine_replays(nh3, replays)
+    assert combined is not None and combined.meta["nodes"] == ["N1", "N2", "N3", "N4"]
+    assert [r.id for r in combined.records] == [r.id for n in ("N1", "N2", "N3", "N4") for r in replays[n].records]
+    assert len({r.id for r in combined.records}) == len(combined.records)  # 노드 접두사로 id 충돌 없음
+    assert combined.meta["recall_parts"] == [("튜닝", 7, 8), ("홀드아웃", 4, 26)]  # 섞지 않는다
+    assert service.recall_tiles(combined) == [("튜닝 recall", "0.875"), ("홀드아웃 recall", "0.154")]
+    assert service.criteria_notice(combined) is None and not combined.is_gold
+    lpg = service.combine_replays(next(p for p in service.CATALOG if p["id"] == "lpg_iocl"), replays)
+    assert lpg is not None and service.recall_tiles(lpg) == [("외부 대조 recall", "0.909")]  # 40/44
+    assert "후한 기준" in service.accuracy_line(lpg, replays)
+    assert service.export_files(combined)["xlsx"][1][:2] == b"PK"  # 다운로드 1파일
+
+
+def test_app_whole_process_replay(monkeypatch: pytest.MonkeyPatch) -> None:
+    from streamlit.testing.v1 import AppTest
+
+    for key, value in _MOCK_ENV.items():
+        monkeypatch.setenv(key, value)
+    at = AppTest.from_file(str(_APP), default_timeout=60).run()
+    at.radio(key="mode").set_value(_CASES).run()
+    at.button(key="preset_all").click().run()
+    assert not at.exception
+    nodes = {str(v).split(" ")[0] for v in at.dataframe[0].value["노드"]}
+    assert nodes == {"N1", "N2", "N3", "N4"}  # 노드가 여러 개라 노드 열을 숨기지 않는다
+    assert {"튜닝 recall", "홀드아웃 recall"} <= {m.label for m in at.metric}
+    assert any(e.label == "노드별 출처" for e in at.expander)
+
+
+def test_booth_pool_chip_opens_as_well_as_group(monkeypatch: pytest.MonkeyPatch) -> None:
+    """X-4: 수영장 칩 → 가이드워드별 보기 · As well as 묶음만 펼침 · 보조 실행 기본값 As well as."""
+    at = _booth_app(monkeypatch, booth=True)
+    next(b for b in at.button if b.label == "수영장 염소 소독").click().run()
+    assert at.session_state["view_pref"] == service.VIEWS[1]
+    assert at.selectbox(key="guideword").value == "As well as"
+    _cta(at).click().run()
+    assert not at.exception
+    assert _view(at).value == service.VIEWS[1] and _view(at).index == 1  # 화면 선택 표시도 같은 값(index 로 생성)
+    groups = [e for e in at.expander if e.label.split(" — ")[0] in service.GUIDEWORD_DEFINITIONS]
+    assert len(groups) == 7
+    assert [e.label.split(" — ")[0] for e in groups if e.proto.expanded] == ["As well as"]
+
+
+# ── 검토 표 가독성 (10/8 사용자 피드백 — 검토자는 열을 눈으로 따라가며 판단한다) ─────────
+def test_review_columns_put_decision_columns_first_and_hide_uniform() -> None:
+    result = _full_result()
+    table = [{service.REVIEW_COLUMN: "미검토", **row} for row in service.readable_rows(service.worksheet_table(result))]
+    order = service.review_column_order(table)
+    assert order[:8] == [service.REVIEW_COLUMN, "No", "가이드워드", "이탈", "위험도", "S(1-5)", "F(1-5)", "신뢰도"]
+    assert "노드" not in order and "시나리오 연계" not in order and service.FLAG_COLUMN not in order
+    assert {"이탈", "원인", "결과", "권고", "S(1-5)", "F(1-5)", "위험도"} <= set(order)
+    demo = service.readable_rows(service.worksheet_table(service.demo_injected(load_replays()["P1"])))
+    assert service.FLAG_COLUMN in service.review_column_order(demo)  # 플래그가 있으면 보인다
+    listed = next(r for r in table if "·" in str(r["원인"]))
+    assert " · " in str(listed["원인"])
+
+
+def test_spacing_only_is_not_an_edit() -> None:
+    """화면은 ' · ' 로 띄워 보여 준다 — 그 값을 그대로 돌려받아도 '수정' 으로 치지 않는다."""
+    result = _full_result()
+    shown = service.readable_rows(service.worksheet_table(result))
+    row = next(i for i, r in enumerate(shown) if " · " in str(r["원인"]))
+    kept, log = service.apply_review(result, {row: {"원인": shown[row]["원인"], service.REVIEW_COLUMN: "채택"}})
+    assert log == [(shown[row]["No"], "채택", shown[row]["가이드워드"], shown[row]["이탈"], "")]
+    assert kept[row]["causes"] == service._display_records(result)[row]["causes"]

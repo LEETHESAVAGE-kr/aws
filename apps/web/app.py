@@ -144,6 +144,13 @@ st.html(
     .hz-info-r span { flex: none; width: 36px; color: var(--muted); }
     .hz-info-r b { font-weight: 500; color: var(--text); }
     .st-key-mode, .st-key-mode .stRadio, .st-key-mode [data-testid="stRadio"] > div { width: 100% !important; }
+    [class*="st-key-view_"] [role="radiogroup"] { gap: 0; background: var(--card2); border-radius: 10px; padding: 3px;
+        display: inline-flex; }
+    [class*="st-key-view_"] [data-testid="stRadioOption"] { border-radius: 8px; padding: 5px 14px; margin: 0; cursor: pointer; }
+    [class*="st-key-view_"] [data-testid="stRadioOption"] > div > div:first-child { display: none; }
+    [class*="st-key-view_"] [data-testid="stRadioOption"] p { font-size: 13px; color: var(--muted); }
+    [class*="st-key-view_"] [data-testid="stRadioOption"][data-selected="true"] { background: #3a3a44; }
+    [class*="st-key-view_"] [data-testid="stRadioOption"][data-selected="true"] p { color: var(--text); font-weight: 600; }
     .st-key-mode [role="radiogroup"] { gap: 0; background: var(--card2); border-radius: 12px; padding: 4px;
         display: flex; flex-wrap: nowrap; width: 100%; }
     .st-key-mode [role="radiogroup"] > div { flex: 1; }
@@ -174,12 +181,23 @@ state.setdefault("node", None)
 state.setdefault("quick_text", "")
 state.setdefault("mode", MODE_NL)
 state.setdefault("guideword", "More")
+state.setdefault("view_pref", service.VIEWS[0])  # 결과 보기(X-2) — 위젯 밖에 둔다
+state.setdefault("view_gen", 0)
+state.setdefault("focus_guideword", None)
+
+
+@st.cache_resource
+def _combined(process_id: str) -> service.Result | None:
+    return service.combine_replays(next(p for p in service.CATALOG if p["id"] == process_id), replays)
 
 
 def _fill(text: str, guideword: str | None = None) -> None:
     state.quick_text = text
-    if guideword:  # 부스 칩이 지정한 가이드워드(V-6)
+    if guideword:  # 칩이 지정한 가이드워드(V-6 · X-4) — 결과는 가이드워드별 보기에서 그 묶음을 펼친다
         state.guideword = guideword
+        state.view_pref = service.VIEWS[1]
+        state.view_gen += 1  # 새 위젯 키 — 상태로 정한 값을 radio 가 선택 표시하게(아래 view_choice)
+        state.focus_guideword = guideword
 
 
 def _to_cases() -> None:
@@ -219,7 +237,7 @@ intro, tool = st.columns([5, 7], gap="large")
 intro.html(
     """<div class="hz-eyebrow">AI 위험성평가 코파일럿</div>
     <div class="hz-h1">공정을 한 문단으로 쓰면,<br>HAZOP 워크시트 초안이 나옵니다.</div>
-    <p class="hz-sub">며칠짜리 HAZOP 회의의 첫 초안을 AI 가 2분 안에 채웁니다. 전문가는 검토와 승인만 하세요.</p>
+    <p class="hz-sub">며칠짜리 HAZOP 회의의 첫 초안을 AI 가 몇 분 안에 채웁니다. 전문가는 검토와 승인만 하세요.</p>
     <div class="hz-steps">
       <div class="hz-step"><b>1</b><div><strong>공정을 문장으로 설명</strong>
         <span>예시 버튼 하나로 바로 시작</span></div></div>
@@ -241,7 +259,7 @@ with tool.container(border=True, key="tool"):
         done = 3 if state.quick_result is not None else (2 if state.quick_text.strip() else 1)
         st.html(
             f'<div class="hz-progress"><div style="width:{done * 33.4:.0f}%"></div></div>'
-            '<p class="hz-q-step">STEP 1 / 2</p><p class="hz-q">어떤 공정을 분석할까요?</p>'
+            '<p class="hz-q">어떤 공정을 분석할까요?</p>'
             '<p class="hz-q-help">물질·설비·압력·온도·안전장치를 적을수록 정확해집니다. 예시를 눌러도 됩니다.</p>'
         )
         for i, (column, (label, text, *chip_guideword)) in enumerate(
@@ -256,32 +274,27 @@ with tool.container(border=True, key="tool"):
             placeholder=DIRECT_PLACEHOLDER,
             label_visibility="collapsed",
         )
-        st.html(
-            '<p class="hz-q-step" style="margin-top:8px">STEP 2 / 2</p>'
-            '<p class="hz-q">어떤 이탈부터 볼까요?</p>'
-        )
-        guideword = st.selectbox(
-            "가이드워드",
-            GUIDEWORDS,
-            key="guideword",  # 기본 More(state.setdefault) — 부스 칩이 바꿀 수 있게 상태로 둔다(V-6)
-            format_func=lambda g: f"{g} — {GUIDEWORD_MEANING[g]}" if g in GUIDEWORD_MEANING else g,
-            label_visibility="collapsed",
-        )
         # V-3 부스 PC 한 대 = 세션 하나 — 세션 상한은 빼고 일 상한(비용 상한)만 건다.
         session_runs = 0 if BOOTH else state.live_runs
         quota = service.quota_block_reason(session_runs)
         blocked = live_reason is not None or quota is not None or not state.quick_text.strip()
+        # 지시문 X-1: 기본 실행 = 가이드워드 전체. HAZOP 은 원래 전 가이드워드를 도는 방법이다.
         with st.container(key="cta"):
-            clicked_quick = st.button(
-                "HAZOP 초안 생성 (약 1분)", type="primary", disabled=blocked, width="stretch"
-            )
-        clicked_full = False
-        if service.live_scope() == "full":
             clicked_full = st.button(
-                f"노드 전체 초안 생성 ({service.LIVE_NOTE.replace('~', '–')})",
+                service.LIVE_BUTTON,
+                type="primary",
                 disabled=blocked,
                 width="stretch",
             )
+        # X-1b 보조 실행 — 특정 가이드워드만 먼저 확인하고 싶을 때(실무 기능).
+        with st.expander(service.QUICK_EXPANDER, expanded=False):
+            guideword = st.selectbox(
+                service.QUICK_QUESTION,
+                GUIDEWORDS,
+                key="guideword",  # 기본 More(state.setdefault) — 칩이 바꿀 수 있게 상태로 둔다(V-6)
+                format_func=lambda g: f"{g} — {GUIDEWORD_MEANING[g]}" if g in GUIDEWORD_MEANING else g,
+            )
+            clicked_quick = st.button(service.QUICK_BUTTON, key="run_quick", disabled=blocked, width="stretch")
         if clicked_quick or clicked_full:
             reason = service.reserve_live_run(session_runs)
             if reason:
@@ -290,19 +303,23 @@ with tool.container(border=True, key="tool"):
                 state.live_runs += 1
                 mock_source = replays.get("N1") or next(iter(replays.values()))
                 # 진행 표시는 버튼 바로 아래 — 결과 영역은 첫 화면 밖이라 거기 두면 "아무 일도 없다"로 보인다(9/29 23:05).
+                expected = "약 1분" if clicked_quick else "약 2~3분"
                 with st.status(
-                    "HAZOP 초안 생성 중 · 약 1분 — 이 화면에서 기다려 주세요", expanded=True
+                    f"HAZOP 초안 생성 중 · {expected} — 이 화면에서 기다려 주세요", expanded=True
                 ) as status:
                     # R-11: 단계가 끝나는 즉시 그 산출물을 쓴다(예전엔 끝난 뒤 2/3·3/3 을 한꺼번에 찍었다).
                     lines = [st.empty() for _ in range(3)]
                     lines[0].write(service.STAGE_PENDING[0])
                     st.caption("생성 중에 다른 버튼을 누르면 이번 생성이 취소됩니다.")
+                    partial = st.empty()  # X-1c: 가이드워드 판정이 끝날 때마다 행이 늘어나는 부분 표
 
                     def on_progress(event: str, payload: dict[str, Any]) -> None:
                         step, text, pending = service.progress_text(event, payload, guideword if clicked_quick else None)
                         lines[step].write(text)
                         if pending is not None and step + 1 < len(lines):
                             lines[step + 1].write(pending)
+                        if event == "guideword" and not clicked_quick:
+                            partial.dataframe(service.partial_rows(payload["records"]), hide_index=True, height=240)
                         # expanded 를 다시 주지 않으면 라벨 갱신이 상자를 접는다(10/8 브라우저 확인).
                         status.update(label=f"HAZOP 초안 생성 중 · {text.split(' — ')[0]}", expanded=True)
 
@@ -343,11 +360,15 @@ with tool.container(border=True, key="tool"):
             )
             st.button("실측 사례 보기", on_click=_to_cases, width="stretch")
         elif BOOTH:
-            st.caption(f"부스 모드 · 오늘 남은 {service.daily_left()}회 · 생성 약 70초 — 기다리는 동안 단계가 하나씩 채워집니다.")
+            st.caption(
+                f"부스 모드 · 오늘 남은 {service.daily_left()}회 · 생성 약 2~3분 — "
+                "가이드워드 판정이 끝날 때마다 표가 채워집니다."
+            )
         else:
             st.caption(
                 f"이 세션 남은 횟수 {left_runs}/{service.SESSION_LIMIT} · "
-                "호출 3회(문장 해석 → 파라미터 열거 → 가이드워드 판정) · 약 $0.15"
+                "문장 해석 → 파라미터 열거 → 가이드워드 7종 판정(병렬) · "
+                f"{service.LIVE_NOTE.split(' · ', 1)[1]}"
                 + (
                     " · mock 모드 — 네트워크 없이 재생 레코드로 생성 경로를 돕니다."
                     if service.is_mock()
@@ -371,8 +392,19 @@ with tool.container(border=True, key="tool"):
         else:
             st.markdown(f":orange-background[예시 공정 · 정성 검토용] {process['description']}")
         node_ids = [n["id"] for n in process["nodes"]]
-        if state.node not in node_ids:  # 공정을 바꾸면 그 공정의 첫 캡처 노드를 연다
+        if state.node not in (*node_ids, service.ALL_NODES):  # 공정을 바꾸면 그 공정의 첫 캡처 노드를 연다
             state.node = next((n for n in node_ids if n in replays), node_ids[0])
+        # X-3: 공정 전체를 노드 순서로 이어 본다(재생만 — 공정 전체 실호출은 비목표). 노드 버튼 줄에 넣으면
+        # 노드 이름이 "① 공급…" 으로 잘려 따로 한 줄(10/8 캡처).
+        if st.button(
+            f"공정 전체 보기 — 노드 순서대로 {' → '.join(node_ids)}",
+            key="preset_all",
+            disabled=not any(n in replays for n in node_ids),
+            type="primary" if state.node == service.ALL_NODES else "secondary",
+            width="stretch",
+        ):
+            state.node = service.ALL_NODES
+            st.rerun()
         for column, node in zip(st.columns(len(node_ids)), process["nodes"], strict=True):
             captured = node["id"] in replays
             if column.button(
@@ -385,14 +417,19 @@ with tool.container(border=True, key="tool"):
                 state.node = node["id"]
                 st.rerun()  # 선택 강조(primary)를 새 노드로 다시 그린다
 
-result = state.quick_result if mode == MODE_NL else replays.get(state.node)
+if mode == MODE_NL:
+    result = state.quick_result
+elif state.node == service.ALL_NODES:
+    result = _combined(process["id"])  # 같은 Result 를 재사용해야 검증 캐시·검토 편집 키가 유지된다
+else:
+    result = replays.get(state.node)
 
 # ── 결과 ─────────────────────────────────────────────────────────────────────
 st.html('<div id="result" class="hz-section">분석 결과</div>')
 if result is None:
     st.html(
         '<div class="hz-empty"><strong>아직 결과가 없습니다</strong>'
-        '위에서 예시를 누르고 "HAZOP 초안 생성"을 누르면 1분 안에 여기에 워크시트가 나타납니다.<br>'
+        '위에서 예시를 누르고 "HAZOP 초안 생성"을 누르면 가이드워드 판정이 끝날 때마다 여기에 워크시트가 채워집니다(전체 약 2~3분).<br>'
         '기다리기 싫다면 "실측 사례 재생"에서 완성된 결과를 바로 볼 수 있습니다.</div>'
     )
 else:
@@ -400,32 +437,43 @@ else:
         st.warning(service.provenance_line(result))
     else:
         st.caption(service.provenance_line(result))
+    if result.meta.get("node_provenance"):  # X-3 공정 전체 — 노드마다 캡처 시각·프롬프트가 다르다
+        with st.expander("노드별 출처", expanded=False):
+            st.markdown("\n".join(f"- **{n}** {line}" for n, line in result.meta["node_provenance"]))
+    failed = service.failed_guidewords_line(result)
+    if failed:
+        st.warning(failed)
     notice = service.criteria_notice(result)
     if notice:
         st.markdown(f":orange-background[평가기준] {notice}")
     view = service.process_view(result)
-    cells = (
-        f"{view['judged_cells']}/{view['expected_cells']}"
-        if view["expected_cells"] is not None
-        else "—"
-    )
-    recall = result.meta.get("recall")
+    cells = service.cells_label(result)
     tiles = [
         ("이탈 시나리오", f"{len(result.records)}건"),
         ("판정 셀 (누락 0)", cells),
         ("소요 시간", "—" if view["latency_s"] is None else f"{view['latency_s']:.0f}초"),
         ("비용", "—" if view["cost_usd"] is None else f"${view['cost_usd']:.2f}"),
+        *service.recall_tiles(result),
     ]
-    if recall:
-        external = result.meta.get("split") == "external"  # 지시문 W — 골드셋이 아니라 외부 공개 워크시트
-        tiles.append(("외부 대조 recall" if external else "전문가 대비 recall", f"{recall['recall']:.3f}"))
+    if result.meta.get("combined"):  # 공정 전체는 노드별 실행이라 지연 합이 의미 없다 — 타일 6개면 값이 잘린다
+        tiles = [t for t in tiles if t[0] != "소요 시간"]
     for column, (label, value) in zip(st.columns(len(tiles)), tiles, strict=True):
         column.metric(label, value)
 
     # 검토 표(export-formats R-10): 편집 상태를 표보다 먼저 읽어 다운로드에 반영한다. 키에 결과 식별을 넣어
     # 새 결과가 오면 이전 편집이 엉뚱한 행에 붙지 않게 한다. 골드 재생은 사람 작성이라 검토 대상이 아니다.
-    review_key = f"review_{result.meta.get('node')}_{result.meta.get('captured_at')}_{len(result.records)}"
-    edits = {} if result.is_gold else (state.get(review_key) or {}).get("edited_rows", {})
+    # 다른 보기로 가면 data_editor 가 그려지지 않아 Streamlit 이 그 위젯 상태를 지운다 — 편집은 위젯 밖
+    # (`review_saved`)에도 두고, 표를 다시 그릴 때는 저장된 편집(`review_base`)을 데이터에 넣어 그린다(X-2b).
+    review_key = service.review_key(result)
+    review_base: dict[str, dict[int, dict[str, Any]]] = state.setdefault("review_base", {})
+    review_saved: dict[str, dict[int, dict[str, Any]]] = state.setdefault("review_saved", {})
+    if result.is_gold:
+        edits: dict[int, dict[str, Any]] = {}
+    elif review_key in state:
+        edits = service.merge_edits(review_base.get(review_key, {}), state[review_key].get("edited_rows", {}))
+    else:
+        edits = review_saved.get(review_key, review_base.get(review_key, {}))
+    review_saved[review_key] = edits
     try:
         files = service.export_files(result, edits)
         review_log = service.apply_review(result, edits)[1] if edits else []
@@ -456,31 +504,81 @@ else:
             shown = service.demo_injected(result)
             st.markdown(service.DEMO_BANNER)
         st.caption(service.summary_line(shown))
-        if result.is_gold or shown is not result:
-            st.dataframe(service.worksheet_table(shown), hide_index=True)
-        else:
+        # X-2 보기 전환 — 표시 순서만 바꾼다. 검토 편집은 워크시트 순서에서만(편집 키가 행 인덱스라서).
+        # 위젯 키에 상태로 값을 넣어 두면 처음 그릴 때 화면 선택 표시가 그 값을 따르지 않는다(10/8 브라우저 확인,
+        # segmented_control·radio 둘 다). 값은 위젯 밖 `view_pref` 에 두고, 칩이 바꾸면 새 키 + index 로 다시 만든다.
+        view_key = f"view_{state.view_gen}"
+
+        def _keep_view() -> None:
+            state.view_pref = state[view_key]
+
+        view_choice = st.radio(
+            "보기",
+            service.VIEWS,
+            index=service.VIEWS.index(state.view_pref),
+            key=view_key,
+            on_change=_keep_view,
+            horizontal=True,
+            label_visibility="collapsed",
+        )
+        editable = not result.is_gold and shown is result
+        table = service.readable_rows(service.worksheet_table(shown))
+        if not result.is_gold:  # 검토 열 — 다른 보기에서는 편집 결과를 읽기 전용으로 보여 준다
+            table = [{service.REVIEW_COLUMN: service.REVIEW_CHOICES[0], **row} for row in table]
+        order = service.review_column_order(table)
+        # 검토자는 열을 눈으로 따라가며 판단한다(10/8 피드백) — 왼쪽 고정·넓은 글 열·높은 행(줄바꿈).
+        column_config: dict[str, Any] = {
+            c: st.column_config.Column(width=w, pinned=c in service.REVIEW_PINNED or None)
+            for c, w in service.REVIEW_WIDTHS.items()
+            if c in order
+        }
+        column_config["No"] = st.column_config.Column(width=44, pinned=True)
+        column_config[service.REVIEW_COLUMN] = st.column_config.Column(width=72, pinned=True)
+        if view_choice == service.VIEWS[0] and editable:
             st.caption(
                 "검토: 행마다 채택·기각을 고르고 원인·결과·권고·S·F 를 고칠 수 있습니다(목록은 · 로 구분). "
-                "위 다운로드 3종에 바로 반영됩니다 — 기각 행은 빠지고, Excel 에 '검토 기록' 시트가 붙습니다."
+                "위 다운로드 3종에 바로 반영됩니다 — 기각 행은 빠지고, Excel 에 '검토 기록' 시트가 붙습니다. "
+                "화면은 위험도·S·F 를 이탈 옆에 두었고, Excel 은 표준 12열 순서입니다."
             )
-            table = [{service.REVIEW_COLUMN: service.REVIEW_CHOICES[0], **row} for row in service.worksheet_table(result)]
             st.data_editor(
-                table,
+                service.with_edits(table, review_base.get(review_key, {})),
                 key=review_key,
                 hide_index=True,
+                column_order=order,
+                row_height=service.REVIEW_ROW_HEIGHT,
                 disabled=[c for c in table[0] if c != service.REVIEW_COLUMN and c not in service.EDITABLE_COLUMNS]
                 if table else True,
                 column_config={
+                    **column_config,
                     service.REVIEW_COLUMN: st.column_config.SelectboxColumn(
-                        options=list(service.REVIEW_CHOICES), required=True, width="small"
+                        options=list(service.REVIEW_CHOICES), required=True, width="small", pinned=True
                     ),
                     "S(1-5)": st.column_config.NumberColumn(min_value=1, max_value=5, step=1, required=True),
                     "F(1-5)": st.column_config.NumberColumn(min_value=1, max_value=5, step=1, required=True),
                 },
             )
-            if review_log:
-                counts = {v: sum(e[1] == v for e in review_log) for v in ("채택", "수정", "기각")}
-                st.caption(" · ".join(f"{k} {n}건" for k, n in counts.items()) + " — 다운로드에 반영됨")
+        else:
+            if editable:
+                st.caption("검토 편집은 '워크시트 순서' 보기에서 합니다. 여기서는 검토 결과를 함께 보여 줍니다.")
+            if not result.is_gold:  # 편집 표가 이번 실행에 안 그려진다 — 돌아오면 저장본을 데이터에 넣어 그린다
+                review_base[review_key] = edits
+            table = service.with_edits(table, edits)
+            for name, head, indices in service.view_groups(shown, view_choice):
+                rows = [table[i] for i in indices]
+                kwargs = {"hide_index": True, "column_order": order, "column_config": column_config,
+                          "row_height": service.REVIEW_ROW_HEIGHT}
+                if not head:  # 워크시트 순서(골드·시연 사본) — 묶음 없이 표 하나
+                    st.dataframe(rows, **kwargs)
+                    continue
+                focus = state.focus_guideword
+                with st.expander(head, expanded=focus is None or name == focus):
+                    if rows:
+                        st.dataframe(rows, **kwargs)
+                    else:
+                        st.caption("이 묶음은 결과 행이 없습니다.")
+        if review_log:
+            counts = {v: sum(e[1] == v for e in review_log) for v in ("채택", "수정", "기각")}
+            st.caption(" · ".join(f"{k} {n}건" for k, n in counts.items()) + " — 다운로드에 반영됨")
     with process_tab:
         calls = "—" if view["api_calls"] is None else f"{view['api_calls']}회"
         st.markdown(f"**정확도** {service.accuracy_line(result, replays)} · API 호출 {calls}")
