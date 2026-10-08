@@ -60,7 +60,13 @@ SESSION_LIMIT: Final[int] = int(os.environ.get("HAZOP_SESSION_LIMIT", 1))
 DAILY_LIMIT: Final[int] = int(os.environ.get("HAZOP_DAILY_LIMIT", 5))
 SECRET_KEYS: Final[tuple[str, ...]] = (
     "HAZOP_ALLOW_LIVE", "HAZOP_LIVE_SCOPE", "ANTHROPIC_API_KEY", "HAZOP_SESSION_LIMIT", "HAZOP_DAILY_LIMIT",
+    # 본선 F-01: 대회 게이트웨이가 Anthropic 형식이면 SDK 가 이 둘을 환경변수에서 읽는다(core/llm 무변경).
+    "ANTHROPIC_BASE_URL", "ANTHROPIC_AUTH_TOKEN", "HAZOP_ENDPOINT_LABEL",
 )
+#: `ANTHROPIC_BASE_URL` 이 있을 때 출처 줄에 붙는 경유 표시. Bedrock 경유는 운영사 확인 뒤에만
+#: Secrets `HAZOP_ENDPOINT_LABEL` 로 바꾼다(PRD 본선 F-01-5) — 코드 기본값은 확인 전 문구.
+DEFAULT_ENDPOINT_LABEL: Final[str] = "대회 제공 API"
+DIRECT_BASE_URL: Final[str] = "https://api.anthropic.com"
 LIVE_SCOPES: Final[tuple[str, ...]] = ("quick", "full")
 BADGES: Final[dict[str | None, str]] = {"grounded": "🟢", "inferred": "🟡", "review": "🔴"}
 CONFIDENCE_COLUMN: Final[str] = "신뢰도"
@@ -116,21 +122,45 @@ def is_auth_error(exc: BaseException) -> bool:
 
 def key_hint(environ: Mapping[str, str] = os.environ) -> str:
     """`ANTHROPIC_API_KEY` 형식 진단 — **키 문자는 한 글자도 드러내지 않는다**(접두사 일치 여부·길이·이상 문자 수만)."""
-    raw = environ.get("ANTHROPIC_API_KEY", "")
+    name = _key_name(environ)
+    raw = environ.get(name, "")
     key = raw.strip()
     if not key:
         return "키 진단: ANTHROPIC_API_KEY 가 비어 있습니다."
     odd = sum(ch not in _KEY_CHARS for ch in key)
-    parts = [
-        "sk-ant- 로 시작 ✅" if key.startswith("sk-ant-") else "sk-ant- 로 시작하지 않음 ❌",
-        f"길이 {len(key)}자 (Anthropic 키는 보통 100자 안팎)",
-        "영문·숫자·-·_ 외 문자 없음 ✅" if odd == 0 else f"영문·숫자·-·_ 외 문자 {odd}개 ❌ (따옴표·공백·줄바꿈이 섞였을 수 있음)",
-    ]
+    if endpoint_label(environ):
+        # 게이트웨이 키는 형식을 모른다 — sk-ant- 접두사·길이로 오경보를 내지 않는다.
+        parts = [f"{name} · 엔드포인트 ANTHROPIC_BASE_URL 설정됨", f"길이 {len(key)}자"]
+    else:
+        parts = [
+            "sk-ant- 로 시작 ✅" if key.startswith("sk-ant-") else "sk-ant- 로 시작하지 않음 ❌",
+            f"길이 {len(key)}자 (Anthropic 키는 보통 100자 안팎)",
+        ]
+    parts.append(
+        "영문·숫자·-·_ 외 문자 없음 ✅" if odd == 0 else f"영문·숫자·-·_ 외 문자 {odd}개 ❌ (따옴표·공백·줄바꿈이 섞였을 수 있음)"
+    )
     if key == "sk-ant-...":
         parts.append("예시 값 'sk-ant-...' 그대로입니다 ❌")
     if raw != key:
         parts.append("앞뒤 공백·줄바꿈 있음(자동 제거됨)")
     return "키 진단: " + " · ".join(parts) + ". Secrets 의 값이 로컬 .env 의 키와 같은지 확인하세요."
+
+
+def _key_name(environ: Mapping[str, str]) -> str:
+    """쓰이는 키 변수 이름 — `x-api-key` 형식이 우선, 없으면 `Bearer` 형식(`ANTHROPIC_AUTH_TOKEN`)."""
+    if environ.get("ANTHROPIC_API_KEY", "").strip() or not environ.get("ANTHROPIC_AUTH_TOKEN", "").strip():
+        return "ANTHROPIC_API_KEY"
+    return "ANTHROPIC_AUTH_TOKEN"
+
+
+def endpoint_label(environ: Mapping[str, str] = os.environ) -> str | None:
+    """`ANTHROPIC_BASE_URL` 로 기본 엔드포인트가 아닌 곳에 보낼 때의 경유 표시. 직결이면 `None`.
+
+    기본 엔드포인트를 명시한 경우(이 PC 셸에 `https://api.anthropic.com` 이 설정돼 있다)도 직결로 본다.
+    """
+    if environ.get("ANTHROPIC_BASE_URL", "").strip().rstrip("/") in ("", DIRECT_BASE_URL):
+        return None
+    return environ.get("HAZOP_ENDPOINT_LABEL", "").strip() or DEFAULT_ENDPOINT_LABEL
 
 
 def is_mock(environ: Mapping[str, str] = os.environ) -> bool:
@@ -149,12 +179,12 @@ def live_scope(environ: Mapping[str, str] = os.environ) -> str:
 def live_block_reason(environ: Mapping[str, str] = os.environ) -> str | None:
     """실호출 모드를 켤 수 없는 사유. `None` 이면 활성.
 
-    `HAZOP_ALLOW_LIVE=true` 와 `ANTHROPIC_API_KEY` 가 **모두** 있어야 한다. mock 모드
-    (`HAZOP_USE_MOCK=true`)는 네트워크를 쓰지 않으므로 키 없이 허용한다(오프라인 시험용).
+    `HAZOP_ALLOW_LIVE=true` 와 키(`ANTHROPIC_API_KEY` 또는 게이트웨이의 `ANTHROPIC_AUTH_TOKEN`)가
+    **모두** 있어야 한다. mock 모드(`HAZOP_USE_MOCK=true`)는 네트워크를 쓰지 않으므로 키 없이 허용한다(오프라인 시험용).
     """
     if not _is_true(environ.get("HAZOP_ALLOW_LIVE", "false")):
         return "실호출 비활성 — 공개 데모는 재생 모드만 제공합니다(HAZOP_ALLOW_LIVE 미설정)."
-    if not environ.get("ANTHROPIC_API_KEY", "").strip() and not is_mock(environ):
+    if not environ.get(_key_name(environ), "").strip() and not is_mock(environ):
         return "실호출 비활성 — ANTHROPIC_API_KEY 가 없습니다."
     return None
 
@@ -341,6 +371,7 @@ def run_live(node_text: str, replay: Result, environ: Mapping[str, str] = os.env
     latency = time.perf_counter() - started
     meta = {
         "source": "mock" if mock else "live-run",
+        "endpoint": None if mock else endpoint_label(environ),
         "captured_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
         "node": node_meta.node,
         "node_meta": node_meta.model_dump(),
@@ -413,6 +444,7 @@ def run_quick(
         "mock": mock,
         "provider": "mock" if mock else provider,
         "model_id": None if mock else model_id,
+        "endpoint": None if mock else endpoint_label(environ),
         "captured_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
         "node": node_meta.node or "직접입력",
         "split": "none",
@@ -631,6 +663,8 @@ def provenance_line(result: Result) -> str:
     tail = f" · 모델 {m.get('model_id') or '미상'}" + (f" · 비용 ${cost:.3f}" if cost is not None else "")
     if (m.get("parallel_calls") or 1) > 1:
         tail += f" · 병렬 {m['parallel_calls']}"
+    if m.get("endpoint"):
+        tail += f" · {m['endpoint']} 경유"
     source = m.get("source")
     if result.is_gold:
         return f"전문가 골드셋 재생 — LLM 생성 결과 아님 ({_kst(m.get('captured_at'))} 저장)"
