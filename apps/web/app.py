@@ -51,6 +51,24 @@ EXAMPLES: tuple[tuple[str, str], ...] = (
         "공급한다. 안전장치는 캐비닛 배기, 가스감지기, 과류차단밸브, 긴급차단밸브.",
     ),
 )
+#: 부스 모드 예시 칩(지시문 V-2) — 관람객이 아는 장소의 공정. 물질·설비·안전장치를 넣어 해석이 비지 않게.
+BOOTH_EXAMPLES: tuple[tuple[str, str], ...] = (
+    (
+        "학교 실험실 수소",
+        "학교 화학 실험실에서 수소 실린더(약 15 MPa)를 감압밸브로 낮춰 가스 분석기에 공급한다. "
+        "다 쓴 실린더는 사람이 직접 교체한다. 안전장치는 가스누출감지기와 긴급차단밸브.",
+    ),
+    (
+        "아파트 LPG 공급",
+        "아파트 단지의 LPG 저장탱크에서 기화기를 거쳐 배관으로 각 세대 가스레인지에 공급한다. "
+        "안전장치는 가스누출경보기, 긴급차단밸브, 안전밸브.",
+    ),
+    (
+        "수영장 염소 소독",
+        "수영장 기계실에서 차아염소산나트륨 용액을 정량펌프로 순환 배관에 주입해 소독한다. "
+        "바로 옆에 pH 조정용 산 탱크가 있다. 안전장치는 유량 인터록과 누출 받침대.",
+    ),
+)
 GUIDEWORD_HELP = (
     "No: 흐름 없음 · More: 과다(압력·온도·유량↑) · Less: 과소 · Reverse: 역류 · Part of: 조성 일부 · "
     "As well as: 이물 혼입 · Other than: 다른 물질/상태"
@@ -62,6 +80,10 @@ GUIDEWORD_MEANING: dict[str, str] = dict(
 )
 
 st.set_page_config(page_title="HAZOP Copilot", layout="wide")
+#: 부스 모드(지시문 V) — `?booth=1` 일 때만. 기본 화면은 그대로다.
+BOOTH = st.query_params.get("booth") == "1"
+if BOOTH:  # V-4 큰 글씨 — 43" 모니터를 2 m 밖에서 본다
+    st.html("<style>.stApp { zoom: 1.2; }</style>")
 # DESIGN.md 토큰: primary #9046ff · primary-tint #f3ecff · primary-soft #c59eff · rounded.md 14px.
 # 회색 캔버스 위 흰 카드 = "앱" 의 기본 문법. 셀렉터가 버전과 달라도 기능은 같다 — 모양만 잃는다(U-R6).
 st.html(
@@ -215,7 +237,7 @@ with tool.container(border=True, key="tool"):
             '<p class="hz-q-help">물질·설비·압력·온도·안전장치를 적을수록 정확해집니다. 예시를 눌러도 됩니다.</p>'
         )
         for i, (column, (label, text)) in enumerate(
-            zip(st.columns(len(EXAMPLES)), EXAMPLES, strict=True)
+            zip(st.columns(len(EXAMPLES)), BOOTH_EXAMPLES if BOOTH else EXAMPLES, strict=True)
         ):
             column.button(label, key=f"chip_{i}", on_click=_fill, args=(text,), width="stretch")
         st.text_area(
@@ -237,7 +259,9 @@ with tool.container(border=True, key="tool"):
             format_func=lambda g: f"{g} — {GUIDEWORD_MEANING[g]}" if g in GUIDEWORD_MEANING else g,
             label_visibility="collapsed",
         )
-        quota = service.quota_block_reason(state.live_runs)
+        # V-3 부스 PC 한 대 = 세션 하나 — 세션 상한은 빼고 일 상한(비용 상한)만 건다.
+        session_runs = 0 if BOOTH else state.live_runs
+        quota = service.quota_block_reason(session_runs)
         blocked = live_reason is not None or quota is not None or not state.quick_text.strip()
         with st.container(key="cta"):
             clicked_quick = st.button(
@@ -251,7 +275,7 @@ with tool.container(border=True, key="tool"):
                 width="stretch",
             )
         if clicked_quick or clicked_full:
-            reason = service.reserve_live_run(state.live_runs)
+            reason = service.reserve_live_run(session_runs)
             if reason:
                 st.error(reason)
             else:
@@ -310,6 +334,8 @@ with tool.container(border=True, key="tool"):
                 "실측 사례에서 같은 화면을 볼 수 있습니다."
             )
             st.button("실측 사례 보기", on_click=_to_cases, width="stretch")
+        elif BOOTH:
+            st.caption(f"부스 모드 · 오늘 남은 {service.daily_left()}회 · 생성 약 70초 — 기다리는 동안 단계가 하나씩 채워집니다.")
         else:
             st.caption(
                 f"이 세션 남은 횟수 {left_runs}/{service.SESSION_LIMIT} · "

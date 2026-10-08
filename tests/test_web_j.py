@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from datetime import date
 from typing import TYPE_CHECKING, Any
 
 import pytest
@@ -579,5 +580,50 @@ def test_app_writes_stages_as_they_finish(monkeypatch: pytest.MonkeyPatch) -> No
     shown = [m.value for m in at.markdown]
     assert "✅ 1/3 입력 해석 — 수소 · gas · 설비 압축기" in shown
     assert "✅ 2/3 파라미터 2개 — 유량, 압력" in shown
-    assert "⏳ 3/3 가이드워드 'More' 판정 중 (약 40초)" in shown
+    assert "⏳ 3/3 가이드워드 'More' 판정 중 (약 40~50초)" in shown
     assert not any(v.startswith("2/3 점검") for v in shown)  # 끝난 뒤 한꺼번에 찍던 옛 문구는 없다
+
+# ── 지시문 V 부스 모드 (본선 F-04) ─────────────────────────────────────────────
+def _booth_app(monkeypatch: pytest.MonkeyPatch, booth: bool, session_runs: int = 0) -> Any:
+    from streamlit.testing.v1 import AppTest
+
+    for key, value in _MOCK_ENV.items():
+        monkeypatch.setenv(key, value)
+    at = AppTest.from_file(str(_APP), default_timeout=30)
+    if booth:
+        at.query_params["booth"] = "1"
+    at.session_state["live_runs"] = session_runs
+    return at.run()
+
+
+def _chips(at: Any) -> list[str]:
+    return [b.label for b in at.button if b.key and b.key.startswith("chip_")]
+
+
+def _cta(at: Any) -> Any:
+    return next(b for b in at.button if b.label.startswith(_GENERATE))
+
+
+def test_default_screen_keeps_original_chips(monkeypatch: pytest.MonkeyPatch) -> None:
+    assert _chips(_booth_app(monkeypatch, booth=False)) == ["수소충전소", "메탄올 하역", "실란 가스 캐비닛"]  # V-1
+
+
+def test_booth_swaps_chips_and_fills_input(monkeypatch: pytest.MonkeyPatch) -> None:
+    at = _booth_app(monkeypatch, booth=True)
+    assert _chips(at) == ["학교 실험실 수소", "아파트 LPG 공급", "수영장 염소 소독"]  # V-2
+    next(b for b in at.button if b.label == "수영장 염소 소독").click().run()
+    assert "차아염소산나트륨" in at.text_area[0].value
+    assert any(c.value.startswith("부스 모드 · 오늘 남은") for c in at.caption)  # V-5
+
+
+def test_booth_ignores_session_limit_but_keeps_daily_limit(monkeypatch: pytest.MonkeyPatch) -> None:
+    at = _booth_app(monkeypatch, booth=True, session_runs=service.SESSION_LIMIT)
+    next(b for b in at.button if b.label == "아파트 LPG 공급").click().run()
+    assert not _cta(at).disabled  # V-3 세션 상한 미적용
+    plain = _booth_app(monkeypatch, booth=False, session_runs=service.SESSION_LIMIT)
+    next(b for b in plain.button if b.label == "수소충전소").click().run()
+    assert _cta(plain).disabled  # 기본 화면은 세션 상한 그대로
+    service._daily_runs[date.today()] = service.DAILY_LIMIT
+    at = _booth_app(monkeypatch, booth=True)
+    next(b for b in at.button if b.label == "아파트 LPG 공급").click().run()
+    assert _cta(at).disabled  # 일 상한 = 비용 상한은 부스에서도 건다
