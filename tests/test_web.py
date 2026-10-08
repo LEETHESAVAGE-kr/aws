@@ -230,7 +230,7 @@ def test_app_switches_between_processes_and_nodes(monkeypatch: pytest.MonkeyPatc
     replays = load_replays()
     at = AppTest.from_file(str(_APP), default_timeout=30).run()
     assert not at.exception
-    assert len(at.table) == 4  # 안내 탭 3(가이드워드·S·F·위험도 구간) + 평가 요약 1
+    assert len(at.table) == 5  # 안내 탭 4(가이드워드·S·F·위험도 대조표·위험도 구간 — Y-2) + 평가 요약 1
     assert next(e for e in at.expander if e.label.startswith("정확도")).proto.expanded is False
     at.radio(key="mode").set_value("실측 사례 재생").run()
     assert at.selectbox(key="process_name").options == [p["name"] for p in service.CATALOG]

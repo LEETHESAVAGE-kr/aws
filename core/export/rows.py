@@ -11,6 +11,8 @@ from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from typing import Any, Final
 
+from core.criteria import load_criteria
+
 # 원본 `data/raw/D1_HAZOP_워크시트.xlsx` 실측 헤더 12열 — 순서·문자열 그대로 (R-02)
 HEADERS: Final[tuple[str, ...]] = (
     "No",
@@ -53,6 +55,7 @@ class WorksheetRow:
     causes_list: tuple[str, ...]
     safeguards_list: tuple[str, ...]
     recommendations_list: tuple[str, ...]
+    criteria_id: str | None = None  # Y-2 — None 이면 골드셋 NH3 기준
 
     def cells(self) -> list[object]:
         """12열 값. 위험도(J) 자리는 `None` — 수식은 xlsx 쪽이 행 번호로 만든다."""
@@ -132,12 +135,14 @@ def normalize_rows(records: Iterable[object]) -> list[WorksheetRow]:
                 recommendations=LIST_JOINER.join(recommendations),
                 scenario=str(m.get("scenario", "") or ""),
                 node=node,
-                risk_score=s * f,  # 입력값이 있어도 재계산 — 워크시트 수식과 일치시킨다
+                # 입력값이 있어도 재계산 — 워크시트 수식과 일치시킨다(Y-2: 기준이 대조표면 표 값)
+                risk_score=load_criteria(m.get("criteria_id")).risk(s, f),
                 evidence=evidence,
                 confidence=str(confidence) if confidence is not None else None,
                 causes_list=causes,
                 safeguards_list=safeguards,
                 recommendations_list=recommendations,
+                criteria_id=m.get("criteria_id"),
             )
         )
     return rows

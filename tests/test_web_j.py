@@ -347,9 +347,13 @@ def test_criteria_notice_only_for_non_gold_processes() -> None:
     replays = load_replays()
     assert service.criteria_notice(replays["N1"]) is None
     assert service.criteria_notice(replays["N4"]) is None
-    assert service.criteria_notice(replays["P1"]) == service.CRITERIA_NOTICE
+    assert service.criteria_notice(replays["P1"]) == service.CRITERIA_NOTICE  # 10/9 이전 캡처 — NH3 기준으로 생성됨
     quick = service.run_quick(_SENTENCE, "More", replays["N1"], _MOCK_ENV)
-    assert service.criteria_notice(quick) == service.CRITERIA_NOTICE
+    # Y-2: 직접 입력은 공식 기준(C-C-37)으로 매기고 그 이름·위치를 적는다 — '참고용' 배지가 아니다
+    notice = service.criteria_notice(quick)
+    assert notice != service.CRITERIA_NOTICE and "C-C-37-2026" in notice and "6.5" in notice
+    assert {r.criteria_id for r in quick.records} == {"kosha_cc37_2026"}
+    assert all(1 <= r.S <= 4 and 1 <= r.F <= 3 for r in quick.records)
 
 
 @pytest.mark.parametrize(
@@ -380,6 +384,9 @@ def test_app_criteria_badge_visibility(monkeypatch: pytest.MonkeyPatch) -> None:
     def badge_shown(at: AppTest) -> bool:
         return any(service.CRITERIA_NOTICE in m.value for m in at.markdown)
 
+    def official_shown(at: AppTest) -> bool:
+        return any("C-C-37-2026" in m.value and "평가기준" in m.value for m in at.markdown)
+
     at = AppTest.from_file(str(_APP), default_timeout=30).run()
     at.radio(key="mode").set_value(_CASES).run()
     assert not at.exception and len(at.dataframe) == 1 and not badge_shown(at)  # 사례 첫 화면 = N1(골드 공정)
@@ -388,7 +395,7 @@ def test_app_criteria_badge_visibility(monkeypatch: pytest.MonkeyPatch) -> None:
     at.radio(key="mode").set_value("문장으로 새 공정 분석").run()
     at.text_area[0].input(_SENTENCE).run()
     next(b for b in at.button if b.label.startswith(_GENERATE)).click().run()
-    assert not at.exception and len(at.dataframe) == 1 and badge_shown(at)
+    assert not at.exception and len(at.dataframe) == 1 and not badge_shown(at) and official_shown(at)  # Y-2
 
 
 def test_provenance_marks_replays_captured_before_m01() -> None:
@@ -722,13 +729,22 @@ def test_edit_changes_values_and_risk_formula_inputs() -> None:
     assert kept[0]["S"] == new_s and kept[0]["recommendations"] == ["인터록 추가", "절차서 개정"]
     assert log == [(1, "수정", table[0]["가이드워드"], table[0]["이탈"], "권고, S(1-5)")]  # 같은 값은 수정 아님
     first = next(_sheets(service.export_files(result, edits))["HAZOP워크시트"].iter_rows(min_row=2, max_row=2))
-    assert first[7].value == new_s and first[9].value == "=H2*I2"  # AC-10-3 위험도는 수식이 다시 계산
+    # AC-10-3 위험도는 수식이 다시 계산 — Y-2: 직접 입력은 C-C-37 대조표라 곱이 아니라 INDEX 조회
+    assert first[7].value == new_s and first[9].value == "=INDEX({1,1,2;1,2,3;2,4,4;3,5,5},H2,I2)"
 
 
-@pytest.mark.parametrize("bad", [0, 6, 2.5])
+@pytest.mark.parametrize("bad", [0, 4, 2.5])
 def test_edit_rejects_out_of_range_grade(bad: float) -> None:
-    with pytest.raises(ValueError, match="1~5"):
+    """Y-2: C-C-37 의 F 는 1~3 — 4 는 NH3 기준에선 맞아도 여기선 거부."""
+    with pytest.raises(ValueError, match="1~3"):
         service.apply_review(_quick_result(), {0: {"F(1-5)": bad}})
+
+
+def test_edit_range_follows_gold_criteria_for_gold_nodes() -> None:
+    n1 = load_replays()["N1"]
+    service.apply_review(n1, {0: {"F(1-5)": 5}})  # NH3 기준 1~5 — 통과
+    with pytest.raises(ValueError, match="1~5"):
+        service.apply_review(n1, {0: {"F(1-5)": 6}})
 
 
 def test_app_passes_review_edits_to_downloads(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -1008,23 +1024,27 @@ def test_guide_reuses_existing_definitions() -> None:
     rows = guide.guideword_rows()
     assert [r["가이드워드"] for r in rows] == STANDARD_GUIDEWORDS
     assert all(r["뜻"] == GUIDEWORD_DEFINITIONS[r["가이드워드"]] for r in rows)
-    scale = guide.load_rating_scale()
-    assert [r["등급"] for r in guide.rating_rows(scale)] == [1, 2, 3, 4, 5]
-    assert [b["판정"] for b in guide.band_rows(scale)] == ["높음", "중간(ALARP)", "낮음"]
+    from core.criteria import load_criteria
+
+    gold, cc37 = load_criteria("nh3_sts_bunkering"), load_criteria("kosha_cc37_2026")
+    assert [r["등급"] for r in guide.criteria_rating_rows(gold)] == [5, 4, 3, 2, 1]
+    assert [b["판정"] for b in guide.criteria_band_rows(gold)] == ["높음", "중간(ALARP)", "낮음"]
+    rows = guide.criteria_rating_rows(cc37)  # S 4단계·F 3단계 — 4등급의 F 칸은 비어 있다
+    assert [r["등급"] for r in rows] == [4, 3, 2, 1] and rows[0]["F 빈도 — 얼마나 자주 일어날 수 있나"] == ""
+    assert guide.criteria_matrix_rows(cc37)[0] == {"S＼F": "S4", "F1": 3, "F2": 5, "F3": 5}
 
 
 def test_worked_example_risk_matches_band() -> None:
-    """설명용 예시의 S×F 와 판정이 평가기준 구간과 맞는다(예시만 고치고 구간을 안 보는 실수 방지)."""
+    """설명용 예시의 위험도·판정이 C-C-37 대조표·구간과 맞는다(예시만 고치고 표를 안 보는 실수 방지)."""
     import re
 
     from apps.web import guide
+    from core.criteria import load_criteria
 
-    value = {s: v for s, _, v in guide.WORKED_EXAMPLE}["S × F = 위험도"]
-    s, f, risk, verdict = re.match(r"S (\d) × F (\d) = (\d+) → (\S+)", value).groups()  # type: ignore[union-attr]
-    assert int(s) * int(f) == int(risk)
-    band = next(b for b in guide.band_rows(guide.load_rating_scale())
-                if int(b["위험도 (S×F)"].split("~")[0]) <= int(risk) <= int(b["위험도 (S×F)"].split("~")[1]))
-    assert band["판정"].startswith(verdict)
+    value = {s: v for s, _, v in guide.WORKED_EXAMPLE}["S · F → 위험도"]
+    s, f, risk, verdict = re.match(r"S (\d)\S* · F (\d)\S* → 위험도 (\d+) → (.+)", value).groups()  # type: ignore[union-attr]
+    cc37 = load_criteria("kosha_cc37_2026")
+    assert cc37.risk(int(s), int(f)) == int(risk) and cc37.band(int(risk)) == verdict
 
 
 def test_app_renders_intro_tabs(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -1035,7 +1055,7 @@ def test_app_renders_intro_tabs(monkeypatch: pytest.MonkeyPatch) -> None:
     at = AppTest.from_file(str(_APP), default_timeout=30).run()
     assert not at.exception
     labels = [t.label for t in at.tabs]
-    assert {"① 한 줄이 만들어지는 과정", "② 가이드워드 7종", "③ 위험도 S×F", "④ 결과 화면 읽는 법", "⑤ 회의와 비교"} <= set(labels)
+    assert {"① 한 줄이 만들어지는 과정", "② 가이드워드 7종", "③ 위험도 (S·F)", "④ 결과 화면 읽는 법", "⑤ 회의와 비교"} <= set(labels)
     assert len(at.table) >= 3 and len(at.dataframe) == 0  # 안내 표는 st.table — 결과 표 시험과 섞이지 않는다
 
 

@@ -242,7 +242,7 @@ intro.html(
       <div class="hz-step"><b>1</b><div><strong>공정을 문장으로 설명</strong>
         <span>예시 버튼 하나로 바로 시작</span></div></div>
       <div class="hz-step"><b>2</b><div><strong>AI 가 가이드워드 전 셀 판정</strong>
-        <span>파라미터를 스스로 세우고 이탈·원인·결과·S×F 위험도·권고까지</span></div></div>
+        <span>파라미터를 스스로 세우고 이탈·원인·결과·S·F 위험도·권고까지</span></div></div>
       <div class="hz-step"><b>3</b><div><strong>검토하고 내려받기</strong>
         <span>PSM 양식 Excel · LOPA 초안 Word · 신뢰도 리포트</span></div></div>
     </div>
@@ -540,6 +540,7 @@ else:
                 "위 다운로드 3종에 바로 반영됩니다 — 기각 행은 빠지고, Excel 에 '검토 기록' 시트가 붙습니다. "
                 "화면은 위험도·S·F 를 이탈 옆에 두었고, Excel 은 표준 12열 순서입니다."
             )
+            crit = service.result_criteria(result)
             st.data_editor(
                 service.with_edits(table, review_base.get(review_key, {})),
                 key=review_key,
@@ -553,8 +554,13 @@ else:
                     service.REVIEW_COLUMN: st.column_config.SelectboxColumn(
                         options=list(service.REVIEW_CHOICES), required=True, width="small", pinned=True
                     ),
-                    "S(1-5)": st.column_config.NumberColumn(min_value=1, max_value=5, step=1, required=True),
-                    "F(1-5)": st.column_config.NumberColumn(min_value=1, max_value=5, step=1, required=True),
+                    # Y-2: 단계 수는 결과의 평가기준대로(C-C-37 은 S 1~4 · F 1~3). 열 키는 그대로, 머리글만 바꾼다.
+                    "S(1-5)": st.column_config.NumberColumn(
+                        f"S(1-{crit.s_max})", min_value=1, max_value=crit.s_max, step=1, required=True
+                    ),
+                    "F(1-5)": st.column_config.NumberColumn(
+                        f"F(1-{crit.f_max})", min_value=1, max_value=crit.f_max, step=1, required=True
+                    ),
                 },
             )
         else:
@@ -603,7 +609,7 @@ else:
                 f"1. **파라미터 {len(view['parameters'])}개**: {' · '.join(view['parameters'])}\n"
                 f"2. **가이드워드 {len(view['guidewords'])}종**({' · '.join(view['guidewords'])})을 교차 적용해 "
                 f"매트릭스 셀 **{cells}** 을 빠짐없이 판정\n"
-                "3. 셀마다 원인·결과·기존 안전장치·S×F 위험도·권고 초안, 근거 없는 규격 번호·수치는 🔴 표시"
+                "3. 셀마다 원인·결과·기존 안전장치·S·F 위험도·권고 초안, 근거 없는 규격 번호·수치는 🔴 표시"
             )
 
 # ── HAZOP 이 처음이라면 ──────────────────────────────────────────────────────
@@ -622,7 +628,7 @@ INTRO_CARDS: tuple[tuple[str, str, tuple[tuple[str, str], ...]], ...] = (
         (
             ("대상", "공정 구간(노드) — 배관·설비를 나눈 한 토막"),
             ("방법", "유량·압력·온도 × No·More·Less·Reverse… 를 칸마다 대입"),
-            ("근거", "공정안전관리(PSM) 표준 기법 · KOSHA GUIDE P-82"),
+            ("근거", "공정안전관리(PSM) 표준 기법 · KOSHA C-C-37-2026(구 P-82)"),
         ),
     ),
     (
@@ -638,7 +644,7 @@ INTRO_CARDS: tuple[tuple[str, str, tuple[tuple[str, str], ...]], ...] = (
         "이 앱의 역할",
         "초안은 AI, 판단은 사람",
         (
-            ("AI", "전 셀 판정 · 원인·결과·S×F·권고 초안"),
+            ("AI", "전 셀 판정 · 원인·결과·S·F·권고 초안"),
             ("사람", "검토 · 수정 · 최종 승인"),
             ("효과", "회의를 없애지 않고 시작점을 올림"),
         ),
@@ -652,7 +658,7 @@ for column, (title, headline, rows) in zip(st.columns(3), INTRO_CARDS, strict=Tr
     )
 st.html('<div style="height:14px"></div>')
 example_tab, gw_tab, risk_tab, read_tab, compare_tab = st.tabs(
-    ["① 한 줄이 만들어지는 과정", "② 가이드워드 7종", "③ 위험도 S×F", "④ 결과 화면 읽는 법", "⑤ 회의와 비교"]
+    ["① 한 줄이 만들어지는 과정", "② 가이드워드 7종", "③ 위험도 (S·F)", "④ 결과 화면 읽는 법", "⑤ 회의와 비교"]
 )
 with example_tab:
     st.caption("워크시트 한 줄은 아래 순서로 채워집니다. 값은 이해를 돕는 설명용 예시입니다(실제 생성 결과 아님).")
@@ -674,13 +680,19 @@ with gw_tab:
     st.table(guide.guideword_rows(), hide_index=True, border="horizontal")
     st.caption("절차(기동·정지·운전 순서)가 있는 노드에는 Too early · Too late · Wrong action 3종이 더 붙습니다.")
 with risk_tab:
-    scale = guide.load_rating_scale()
     st.caption(
-        "S(심각도)와 F(빈도)를 1~5 로 매기고 곱한 값이 위험도입니다. 위험도가 높은 줄부터 대책을 세웁니다. "
-        "아래 정의는 이 앱의 골드셋(NH3 선박 벙커링) 평가기준 그대로라 다른 공정에는 참고용입니다."
+        "S(심각도)와 F(빈도)를 등급으로 매기고, 둘을 조합한 값이 위험도입니다. 위험도가 높은 줄부터 대책을 세웁니다. "
+        "기준은 결과마다 하나입니다 — 직접 입력은 KOSHA C-C-37(공식 HAZOP 기술지원규정), NH3 골드셋 노드는 골드셋 평가기준. "
+        "기준마다 단계 수와 계산법이 달라 섞거나 평균내지 않습니다."
     )
-    st.table(guide.rating_rows(scale), hide_index=True, border="horizontal")
-    st.table(guide.band_rows(scale), hide_index=True, border="horizontal")
+    crit_by_name = {c.short: c for c in service.all_criteria()}
+    shown = crit_by_name[st.radio("평가기준", list(crit_by_name), horizontal=True, key="guide_criteria")]
+    st.caption(guide.criteria_caption(shown))
+    st.table(guide.criteria_rating_rows(shown), hide_index=True, border="horizontal")
+    st.table(guide.criteria_matrix_rows(shown), hide_index=True, border="horizontal")
+    st.table(guide.criteria_band_rows(shown), hide_index=True, border="horizontal")
+    for note in shown.data.get("notes") or []:
+        st.caption("· " + note)
 with read_tab:
     read_tab.html(
         '<div class="hz-info">'

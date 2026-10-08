@@ -80,7 +80,10 @@ class Gateway:
         else:
             user = body["messages"][0]["content"]
             text = user if isinstance(user, str) else "".join(b.get("text", "") for b in user)
-            content = self.answer(system, [Message(role="user", content=text)]).content
+            # Y-2: 기준별 S·F 상한은 구조화 출력 tool 의 input_schema 에 있다 — 재생 응답을 그 상한에 맞춘다
+            schema = next((t.get("input_schema") for t in body.get("tools") or []
+                           if t.get("name") == STRUCTURED_OUTPUT_TOOL), None)
+            content = self.answer(system, [Message(role="user", content=text)], response_schema=schema).content
         return 200, {
             "id": f"msg_fake_{len(self.log)}",
             "type": "message",

@@ -52,7 +52,8 @@ class MockBedrockClient(AbstractBedrockClient):
             }
         )
         if self._factory is not None:
-            return self._factory(system=system, messages=messages)
+            # Y-2: 기준별 S·F 상한이 스키마에 실려 온다 — 공장이 필요하면 읽는다(받지 않는 공장은 **_ 로 무시)
+            return self._factory(system=system, messages=messages, response_schema=response_schema)
         if self._responses:
             return self._responses.pop(0)
         raise MockExhaustedError("MockBedrockClient: no more responses")
