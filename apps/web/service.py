@@ -204,6 +204,11 @@ def quota_block_reason(session_runs: int, today: date | None = None) -> str | No
     return None
 
 
+def daily_left(today: date | None = None) -> int:
+    """오늘 남은 실호출 횟수(일 상한 기준) — 부스 모드 안내 줄(지시문 V-5)."""
+    return max(DAILY_LIMIT - _daily_runs.get(today or date.today(), 0), 0)
+
+
 def reserve_live_run(session_runs: int, today: date | None = None) -> str | None:
     """상한을 확인하고 통과하면 일일 카운터를 1 올린다. 거부되면 사유를 돌려준다."""
     day = today or date.today()
@@ -358,7 +363,7 @@ def parse_node_text(
     }
 
 
-#: 단계별 대기 문구(R-11 T-12). 소요 시간은 J-03 실측(열거 22초·판정 41초, 해석 약 3초).
+#: 단계별 대기 문구(R-11 T-12). 소요 시간은 실측 2회 — J-03(열거 22·판정 41초), 10/8(해석 5·열거 14·판정 53초).
 STAGE_PENDING: Final[tuple[str, str]] = (
     "⏳ 1/3 문장을 노드 입력으로 해석 중 (약 3초)",
     "⏳ 2/3 점검 파라미터 열거 중 (약 20초)",
@@ -379,7 +384,7 @@ def progress_text(
         names = list(payload["parameters"])
         more = f" 외 {len(names) - 6}개" if len(names) > 6 else ""
         pending = (
-            f"⏳ 3/3 가이드워드 '{quick_guideword}' 판정 중 (약 40초)"
+            f"⏳ 3/3 가이드워드 '{quick_guideword}' 판정 중 (약 40~50초)"
             if quick_guideword
             else "⏳ 3/3 가이드워드 판정 중 (병렬)"
         )
