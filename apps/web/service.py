@@ -830,15 +830,69 @@ def evaluation_markdown(results: Mapping[str, Result]) -> str:
     return "\n".join(lines) + "\n"
 
 
-def export_files(result: Result) -> dict[str, tuple[str, bytes]]:
-    """`export_all` 을 임시 디렉터리에 쓰고 바이트로 돌려준다(`results/` 에 쓰지 않는다)."""
+#: 검토 표(export-formats R-10, T-08). 화면 열 이름 → 레코드 필드. 목록 필드는 화면처럼 `·` 로 잇고 가른다.
+REVIEW_COLUMN: Final[str] = "검토"
+REVIEW_CHOICES: Final[tuple[str, ...]] = ("미검토", "채택", "기각")
+EDITABLE_COLUMNS: Final[dict[str, str]] = {
+    "원인": "causes", "결과": "consequences", "권고": "recommendations", "S(1-5)": "S", "F(1-5)": "F",
+}
+
+
+def apply_review(
+    result: Result, edits: Mapping[int, Mapping[str, Any]]
+) -> tuple[list[dict[str, Any]], list[tuple[object, ...]]]:
+    """검토 표의 편집(`st.data_editor` 의 `edited_rows` — 행 인덱스 → {열: 값}) → (내보낼 레코드, 검토 기록).
+
+    기각 행은 빼고, 수정 셀은 반영한다(위험도는 내보내기가 S×F 로 다시 계산). 기록 행은
+    `core/export` 의 `REVIEW_HEADERS` 순서. 값이 원래와 같으면 수정으로 치지 않는다. S·F 는 1~5 정수만.
+    """
+    records = _display_records(result)
+    table = worksheet_table(result)
+    kept: list[dict[str, Any]] = []
+    log: list[tuple[object, ...]] = []
+    for index, (record, shown) in enumerate(zip(records, table, strict=True)):
+        edit = edits.get(index) or edits.get(str(index)) or {}  # type: ignore[call-overload]
+        record = dict(record)
+        changed: list[str] = []
+        for column, field in EDITABLE_COLUMNS.items():
+            if column not in edit or edit[column] == shown[column]:
+                continue
+            value = edit[column]
+            if field in ("S", "F"):
+                grade = int(value)
+                if grade != value or not 1 <= grade <= 5:
+                    raise ValueError(f"{column} 는 1~5 정수여야 합니다: {value!r}")
+                record[field] = grade
+            else:
+                record[field] = [part.strip() for part in str(value or "").split("·") if part.strip()]
+            changed.append(column)
+        verdict = edit.get(REVIEW_COLUMN) or REVIEW_CHOICES[0]
+        if verdict == "기각":
+            log.append((shown["No"], "기각", shown["가이드워드"], shown["이탈"], ""))
+            continue
+        kept.append(record)
+        if changed:
+            log.append((shown["No"], "수정", shown["가이드워드"], shown["이탈"], ", ".join(changed)))
+        elif verdict == "채택":
+            log.append((shown["No"], "채택", shown["가이드워드"], shown["이탈"], ""))
+    return kept, log
+
+
+def export_files(
+    result: Result, edits: Mapping[int, Mapping[str, Any]] | None = None
+) -> dict[str, tuple[str, bytes]]:
+    """`export_all` 을 임시 디렉터리에 쓰고 바이트로 돌려준다(`results/` 에 쓰지 않는다).
+
+    `edits` 가 있으면 검토(R-10)를 반영한다 — 기각 행 제외·수정 값·`검토 기록` 시트.
+    """
     meta = result.meta
     expected, judged = meta.get("expected_cells"), meta.get("judged_cells")
     coverage = (expected, judged) if expected is not None and judged is not None else None
+    records, review_log = apply_review(result, edits) if edits else (_display_records(result), None)
     tmp = Path(tempfile.mkdtemp(prefix="hazop_demo_"))
     try:
         paths = export_all(
-            _display_records(result), tmp, generated_at=meta.get("captured_at"), coverage=coverage
+            records, tmp, generated_at=meta.get("captured_at"), coverage=coverage, review_log=review_log
         )
         files = {key: (path.name, path.read_bytes()) for key, path in paths.items()}
     finally:
