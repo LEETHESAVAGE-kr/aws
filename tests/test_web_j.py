@@ -756,7 +756,7 @@ def test_app_shows_external_badge_instead_of_no_gold(monkeypatch: pytest.MonkeyP
     shown = " ".join(m.value for m in at.markdown)
     assert "공개 HAZOP 대조 · 외부 팀 작성" in shown and "골드셋 없음" not in shown
     labels = [m.label for m in at.metric]
-    assert "외부 공개 HAZOP 대비 recall" in labels and "전문가 대비 recall" not in labels
+    assert "외부 대조 recall" in labels and "전문가 대비 recall" not in labels
     at.selectbox(key="process_name").select("LPG 저장탱크 출하").run()
     shown = " ".join(m.value for m in at.markdown)
     assert "예시 공정 · 정성 검토용" in shown and "골드셋 없음" not in shown
