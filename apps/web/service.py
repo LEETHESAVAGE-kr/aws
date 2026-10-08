@@ -358,6 +358,40 @@ def parse_node_text(
     }
 
 
+#: 단계별 대기 문구(R-11 T-12). 소요 시간은 J-03 실측(열거 22초·판정 41초, 해석 약 3초).
+STAGE_PENDING: Final[tuple[str, str]] = (
+    "⏳ 1/3 문장을 노드 입력으로 해석 중 (약 3초)",
+    "⏳ 2/3 점검 파라미터 열거 중 (약 20초)",
+)
+
+
+def progress_text(
+    event: str, payload: Mapping[str, Any], quick_guideword: str | None
+) -> tuple[int, str, str | None]:
+    """진행 알림 → (줄 번호, 완료 문구, 다음 줄 대기 문구). 빠른 실호출이면 `quick_guideword` 를 준다."""
+    if event == "parsed":
+        if payload.get("parsed_by") == "json":
+            return 0, "✅ 1/3 JSON 입력 — 해석 생략", STAGE_PENDING[1]
+        m = payload["node_meta"]
+        equipment = ", ".join(m.equipment[:3]) or "미상"
+        return 0, f"✅ 1/3 입력 해석 — {m.substance} · {m.phase} · 설비 {equipment}", STAGE_PENDING[1]
+    if event == "parameters":
+        names = list(payload["parameters"])
+        more = f" 외 {len(names) - 6}개" if len(names) > 6 else ""
+        pending = (
+            f"⏳ 3/3 가이드워드 '{quick_guideword}' 판정 중 (약 40초)"
+            if quick_guideword
+            else "⏳ 3/3 가이드워드 판정 중 (병렬)"
+        )
+        return 1, f"✅ 2/3 파라미터 {len(names)}개 — {', '.join(names[:6])}{more}", pending
+    n = len(payload["records"])
+    if quick_guideword:
+        return 2, f"✅ 3/3 가이드워드 '{quick_guideword}' 판정 — 이탈 {n}건", None
+    done, total = payload["done"], payload["total"]
+    mark = "✅" if done == total else "⏳"
+    return 2, f"{mark} 3/3 가이드워드 {done}/{total} 판정 완료 — 방금 {payload['guideword']} · 이탈 {n}건", None
+
+
 def _parse_and_notify(
     node_text: str, environ: Mapping[str, str], on_progress: ProgressCallback | None
 ) -> tuple[NodeMeta, dict[str, Any]]:

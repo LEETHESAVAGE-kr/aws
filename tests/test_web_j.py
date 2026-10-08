@@ -546,3 +546,38 @@ def test_run_quick_survives_progress_callback_errors() -> None:
 def test_service_uses_only_public_generator_api() -> None:
     source = (REPLAY_DIR.parents[1] / "apps" / "web" / "service.py").read_text(encoding="utf-8")
     assert "generator._" not in source  # R-11 AC-11-5
+
+def test_progress_text_reports_stage_outputs() -> None:
+    meta = NodeMeta(node="X1", substance="수소", phase="gas", equipment=["압축기", "디스펜서"])
+    assert service.progress_text("parsed", {"node_meta": meta, "parsed_by": "llm"}, "More") == (
+        0, "✅ 1/3 입력 해석 — 수소 · gas · 설비 압축기, 디스펜서", service.STAGE_PENDING[1],
+    )
+    step, text, pending = service.progress_text("parameters", {"parameters": [f"p{i}" for i in range(8)]}, "More")
+    assert (step, text) == (1, "✅ 2/3 파라미터 8개 — p0, p1, p2, p3, p4, p5 외 2개") and "'More'" in str(pending)
+    assert service.progress_text("guideword", {"records": [1, 2], "done": 3, "total": 7, "guideword": "Less"}, None)[1] == (
+        "⏳ 3/3 가이드워드 3/7 판정 완료 — 방금 Less · 이탈 2건"
+    )
+
+
+def test_app_writes_stages_as_they_finish(monkeypatch: pytest.MonkeyPatch) -> None:
+    """실패 경로는 상태 상자를 펼친 채 남긴다 — 실패 직전까지 끝난 단계가 화면에 남아 있어야 한다(T-12)."""
+    from streamlit.testing.v1 import AppTest
+
+    for key, value in _MOCK_ENV.items():
+        monkeypatch.setenv(key, value)
+
+    def partial_then_fail(text: str, guideword: str, replay: object, *_: object, on_progress: Any = None) -> None:
+        on_progress("parsed", {"node_meta": NodeMeta(substance="수소", phase="gas", equipment=["압축기"]),
+                               "parsed_by": "llm"})
+        on_progress("parameters", {"parameters": ["유량", "압력"]})
+        raise TimeoutError("판정 중 끊김")
+
+    monkeypatch.setattr(service, "run_quick", partial_then_fail)
+    at = AppTest.from_file(str(_APP), default_timeout=30).run()
+    at.text_area[0].input(_SENTENCE).run()
+    next(b for b in at.button if b.label.startswith(_GENERATE)).click().run()
+    shown = [m.value for m in at.markdown]
+    assert "✅ 1/3 입력 해석 — 수소 · gas · 설비 압축기" in shown
+    assert "✅ 2/3 파라미터 2개 — 유량, 압력" in shown
+    assert "⏳ 3/3 가이드워드 'More' 판정 중 (약 40초)" in shown
+    assert not any(v.startswith("2/3 점검") for v in shown)  # 끝난 뒤 한꺼번에 찍던 옛 문구는 없다
