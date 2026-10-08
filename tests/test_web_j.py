@@ -523,3 +523,26 @@ def test_app_example_chip_fills_input(monkeypatch: pytest.MonkeyPatch) -> None:
     assert at.session_state["quick_text"].startswith("수소충전소에서 튜브트레일러")
     assert at.text_area[0].value == at.session_state["quick_text"]
     assert next(b for b in at.button if b.label.startswith(_GENERATE)).disabled is False
+
+
+# ── R-11 진행 알림 (본선 T-11·T-12) ───────────────────────────────────────────
+def test_run_quick_reports_each_stage_in_order() -> None:
+    seen: list[tuple[str, dict[str, Any]]] = []
+    result = service.run_quick(_SENTENCE, "More", load_replays()["N1"], _MOCK_ENV, lambda e, p: seen.append((e, p)))
+    assert [e for e, _ in seen] == ["parsed", "parameters", "guideword"]
+    assert seen[0][1]["node_meta"].substance == "수소"
+    assert seen[1][1]["parameters"] == result.meta["parameters"]
+    assert len(seen[2][1]["records"]) == len(result.records)
+
+
+def test_run_quick_survives_progress_callback_errors() -> None:
+    def boom(*_: object) -> None:
+        raise RuntimeError("화면 오류")
+
+    result = service.run_quick(_SENTENCE, "More", load_replays()["N1"], _MOCK_ENV, boom)
+    assert result.records  # AC-11-3 — 해석 단계 알림 예외도 생성을 멈추지 않는다
+
+
+def test_service_uses_only_public_generator_api() -> None:
+    source = (REPLAY_DIR.parents[1] / "apps" / "web" / "service.py").read_text(encoding="utf-8")
+    assert "generator._" not in source  # R-11 AC-11-5

@@ -666,3 +666,80 @@ def test_generate_batch_does_not_mutate_self() -> None:
         ):
             offenders.append(f"L{node.lineno} self.{node.func.value.attr}.{node.func.attr}")
     assert not offenders, offenders
+
+
+# ── R-11 진행 알림 · generate_quick (본선 T-10·T-11) ─────────────────────────────
+def _dump(records: list[DeviationRecord]) -> str:
+    return json.dumps([r.model_dump() for r in records], ensure_ascii=False)
+
+
+def _run_with_progress(parallel_calls: int, callback: Any = None):
+    make, _ = _parallel_factory(delay_s=0.01)
+    generator = HazopGenerator(MockBedrockClient(response_factory=make), GeneratorConfig(parallel_calls=parallel_calls))
+    events: list[tuple[str, dict[str, Any], int]] = []
+
+    def record(event: str, payload: dict[str, Any]) -> None:
+        events.append((event, payload, threading.get_ident()))
+        if callback is not None:
+            callback(event, payload)
+
+    return generator, generator.generate(N1_META, on_progress=record), events
+
+
+def test_progress_events_arrive_in_completion_order_and_final_records_unchanged() -> None:
+    baseline = _run_parallel(1, delay_s=0.0)[2]  # 콜백 없는 순차 실행
+    for workers in (1, 4):
+        generator, records, events = _run_with_progress(workers)
+        assert _dump(records) == _dump(baseline)  # AC-11-1 — 콜백·병렬 무관
+        assert events[0][0] == "parameters" and events[0][1]["parameters"] == generator.parameters
+        gw_events = [p for e, p, _ in events if e == "guideword"]
+        assert [p["done"] for p in gw_events] == list(range(1, len(STANDARD_GUIDEWORDS) + 1))
+        assert {p["total"] for p in gw_events} == {len(STANDARD_GUIDEWORDS)}
+        assert sorted(p["guideword"] for p in gw_events) == sorted(STANDARD_GUIDEWORDS)
+        assert len(gw_events[-1]["records"]) == len(records)  # 마지막 알림 = 전부
+        sizes = [len(p["records"]) for p in gw_events]
+        assert sizes == sorted(sizes)  # 중간 표는 줄지 않는다
+        if workers == 4:  # 앞 가이드워드가 늦게 끝나도록 만든 응답 — 완료 순서로 알린다
+            assert gw_events[0]["guideword"] != STANDARD_GUIDEWORDS[0]
+
+
+def test_progress_callback_runs_on_calling_thread() -> None:
+    _, _, events = _run_with_progress(4)
+    assert {tid for _, _, tid in events} == {threading.get_ident()}  # AC-11-2
+
+
+def test_progress_callback_exception_does_not_stop_generation(caplog: pytest.LogCaptureFixture) -> None:
+    def boom(*_: Any) -> None:
+        raise RuntimeError("화면 오류")
+
+    _, baseline, _ = _run_with_progress(4)
+    with caplog.at_level(logging.WARNING):
+        generator, records, _ = _run_with_progress(4, callback=boom)
+    assert _dump(records) == _dump(baseline)  # AC-11-3
+    assert "진행 알림 콜백 예외" in caplog.text
+
+
+def test_progress_does_not_change_generator_counts() -> None:
+    plain, _, _, _ = _run_parallel(4)
+    noisy, _, _ = _run_with_progress(4)
+    assert (noisy.judged_cells, noisy.expected_cells, noisy.total_cost_usd) == (
+        plain.judged_cells, plain.expected_cells, plain.total_cost_usd,
+    )  # AC-11-4
+
+
+def test_generate_quick_two_calls_and_events() -> None:
+    client = MockBedrockClient(response_factory=_factory())
+    generator = HazopGenerator(client, GeneratorConfig(parallel_calls=4))
+    events: list[str] = []
+    records = generator.generate_quick(N1_META, "More", on_progress=lambda e, _: events.append(e))
+    assert len(client.calls) == 2 and events == ["parameters", "guideword"]
+    assert records and {r.guideword for r in records} == {"More"}
+    assert generator.expected_cells == len(generator.parameters) == generator.judged_cells
+
+
+def test_generate_quick_skips_judgement_when_enumeration_fails() -> None:
+    client = MockBedrockClient(response_factory=lambda **_: ConverseResponse(content=None))
+    generator = HazopGenerator(client, GeneratorConfig(parallel_calls=4))
+    assert generator.generate_quick(N1_META, "More") == []
+    assert generator.parameters == []
+    assert client.calls and all(_is_enumeration(c["system"]) for c in client.calls)  # 열거(+재시도)뿐, 판정 0회

@@ -19,7 +19,8 @@ from __future__ import annotations
 import json
 import logging
 import re
-from concurrent.futures import ThreadPoolExecutor
+from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Final
@@ -40,6 +41,9 @@ _RATING_SCALE_PATH: Final[Path] = (
     Path(__file__).parent.parent.parent / "data" / "gold" / "rating_scale.json"
 )
 _USER_DELIMITER: Final[str] = "<!-- USER -->"
+
+#: 진행 알림(R-11, design §10). `(event, payload)` — event 는 "parameters" | "guideword".
+ProgressCallback = Callable[[str, dict[str, Any]], None]
 
 # ── 가이드워드 축 (R-04, design.md §4) ────────────────────────────────────────
 # 정본은 steering domain.md §1. 데이터가 아니라 방법론이 정의하는 축이므로 고정 상수다.
@@ -239,32 +243,54 @@ class HazopGenerator:
         self.total_cost_usd: float = 0.0
         self.expected_cells: int = 0
         self.judged_cells: int = 0
+        self.parameters: list[str] = []  # 마지막 실행에서 열거된 파라미터 이름(R-11)
 
     # -- 공개 진입점 ---------------------------------------------------------
-    def generate(self, node_meta: NodeMeta) -> list[DeviationRecord]:
-        self.review_guidewords = []
-        self.total_cost_usd = 0.0
-        self.expected_cells = 0
-        self.judged_cells = 0
-
-        parameters = self._enumerate_parameters(node_meta)
+    def generate(
+        self, node_meta: NodeMeta, on_progress: ProgressCallback | None = None
+    ) -> list[DeviationRecord]:
+        """노드 전체 생성. `on_progress` 는 단계가 끝날 때마다 이 스레드에서 불린다(R-11)."""
+        parameters = self._start(node_meta, on_progress)
         guidewords = _select_guidewords(node_meta)
         self.expected_cells = len(parameters) * len(guidewords)
 
         # 가이드워드 판정은 서로 독립이다(R-10). 각 호출은 (batch, 비용) 을 **반환**만 하고
         # 공유 상태는 건드리지 않는다 — 합산·review 기록은 아래에서 목록 순서대로 단일 스레드로 한다.
+        outcomes: list[tuple[dict[str, Any] | None, float] | None] = [None] * len(guidewords)
+        partial: list[list[DeviationRecord]] = [[] for _ in guidewords]
+
+        def collect(index: int, outcome: tuple[dict[str, Any] | None, float]) -> None:
+            # 완료 순서로 알리고(R-11), 결과는 축 인덱스 자리에 둔다 — 최종 조립은 축 순서(AC-10-1).
+            outcomes[index] = outcome
+            if on_progress is None:
+                return
+            # 중간 표는 묶음별로 한 번만 만든다. id 는 묶음 안 임시 번호 — 최종 id 는 아래 _assemble 이 매긴다.
+            if outcome[0] is not None:
+                partial[index] = _build_records(node_meta, [outcome[0]])[0]
+            self._notify(on_progress, "guideword", {
+                "guideword": guidewords[index],
+                "done": sum(o is not None for o in outcomes),
+                "total": len(guidewords),
+                "records": [r for rows in partial for r in rows],
+            })
+
         workers = max(1, self._config.parallel_calls)
         if workers == 1:
-            outcomes = [self._generate_batch(node_meta, parameters, gw) for gw in guidewords]
+            for index, gw in enumerate(guidewords):
+                collect(index, self._generate_batch(node_meta, parameters, gw))
         else:
             with ThreadPoolExecutor(max_workers=workers) as pool:
-                # map 은 입력 순서로 결과를 돌려준다 — 레코드 id·골든 스냅샷이 순차와 같다.
-                outcomes = list(
-                    pool.map(lambda gw: self._generate_batch(node_meta, parameters, gw), guidewords)
-                )
+                futures = {
+                    pool.submit(self._generate_batch, node_meta, parameters, gw): index
+                    for index, gw in enumerate(guidewords)
+                }
+                for future in as_completed(futures):
+                    collect(futures[future], future.result())
 
         batches: list[dict[str, Any]] = []
-        for guideword, (batch, cost) in zip(guidewords, outcomes, strict=True):
+        for guideword, outcome in zip(guidewords, outcomes, strict=True):
+            assert outcome is not None  # 모든 future 가 collect 를 거쳤다
+            batch, cost = outcome
             self.total_cost_usd += cost
             if batch is None:
                 if parameters:
@@ -276,6 +302,48 @@ class HazopGenerator:
         self._check_coverage(node_meta)
         self._check_node_cost(node_meta)
         return records
+
+    def generate_quick(
+        self, node_meta: NodeMeta, guideword: str, on_progress: ProgressCallback | None = None
+    ) -> list[DeviationRecord]:
+        """빠른 실호출(R-11 AC-11-5): 파라미터 열거 1회 + 가이드워드 1종 판정 1회.
+
+        `generate()` 와 같은 관측 상태를 남긴다. 열거가 실패하면 판정을 부르지 않고 빈 목록.
+        """
+        parameters = self._start(node_meta, on_progress)
+        self.expected_cells = len(parameters)
+        if not parameters:
+            return []
+        batch, cost = self._generate_batch(node_meta, parameters, guideword)
+        self.total_cost_usd += cost  # O-1 이후 _generate_batch 는 합산을 호출자에게 맡긴다
+        if batch is None:
+            self.review_guidewords.append(guideword)
+        records = self._assemble(node_meta, [batch] if batch else [])
+        self._notify(on_progress, "guideword", {
+            "guideword": guideword, "done": 1, "total": 1, "records": records,
+        })
+        return records
+
+    def _start(self, node_meta: NodeMeta, on_progress: ProgressCallback | None) -> list[dict[str, str]]:
+        """관측 상태 초기화 → 파라미터 열거 → `parameters` 알림. 두 진입점 공통."""
+        self.review_guidewords = []
+        self.total_cost_usd = 0.0
+        self.expected_cells = 0
+        self.judged_cells = 0
+        parameters = self._enumerate_parameters(node_meta)
+        self.parameters = [p["name"] for p in parameters]
+        self._notify(on_progress, "parameters", {"parameters": list(self.parameters)})
+        return parameters
+
+    @staticmethod
+    def _notify(on_progress: ProgressCallback | None, event: str, payload: dict[str, Any]) -> None:
+        """진행 알림 단일 지점. 화면 쪽 예외가 생성을 멈추지 않는다(AC-11-3)."""
+        if on_progress is None:
+            return
+        try:
+            on_progress(event, payload)
+        except Exception:  # noqa: BLE001 — 표시 실패는 생성 실패가 아니다
+            logger.warning("진행 알림 콜백 예외(event=%s) — 생성은 계속한다", event, exc_info=True)
 
     # -- 1단: 파라미터 축 도출 (R-03) ----------------------------------------
     def _enumerate_parameters(self, node_meta: NodeMeta) -> list[dict[str, str]]:
@@ -364,43 +432,8 @@ class HazopGenerator:
     def _assemble(
         self, node_meta: NodeMeta, batches: list[dict[str, Any]]
     ) -> list[DeviationRecord]:
-        records: list[DeviationRecord] = []
-        prefix = (node_meta.node or "node").lower()
-        for batch in batches:
-            guideword = str(batch.get("guideword", ""))
-            for cell in batch.get("cells", []):
-                self.judged_cells += 1
-                if not cell.get("applicable", False):
-                    continue
-                if not _cell_is_complete(cell):
-                    logger.warning(
-                        "node=%s gw=%s param=%s 필수 필드 결측 — 이 셀을 버린다",
-                        node_meta.node,
-                        guideword,
-                        cell.get("parameter"),
-                    )
-                    continue
-                records.append(
-                    DeviationRecord(
-                        id=f"{prefix}-{len(records) + 1:03d}",
-                        node=node_meta.node,
-                        node_meta=node_meta,
-                        guideword=guideword,
-                        parameter=str(cell["parameter"]),
-                        deviation=str(cell["deviation"]),
-                        causes=list(cell.get("causes", [])),
-                        consequences=list(cell.get("consequences", [])),
-                        safeguards_before=_normalize_safeguards(
-                            node_meta, guideword, str(cell["parameter"]), cell.get("safeguards_before", [])
-                        ),
-                        S=int(cell["S"]),
-                        F=int(cell["F"]),
-                        recommendations=list(cell.get("recommendations", [])),
-                        scenario="",
-                        evidence=[],
-                        confidence="inferred",
-                    )
-                )
+        records, judged = _build_records(node_meta, batches)
+        self.judged_cells += judged
         return records
 
     # -- 사후 점검 -----------------------------------------------------------
@@ -426,6 +459,51 @@ class HazopGenerator:
 
 
 # ── 보조 함수 ─────────────────────────────────────────────────────────────────
+def _build_records(
+    node_meta: NodeMeta, batches: list[dict[str, Any]]
+) -> tuple[list[DeviationRecord], int]:
+    """batch 목록 → (레코드, 판정 셀 수). 생성기 상태를 건드리지 않는다 — 진행 알림의 중간 표가 이걸 쓴다(AC-11-4)."""
+    records: list[DeviationRecord] = []
+    judged = 0
+    prefix = (node_meta.node or "node").lower()
+    for batch in batches:
+        guideword = str(batch.get("guideword", ""))
+        for cell in batch.get("cells", []):
+            judged += 1
+            if not cell.get("applicable", False):
+                continue
+            if not _cell_is_complete(cell):
+                logger.warning(
+                    "node=%s gw=%s param=%s 필수 필드 결측 — 이 셀을 버린다",
+                    node_meta.node,
+                    guideword,
+                    cell.get("parameter"),
+                )
+                continue
+            records.append(
+                DeviationRecord(
+                    id=f"{prefix}-{len(records) + 1:03d}",
+                    node=node_meta.node,
+                    node_meta=node_meta,
+                    guideword=guideword,
+                    parameter=str(cell["parameter"]),
+                    deviation=str(cell["deviation"]),
+                    causes=list(cell.get("causes", [])),
+                    consequences=list(cell.get("consequences", [])),
+                    safeguards_before=_normalize_safeguards(
+                        node_meta, guideword, str(cell["parameter"]), cell.get("safeguards_before", [])
+                    ),
+                    S=int(cell["S"]),
+                    F=int(cell["F"]),
+                    recommendations=list(cell.get("recommendations", [])),
+                    scenario="",
+                    evidence=[],
+                    confidence="inferred",
+                )
+            )
+    return records, judged
+
+
 def _select_guidewords(node_meta: NodeMeta) -> list[str]:
     """절차형 3종은 설비가 운전 절차를 가리킬 때만 축에 넣는다(R-04 조건부 포함)."""
     guidewords = list(STANDARD_GUIDEWORDS)
