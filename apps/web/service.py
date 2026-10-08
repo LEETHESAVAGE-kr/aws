@@ -51,8 +51,19 @@ if TYPE_CHECKING:
     from core.agent.generate import ProgressCallback
     from core.llm import AbstractBedrockClient
 
-LIVE_NOTE: Final[str] = "약 7~9분 · 약 $0.75~1.01 소요(9/29 실측 4노드)"
+#: 기본 실행(지시문 X-1) 안내 — 노드 전체, 병렬 4. 값은 README §6 노드 실측 범위(9/29·10/8).
+LIVE_NOTE: Final[str] = "가이드워드 전체 · 약 2~3분 · 약 $0.8"
+LIVE_BUTTON: Final[str] = "HAZOP 초안 생성 (가이드워드 전체 · 약 2–3분)"
 QUICK_NOTE: Final[str] = "약 1분 · API 호출 3회(입력 해석 1 + 파라미터 열거 1 + 가이드워드 1, JSON 입력이면 2회)"
+#: 보조 실행 "가이드워드 하나만 빠르게"(지시문 X-1b) 문구 — 실무 기능이다. 이 묶음에 '부스'·'관람객' 을 쓰지 않는다(시험).
+QUICK_EXPANDER: Final[str] = "가이드워드 하나만 빠르게 보기 — 특정 이탈 방향만 먼저 확인할 때 (약 1분)"
+QUICK_QUESTION: Final[str] = "어떤 가이드워드만 볼까요?"
+QUICK_BUTTON: Final[str] = "이 가이드워드만 생성 (약 1분 · 약 $0.15)"
+QUICK_SCOPE: Final[str] = "가이드워드 1종({guideword})만 생성 — 전체 매트릭스 아님"
+#: 결과 보기(지시문 X-2). 보기는 표시 순서만 바꾼다 — 레코드·다운로드는 그대로.
+VIEWS: Final[tuple[str, ...]] = ("워크시트 순서", "가이드워드별", "파라미터별")
+#: 재생에서 공정 전체를 노드 순서로 이어 보는 선택(지시문 X-3).
+ALL_NODES: Final[str] = "__all__"
 #: 자연어 입력 길이 상한 — 해석 호출 비용·남용 방지.
 NODE_TEXT_LIMIT: Final[int] = 600
 _PARSE_PROMPT: Final[Path] = Path(__file__).parent / "prompts" / "node_parse.md"
@@ -410,15 +421,64 @@ def _parse_and_notify(
     return node_meta, parsed
 
 
+def _model_info() -> tuple[str | None, str | None, int | None]:
+    """(provider, 생성 모델 ID, max_tokens) — 설정을 못 읽으면 None."""
+    with contextlib.suppress(ConfigValidationError):
+        config = load_model_config()
+        return config.provider, config.generation.model_id, config.generation.max_tokens
+    return None, None, None
+
+
+def _run_meta(
+    source: str,
+    environ: Mapping[str, str],
+    node_meta: NodeMeta,
+    parsed: dict[str, Any],
+    generator: HazopGenerator,
+    raw_calls: list[dict[str, Any]],
+    started: float,
+) -> dict[str, Any]:
+    """실행 결과 메타 — 기본 실행·빠른 실행 공통(출처 줄·요약 줄·'AI 가 한 일' 패널이 읽는다)."""
+    mock = is_mock(environ)
+    provider, model_id, max_tokens = _model_info()
+    calls = parsed["raw_calls"] + raw_calls
+    return {
+        "source": source,
+        "mock": mock,
+        "provider": "mock" if mock else provider,
+        "model_id": None if mock else model_id,
+        "endpoint": None if mock else endpoint_label(environ),
+        "captured_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+        "node": node_meta.node or "직접입력",
+        "split": "none",
+        "node_meta": node_meta.model_dump(),
+        **{k: parsed[k] for k in ("parsed_by", "node_text", "parse_model") if k in parsed},
+        "parameters": list(generator.parameters),
+        "latency_s": round(time.perf_counter() - started, 1),
+        "cost_usd": round(generator.total_cost_usd + parsed["cost_usd"], 4),
+        "expected_cells": generator.expected_cells,
+        "judged_cells": generator.judged_cells,
+        "review_guidewords": list(generator.review_guidewords),
+        "recall": None,
+        "raw_calls": calls,
+        "truncated_calls": sum(
+            c["stop_reason"] == "max_tokens" or (max_tokens is not None and c["tokens_out"] >= max_tokens)
+            for c in calls
+        ),
+    }
+
+
 def run_live(
     node_text: str,
     replay: Result,
     environ: Mapping[str, str] = os.environ,
     on_progress: ProgressCallback | None = None,
 ) -> Result:
-    """노드 1건 생성. mock 모드면 재생 레코드를 돌려주는 모의 클라이언트로 끝까지 돈다(H-02 ⑦).
+    """노드 1건 전체 생성(가이드워드 7~10종) — 직접 입력의 기본 실행(지시문 X-1).
 
-    `node_text` 는 NodeMeta JSON 또는 자연어 공정 설명(`parse_node_text`).
+    `node_text` 는 NodeMeta JSON 또는 자연어 공정 설명(`parse_node_text`). mock 모드면 재생 레코드를
+    돌려주는 모의 클라이언트로 끝까지 돈다(H-02 ⑦). 가이드워드 판정이 끝날 때마다 `on_progress` 로
+    부분 레코드가 온다(R-11).
     """
     started = time.perf_counter()
     node_meta, parsed = _parse_and_notify(node_text, environ, on_progress)
@@ -426,25 +486,23 @@ def run_live(
     client: AbstractBedrockClient = (
         MockBedrockClient(response_factory=_mock_factory(replay)) if mock else get_bedrock_client()
     )
+    raw_calls = _observe_calls(client)
     gen_config = load_generator_config()
     generator = HazopGenerator(client, gen_config)
-    records = generator.generate(node_meta, on_progress)
-    latency = time.perf_counter() - started
-    meta = {
-        "source": "mock" if mock else "live-run",
-        "endpoint": None if mock else endpoint_label(environ),
-        "captured_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
-        "node": node_meta.node,
-        "node_meta": node_meta.model_dump(),
-        **{k: parsed[k] for k in ("parsed_by", "node_text", "parse_model") if k in parsed},
-        "latency_s": round(latency, 1),
-        "cost_usd": round(generator.total_cost_usd + parsed["cost_usd"], 4),
-        "expected_cells": generator.expected_cells,
-        "judged_cells": generator.judged_cells,
-        "review_guidewords": list(generator.review_guidewords),
-        "recall": None,
-        "parallel_calls": gen_config.parallel_calls,
-    }
+    judged: list[str] = []  # 판정한 가이드워드(완료 순서) — 결과 묶음 보기의 축
+
+    def relay(event: str, payload: dict[str, Any]) -> None:
+        if event == "guideword":
+            judged.append(payload["guideword"])
+        if on_progress is not None:
+            on_progress(event, payload)
+
+    records = generator.generate(node_meta, relay)
+    if not generator.parameters:
+        raise RuntimeError("파라미터 열거 실패(응답 스키마 2회 위반) — 가이드워드 판정을 건너뛰었습니다.")
+    meta = _run_meta("mock" if mock else "live-run", environ, node_meta, parsed, generator, raw_calls, started)
+    meta["guidewords"] = [g for g in STANDARD_GUIDEWORDS + PROCEDURAL_GUIDEWORDS if g in judged]
+    meta["parallel_calls"] = gen_config.parallel_calls
     return Result(meta=meta, records=records)
 
 
@@ -485,44 +543,12 @@ def run_quick(
         MockBedrockClient(response_factory=_mock_factory(replay)) if mock else get_bedrock_client()
     )
     raw_calls = _observe_calls(client)
-    provider: str | None = None
-    model_id: str | None = None
-    max_tokens: int | None = None
-    with contextlib.suppress(ConfigValidationError):
-        config = load_model_config()
-        provider, model_id, max_tokens = (
-            config.provider, config.generation.model_id, config.generation.max_tokens
-        )
     generator = HazopGenerator(client, load_generator_config())
     records = generator.generate_quick(node_meta, guideword, on_progress)  # R-11 AC-11-5 공개 API
     if not generator.parameters:
         raise RuntimeError("파라미터 열거 실패(응답 스키마 2회 위반) — 가이드워드 판정을 건너뛰었습니다.")
-    latency = time.perf_counter() - started
-    meta = {
-        "source": "quick",
-        "mock": mock,
-        "provider": "mock" if mock else provider,
-        "model_id": None if mock else model_id,
-        "endpoint": None if mock else endpoint_label(environ),
-        "captured_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
-        "node": node_meta.node or "직접입력",
-        "split": "none",
-        "node_meta": node_meta.model_dump(),
-        **{k: parsed[k] for k in ("parsed_by", "node_text", "parse_model") if k in parsed},
-        "guidewords": [guideword],
-        "parameters": list(generator.parameters),
-        "latency_s": round(latency, 1),
-        "cost_usd": round(generator.total_cost_usd + parsed["cost_usd"], 4),
-        "expected_cells": generator.expected_cells,
-        "judged_cells": generator.judged_cells,
-        "review_guidewords": list(generator.review_guidewords),
-        "recall": None,
-        "raw_calls": parsed["raw_calls"] + raw_calls,
-        "truncated_calls": sum(
-            c["stop_reason"] == "max_tokens" or (max_tokens is not None and c["tokens_out"] >= max_tokens)
-            for c in parsed["raw_calls"] + raw_calls
-        ),
-    }
+    meta = _run_meta("quick", environ, node_meta, parsed, generator, raw_calls, started)
+    meta["guidewords"] = [guideword]
     return Result(meta=meta, records=records)
 
 
@@ -631,6 +657,14 @@ def accuracy_line(result: Result, replays: Mapping[str, Result]) -> str:
     recall = result.meta.get("recall")
     if result.meta.get("split") == "none":
         return "정성 검토용 예시라 대조할 기준이 없어 정확도는 측정하지 않았습니다."
+    if result.meta.get("combined"):
+        parts = result.meta.get("recall_parts") or []
+        line = " · ".join(f"{label} **{a / b:.1%}** ({a}/{b})" for label, a, b in parts)
+        if any(label == "외부 대조" for label, _, _ in parts):
+            line += " — 외부 공개 워크시트의 공정변수 점검표와 대조한 후한 기준이며 NH3 골드셋과 같은 난이도가 아닙니다."
+        elif len(parts) > 1:
+            line += " — 튜닝 노드(프롬프트를 맞춘 노드)와 처음 보는 홀드아웃 노드를 한 숫자로 합치지 않았습니다."
+        return line or "대조 기준 없음"
     if result.meta.get("split") == "external" and recall:
         return (
             f"외부 공개 HAZOP 대비 **{recall['recall']:.1%}** ({recall['matched']}/{recall['total']}, 1회 실행) — "
@@ -666,6 +700,10 @@ def summary_line(result: Result) -> str:
     """요약 줄. 불리한 숫자도 그대로(NFR-03) — 값이 없으면 없다고 적는다."""
     m = result.meta
     parts = [f"레코드 {len(result.records)}건", f_distribution(result)]
+    if m.get("source") == "quick":
+        parts.insert(0, QUICK_SCOPE.format(guideword=", ".join(m.get("guidewords") or [])))
+    if m.get("combined"):
+        parts.insert(0, f"{m['process']} 공정 전체 {len(m['nodes'])}노드 ({m['node']})")
     if m.get("expected_cells") is not None:
         parts.append(f"판정 셀 {m.get('judged_cells')}/{m['expected_cells']}")
     review = m.get("review_guidewords") or []
@@ -684,7 +722,10 @@ def summary_line(result: Result) -> str:
     parts.append(f"비용 ${cost:.3f}" if cost is not None else "비용 해당 없음")
     recall = m.get("recall")
     node, split = m.get("node", "N1"), m.get("split", "—")
-    if recall and split == "external":
+    if m.get("combined"):
+        recalls = [f"{label} recall {a / b:.3f} ({a}/{b})" for label, a, b in m.get("recall_parts") or []]
+        parts.append(" · ".join(recalls) if recalls else "정성 검토용 — 대조 기준 없음")
+    elif recall and split == "external":
         parts.append(
             f"{node} 외부 공개 HAZOP 대비 recall {recall['recall']:.3f} ({recall['matched']}/{recall['total']})"
         )
@@ -735,14 +776,23 @@ def provenance_line(result: Result) -> str:
     if m.get("endpoint"):
         tail += f" · {m['endpoint']} 경유"
     source = m.get("source")
+    if m.get("combined"):
+        cost_part = f" · 합계 비용 ${cost:.3f}" if cost is not None else ""
+        return (
+            f"{m['process']} — 노드 {len(m['nodes'])}개의 실호출 캡처를 노드 순서({m['node']})로 이어 본 재생"
+            f"{cost_part} · 노드마다 캡처 시각·프롬프트가 다릅니다(아래 '노드별 출처')"
+        )
     if result.is_gold:
         return f"전문가 골드셋 재생 — LLM 생성 결과 아님 ({_kst(m.get('captured_at'))} 저장)"
     if source == "live":
         stale = " · **M-01 이전 프롬프트**(판정 단계에 기존 안전장치·운전조건 미전달)" if _before_m01(m) else ""
         return f"{_kst(m.get('captured_at'))} 실호출 캡처를 재생{tail}{stale}"
+    scope = (
+        " · " + QUICK_SCOPE.format(guideword=", ".join(m.get("guidewords") or [])) if source == "quick" else ""
+    )
     if m.get("mock"):
-        return f"mock 실행 — 네트워크 없이 재생 레코드로 생성 경로를 돈 결과 ({_kst(m.get('captured_at'))})"
-    return f"{_kst(m.get('captured_at'))} 방금 실호출{tail}"
+        return f"mock 실행 — 네트워크 없이 재생 레코드로 생성 경로를 돈 결과 ({_kst(m.get('captured_at'))}){scope}"
+    return f"{_kst(m.get('captured_at'))} 방금 실호출{tail}{scope}"
 
 
 def process_view(result: Result) -> dict[str, Any]:
@@ -763,6 +813,134 @@ def process_view(result: Result) -> dict[str, Any]:
         "truncated_calls": m.get("truncated_calls"),
         "review": sum(r.confidence == "review" for r in records),
     }
+
+
+# ── 보기 전환 · 공정 전체 (지시문 X-2·X-3) ────────────────────────────────────
+def cells_label(result: Result) -> str:
+    """'판정 셀' 타일 값. 빠른 실행은 1종만 돌았다는 것을 값에 붙인다(X-1b)."""
+    m = result.meta
+    if m.get("expected_cells") is None:
+        return "—"
+    cells = f"{m.get('judged_cells')}/{m['expected_cells']}"
+    return cells + " (1종)" if m.get("source") == "quick" else cells
+
+
+def failed_guidewords_line(result: Result) -> str | None:
+    """판정에 실패해 review 로 격하된 가이드워드가 있으면 경고 문구(X-1d). 없거나 빠른 실행이면 None."""
+    m = result.meta
+    failed = m.get("review_guidewords") or []
+    if not failed or m.get("source") == "quick" or result.is_gold:
+        return None
+    ok = len(m.get("guidewords") or []) - len(failed)
+    tail = f" — 나머지 {ok}종은 정상" if ok > 0 else ""
+    return f"가이드워드 {', '.join(failed)} 판정 실패(review){tail}. 실패한 가이드워드의 셀은 결과에 없습니다."
+
+
+def partial_rows(records: list[DeviationRecord]) -> list[dict[str, object]]:
+    """생성 중 부분 표(X-1c) — 가볍게 6열. 레코드는 생성기가 축 순서로 준다."""
+    return [
+        {"가이드워드": r.guideword, "파라미터": r.parameter, "이탈": r.deviation, "S": r.S, "F": r.F, "위험도": r.S * r.F}
+        for r in records
+    ]
+
+
+def _guideword_axis(result: Result, records: list[DeviationRecord]) -> list[str]:
+    known = list(result.meta.get("guidewords") or [])
+    seen = {r.guideword for r in records} | set(known) | set(result.meta.get("review_guidewords") or [])
+    return [g for g in STANDARD_GUIDEWORDS + PROCEDURAL_GUIDEWORDS if g in seen] + sorted(
+        seen - set(STANDARD_GUIDEWORDS + PROCEDURAL_GUIDEWORDS)
+    )
+
+
+def view_groups(result: Result, view: str) -> list[tuple[str, str, list[int]]]:
+    """보기별 묶음 [(묶음 이름, 머리줄, 워크시트 행 인덱스)]. 인덱스는 `worksheet_table` 순서 — 보기는 순서만 바꾼다.
+
+    가이드워드별 머리줄 "More — 9건 (해당 없음 1셀)" 의 해당 없음 셀 수는 열거된 파라미터를 아는 단일 노드
+    결과에서만 계산한다(공정 전체·옛 재생은 건수만).
+    """
+    records = verified(result)[0]
+    review = set(result.meta.get("review_guidewords") or [])
+    if view == VIEWS[1]:
+        axis = _guideword_axis(result, records)
+        key = "guideword"
+    elif view == VIEWS[2]:
+        axis = list(dict.fromkeys(list(result.meta.get("parameters") or []) + [r.parameter for r in records]))
+        key = "parameter"
+    else:
+        return [("", "", list(range(len(records))))]
+    rows: dict[str, list[int]] = {name: [] for name in axis}
+    for index, record in enumerate(records):
+        rows.setdefault(getattr(record, key), []).append(index)
+    parameters = result.meta.get("parameters")
+    groups: list[tuple[str, str, list[int]]] = []
+    for name, indices in rows.items():
+        if key == "guideword" and name in review:
+            head = f"{name} — 판정 실패(review)"
+        else:
+            head = f"{name} — {len(indices)}건"
+            if key == "guideword" and parameters and not result.meta.get("combined"):
+                skipped = len(parameters) - len({records[i].parameter for i in indices})
+                head += f" (해당 없음 {skipped}셀)" if skipped > 0 else ""
+        groups.append((name, head, indices))
+    return [g for g in groups if g[2] or "실패" in g[1]] if key == "parameter" else groups
+
+
+def _sum(values: list[Any]) -> Any:
+    return None if any(v is None for v in values) else sum(values)
+
+
+def combine_replays(process: Mapping[str, Any], replays: Mapping[str, Result]) -> Result | None:
+    """공정의 캡처된 노드 재생을 노드 순서로 이어 붙인 결과 1개(X-3). 캡처된 노드가 없으면 None.
+
+    레코드 id 는 노드 접두사(n1-·n2-…)가 달라 겹치지 않는다. 지연은 노드별 실행을 더한 값이라 비운다.
+    recall 은 split 별로 따로 합산한다 — NH3 튜닝 N1 과 홀드아웃 N2~N4 를 한 숫자로 섞지 않는다.
+    """
+    nodes = [n["id"] for n in process["nodes"] if n["id"] in replays]
+    if not nodes:
+        return None
+    parts = [replays[n] for n in nodes]
+    metas = [p.meta for p in parts]
+    recall_parts: list[tuple[str, int, int]] = []
+    for label, split in (("튜닝", "tune"), ("홀드아웃", "holdout"), ("외부 대조", "external")):
+        pairs = [m["recall"] for m in metas if m.get("split") == split and m.get("recall")]
+        if pairs:
+            recall_parts.append((label, sum(p["matched"] for p in pairs), sum(p["total"] for p in pairs)))
+    splits = {m.get("split") for m in metas}
+    sources = {m.get("source") for m in metas}
+    models = {m.get("model_id") for m in metas}
+    cost = _sum([m.get("cost_usd") for m in metas])
+    meta = {
+        "combined": True,
+        "process": process["name"],
+        "nodes": nodes,
+        "node": "→".join(nodes),
+        "source": sources.pop() if len(sources) == 1 else "mixed",
+        "split": splits.pop() if len(splits) == 1 else "mixed",
+        "model_id": models.pop() if len(models) == 1 else None,
+        "captured_at": max(str(m.get("captured_at", "")) for m in metas),
+        "latency_s": None,
+        "cost_usd": None if cost is None else round(cost, 4),
+        "expected_cells": _sum([m.get("expected_cells") for m in metas]),
+        "judged_cells": _sum([m.get("judged_cells") for m in metas]),
+        "review_guidewords": sorted({g for m in metas for g in m.get("review_guidewords") or []}),
+        "recall": None,
+        "recall_parts": recall_parts,
+        "node_provenance": [(n, provenance_line(p)) for n, p in zip(nodes, parts, strict=True)],
+    }
+    return Result(meta=meta, records=[r for p in parts for r in p.records])
+
+
+def recall_tiles(result: Result) -> list[tuple[str, str]]:
+    """recall 지표 타일. 공정 전체는 split 별로 타일을 따로(튜닝 · 홀드아웃 — 한 칸에 넣으면 값이 잘린다),
+    단일 노드는 기존 1개."""
+    m = result.meta
+    if m.get("combined"):
+        return [(f"{label} recall", f"{a / b:.3f}") for label, a, b in m.get("recall_parts") or []]
+    recall = m.get("recall")
+    if not recall:
+        return []
+    external = m.get("split") == "external"  # 지시문 W — 골드셋이 아니라 외부 공개 워크시트
+    return [("외부 대조 recall" if external else "전문가 대비 recall", f"{recall['recall']:.3f}")]
 
 
 # ── 평가 요약 표 (H-06 / FR-08 축소 실행) ─────────────────────────────────────
@@ -848,6 +1026,70 @@ EDITABLE_COLUMNS: Final[dict[str, str]] = {
 }
 
 
+#: 검토 표 가독성(10/8 사용자 피드백 — 검토자는 열을 눈으로 따라가며 채택·기각한다).
+#: 왼쪽 고정 열 · 넓은 글 열 · 목록 구분자 띄어쓰기 · 모든 행이 같거나 빈 열 숨김.
+REVIEW_PINNED: Final[tuple[str, ...]] = (REVIEW_COLUMN, "No", "가이드워드")
+#: 고정 열 다음에 오는 판단 열 — 우선순위(위험도·S·F·신뢰도)가 가로 스크롤 없이 보이게 이탈 바로 뒤에 둔다.
+#: 화면 순서일 뿐이다. 다운로드 xlsx 는 표준 12열 순서(R-02) 그대로.
+REVIEW_FRONT: Final[tuple[str, ...]] = ("이탈", "위험도", "S(1-5)", "F(1-5)", CONFIDENCE_COLUMN)
+#: 글 열 너비(px) — 'large' 는 열 4개가 화면을 다 먹어 숫자 열이 밀려난다(10/8 1440px 캡처).
+REVIEW_WIDTHS: Final[dict[str, int]] = {
+    "가이드워드": 130, "이탈": 300, "원인": 300, "결과": 300, "기존 안전장치(Before)": 220, "권고": 300,
+}
+REVIEW_ROW_HEIGHT: Final[int] = 84
+_LIST_COLUMNS: Final[tuple[str, ...]] = ("원인", "결과", "기존 안전장치(Before)", "권고")
+_HIDE_IF_UNIFORM: Final[tuple[str, ...]] = ("노드", "시나리오 연계", FLAG_COLUMN)
+
+
+def _split_list(value: object) -> list[str]:
+    return [part.strip() for part in str(value or "").split("·") if part.strip()]
+
+
+def review_key(result: Result) -> str:
+    """검토 편집 상태의 키 — 결과 식별을 넣어 새 결과가 오면 이전 편집이 엉뚱한 행에 붙지 않게 한다."""
+    m = result.meta
+    return f"review_{m.get('node')}_{m.get('captured_at')}_{len(result.records)}"
+
+
+def merge_edits(
+    base: Mapping[int, Mapping[str, Any]], newer: Mapping[Any, Mapping[str, Any]]
+) -> dict[int, dict[str, Any]]:
+    """행별로 합친 편집. `data_editor` 의 `edited_rows` 는 행 인덱스가 str 로 올 수 있어 int 로 맞춘다."""
+    merged = {int(i): dict(e) for i, e in base.items()}
+    for i, e in newer.items():
+        merged.setdefault(int(i), {}).update(e)
+    return merged
+
+
+def with_edits(table: list[dict[str, object]], edits: Mapping[int, Mapping[str, Any]]) -> list[dict[str, object]]:
+    """화면 표 사본에 검토 편집(검토 판정·수정 값)을 넣는다 — 다른 보기의 읽기 전용 표와 편집 표 재생성용."""
+    out = [dict(row) for row in table]
+    for i, edit in edits.items():
+        if 0 <= int(i) < len(out):
+            out[int(i)].update({k: v for k, v in edit.items() if k in out[int(i)]})
+    return out
+
+
+def readable_rows(table: list[dict[str, object]]) -> list[dict[str, object]]:
+    """화면용 사본 — 목록 열의 `·` 를 ` · ` 로 띄운다. `apply_review` 는 띄어쓰기 차이를 수정으로 치지 않는다."""
+    return [
+        {k: (" · ".join(_split_list(v)) if k in _LIST_COLUMNS else v) for k, v in row.items()} for row in table
+    ]
+
+
+def review_column_order(table: list[dict[str, object]]) -> list[str]:
+    """보이는 열 순서. 판단에 쓰는 열을 앞에, 모든 행이 같은 값(노드)·빈 값(시나리오 연계·플래그)인 열은 뺀다.
+
+    숨긴 노드 값은 요약 줄·'AI 가 한 일'에 이미 있고, 다운로드 파일에는 12열이 그대로 남는다.
+    """
+    if not table:
+        return []
+    columns = list(table[0])
+    hidden = {c for c in _HIDE_IF_UNIFORM if c in columns and len({str(r[c]) for r in table}) == 1}
+    front = [c for c in (*REVIEW_PINNED, *REVIEW_FRONT) if c in columns]
+    return front + [c for c in columns if c not in front and c not in hidden]
+
+
 def apply_review(
     result: Result, edits: Mapping[int, Mapping[str, Any]]
 ) -> tuple[list[dict[str, Any]], list[tuple[object, ...]]]:
@@ -865,16 +1107,21 @@ def apply_review(
         record = dict(record)
         changed: list[str] = []
         for column, field in EDITABLE_COLUMNS.items():
-            if column not in edit or edit[column] == shown[column]:
+            if column not in edit:
                 continue
             value = edit[column]
+            if field in ("S", "F"):
+                if value == shown[column]:
+                    continue
+            elif _split_list(value) == _split_list(shown[column]):
+                continue  # 화면은 ' · ' 로 띄워 보여 준다 — 띄어쓰기만 다르면 같은 값
             if field in ("S", "F"):
                 grade = int(value)
                 if grade != value or not 1 <= grade <= 5:
                     raise ValueError(f"{column} 는 1~5 정수여야 합니다: {value!r}")
                 record[field] = grade
             else:
-                record[field] = [part.strip() for part in str(value or "").split("·") if part.strip()]
+                record[field] = _split_list(value)
             changed.append(column)
         verdict = edit.get(REVIEW_COLUMN) or REVIEW_CHOICES[0]
         if verdict == "기각":
