@@ -179,3 +179,23 @@ WHEN 노드의 가이드워드 행들을 판정할 때 THE SYSTEM SHALL 가이�
 AC-10-1: 레코드 순서와 `id` 가 결정적이다(가이드워드 축 순서 → 셀 순서). AC-10-2: `parallel_calls` 는 `config/models.yaml` 에서만 읽는다(누락 시 4).
 AC-10-3: 비용·review 집계가 유실되지 않는다(각 호출이 결과를 반환, 합산은 수집 뒤 단일 스레드). AC-10-4: `parallel_calls: 1` 이면 순차 경로와 결과가 같다.
 파라미터 청크 분할(`max_parameters_per_call`)은 이번 범위가 아니다.
+
+---
+
+### R-11 생성 진행 단계 표시 (2026-10-08 추가, 손 작성 — 본선 PRD F-02 수정안)
+
+배경: 데모의 직접 입력 빠른 실호출은 `generate()` 를 거치지 않고(가이드워드 1종), 열거 호출만 약 22초다(J-03 실측).
+그래서 PRD 원안의 "가이드워드 묶음마다 행 추가·첫 레코드 ≤15초"는 데모 경로에서 효과가 없다. 대신 **각 단계가
+끝나는 즉시** 그 산출물을 알린다. 화면의 기존 "1/3·2/3·3/3" 은 생성이 다 끝난 뒤 한꺼번에 찍혔다.
+
+WHEN `HazopGenerator.generate()` 또는 `generate_quick()` 이 선택 인자 `on_progress` 를 받으면
+THE SYSTEM SHALL 파라미터 열거가 끝난 즉시 `("parameters", {...})` 를, 가이드워드 판정이 하나 끝날 때마다
+`("guideword", {guideword, done, total, records})` 를 호출 완료 순서대로 알린다.
+
+AC-11-1: 최종 반환 레코드의 순서·`id` 는 `on_progress` 유무·`parallel_calls` 와 무관하게 같다(R-10 AC-10-1, 골든 스냅샷 유지).
+AC-11-2: `on_progress` 는 `generate()` 를 부른 스레드에서만 호출된다. 비용·review 합산도 그 스레드에 남는다(AC-10-3).
+AC-11-3: `on_progress` 가 예외를 던져도 생성은 계속된다(WARNING 로그).
+AC-11-4: 진행 알림의 `records` 는 표시용 중간 결과다 — `judged_cells` 등 생성기 집계를 바꾸지 않는다.
+AC-11-5: 빠른 실호출은 공개 API `generate_quick(node_meta, guideword, on_progress=None)` 를 쓴다. 웹 서비스의
+비공개 메서드 의존(`_enumerate_parameters`·`_generate_batch`·`_assemble`)을 없앤다.
+비목표: 판정 호출 스트리밍, 파라미터 청크 분할(`max_parameters_per_call`).

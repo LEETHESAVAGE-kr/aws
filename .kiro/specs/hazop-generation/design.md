@@ -231,3 +231,16 @@ from core.llm import get_bedrock_client
 client = get_bedrock_client()  # 환경변수로 real/mock 자동 선택
 generator = HazopGenerator(client=client, config=load_generator_config())
 ```
+
+## 10. 진행 알림 (R-11, 2026-10-08 추가)
+
+- 타입: `ProgressCallback = Callable[[str, dict[str, Any]], None]`. 이벤트 2종 —
+  `"parameters"`: `{"parameters": [이름...]}` / `"guideword"`: `{"guideword", "done", "total", "records"}`.
+  입력 해석(문장 → NodeMeta)은 웹 서비스 소관이라 `"parsed"` 이벤트는 `service` 가 같은 콜백으로 보낸다.
+- 병렬 경로는 `pool.map` → `submit` + `as_completed`. 완료 순서로 알리되, 결과는 가이드워드 인덱스 자리에
+  넣었다가 끝난 뒤 축 순서로 `_assemble` — 최종 레코드는 R-10 과 같다.
+- 중간 `records` 는 순수 함수 `_build_records(node_meta, batches) -> (records, judged)` 로 만든다.
+  `_assemble` 은 이 함수 + `judged_cells` 누적이다(AC-11-4).
+- 콜백 호출은 `_notify()` 한 곳 — 예외를 삼키고 WARNING(AC-11-3).
+- `generate_quick` 은 `generate` 와 같은 상태(`total_cost_usd`·`review_guidewords`·`expected_cells`·`judged_cells`)와
+  `parameters`(이름 목록, 두 진입점 공통)를 남긴다. 열거 실패면 빈 목록을 돌려주고 판정을 부르지 않는다.

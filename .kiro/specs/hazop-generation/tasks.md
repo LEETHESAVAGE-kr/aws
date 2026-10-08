@@ -173,3 +173,26 @@
 | T-07 | 실호출 스모크 테스트 | G0 후 | ☑ |
 | T-08 | G1 킬체크 N1 recall ≥ 0.5 | G0 후 | ☑ |
 | T-09 | 가이드워드 판정 병렬 호출 (R-10, 지시문 O-1) | ✅ | ☑ |
+| T-10 | `generate(on_progress)` · `as_completed` 전환 (R-11) | ✅ | ☐ |
+| T-11 | `generate_quick` 공개 API 승격 · `run_quick` 교체 (R-11 AC-11-5) | ✅ | ☐ |
+| T-12 | 화면 단계 표시 배선 (R-11, apps/web) | ✅ | ☐ |
+
+---
+
+## T-10 진행 알림 · 완료 순서 수집 (R-11) 【본선 · 2026-10-08 추가, 손 작성】
+
+**작업**: design §10 대로 `ProgressCallback`·`_notify`·`_build_records`, 병렬 경로 `as_completed`.
+**완료 조건**: (1) 콜백 유무·`parallel_calls` 1/4 에서 최종 레코드 동일 (2) 이벤트 순서 `parameters` → `guideword`×n,
+`done` 이 1..n (3) 콜백 예외에도 결과 동일 (4) 콜백 스레드 = 호출 스레드 (5) 중간 알림 후 `judged_cells` 불변.
+기존 골든 스냅샷·O-1 AST 구조 시험 통과. 결함 재삽입으로 (1)~(5) 가 깨지는지 확인.
+
+## T-11 `generate_quick` 승격 (R-11 AC-11-5)
+
+**작업**: `HazopGenerator.generate_quick(node_meta, guideword, on_progress=None)`, `service.run_quick` 이 이것만 부른다.
+**완료 조건**: `service.py` 에 `generator._` 접근 0곳, 기존 `run_quick` 시험 무수정 통과, 열거 실패 시 판정 호출 0회.
+
+## T-12 화면 단계 표시 (R-11, apps/web)
+
+**작업**: `run_quick`·`run_live` 에 `on_progress` 전달, 생성 중 상태 상자에 단계별 산출물(해석된 물질·설비 → 파라미터 축 →
+가이드워드 k/n)을 그 단계가 끝난 즉시 쓴다. 완료 뒤 한꺼번에 찍던 "2/3·3/3" 을 없앤다.
+**완료 조건**: AppTest 로 생성 후 상태 상자에 해석 결과·파라미터 이름이 보이고, mock 경로 이벤트 순서 시험 통과.
