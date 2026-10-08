@@ -13,6 +13,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import contextlib  # noqa: E402
+from typing import Any  # noqa: E402
 
 import streamlit as st  # noqa: E402
 import streamlit.components.v1 as components  # noqa: E402
@@ -260,15 +261,28 @@ with tool.container(border=True, key="tool"):
                 with st.status(
                     "HAZOP 초안 생성 중 · 약 1분 — 이 화면에서 기다려 주세요", expanded=True
                 ) as status:
-                    st.write("1/3 문장을 노드 입력으로 해석")
+                    # R-11: 단계가 끝나는 즉시 그 산출물을 쓴다(예전엔 끝난 뒤 2/3·3/3 을 한꺼번에 찍었다).
+                    lines = [st.empty() for _ in range(3)]
+                    lines[0].write(service.STAGE_PENDING[0])
                     st.caption("생성 중에 다른 버튼을 누르면 이번 생성이 취소됩니다.")
+
+                    def on_progress(event: str, payload: dict[str, Any]) -> None:
+                        step, text, pending = service.progress_text(event, payload, guideword if clicked_quick else None)
+                        lines[step].write(text)
+                        if pending is not None and step + 1 < len(lines):
+                            lines[step + 1].write(pending)
+                        # expanded 를 다시 주지 않으면 라벨 갱신이 상자를 접는다(10/8 브라우저 확인).
+                        status.update(label=f"HAZOP 초안 생성 중 · {text.split(' — ')[0]}", expanded=True)
+
                     try:
                         if clicked_quick:
                             state.quick_result = service.run_quick(
-                                state.quick_text, guideword, mock_source
+                                state.quick_text, guideword, mock_source, on_progress=on_progress
                             )
                         else:
-                            state.quick_result = service.run_live(state.quick_text, mock_source)
+                            state.quick_result = service.run_live(
+                                state.quick_text, mock_source, on_progress=on_progress
+                            )
                     except Exception as exc:  # noqa: BLE001 — 사유를 보이고 앱은 계속 산다
                         state.live_runs -= 1  # 실패한 실행은 세션 횟수에서 빼지 않는다
                         status.update(label="생성 실패", state="error", expanded=True)
@@ -283,8 +297,6 @@ with tool.container(border=True, key="tool"):
                         if service.is_auth_error(exc):
                             st.caption(service.key_hint())
                     else:
-                        st.write("2/3 점검 파라미터 열거")
-                        st.write(f"3/3 가이드워드 '{guideword}' 판정")
                         status.update(label="완료", state="complete")
                         state.scroll_result = True  # 다음 실행에서 결과로 스크롤
                         st.rerun()  # 버튼을 상한 사유와 함께 즉시 비활성으로 다시 그린다
