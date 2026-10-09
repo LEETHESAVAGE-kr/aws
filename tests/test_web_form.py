@@ -18,12 +18,14 @@ def _values(**kw: Any) -> dict[str, Any]:
     return {**form.EMPTY, **kw}
 
 
-def test_examples_become_valid_node_meta() -> None:
-    for name in form.EXAMPLES:
-        values = {k: form.example_state(name)[form.KEYS[k]] for k in form.EMPTY}
-        meta, parsed = service.parse_node_text(form.to_node_json(values), _MOCK_ENV)
-        assert parsed["parsed_by"] == "json" and parsed["raw_calls"] == []  # 해석 호출 없음
-        assert meta.equipment == form.EXAMPLES[name]["equipment"]
+_H2 = {"substance": "수소", "phase": "기체", "equipment": ["튜브트레일러", "압축기", "고압 저장용기", "디스펜서"],
+       "pressure": 90.0, "design_pressure": 100.0, "capacity": "200 kg", "safeguards": ["안전밸브", "고압 경보(설정 95 MPa)"]}
+
+
+def test_form_values_become_valid_node_meta() -> None:
+    meta, parsed = service.parse_node_text(form.to_node_json(_values(**_H2)), _MOCK_ENV)
+    assert parsed["parsed_by"] == "json" and parsed["raw_calls"] == []  # 해석 호출 없음
+    assert meta.equipment == _H2["equipment"] and meta.capacity == "200 kg"
 
 
 def test_units_capacity_and_design_pressure() -> None:
@@ -58,11 +60,11 @@ def test_app_form_chip_fills_and_runs(monkeypatch: pytest.MonkeyPatch) -> None:
     at.radio(key="input_style").set_value("항목 선택").run()
     cta = next(b for b in at.button if b.label.startswith("HAZOP 초안 생성"))
     assert cta.disabled  # 물질·설비가 비면 막힌다
-    next(b for b in at.button if b.label == "수소충전소").click().run()
+    assert not any(b.label == "수소충전소" for b in at.button)  # 항목 선택에는 예시 칩이 없다(10/9 사용자)
+    at.selectbox(key=form.KEYS["substance"]).set_value("수소")
+    at.multiselect(key=form.KEYS["equipment"]).set_value(_H2["equipment"])
+    at.text_input(key=form.KEYS["capacity"]).set_value("200 kg").run()
     assert not at.exception
-    assert at.selectbox(key=form.KEYS["substance"]).value == "수소"
-    assert at.multiselect(key=form.KEYS["equipment"]).value == ["튜브트레일러", "압축기", "고압 저장용기", "디스펜서"]
-    assert at.text_input(key=form.KEYS["capacity"]).value == "200 kg"
     next(b for b in at.button if b.label.startswith("HAZOP 초안 생성")).click().run()
     assert not at.exception and len(at.dataframe) >= 1
     assert at.session_state["quick_result"].meta["parsed_by"] == "json"
@@ -99,8 +101,8 @@ def test_full_table_html_escapes_and_splits_lists() -> None:
     assert "&lt;b&gt;밸브&lt;/b&gt;<br>• 펌프 정지" in out and ">3<" in out and "nan" not in out
 
 
-def test_chip_fills_only_chosen_input_style(monkeypatch: pytest.MonkeyPatch) -> None:
-    """PRD 첫화면 U-3: 입력 방식을 먼저 고르고, 예시 칩은 그 방식의 칸만 채운다."""
+def test_chips_only_in_sentence_style(monkeypatch: pytest.MonkeyPatch) -> None:
+    """PRD 첫화면 U-3 + 10/9 사용자: 입력 방식을 먼저 고르고, 예시 칩은 '문장으로 설명'에서만 보인다."""
     from streamlit.testing.v1 import AppTest
 
     for key, value in _MOCK_ENV.items():
@@ -109,10 +111,9 @@ def test_chip_fills_only_chosen_input_style(monkeypatch: pytest.MonkeyPatch) -> 
     assert at.radio(key="input_style").value == "문장으로 설명"
     next(b for b in at.button if b.label == "수소충전소").click().run()
     assert "수소" in at.session_state["quick_text"] and at.session_state[form.KEYS["substance"]] is None
-    at2 = AppTest.from_file(str(_APP), default_timeout=60).run()
-    at2.radio(key="input_style").set_value("항목 선택").run()
-    next(b for b in at2.button if b.label == "수소충전소").click().run()
-    assert at2.session_state[form.KEYS["substance"]] == "수소" and at2.session_state["quick_text"] == ""
+    at.radio(key="input_style").set_value("항목 선택").run()
+    assert not any(b.label in ("수소충전소", "메탄올 하역", "실란 가스 캐비닛") for b in at.button)
+    assert not any("공정 예시" in h.proto.body for h in at.get("html"))
 
 
 def test_progress_line_for_selected_items_has_no_json_word() -> None:
