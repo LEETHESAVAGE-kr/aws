@@ -132,5 +132,5 @@ def test_first_screen_title_is_service_name_and_shows_three_paths(monkeypatch: p
     at = AppTest.from_file(str(_APP), default_timeout=60).run()
     hero = next(h.proto.body for h in at.get("html") if "hz-h1" in h.proto.body)
     assert '<div class="hz-h1">HAZOP Copilot</div>' in hero
-    assert all(p in hero for p in ("문장으로 설명", "항목 선택", "완성된 사례 보기"))
+    assert all(p in hero for p in ("두 가지 방법", "문장으로 설명", "항목 선택", "모르겠다면", "완성된 사례 보기"))
     assert "골드셋" not in hero
