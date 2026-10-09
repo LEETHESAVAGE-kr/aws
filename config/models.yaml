@@ -31,6 +31,17 @@ verifier:
   max_tokens: 1024
   prompt_caching: false
 
+# 대회 AI 모델 게이트웨이(OpenAI 호환) — 「AI 모델 API 사용 가이드」(넥스트클라우드, 10/9 수령) 1·3쪽.
+# HAZOP_PROVIDER=gateway(.env / Streamlit Secrets) 로 켠다. 키는 KIRO_API_KEY(환경변수)만.
+# 별칭은 GET /v1/models 결과(10/9): bedrock-claude-opus-4-8 · bedrock-claude-sonnet-5 · bedrock-haiku — 추측 기입 아님.
+gateway:
+  base_url: https://52.79.201.46/v1
+  # ⚠ 10/9 실측: 허용 목록이 ['"bedrock-claude-opus-4-8', 'bedrock-claude-sonnet-5', 'bedrock-haiku"'] 로
+  #   첫·끝 별칭에 따옴표가 붙어 있어 opus·haiku 는 403(key_model_access_denied). 운영 측 수정 전까지 sonnet-5 만 쓴다.
+  #   sonnet-5 실호출 1회 성공(구조화 출력 정상, 2.1초). 수정되면 generation 을 opus-4-8, verifier 를 haiku 로 되돌린다.
+  generation_model_id: bedrock-claude-sonnet-5
+  verifier_model_id: bedrock-claude-sonnet-5
+
 embedding:
   model_id: null # ← 임베딩 모델 ID 기입
 

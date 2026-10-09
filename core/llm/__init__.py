@@ -53,6 +53,7 @@ __all__ = [
     "calculate_cost",
     "get_bedrock_client",
     "is_throttling_error",
+    "effective_provider",
     "load_model_config",
 ]
 
@@ -67,6 +68,20 @@ def get_bedrock_client() -> AbstractBedrockClient:
     if os.environ.get("HAZOP_USE_MOCK", "false").lower() == "true":
         return MockBedrockClient()
     config = _client_mod.load_model_config()
-    if config.provider == "anthropic":
+    provider = effective_provider(config)
+    if provider == "gateway":
+        from .gateway_client import GatewayClient
+
+        return GatewayClient(config=config)
+    if provider == "anthropic":
         return AnthropicClient(config=config)
     return BedrockClient(config=config)
+
+
+def effective_provider(config: object, environ: object = None) -> str:
+    """공급자 — 환경변수 `HAZOP_PROVIDER`(anthropic|gateway|bedrock, `kiro` 는 gateway 별칭)가 있으면 그것,
+    없으면 models.yaml 의 `provider`. 배포 Secrets 한 줄로 바꿀 수 있게 한다(PRD Kiro K-4)."""
+    env = os.environ if environ is None else environ
+    value = str(env.get("HAZOP_PROVIDER", "")).strip().lower()  # type: ignore[attr-defined]
+    value = "gateway" if value == "kiro" else value
+    return value if value in ("anthropic", "gateway", "bedrock") else str(getattr(config, "provider", "bedrock"))

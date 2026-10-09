@@ -34,8 +34,7 @@ def gateway() -> Iterator[tuple[Gateway, str]]:
 def _clean_env(monkeypatch: pytest.MonkeyPatch) -> None:
     service._daily_runs.clear()
     for name in ("HAZOP_USE_MOCK", "ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_BASE_URL",
-                 "HAZOP_ENDPOINT_LABEL", "HAZOP_PROVIDER", "KIRO_BASE_URL", "KIRO_API_KEY", "KIRO_API_KEY_FILE",
-                 "KIRO_AUTH"):
+                 "HAZOP_ENDPOINT_LABEL", "HAZOP_PROVIDER", "KIRO_API_KEY", "HAZOP_GATEWAY_KEY"):
         monkeypatch.delenv(name, raising=False)
 
 
@@ -93,38 +92,75 @@ def test_gateway_secrets_are_synced_and_stripped() -> None:
     assert "ANTHROPIC_AUTH_TOKEN" in hint and "sk-ant-" not in hint  # 게이트웨이 키에 접두사 오경보 없음
 
 
-# ── Kiro API 전환(PRD 추론경계·Kiro K-1~K-4) ────────────────────────────────────
-@pytest.mark.parametrize(("auth", "header"), [("bearer", "bearer"), ("x-api-key", "x-api-key")])
-def test_kiro_switch_routes_to_kiro_and_drops_direct_key(
-    gateway: tuple[Gateway, str], monkeypatch: pytest.MonkeyPatch, auth: str, header: str
-) -> None:
-    """HAZOP_PROVIDER=kiro → Kiro 주소·키로만. 직결 키가 같이 있어도 그 키는 지운다(섞여 나가지 않게)."""
-    gw, url = gateway
+# ── 대회 AI 모델 게이트웨이(OpenAI 호환, PRD 추론경계·Kiro K-2 B) ───────────────────
+def _gateway_reply(arguments: str, finish: str = "tool_calls") -> dict[str, object]:
+    return {"choices": [{"finish_reason": finish, "message": {"content": None, "tool_calls": [
+        {"id": "c1", "type": "function", "function": {"name": "structured_output", "arguments": arguments}}]}}],
+        "usage": {"prompt_tokens": 1200, "completion_tokens": 300, "prompt_tokens_details": {"cached_tokens": 200}}}
+
+
+def test_gateway_client_payload_and_parse(monkeypatch: pytest.MonkeyPatch) -> None:
+    """가이드 형식: Bearer·별칭 모델·function tool 로 스키마 강제 → tool 인자가 content JSON 으로 올라온다."""
+    from core.llm import Message, load_model_config
+    from core.llm.gateway_client import GatewayClient
+
+    client = GatewayClient(load_model_config())
+    alias = load_model_config().gateway["generation_model_id"]
+    assert client.base_url == "https://52.79.201.46/v1" and client.model_id == alias
+    sent: list[dict[str, object]] = []
+    monkeypatch.setattr(client, "_post", lambda payload: sent.append(payload) or _gateway_reply('{"a": 1}'))
+    schema = {"type": "object", "required": ["a"], "properties": {"a": {"type": "integer"}}}
+    r = client.converse(system="S", messages=[Message(role="user", content="U")], response_schema=schema)
+    assert r.content == '{"a": 1}' and r.stop_reason == "tool_use"
+    assert (r.usage.input, r.usage.output, r.usage.cache_read) == (1000, 300, 200)
+    p = sent[0]
+    assert p["model"] == alias and p["messages"][0] == {"role": "system", "content": "S"}
+    assert p["tool_choice"] == {"type": "function", "function": {"name": "structured_output"}}
+    assert "temperature" not in p
+
+
+def test_gateway_truncation_maps_to_max_tokens(monkeypatch: pytest.MonkeyPatch) -> None:
+    from core.llm import load_model_config
+    from core.llm.gateway_client import GatewayClient
+
+    client = GatewayClient(load_model_config())
+    assert client._parse(_gateway_reply("{", "length"), "c", 0.1).stop_reason == "max_tokens"
+
+
+def test_gateway_429_is_retried_and_key_never_in_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    import io
+    import urllib.error
+
+    from core.llm import client as client_mod
+    from core.llm import load_model_config
+    from core.llm.gateway_client import APIStatusError, GatewayClient
+
+    monkeypatch.setenv("KIRO_API_KEY", "sk-secret-value")
+    monkeypatch.setattr(client_mod, "_sleep", lambda _s: None)
+    calls: list[int] = []
+
+    def fail(*_a: object, **_k: object) -> object:
+        calls.append(1)
+        raise urllib.error.HTTPError("u", 429, "rate", {}, io.BytesIO(b'{"error":"rate limited"}'))
+
+    monkeypatch.setattr("urllib.request.urlopen", fail)
+    with pytest.raises(client_mod.BedrockCallError) as info:
+        GatewayClient(load_model_config())._post({"model": "m"})
+    cause = info.value.__cause__
+    assert len(calls) == 3 and isinstance(cause, APIStatusError) and cause.status_code == 429
+    assert "sk-secret" not in str(info.value) + str(cause)
+
+
+def test_provider_switch_selects_gateway_and_blocks_without_key(monkeypatch: pytest.MonkeyPatch) -> None:
+    """HAZOP_PROVIDER=kiro(=gateway): 키 없으면 직결로 넘어가지 않고 막는다. 키가 있으면 게이트웨이 클라이언트·출처 표시."""
     import os
 
-    _live(monkeypatch, ANTHROPIC_API_KEY="direct-key", HAZOP_PROVIDER="kiro", KIRO_BASE_URL=url,
-          KIRO_API_KEY="kiro-key", KIRO_AUTH=auth)
-    assert service.apply_provider(os.environ) == "kiro"
-    assert os.environ["ANTHROPIC_BASE_URL"] == url
-    assert ("ANTHROPIC_API_KEY" in os.environ) == (auth != "bearer")
-    result = service.run_quick(_SENTENCE, "More", load_replays()["N1"], os.environ)
-    assert {e["auth"] for e in gw.log} == {header}
-    assert "Kiro API 경유" in service.provenance_line(result)
+    from core.llm import get_bedrock_client
+    from core.llm.gateway_client import GatewayClient
 
-
-def test_kiro_switch_without_url_blocks_live_instead_of_falling_back(monkeypatch: pytest.MonkeyPatch) -> None:
-    """설정이 모자라면 직결로 몰래 돌지 않고 실호출을 막는다(K-4)."""
-    import os
-
-    _live(monkeypatch, ANTHROPIC_API_KEY="direct-key", HAZOP_PROVIDER="kiro", KIRO_API_KEY="kiro-key")
-    assert service.apply_provider(os.environ) == "anthropic"
-    assert "KIRO_BASE_URL" in (service.live_block_reason(os.environ) or "")
-
-
-def test_kiro_key_file(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
-    import os
-
-    key_file = tmp_path / "kiro.txt"
-    key_file.write_text("\ufefffile-key\n", encoding="utf-8")  # BOM·줄바꿈이 섞여도
-    _live(monkeypatch, HAZOP_PROVIDER="kiro", KIRO_BASE_URL="http://127.0.0.1:1", KIRO_API_KEY_FILE=str(key_file))
-    assert service.apply_provider(os.environ) == "kiro" and os.environ["ANTHROPIC_API_KEY"] == "file-key"
+    _live(monkeypatch, HAZOP_PROVIDER="kiro", ANTHROPIC_API_KEY="direct-key")
+    assert "게이트웨이 키" in (service.live_block_reason(os.environ) or "")
+    monkeypatch.setenv("KIRO_API_KEY", "sk-test")
+    assert service.live_block_reason(os.environ) is None
+    assert isinstance(get_bedrock_client(), GatewayClient)
+    assert service.endpoint_label(os.environ) == service.GATEWAY_LABEL
