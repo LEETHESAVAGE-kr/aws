@@ -1104,3 +1104,32 @@ def _grid(at: Any) -> Any:
     """기존 화면 시험은 편집 격자(st.dataframe·data_editor)를 본다 — 기본 표 모양은 10/9 부터 펼쳐 보기(HTML)."""
     at.session_state["table_style"] = service.TABLE_STYLES[1]
     return at
+
+
+def test_app_generation_mode_single_default_and_consensus(monkeypatch: pytest.MonkeyPatch) -> None:
+    """§8 C 생성 방식(10/9 사용자): 기본은 한 번 생성(지금 방식, '반복 일치' 열 없음), 고르면 3번 생성해 공통 답."""
+    from streamlit.testing.v1 import AppTest
+
+    from core.agent import consensus
+
+    monkeypatch.setattr(consensus, "e5_similarity", lambda: None)
+    for key, value in _MOCK_ENV.items():
+        monkeypatch.setenv(key, value)
+    at = _grid(AppTest.from_file(str(_APP), default_timeout=60)).run()
+    single, multi = list(service.GENERATION_MODES)
+    assert at.radio(key="gen_mode").value == single
+    at.text_area[0].input(_SENTENCE).run()
+    _cta(at).click().run()
+    assert not at.exception
+    first = at.session_state["quick_result"]
+    assert first.meta["consensus_runs"] == 1 and not any(r.consensus for r in first.records)
+    assert service.REPEAT_COLUMN not in service.worksheet_table(first)[0]
+
+    at.session_state["live_runs"] = 0  # 세션 상한(기본 1회)을 비워 두 번째 생성을 허용
+    at.radio(key="gen_mode").set_value(multi).run()
+    _cta(at).click().run()
+    assert not at.exception
+    second = at.session_state["quick_result"]
+    assert second.meta["consensus_runs"] == 3 and all(r.consensus for r in second.records)
+    assert service.REPEAT_COLUMN in service.worksheet_table(second)[0]
+    assert service.repeat_counts(second).startswith("같은 입력으로 판정 3번")
