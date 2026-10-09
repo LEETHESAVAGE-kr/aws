@@ -20,7 +20,7 @@ generation:
   max_tokens: 16384 # 9/28 예선 데모용 4096→16384 — 절단 방지(E-2 갈래 ①). 지연은 못 줄임, 본선 지시문 G 에서 재검토
   prompt_caching: true
   enumerate_examples: false # R-12(본선 F-06): 열거 프롬프트에 공개 HAZOP 예시(data/kb). 측정은 tools/measure_enumerate.py
-  evidence_k: 0 # Y-3: 판정 호출에 넣는 법령·고시 발췌(파라미터당 검색 수, 호출당 최대 10문단). 0 = 끔. Y-G5 측정(사전등록) 뒤에 켠다
+  evidence_k: 2 # Y-3: 판정 호출에 넣는 법령·고시·MSDS 발췌(파라미터당 검색 수, 호출당 최대 10문단). 0 = 끔. 10/9 Y-G5 는 비용 규칙 ② 위반이었으나 사용자 결정("비용 상관없어")으로 켬
   inference_boundary: false # Z-1~Z-3: 정보 4단계·노드 유형별 추론 경계(data/kb/inference_policy.json)·셀 보류(정보 부족). 사전등록 실측 뒤 켠다
   parallel_calls: 7 # R-10: 가이드워드 판정 동시 호출 수. 1 이면 순차. X-G7(10/8) 병렬 4 138.8초 vs 7 79~126초, 429 0회 → 7 (results/xg7_20261008_2350)
 
