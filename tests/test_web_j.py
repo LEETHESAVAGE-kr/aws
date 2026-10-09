@@ -1133,3 +1133,4 @@ def test_app_generation_mode_single_default_and_consensus(monkeypatch: pytest.Mo
     assert second.meta["consensus_runs"] == 3 and all(r.consensus for r in second.records)
     assert service.REPEAT_COLUMN in service.worksheet_table(second)[0]
     assert service.repeat_counts(second).startswith("같은 입력으로 판정 3번")
+    assert any(c.value.startswith("반복 일치 — 같은 입력으로 판정 3번") for c in at.caption)  # 화면에 보인다
