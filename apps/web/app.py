@@ -18,12 +18,15 @@ from typing import Any  # noqa: E402
 import streamlit as st  # noqa: E402
 import streamlit.components.v1 as components  # noqa: E402
 
-from apps.web import guide, service  # noqa: E402
+from apps.web import form, guide, service  # noqa: E402
 from apps.web.replay import load_replays  # noqa: E402
 from core.agent.generate import PROCEDURAL_GUIDEWORDS, STANDARD_GUIDEWORDS  # noqa: E402
 
 MODE_NL = "문장으로 새 공정 분석"
 MODE_CASES = "실측 사례 재생"
+#: 입력 방식(10/9 사용자 요청 — 서술형 말고 클릭으로도). 골라서 입력은 JSON 으로 넘어가 문장 해석 호출이 없다.
+INPUT_TEXT = "문장으로 쓰기"
+INPUT_FORM = "골라서 입력"
 GUIDEWORDS = STANDARD_GUIDEWORDS + PROCEDURAL_GUIDEWORDS
 REPO = "https://github.com/LEETHESAVAGE-kr/aws"
 README_EVAL = f"{REPO}/blob/main/README.md#-6-평가-결과"
@@ -179,6 +182,9 @@ state.setdefault("live_runs", 0)
 state.setdefault("quick_result", None)
 state.setdefault("node", None)
 state.setdefault("quick_text", "")
+state.setdefault("input_style", INPUT_TEXT)
+for _k, _v in form.EMPTY.items():
+    state.setdefault(form.KEYS[_k], _v)
 state.setdefault("mode", MODE_NL)
 state.setdefault("guideword", "More")
 state.setdefault("view_pref", service.VIEWS[0])  # 결과 보기(X-2) — 위젯 밖에 둔다
@@ -186,13 +192,37 @@ state.setdefault("view_gen", 0)
 state.setdefault("focus_guideword", None)
 
 
+def _node_form() -> None:
+    """골라서 입력 — 목록에서 고르고, 없으면 직접 적는다(accept_new_options). 값은 `form.KEYS` 상태에 있다."""
+    left, right = st.columns([3, 2])
+    left.selectbox("물질", form.SUBSTANCES, key=form.KEYS["substance"],
+                   placeholder="고르거나 직접 입력", accept_new_options=True)
+    right.selectbox("상태", list(form.PHASES), key=form.KEYS["phase"])
+    st.multiselect("설비 — 흐름 순서대로 고르세요", form.EQUIPMENT, key=form.KEYS["equipment"],
+                   placeholder="예: 압축기 → 저장용기 → 디스펜서", accept_new_options=True)
+    p, pu, t_, d, du, c = st.columns([3, 2, 3, 3, 2, 3])
+    p.number_input("운전압력", key=form.KEYS["pressure"], min_value=0.0, placeholder="모름")
+    pu.selectbox("단위", form.UNITS, key=form.KEYS["pressure_unit"])
+    t_.number_input("온도(℃)", key=form.KEYS["temperature"], placeholder="모름")
+    d.number_input("설계압력", key=form.KEYS["design_pressure"], min_value=0.0, placeholder="모름")
+    du.selectbox("단위 ", form.UNITS, key=form.KEYS["design_unit"])
+    c.text_input("용량", key=form.KEYS["capacity"], placeholder="예: 200 kg")
+    no_safeguards = st.checkbox("안전장치 없음 (모르면 체크하지 말고 비워 두세요)", key=form.KEYS["no_safeguards"])
+    st.multiselect("기존 안전장치 — 설정값은 직접 입력(예: 고압 경보(설정 95 MPa))", form.SAFEGUARDS,
+                   key=form.KEYS["safeguards"], disabled=no_safeguards, accept_new_options=True,
+                   placeholder="비워 두면 '모름'으로 다룹니다")
+
+
 @st.cache_resource
 def _combined(process_id: str) -> service.Result | None:
     return service.combine_replays(next(p for p in service.CATALOG if p["id"] == process_id), replays)
 
 
-def _fill(text: str, guideword: str | None = None) -> None:
+def _fill(text: str, guideword: str | None = None, label: str | None = None) -> None:
     state.quick_text = text
+    if label in form.EXAMPLES:  # 골라서 입력 양식도 같은 예시로 채운다 — 어느 방식으로 보고 있든 같은 공정
+        for key, value in form.example_state(label).items():
+            state[key] = value
     if guideword:  # 칩이 지정한 가이드워드(V-6 · X-4) — 결과는 가이드워드별 보기에서 그 묶음을 펼친다
         state.guideword = guideword
         state.view_pref = service.VIEWS[1]
@@ -256,7 +286,7 @@ with tool.container(border=True, key="tool"):
         "모드", [MODE_NL, MODE_CASES], horizontal=True, label_visibility="collapsed", key="mode"
     )
     if mode == MODE_NL:
-        done = 3 if state.quick_result is not None else (2 if state.quick_text.strip() else 1)
+        done = 3 if state.quick_result is not None else (2 if state.quick_text.strip() or state[form.KEYS["substance"]] else 1)
         st.html(
             f'<div class="hz-progress"><div style="width:{done * 33.4:.0f}%"></div></div>'
             '<p class="hz-q">어떤 공정을 분석할까요?</p>'
@@ -265,19 +295,31 @@ with tool.container(border=True, key="tool"):
         for i, (column, (label, text, *chip_guideword)) in enumerate(
             zip(st.columns(len(EXAMPLES)), BOOTH_EXAMPLES if BOOTH else EXAMPLES, strict=True)
         ):
-            column.button(label, key=f"chip_{i}", on_click=_fill, args=(text, *chip_guideword), width="stretch")
-        st.text_area(
-            "공정 설명",
-            key="quick_text",
-            height=130,
-            max_chars=service.NODE_TEXT_LIMIT,
-            placeholder=DIRECT_PLACEHOLDER,
-            label_visibility="collapsed",
-        )
+            column.button(label, key=f"chip_{i}", on_click=_fill,
+                          args=(text, chip_guideword[0] if chip_guideword else None, label), width="stretch")
+        input_style = st.radio("입력 방식", [INPUT_TEXT, INPUT_FORM], key="input_style", horizontal=True)
+        if input_style == INPUT_TEXT:
+            st.text_area(
+                "공정 설명",
+                key="quick_text",
+                height=130,
+                max_chars=service.NODE_TEXT_LIMIT,
+                placeholder=DIRECT_PLACEHOLDER,
+                label_visibility="collapsed",
+            )
+            run_text = state.quick_text
+            form_missing: list[str] = []
+        else:
+            _node_form()
+            values = {k: state[form.KEYS[k]] for k in form.EMPTY}
+            form_missing = form.missing_fields(values)
+            run_text = "" if form_missing else form.to_node_json(values)
+            if form_missing:
+                st.caption(f"{' · '.join(form_missing)}을(를) 고르면 생성할 수 있습니다.")
         # V-3 부스 PC 한 대 = 세션 하나 — 세션 상한은 빼고 일 상한(비용 상한)만 건다.
         session_runs = 0 if BOOTH else state.live_runs
         quota = service.quota_block_reason(session_runs)
-        blocked = live_reason is not None or quota is not None or not state.quick_text.strip()
+        blocked = live_reason is not None or quota is not None or not run_text.strip()
         # 지시문 X-1: 기본 실행 = 가이드워드 전체. HAZOP 은 원래 전 가이드워드를 도는 방법이다.
         with st.container(key="cta"):
             clicked_full = st.button(
@@ -326,11 +368,11 @@ with tool.container(border=True, key="tool"):
                     try:
                         if clicked_quick:
                             state.quick_result = service.run_quick(
-                                state.quick_text, guideword, mock_source, on_progress=on_progress
+                                run_text, guideword, mock_source, on_progress=on_progress
                             )
                         else:
                             state.quick_result = service.run_live(
-                                state.quick_text, mock_source, on_progress=on_progress
+                                run_text, mock_source, on_progress=on_progress
                             )
                     except Exception as exc:  # noqa: BLE001 — 사유를 보이고 앱은 계속 산다
                         state.live_runs -= 1  # 실패한 실행은 세션 횟수에서 빼지 않는다
