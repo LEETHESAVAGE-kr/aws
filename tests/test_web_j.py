@@ -150,15 +150,18 @@ def test_parse_json_input_makes_no_call() -> None:
 
 def test_parse_sends_sentence_with_schema_and_validates_reply() -> None:
     reply = {"node": "X1", "substance": "수소", "phase": "gas", "pressure": {"value": 90, "unit": "MPa"},
-             "T_degC": None, "equipment": ["압축기"], "safeguards": []}
+             "T_degC": None, "equipment": ["압축기"], "safeguards": [],
+             "design_pressure": {"value": 100, "unit": "MPa"}, "capacity": "200 kg"}
     client = _parse_client(reply)
     meta, parsed = service.parse_node_text(_SENTENCE, _MOCK_ENV, client)
     assert meta.P_kPag == 90000 and meta.T_degC is None and parsed["cost_usd"] == 0.0  # 환산은 코드가 한다
+    assert meta.design_P_kPag == 100000 and meta.capacity == "200 kg"  # 10/9 설계압력·용량 칸
     (call,) = client.calls
     assert _SENTENCE in str(call["messages"][0].content) and "{text}" not in str(call["messages"][0].content)
     schema = call["response_schema"]
     assert schema["properties"]["phase"]["enum"] == ["liquid", "gas", "liquid/gas", "unknown"]
     assert "P_kPag" not in schema["properties"] and "pressure" in schema["required"]
+    assert {"design_pressure", "capacity"} <= set(schema["required"]) and "design_P_kPag" not in schema["properties"]
     assert "node" in schema["required"] and "$comment" not in json.dumps(schema)
     # 모델이 enum 밖 값을 내면 core/llm 이 응답 스키마로 1회 재시도 후 content=None → 생성 전에 막힌다.
     # (그 뒤의 validate_node_meta 는 _parse_schema 와 산출물 스키마가 어긋날 때를 위한 2차 방어라 여기선 닿지 않는다.)
@@ -175,7 +178,7 @@ def test_parse_sends_sentence_with_schema_and_validates_reply() -> None:
 )
 def test_parse_converts_pressure_in_code(pressure: dict[str, Any] | None, kpag: float | None) -> None:
     reply = {"node": "X1", "substance": "프로판", "phase": "liquid", "pressure": pressure, "T_degC": 25,
-             "equipment": ["저장탱크"], "safeguards": []}
+             "equipment": ["저장탱크"], "safeguards": [], "design_pressure": None, "capacity": None}
     meta, _ = service.parse_node_text(_SENTENCE, _MOCK_ENV, _parse_client(reply))
     assert meta.P_kPag == kpag
 
