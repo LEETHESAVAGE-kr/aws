@@ -34,7 +34,8 @@ def gateway() -> Iterator[tuple[Gateway, str]]:
 def _clean_env(monkeypatch: pytest.MonkeyPatch) -> None:
     service._daily_runs.clear()
     for name in ("HAZOP_USE_MOCK", "ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_BASE_URL",
-                 "HAZOP_ENDPOINT_LABEL"):
+                 "HAZOP_ENDPOINT_LABEL", "HAZOP_PROVIDER", "KIRO_BASE_URL", "KIRO_API_KEY", "KIRO_API_KEY_FILE",
+                 "KIRO_AUTH"):
         monkeypatch.delenv(name, raising=False)
 
 
@@ -90,3 +91,40 @@ def test_gateway_secrets_are_synced_and_stripped() -> None:
     assert environ == {"ANTHROPIC_BASE_URL": "http://gw", "ANTHROPIC_AUTH_TOKEN": "t"}
     hint = service.key_hint({**environ})
     assert "ANTHROPIC_AUTH_TOKEN" in hint and "sk-ant-" not in hint  # 게이트웨이 키에 접두사 오경보 없음
+
+
+# ── Kiro API 전환(PRD 추론경계·Kiro K-1~K-4) ────────────────────────────────────
+@pytest.mark.parametrize(("auth", "header"), [("bearer", "bearer"), ("x-api-key", "x-api-key")])
+def test_kiro_switch_routes_to_kiro_and_drops_direct_key(
+    gateway: tuple[Gateway, str], monkeypatch: pytest.MonkeyPatch, auth: str, header: str
+) -> None:
+    """HAZOP_PROVIDER=kiro → Kiro 주소·키로만. 직결 키가 같이 있어도 그 키는 지운다(섞여 나가지 않게)."""
+    gw, url = gateway
+    import os
+
+    _live(monkeypatch, ANTHROPIC_API_KEY="direct-key", HAZOP_PROVIDER="kiro", KIRO_BASE_URL=url,
+          KIRO_API_KEY="kiro-key", KIRO_AUTH=auth)
+    assert service.apply_provider(os.environ) == "kiro"
+    assert os.environ["ANTHROPIC_BASE_URL"] == url
+    assert ("ANTHROPIC_API_KEY" in os.environ) == (auth != "bearer")
+    result = service.run_quick(_SENTENCE, "More", load_replays()["N1"], os.environ)
+    assert {e["auth"] for e in gw.log} == {header}
+    assert "Kiro API 경유" in service.provenance_line(result)
+
+
+def test_kiro_switch_without_url_blocks_live_instead_of_falling_back(monkeypatch: pytest.MonkeyPatch) -> None:
+    """설정이 모자라면 직결로 몰래 돌지 않고 실호출을 막는다(K-4)."""
+    import os
+
+    _live(monkeypatch, ANTHROPIC_API_KEY="direct-key", HAZOP_PROVIDER="kiro", KIRO_API_KEY="kiro-key")
+    assert service.apply_provider(os.environ) == "anthropic"
+    assert "KIRO_BASE_URL" in (service.live_block_reason(os.environ) or "")
+
+
+def test_kiro_key_file(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
+    import os
+
+    key_file = tmp_path / "kiro.txt"
+    key_file.write_text("\ufefffile-key\n", encoding="utf-8")  # BOM·줄바꿈이 섞여도
+    _live(monkeypatch, HAZOP_PROVIDER="kiro", KIRO_BASE_URL="http://127.0.0.1:1", KIRO_API_KEY_FILE=str(key_file))
+    assert service.apply_provider(os.environ) == "kiro" and os.environ["ANTHROPIC_API_KEY"] == "file-key"
