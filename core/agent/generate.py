@@ -27,6 +27,7 @@ from typing import Any, Final
 
 from pydantic import BaseModel, Field, model_validator
 
+from core import policy
 from core.criteria import GOLD_CRITERIA, Criteria, load_criteria
 from core.llm import (
     AbstractBedrockClient,
@@ -169,12 +170,15 @@ def render_param_examples(path: Path = _PARAM_EXAMPLES_PATH) -> str:
     return "\n".join(lines)
 
 
-def batch_schema(criteria: Criteria, with_evidence: bool = False) -> dict[str, Any]:
+def batch_schema(criteria: Criteria, with_evidence: bool = False, boundary: bool = False) -> dict[str, Any]:
     """판정 호출 스키마 — S·F 상한을 기준의 단계 수로 좁힌다(Y-2). 골드셋 기준이면 `DEVIATION_BATCH_SCHEMA` 와 같다."""
     schema = json.loads(json.dumps(DEVIATION_BATCH_SCHEMA))
     cell = schema["properties"]["cells"]["items"]["properties"]
     cell["S"]["maximum"] = criteria.s_max
     cell["F"]["maximum"] = criteria.f_max
+    if boundary:  # Z-3: 셀 보류 — 미상(U) 정보 없이는 정할 수 없는 셀. 원인·S·F 는 코드가 지운다
+        cell["insufficient"] = {"type": "boolean"}
+        cell["missing"] = {"type": "array", "maxItems": 3, "items": {"type": "string", "minLength": 1}}
     if with_evidence:  # Y-3: 발췌 id + 원문 구절만. 제목·위치는 코드가 코퍼스에서 채운다
         cell["evidence"] = {
             "type": "array", "maxItems": 3,
@@ -198,6 +202,8 @@ class GeneratorConfig:
     enumerate_examples: bool = False
     # Y-3: 파라미터당 공식 문서 발췌 검색 수. 0 이면 근거 인용 끔 — 판정 프롬프트·스키마가 Y-3 이전과 같다.
     evidence_k: int = 0
+    # Z-1~Z-3: 추론 경계. false 면 판정·열거 프롬프트와 스키마가 Z 이전과 바이트 동일.
+    inference_boundary: bool = False
 
 
 def load_generator_config() -> GeneratorConfig:
@@ -217,6 +223,7 @@ def load_generator_config() -> GeneratorConfig:
         parallel_calls=cfg.parallel_calls,
         enumerate_examples=cfg.enumerate_examples,
         evidence_k=cfg.evidence_k,
+        inference_boundary=cfg.inference_boundary,
     )
 
 
@@ -231,6 +238,13 @@ class NodeMeta(BaseModel):
     T_degC: float | None = None
     equipment: list[str] = Field(default_factory=list)
     safeguards: list[str] = Field(default_factory=list)
+    #: Z-1 "없음"과 "모름"의 구분. `safeguards` 가 비었을 때 true 면 사용자가 '안전장치 없음'을 명시(G),
+    #: false 면 입력에 없을 뿐(U). 입력 해석은 "없음"이 명시된 경우에만 true 로 둔다.
+    safeguards_known: bool = False
+
+
+#: 셀 상태(Z-3). 판정한 셀 = 해당(레코드) · 해당 없음(레코드 아님) · 정보 부족(보류 레코드).
+INSUFFICIENT: Final[str] = "insufficient"
 
 
 class DeviationRecord(BaseModel):
@@ -245,9 +259,10 @@ class DeviationRecord(BaseModel):
     causes: list[str] = Field(default_factory=list)
     consequences: list[str] = Field(default_factory=list)
     safeguards_before: list[str] = Field(default_factory=list)
-    S: int = Field(ge=1, le=5)
-    F: int = Field(ge=1, le=5)
-    risk_score: int = 0
+    #: 보류(`status="insufficient"`) 행만 None — 미상 정보 없이 S·F 를 정하지 않는다(Z-3).
+    S: int | None = Field(default=None, ge=1, le=5)
+    F: int | None = Field(default=None, ge=1, le=5)
+    risk_score: int | None = 0
     recommendations: list[str] = Field(default_factory=list)
     scenario: str = ""
     evidence: list[Any] = Field(default_factory=list)
@@ -256,10 +271,21 @@ class DeviationRecord(BaseModel):
     criteria_id: str | None = None
     #: Y-3 인용 검사에서 지운 인용(가짜·변형 구절). 비어 있지 않으면 검증기가 review 로 내린다.
     citation_flags: list[str] = Field(default_factory=list)
+    #: Z-3 "applicable" | "insufficient"(정보 부족 보류). 보류 행의 `missing` 은 없어서 보류한 정보(1~3개).
+    status: str = "applicable"
+    missing: list[str] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def _compute_risk_score(self) -> DeviationRecord:
-        """위험도는 언제나 코드가 계산한다(R-05) — 기준이 곱이면 S×F, 대조표면 표 값. 입력값은 덮어쓴다."""
+        """위험도는 언제나 코드가 계산한다(R-05) — 기준이 곱이면 S×F, 대조표면 표 값. 입력값은 덮어쓴다.
+
+        보류 행은 S·F 가 없으면 위험도도 없다(None). 보류가 아닌 행에 S·F 가 없으면 거부한다.
+        """
+        if self.S is None or self.F is None:
+            if self.status != INSUFFICIENT:
+                raise ValueError("S·F 는 보류(insufficient) 행에서만 비울 수 있다")
+            object.__setattr__(self, "risk_score", None)
+            return self
         object.__setattr__(self, "risk_score", load_criteria(self.criteria_id).risk(self.S, self.F))
         return self
 
@@ -277,6 +303,7 @@ class HazopGenerator:
         self._config = config or GeneratorConfig()
         self.criteria = load_criteria(criteria_id)  # Y-2: S·F 등급표·위험도 산정 기준
         self._retriever = retriever  # Y-3: evidence_k > 0 일 때만 쓴다(없으면 프로세스 공용 검색기)
+        self.inference_boundary = self._config.inference_boundary  # Z: 결과 메타에 남긴다
         # 한 번의 generate() 실행 결과를 관측하기 위한 상태 (R-06 수용 기준·비용 집계)
         self.review_guidewords: list[str] = []
         self.total_cost_usd: float = 0.0
@@ -389,6 +416,8 @@ class HazopGenerator:
         system, user_template = _split_prompt(_load_prompt("matrix_enumerate.md"))
         if self._config.enumerate_examples:
             system = system + "\n\n" + render_param_examples()
+        if self._config.inference_boundary:
+            system = policy.enumerate_rule(system)
         user = _fill(
             user_template,
             {
@@ -398,7 +427,7 @@ class HazopGenerator:
                 "P_kPag": _fmt_number(node_meta.P_kPag),
                 "T_degC": _fmt_number(node_meta.T_degC),
                 "equipment": ", ".join(node_meta.equipment) or "미상",
-                "safeguards": ", ".join(node_meta.safeguards) or "없음",
+                "safeguards": self._safeguards_text(node_meta),
             },
         )
         response = self._client.converse(
@@ -426,6 +455,9 @@ class HazopGenerator:
             return None, 0.0
         system_template, user_template = _split_prompt(_load_prompt("deviation_generate.md"))
         system = _fill(system_template, {"rating_scale": self.criteria.prompt_text()})
+        boundary = self._config.inference_boundary
+        if boundary:  # Z-1: 노드와 무관한 고정 문구라 시스템 끝에 둔다(캐시 유지)
+            system = system + "\n\n" + policy.judge_system_block()
         user = _fill(
             user_template,
             {
@@ -435,7 +467,7 @@ class HazopGenerator:
                 "phase": node_meta.phase or "미상",
                 "P_kPag": _fmt_number(node_meta.P_kPag),
                 "T_degC": _fmt_number(node_meta.T_degC),
-                "safeguards": ", ".join(node_meta.safeguards) or "없음",
+                "safeguards": self._safeguards_text(node_meta),
                 "guideword": guideword,
                 "guideword_definition": GUIDEWORD_DEFINITIONS.get(guideword, ""),
                 "n": str(len(parameters)),
@@ -444,6 +476,8 @@ class HazopGenerator:
                 ),
             },
         )
+        if boundary:  # Z-2: 이 노드에 걸린 유형의 경계표만
+            user += "\n\n" + policy.node_block(node_meta.node, node_meta.equipment)
         passages = self._passages_for(node_meta, parameters, guideword)
         if passages:
             block = _split_prompt(_load_prompt("evidence_block.md"))[0]
@@ -454,7 +488,7 @@ class HazopGenerator:
             response = self._client.converse(
                 system=system,
                 messages=[Message(role="user", content=user)],
-                response_schema=batch_schema(self.criteria, with_evidence=bool(passages)),
+                response_schema=batch_schema(self.criteria, with_evidence=bool(passages), boundary=boundary),
                 context={"node": node_meta.node},
             )
         except Exception:
@@ -475,6 +509,12 @@ class HazopGenerator:
         batch["guideword"] = guideword  # 모델이 다른 값을 넣어도 호출한 축을 정본으로 삼는다
         batch["_passages"] = {p.chunk_id: p for p in passages}  # 인용 검사의 허용 집합(이번 호출에 보낸 발췌)
         return batch, response.cost_usd
+
+    def _safeguards_text(self, node_meta: NodeMeta) -> str:
+        """'기존 안전장치' 칸. 추론 경계를 켜면 빈 칸을 '없음'이 아니라 '미상'으로 보낸다(Z-1)."""
+        if self._config.inference_boundary:
+            return policy.safeguards_text(node_meta.safeguards, node_meta.safeguards_known)
+        return ", ".join(node_meta.safeguards) or "없음"
 
     def _passages_for(
         self, node_meta: NodeMeta, parameters: list[dict[str, str]], guideword: str
@@ -536,8 +576,11 @@ def _build_records(
         guideword = str(batch.get("guideword", ""))
         allowed: dict[str, Passage] = batch.get("_passages") or {}
         for cell in batch.get("cells", []):
-            judged += 1
+            judged += 1  # 보류 셀도 판정한 셀이다 — 건너뛴 것이 아니라 판단의 결과(Z-3-5)
             if not cell.get("applicable", False):
+                continue
+            if cell.get(INSUFFICIENT) and cell.get("deviation"):
+                records.append(_held_record(node_meta, guideword, cell, len(records) + 1, criteria_id))
                 continue
             if not _cell_is_complete(cell):
                 logger.warning(
@@ -570,6 +613,32 @@ def _build_records(
                 )
             )
     return records, judged
+
+
+def _held_record(
+    node_meta: NodeMeta, guideword: str, cell: dict[str, Any], seq: int, criteria_id: str
+) -> DeviationRecord:
+    """정보 부족 보류 행(Z-3). 원인·S·F 는 모델이 적었어도 버린다 — 미상 정보에 달린 값이기 때문이다.
+
+    이탈 초안·결과·권고(예: "~ 유무 확인")와 없어서 보류한 정보만 남긴다. 인용은 보류 행에 붙이지 않는다.
+    """
+    missing = [str(m).strip() for m in cell.get("missing") or [] if str(m).strip()][:3]
+    return DeviationRecord(
+        id=f"{(node_meta.node or 'node').lower()}-{seq:03d}",
+        node=node_meta.node,
+        node_meta=node_meta,
+        guideword=guideword,
+        parameter=str(cell["parameter"]),
+        deviation=str(cell["deviation"]),
+        consequences=list(cell.get("consequences", [])),
+        safeguards_before=_normalize_safeguards(
+            node_meta, guideword, str(cell["parameter"]), cell.get("safeguards_before", [])
+        ),
+        recommendations=list(cell.get("recommendations", [])),
+        criteria_id=criteria_id,
+        status=INSUFFICIENT,
+        missing=missing or ["(모델이 적지 않음)"],
+    )
 
 
 def process_order(

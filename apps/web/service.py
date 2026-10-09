@@ -22,6 +22,7 @@ from typing import TYPE_CHECKING, Any, Final
 from core.agent import HazopGenerator, NodeMeta, VerifySummary, verify
 from core.agent.generate import (
     GUIDEWORD_DEFINITIONS,
+    INSUFFICIENT,
     PROCEDURAL_GUIDEWORDS,
     STANDARD_GUIDEWORDS,
     load_generator_config,
@@ -501,6 +502,7 @@ def _run_meta(
         "expected_cells": generator.expected_cells,
         "judged_cells": generator.judged_cells,
         "review_guidewords": list(generator.review_guidewords),
+        "inference_boundary": generator.inference_boundary,
         "recall": None,
         "raw_calls": calls,
         "truncated_calls": sum(
@@ -674,9 +676,53 @@ def evidence_rows(result: Result) -> list[dict[str, object]]:
 
 
 def confidence_counts(result: Result) -> str:
-    """신뢰도 단계 분포 한 줄(Y-G4 — 한 단계로 몰려도 그대로 적는다)."""
+    """신뢰도 단계 분포 한 줄(Y-G4 — 한 단계로 몰려도 그대로 적는다). ⚪ 정보 부족은 보류 행이 있을 때만(Z-3)."""
     counts = Counter(r.confidence for r in verified(result)[0])
-    return " · ".join(f"{BADGES[k]} {confidence_label(k)[0]} {counts.get(k, 0)}" for k in BADGES)
+    line = " · ".join(f"{BADGES[k]} {confidence_label(k)[0]} {counts.get(k, 0)}" for k in BADGES)
+    if counts.get(INSUFFICIENT):
+        line += f" · {HELD_BADGE} {confidence_label(INSUFFICIENT)[0]} {counts[INSUFFICIENT]}"
+    return line
+
+
+#: Z-3 보류 행 배지. 보류 행의 신뢰도 칸은 "⚪ 정보 부족 — 〈없는 정보〉 미상".
+HELD_BADGE: Final[str] = "⚪"
+#: Q-Z2 (a)(PRD 추천안 — 사용자 미결정): 안전장치를 모르면 F 는 매기되 '안전조치 미반영'을 알린다.
+SAFEGUARDS_UNKNOWN_NOTICE: Final[str] = (
+    "기존 안전장치가 입력에 없어 '없음'이 아니라 '모름'으로 다뤘습니다 — F(빈도)는 현재 안전조치를 반영하지 못한 값입니다."
+)
+
+
+def held_label(record: DeviationRecord) -> str:
+    return f"{HELD_BADGE} {confidence_label(INSUFFICIENT)[0]} — {' · '.join(record.missing)} 미상"
+
+
+def held_rows(result: Result) -> list[dict[str, object]]:
+    """정보 부족으로 보류한 셀(Z-3) — 워크시트 No·가이드워드·이탈 초안·필요한 정보. Excel '확인 필요' 시트와 같은 내용."""
+    return [
+        {"No": no, "가이드워드": f"{r.guideword} ({r.parameter})", "이탈 초안": r.deviation, "필요한 정보": " · ".join(r.missing)}
+        for no, r in enumerate(verified(result)[0], start=1)
+        if r.status == INSUFFICIENT
+    ]
+
+
+def safeguards_notice(result: Result) -> str | None:
+    """추론 경계를 켠 실행에서 안전장치가 '모름'이었으면 F 가 안전조치 미반영이라는 알림(Q-Z2 a)."""
+    m = result.meta
+    node_meta = m.get("node_meta") or {}
+    if not m.get("inference_boundary") or node_meta.get("safeguards") or node_meta.get("safeguards_known"):
+        return None
+    return SAFEGUARDS_UNKNOWN_NOTICE
+
+
+def cell_breakdown(result: Result) -> str | None:
+    """판정 셀 내역(Z-6 예시) — 추론 경계를 켠 실행만. "판정 84셀 = 해당 41 · 해당 없음 30 · 정보 부족 13(보류)"."""
+    m = result.meta
+    if not m.get("inference_boundary") or m.get("judged_cells") is None:
+        return None
+    held = sum(r.status == INSUFFICIENT for r in result.records)
+    shown = len(result.records)
+    return (f"판정 {m['judged_cells']}셀 = 해당 {shown - held} · 해당 없음 {m['judged_cells'] - shown} · "
+            f"정보 부족 {held}(보류)")
 
 
 def worksheet_table(result: Result) -> list[dict[str, object]]:
@@ -691,7 +737,9 @@ def worksheet_table(result: Result) -> list[dict[str, object]]:
         values[HEADERS.index("위험도")] = row.risk_score  # 파일은 수식, 화면은 값
         label, _ = confidence_label(row.confidence)
         entry: dict[str, object] = dict(zip(HEADERS, values, strict=True))
-        entry[CONFIDENCE_COLUMN] = f"{BADGES.get(row.confidence, '⚪')} {label}"
+        entry[CONFIDENCE_COLUMN] = (
+            held_label(record) if row.confidence == INSUFFICIENT else f"{BADGES.get(row.confidence, '⚪')} {label}"
+        )
         entry[FLAG_COLUMN] = "; ".join(flags.get(record.id, []))
         entry[EVIDENCE_COLUMN] = evidence_label(record.evidence)
         table.append(entry)
@@ -720,11 +768,11 @@ def criteria_notice(result: Result) -> str | None:
 
 def f_distribution(result: Result) -> str:
     """가장 많은 F 값과 그 비율(실무자평가 P-2 공개). 동률이면 작은 F. 레코드가 없으면 해당 없음."""
-    counts = Counter(r.F for r in result.records)
+    counts = Counter(r.F for r in result.records if r.F is not None)  # 보류 행(Z-3)은 F 가 없다
     if not counts:
         return "F 분포 해당 없음"
     value, count = max(counts.items(), key=lambda kv: (kv[1], -kv[0]))
-    return f"F={value} 비율 {count / len(result.records):.0%}"
+    return f"F={value} 비율 {count / sum(counts.values()):.0%}"
 
 
 def holdout_recall(replays: Mapping[str, Result]) -> tuple[int, int] | None:
@@ -791,6 +839,9 @@ def summary_line(result: Result) -> str:
         parts.insert(0, f"{m['process']} 공정 전체 {len(m['nodes'])}노드 ({m['node']})")
     if m.get("expected_cells") is not None:
         parts.append(f"판정 셀 {m.get('judged_cells')}/{m['expected_cells']}")
+    breakdown = cell_breakdown(result)
+    if breakdown:
+        parts.append(breakdown)
     review = m.get("review_guidewords") or []
     parts.append(f"review 가이드워드 {', '.join(review) if review else '없음'}")
     if result.is_gold:
@@ -924,7 +975,7 @@ def failed_guidewords_line(result: Result) -> str | None:
 def partial_rows(records: list[DeviationRecord]) -> list[dict[str, object]]:
     """생성 중 부분 표(X-1c) — 가볍게 6열. 레코드는 생성기가 공정 순서(Y-1)로 준다."""
     return [
-        {"가이드워드": r.guideword, "파라미터": r.parameter, "이탈": r.deviation, "S": r.S, "F": r.F, "위험도": r.S * r.F}
+        {"가이드워드": r.guideword, "파라미터": r.parameter, "이탈": r.deviation, "S": r.S, "F": r.F, "위험도": r.risk_score}
         for r in records
     ]
 
@@ -1126,6 +1177,11 @@ _LIST_COLUMNS: Final[tuple[str, ...]] = ("원인", "결과", "기존 안전장�
 _HIDE_IF_UNIFORM: Final[tuple[str, ...]] = ("노드", "시나리오 연계", FLAG_COLUMN, EVIDENCE_COLUMN)
 
 
+def _blank(value: object) -> bool:
+    """data_editor 의 빈 숫자 칸 — None 또는 NaN."""
+    return value is None or (isinstance(value, float) and value != value)
+
+
 def _split_list(value: object) -> list[str]:
     return [part.strip() for part in str(value or "").split("·") if part.strip()]
 
@@ -1199,11 +1255,17 @@ def apply_review(
                 continue
             value = edit[column]
             if field in ("S", "F"):
-                if value == shown[column]:
+                if value == shown[column] or (_blank(value) and _blank(shown[column])):
                     continue
             elif _split_list(value) == _split_list(shown[column]):
                 continue  # 화면은 ' · ' 로 띄워 보여 준다 — 띄어쓰기만 다르면 같은 값
             if field in ("S", "F"):
+                if _blank(value):  # 보류 행(Z-3)만 빈칸을 허용 — 판정한 행의 등급은 지울 수 없다
+                    if record.get("status") != INSUFFICIENT:
+                        raise ValueError(f"{column} 는 비울 수 없습니다(정보 부족 보류 행만 빈칸)")
+                    record[field] = None
+                    changed.append(column)
+                    continue
                 grade = int(value)
                 if grade != value or not 1 <= grade <= limits[field]:
                     raise ValueError(f"{column} 는 1~{limits[field]} 정수여야 합니다({criteria.short}): {value!r}")

@@ -28,6 +28,8 @@ RISK_BANDS: Final[tuple[tuple[int, int, str], ...]] = (
     (1, 7, "낮음"),
 )
 CONFIDENCE_KEYS: Final[tuple[str, ...]] = ("grounded", "single_source", "inferred", "review", "unassigned")
+#: Z-3 보류 행의 confidence. 보류가 있는 산출물에서만 분포에 키가 생긴다(없는 실행의 리포트는 예전과 같다).
+INSUFFICIENT_KEY: Final[str] = "insufficient"
 PENDING_REASONS: Final[dict[str, str]] = {
     "evidence_attachment_rate": "근거 인용 0건 — evidence[] 가 전부 비어 있음(근거 인용을 끈 실행·골드셋 포함)",
     "matrix_coverage": "FR-03 HazopGenerator 관측값(expected_cells, judged_cells) 필요 — 골드셋에는 없음",
@@ -64,6 +66,8 @@ class ConfidenceReport(BaseModel):
     sf_matrix: dict[str, dict[str, int]]
     criteria_id: str | None = None
     criteria_name: str | None = None
+    #: Z-3 정보 부족 보류 행 수. 보류가 없으면 null(보류 기능을 켜지 않은 실행·골드셋과 구분하지 않는다 — 0 처럼 읽히지 않게).
+    insufficient_count: int | None = None
     pending: dict[str, str] = Field(default_factory=dict)
 
 
@@ -74,9 +78,11 @@ def build_report(
     coverage: tuple[int, int] | None = None,
 ) -> ConfidenceReport:
     """`coverage=(expected_cells, judged_cells)` 는 FR-03 생성기의 관측값. 없으면 `null`."""
-    dist = dict.fromkeys(CONFIDENCE_KEYS, 0)
+    held = [r for r in rows if r.held]
+    keys = (*CONFIDENCE_KEYS[:4], INSUFFICIENT_KEY, CONFIDENCE_KEYS[4]) if held else CONFIDENCE_KEYS
+    dist = dict.fromkeys(keys, 0)
     for r in rows:
-        key = r.confidence if r.confidence in CONFIDENCE_KEYS else None
+        key = r.confidence if r.confidence in keys else None
         dist[key or "unassigned"] += 1
 
     attached = sum(1 for r in rows if r.evidence)
@@ -97,7 +103,9 @@ def build_report(
         str(s): {str(f): 0 for f in range(1, criteria.f_max + 1)} for s in range(1, criteria.s_max + 1)
     }
     for r in rows:
-        risk_dist[criteria.band(r.risk_score)] += 1
+        if r.held:  # 위험도 없는 보류 행은 구간·S×F 분포에 넣지 않는다(insufficient_count 로 따로)
+            continue
+        risk_dist[criteria.band(r.risk_score or 0)] += 1
         sf[str(r.S)][str(r.F)] += 1
 
     pending = {
@@ -118,6 +126,7 @@ def build_report(
         sf_matrix=sf,
         criteria_id=criteria.id,
         criteria_name=criteria.name,
+        insufficient_count=len(held) or None,
         pending=pending,
     )
 

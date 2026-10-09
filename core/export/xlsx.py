@@ -48,6 +48,10 @@ EVIDENCE_EMPTY_NOTE: Final[str] = (
     "근거 인용 없음 — 이 결과는 공식 문서 발췌를 인용하지 않았다(근거 인용을 끈 실행·골드셋·인용 0건)."
 )
 CONFIDENCE_HEADERS: Final[tuple[str, ...]] = ("No", "confidence", "사유")
+#: Z-3 정보 부족 보류 행이 있을 때만 붙는 시트 — 무엇이 없어서 판단하지 않았는지.
+HELD_SHEET: Final[str] = "확인 필요"
+HELD_HEADERS: Final[tuple[str, ...]] = ("No", "가이드워드", "이탈 초안", "필요한 정보")
+HELD_LEGEND: Final[str] = "S·F·위험도 빈칸 = 정보 부족으로 판정 보류(입력·근거에 없는 사업장 정보가 필요 — '확인 필요' 시트)."
 #: R-10 검토 기록 — 검토가 있을 때만 6번째 시트로 붙는다(AC-10-1). "원 No" 는 검토 전 화면 번호.
 REVIEW_SHEET: Final[str] = "검토 기록"
 REVIEW_HEADERS: Final[tuple[str, ...]] = ("원 No", "검토", "가이드워드", "이탈", "수정한 열")
@@ -58,6 +62,7 @@ CONFIDENCE_REASONS: Final[dict[str | None, tuple[str, str]]] = {
     "single_source": ("근거 1건", "공식 문서 1건 인용 · 인용 원문 대조 통과 · 검증 플래그 0 (Y-4)"),
     "inferred": ("추론", "인용 없음 — 모델 추론 · 검증 플래그 0"),
     "review": ("검토 필요", "검증 플래그(근거 없는 규격·수치, 원문과 다른 인용) 또는 스키마 2회 실패 — 사람 검토 필요"),
+    "insufficient": ("정보 부족", "입력·근거에 없는 사업장 정보(미상)가 있어야 판단할 수 있어 S·F 를 매기지 않고 보류 (Z-3)"),
     None: (CONFIDENCE_UNASSIGNED, "입력에 confidence 필드 없음(골드셋 등 사람 작성 레코드)"),
 }
 
@@ -110,7 +115,8 @@ def _write_worksheet(ws: Worksheet, rows: Sequence[WorksheetRow], criteria: Crit
     r = 1
     for r, row in enumerate(rows, start=2):
         values = row.cells()
-        values[9] = criteria.excel_formula(r)  # J 열 — 값 대신 수식(곱 =H*I, 대조표 =INDEX(...))
+        # J 열 — 값 대신 수식(곱 =H*I, 대조표 =INDEX(...)). 보류 행(S·F 빈칸)은 비운다(Z-3)
+        values[9] = None if row.held else criteria.excel_formula(r)
         for col, value in enumerate(values, start=1):
             cell = ws.cell(row=r, column=col, value=value)
             cell.alignment = _BODY_ALIGN
@@ -120,6 +126,8 @@ def _write_worksheet(ws: Worksheet, rows: Sequence[WorksheetRow], criteria: Crit
     legend = LEGEND_TEXT if criteria.method == "product" else LEGEND_TEXT.replace(
         "위험도=수식(S×F)", f"위험도=수식(대조표, {criteria.short})"
     )
+    if any(row.held for row in rows):
+        legend += " " + HELD_LEGEND
     ws.cell(row=last + 2, column=1, value=legend)
     return last
 
@@ -235,6 +243,14 @@ def export_xlsx(
     _write_screening(wb.create_sheet(SHEET_ORDER[2]), last_row, criteria.s_max, criteria.f_max)
     _write_evidence(wb.create_sheet(SHEET_ORDER[3]), rows)
     _write_confidence(wb.create_sheet(SHEET_ORDER[4]), rows)
+    held = [row for row in rows if row.held]
+    if held:
+        ws_held = wb.create_sheet(HELD_SHEET)
+        _write_header(ws_held, HELD_HEADERS)
+        for col, width in zip("ABCD", (6, 18, 40, 50), strict=True):
+            ws_held.column_dimensions[col].width = width
+        for row in held:
+            ws_held.append([row.no, row.guideword_label, row.deviation, " · ".join(row.missing)])
     if review_log:
         ws_review = wb.create_sheet(REVIEW_SHEET)
         _write_header(ws_review, REVIEW_HEADERS)
@@ -252,6 +268,8 @@ __all__ = [
     "CONFIDENCE_UNASSIGNED",
     "EVIDENCE_EMPTY_NOTE",
     "EVIDENCE_HEADERS",
+    "HELD_HEADERS",
+    "HELD_SHEET",
     "CONFIDENCE_HEADERS",
     "FREEZE_PANES",
     "LEGEND_TEXT",
