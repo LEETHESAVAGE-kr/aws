@@ -340,8 +340,8 @@ with tool.container(border=True, key="tool"):
         quota = service.quota_block_reason(session_runs)
         blocked = live_reason is not None or quota is not None or not run_text.strip()
         # §8 C: 한 번 생성(지금 방식)과 3번 생성해 공통 답 중 고른다 — 사용자 요청(10/9)으로 둘 다 남긴다.
-        mode = st.radio(service.GENERATION_MODE_LABEL, list(service.GENERATION_MODES), key="gen_mode", horizontal=True)
-        runs = service.GENERATION_MODES[mode]
+        gen_mode = st.radio(service.GENERATION_MODE_LABEL, list(service.GENERATION_MODES), key="gen_mode", horizontal=True)
+        runs = service.GENERATION_MODES[gen_mode]
         # 지시문 X-1: 기본 실행 = 가이드워드 전체. HAZOP 은 원래 전 가이드워드를 도는 방법이다.
         with st.container(key="cta"):
             clicked_full = st.button(
