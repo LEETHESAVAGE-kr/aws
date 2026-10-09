@@ -242,7 +242,7 @@ intro.html(
       <div class="hz-step"><b>1</b><div><strong>공정을 문장으로 설명</strong>
         <span>예시 버튼 하나로 바로 시작</span></div></div>
       <div class="hz-step"><b>2</b><div><strong>AI 가 가이드워드 전 셀 판정</strong>
-        <span>파라미터를 스스로 세우고 이탈·원인·결과·S·F 위험도·권고까지</span></div></div>
+        <span>파라미터를 스스로 세우고 이탈·원인·결과·심각도·빈도·위험도·권고까지</span></div></div>
       <div class="hz-step"><b>3</b><div><strong>검토하고 내려받기</strong>
         <span>PSM 양식 Excel · LOPA 초안 Word · 신뢰도 리포트</span></div></div>
     </div>
@@ -536,14 +536,17 @@ else:
             if c in order
         }
         column_config["No"] = st.column_config.Column(width=44, pinned=True)
+        crit = service.result_criteria(result)
+        # 머리글은 우리말(10/9 사용자 요청 — 'S·F' 대신 '심각도·빈도'). 열 키는 Excel 표준 12열 그대로.
+        column_config["S(1-5)"] = st.column_config.NumberColumn(f"심각도(1-{crit.s_max})", width=76)
+        column_config["F(1-5)"] = st.column_config.NumberColumn(f"빈도(1-{crit.f_max})", width=70)
         column_config[service.REVIEW_COLUMN] = st.column_config.Column(width=72, pinned=True)
         if view_choice == service.VIEWS[0] and editable:
             st.caption(
-                "검토: 행마다 채택·기각을 고르고 원인·결과·권고·S·F 를 고칠 수 있습니다(목록은 · 로 구분). "
+                "검토: 행마다 채택·기각을 고르고 원인·결과·권고·심각도·빈도를 고칠 수 있습니다(목록은 · 로 구분). "
                 "위 다운로드 3종에 바로 반영됩니다 — 기각 행은 빠지고, Excel 에 '검토 기록' 시트가 붙습니다. "
-                "화면은 위험도·S·F 를 이탈 옆에 두었고, Excel 은 표준 12열 순서입니다."
+                "화면은 위험도·심각도·빈도를 이탈 옆에 두었고, Excel 은 표준 12열 순서입니다."
             )
-            crit = service.result_criteria(result)
             st.data_editor(
                 service.with_edits(table, review_base.get(review_key, {})),
                 key=review_key,
@@ -557,12 +560,12 @@ else:
                     service.REVIEW_COLUMN: st.column_config.SelectboxColumn(
                         options=list(service.REVIEW_CHOICES), required=True, width="small", pinned=True
                     ),
-                    # Y-2: 단계 수는 결과의 평가기준대로(C-C-37 은 S 1~4 · F 1~3). 열 키는 그대로, 머리글만 바꾼다.
+                    # Y-2: 단계 수는 결과의 평가기준대로(C-C-37 은 심각도 1~4 · 빈도 1~3). 열 키는 그대로, 머리글만 바꾼다.
                     "S(1-5)": st.column_config.NumberColumn(
-                        f"S(1-{crit.s_max})", min_value=1, max_value=crit.s_max, step=1, required=True
+                        f"심각도(1-{crit.s_max})", min_value=1, max_value=crit.s_max, step=1, width=76
                     ),
                     "F(1-5)": st.column_config.NumberColumn(
-                        f"F(1-{crit.f_max})", min_value=1, max_value=crit.f_max, step=1, required=True
+                        f"빈도(1-{crit.f_max})", min_value=1, max_value=crit.f_max, step=1, width=70
                     ),
                 },
             )
@@ -594,9 +597,9 @@ else:
                 st.dataframe(cited, hide_index=True, row_height=60)
         held = service.held_rows(shown)
         if held:
-            with st.expander(f"확인 필요 — 정보 부족으로 보류한 {len(held)}셀 (S·F·위험도를 매기지 않음)", expanded=False):
+            with st.expander(f"확인 필요 — 정보 부족으로 보류한 {len(held)}셀 (심각도·빈도·위험도를 매기지 않음)", expanded=False):
                 st.caption("입력에도 공식 문서에도 없는 사업장 정보가 있어야 판단할 수 있는 셀입니다. "
-                           "정보를 확인해 S·F 를 채우거나 기각하세요. Excel '확인 필요' 시트와 같은 내용입니다.")
+                           "정보를 확인해 심각도·빈도를 채우거나 기각하세요. Excel '확인 필요' 시트와 같은 내용입니다.")
                 st.dataframe(held, hide_index=True)
         if review_log:
             counts = {v: sum(e[1] == v for e in review_log) for v in ("채택", "수정", "기각")}
@@ -625,7 +628,7 @@ else:
                 f"1. **파라미터 {len(view['parameters'])}개**: {' · '.join(view['parameters'])}\n"
                 f"2. **가이드워드 {len(view['guidewords'])}종**({' · '.join(view['guidewords'])})을 교차 적용해 "
                 f"매트릭스 셀 **{cells}** 을 빠짐없이 판정\n"
-                "3. 셀마다 원인·결과·기존 안전장치·S·F 위험도·권고 초안, 근거 없는 규격 번호·수치는 🔴 표시"
+                "3. 셀마다 원인·결과·기존 안전장치·심각도·빈도·위험도·권고 초안, 근거 없는 규격 번호·수치는 🔴 표시"
             )
 
 # ── HAZOP 이 처음이라면 ──────────────────────────────────────────────────────
@@ -660,7 +663,7 @@ INTRO_CARDS: tuple[tuple[str, str, tuple[tuple[str, str], ...]], ...] = (
         "이 앱의 역할",
         "초안은 AI, 판단은 사람",
         (
-            ("AI", "전 셀 판정 · 원인·결과·S·F·권고 초안"),
+            ("AI", "전 셀 판정 · 원인·결과·심각도·빈도·권고 초안"),
             ("사람", "검토 · 수정 · 최종 승인"),
             ("효과", "회의를 없애지 않고 시작점을 올림"),
         ),
@@ -674,7 +677,7 @@ for column, (title, headline, rows) in zip(st.columns(3), INTRO_CARDS, strict=Tr
     )
 st.html('<div style="height:14px"></div>')
 example_tab, gw_tab, risk_tab, read_tab, compare_tab = st.tabs(
-    ["① 한 줄이 만들어지는 과정", "② 가이드워드 7종", "③ 위험도 (S·F)", "④ 결과 화면 읽는 법", "⑤ 회의와 비교"]
+    ["① 한 줄이 만들어지는 과정", "② 가이드워드 7종", "③ 위험도 (심각도·빈도)", "④ 결과 화면 읽는 법", "⑤ 회의와 비교"]
 )
 with example_tab:
     st.caption("워크시트 한 줄은 아래 순서로 채워집니다. 값은 이해를 돕는 설명용 예시입니다(실제 생성 결과 아님).")
@@ -697,7 +700,7 @@ with gw_tab:
     st.caption("절차(기동·정지·운전 순서)가 있는 노드에는 Too early · Too late · Wrong action 3종이 더 붙습니다.")
 with risk_tab:
     st.caption(
-        "S(심각도)와 F(빈도)를 등급으로 매기고, 둘을 조합한 값이 위험도입니다. 위험도가 높은 줄부터 대책을 세웁니다. "
+        "심각도와 빈도를 등급으로 매기고, 둘을 조합한 값이 위험도입니다. 위험도가 높은 줄부터 대책을 세웁니다. "
         "기준은 결과마다 하나입니다 — 직접 입력은 KOSHA C-C-37(공식 HAZOP 기술지원규정), NH3 골드셋 노드는 골드셋 평가기준. "
         "기준마다 단계 수와 계산법이 달라 섞거나 평균내지 않습니다."
     )

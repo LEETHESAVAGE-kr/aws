@@ -358,7 +358,7 @@ def test_criteria_notice_only_for_non_gold_processes() -> None:
 
 @pytest.mark.parametrize(
     ("node", "expected"),
-    [("N1", "F=3 비율 93%"), ("N4", "F=3 비율 95%"), ("P1", "F=3 비율 85%"), ("P2", "F=3 비율 64%")],
+    [("N1", "빈도=3 비율 93%"), ("N4", "빈도=3 비율 95%"), ("P1", "빈도=3 비율 85%"), ("P2", "빈도=3 비율 64%")],
 )
 def test_f_distribution_from_replays(node: str, expected: str) -> None:
     """재생 파일의 F 분포가 그대로 나온다 — 불리한 숫자도 그대로. N4 는 실무자평가 P-2 값(92/97),
@@ -371,8 +371,8 @@ def test_f_distribution_from_replays(node: str, expected: str) -> None:
 def test_f_distribution_tie_and_empty() -> None:
     base = load_replays()["N1"]
     two = [base.records[0].model_copy(update={"F": 4}), base.records[0].model_copy(update={"F": 2})]
-    assert service.f_distribution(service.Result(meta={}, records=two)) == "F=2 비율 50%"
-    assert service.f_distribution(service.Result(meta={}, records=[])) == "F 분포 해당 없음"
+    assert service.f_distribution(service.Result(meta={}, records=two)) == "빈도=2 비율 50%"
+    assert service.f_distribution(service.Result(meta={}, records=[])) == "빈도 분포 해당 없음"
 
 
 def test_app_criteria_badge_visibility(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -1030,8 +1030,8 @@ def test_guide_reuses_existing_definitions() -> None:
     assert [r["등급"] for r in guide.criteria_rating_rows(gold)] == [5, 4, 3, 2, 1]
     assert [b["판정"] for b in guide.criteria_band_rows(gold)] == ["높음", "중간(ALARP)", "낮음"]
     rows = guide.criteria_rating_rows(cc37)  # S 4단계·F 3단계 — 4등급의 F 칸은 비어 있다
-    assert [r["등급"] for r in rows] == [4, 3, 2, 1] and rows[0]["F 빈도 — 얼마나 자주 일어날 수 있나"] == ""
-    assert guide.criteria_matrix_rows(cc37)[0] == {"S＼F": "S4", "F1": 3, "F2": 5, "F3": 5}
+    assert [r["등급"] for r in rows] == [4, 3, 2, 1] and rows[0]["빈도 — 얼마나 자주 일어날 수 있나"] == ""
+    assert guide.criteria_matrix_rows(cc37)[0] == {"심각도＼빈도": "심각도 4", "빈도 1": 3, "빈도 2": 5, "빈도 3": 5}
 
 
 def test_worked_example_risk_matches_band() -> None:
@@ -1041,8 +1041,8 @@ def test_worked_example_risk_matches_band() -> None:
     from apps.web import guide
     from core.criteria import load_criteria
 
-    value = {s: v for s, _, v in guide.WORKED_EXAMPLE}["S · F → 위험도"]
-    s, f, risk, verdict = re.match(r"S (\d)\S* · F (\d)\S* → 위험도 (\d+) → (.+)", value).groups()  # type: ignore[union-attr]
+    value = {s: v for s, _, v in guide.WORKED_EXAMPLE}["심각도 · 빈도 → 위험도"]
+    s, f, risk, verdict = re.match(r"심각도 (\d)\S* · 빈도 (\d)\S* → 위험도 (\d+) → (.+)", value).groups()  # type: ignore[union-attr]
     cc37 = load_criteria("kosha_cc37_2026")
     assert cc37.risk(int(s), int(f)) == int(risk) and cc37.band(int(risk)) == verdict
 
@@ -1055,7 +1055,7 @@ def test_app_renders_intro_tabs(monkeypatch: pytest.MonkeyPatch) -> None:
     at = AppTest.from_file(str(_APP), default_timeout=30).run()
     assert not at.exception
     labels = [t.label for t in at.tabs]
-    assert {"① 한 줄이 만들어지는 과정", "② 가이드워드 7종", "③ 위험도 (S·F)", "④ 결과 화면 읽는 법", "⑤ 회의와 비교"} <= set(labels)
+    assert {"① 한 줄이 만들어지는 과정", "② 가이드워드 7종", "③ 위험도 (심각도·빈도)", "④ 결과 화면 읽는 법", "⑤ 회의와 비교"} <= set(labels)
     assert len(at.table) >= 3 and len(at.dataframe) == 0  # 안내 표는 st.table — 결과 표 시험과 섞이지 않는다
 
 

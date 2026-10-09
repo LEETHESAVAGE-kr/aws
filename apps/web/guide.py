@@ -23,8 +23,8 @@ WORKED_EXAMPLE: Final[tuple[tuple[str, str, str], ...]] = (
     ("원인", "왜 그렇게 되나", "압축기 토출 제어 고장 · 저장용기 출구 밸브 닫힘"),
     ("결과", "그러면 무슨 일이 생기나", "용기·배관 파열 → 수소 누출 · 화재·폭발"),
     ("기존 안전장치", "지금 이미 있는 대책은", "안전밸브 · 긴급차단밸브"),
-    ("S · F → 위험도", "얼마나 심각하고(S) 얼마나 자주(F) — 공식 대조표(KOSHA C-C-37)로 조합해 우선순위",
-     "S 4(치명적) · F 2(중) → 위험도 5 → 위험작업 불허"),
+    ("심각도 · 빈도 → 위험도", "얼마나 심각하고(심각도) 얼마나 자주(빈도) — 공식 대조표(KOSHA C-C-37)로 조합해 우선순위",
+     "심각도 4(치명적) · 빈도 2(중) → 위험도 5 → 위험작업 불허"),
     ("권고", "무엇을 더 해야 하나", "고압 연동 정지(인터록) 추가 · 안전밸브 정기 시험"),
 )
 
@@ -49,8 +49,8 @@ READING_GUIDE: Final[tuple[tuple[str, str], ...]] = (
     ("🔴 검토 필요", "형식 검증 실패, 근거 없는 규격 번호·수치, 또는 원문과 한 글자라도 다른 인용이 있어 사람이 꼭 봐야 하는 행. "
      "근거가 붙었다는 것은 '공식 문서가 같은 위험을 다룬다'는 뜻이지 내용이 맞다는 보증이 아니다"),
     ("⚪ 정보 부족", "입력에도 공식 문서에도 없는 사업장 정보(인터록 설정값, 입력에 없는 안전장치의 유무 등)가 있어야 판단할 수 있어 "
-     "S·F 를 매기지 않고 보류한 행. 무엇이 없는지 함께 적는다 — 모르는 것을 메우느니 덜 쓰는 편이 낫다는 원칙(추론 경계를 켠 실행에서만)"),
-    ("검토 열", "행마다 채택·기각을 고르고 원인·결과·권고·S·F 를 고친다. 다운로드 Excel 에 그대로 반영되고 '검토 기록' 시트가 붙는다"),
+     "심각도·빈도를 매기지 않고 보류한 행. 무엇이 없는지 함께 적는다 — 모르는 것을 메우느니 덜 쓰는 편이 낫다는 원칙(추론 경계를 켠 실행에서만)"),
+    ("검토 열", "행마다 채택·기각을 고르고 원인·결과·권고·심각도·빈도를 고친다. 다운로드 Excel 에 그대로 반영되고 '검토 기록' 시트가 붙는다"),
     ("보기 전환", "워크시트 순서(공정 순서 — 파라미터마다 No·More·Less… 가 붙어 나온다, Excel No 와 같다) · 가이드워드별(예: More 만 모아 보기) · 파라미터별(예: 압력만 모아 보기). "
      "보는 순서만 바뀌고 내용·다운로드는 같다"),
 )
@@ -60,7 +60,7 @@ PROCESS_TABLE: Final[str] = (
     "| 노드 정의 | 사람 (P&ID 도면을 보고 구간을 나눔) | 사람 — 문장 한 문단 또는 JSON |\n"
     "| 파라미터 도출 | 팀 브레인스토밍 | AI 1회 호출, 노드당 8–12개 |\n"
     "| 가이드워드 전 셀 판정 | 셀마다 토론, 지치면 건너뛰는 칸이 생김 | AI 가 가이드워드별로 동시에 판정, 셀 누락 0 |\n"
-    "| 원인·결과·안전장치·S·F·권고 | 서기가 회의 중 기록 | 초안 자동, 신뢰도 배지 + 규칙 검증기 |\n"
+    "| 원인·결과·안전장치·심각도·빈도·권고 | 서기가 회의 중 기록 | 초안 자동, 신뢰도 배지 + 규칙 검증기 |\n"
     "| 워크시트·LOPA 문서화 | 회의 후 수일 | 즉시 xlsx(5시트)·LOPA docx·신뢰도 JSON |\n"
     "| 검토·승인 | 회의 참석자 | **사람** — 이 앱은 이 단계를 대신하지 않는다 |"
 )
@@ -70,7 +70,7 @@ def criteria_caption(criteria: Criteria) -> str:
     """기준 한 줄 설명 — 단계 수·산정 방식·출처(Y-2). 단계 수는 원문 그대로라 기준마다 다르다."""
     how = "곱한 값" if criteria.method == "product" else "대조표에서 찾은 값(곱이 아님)"
     src = criteria.data.get("locator") or ""
-    return (f"S {criteria.s_max}단계 · F {criteria.f_max}단계 — 위험도는 S·F 를 {how}. "
+    return (f"심각도 {criteria.s_max}단계 · 빈도 {criteria.f_max}단계 — 위험도는 심각도·빈도를 {how}. "
             f"출처: {criteria.data.get('issuer')} {criteria.data.get('doc')} {src}".strip())
 
 
@@ -85,8 +85,8 @@ def criteria_rating_rows(criteria: Criteria) -> list[dict[str, object]]:
         return f"{item['label']} — {item['definition']}" if item.get("label") else str(item["definition"])
 
     return [
-        {"등급": g, "S 심각도 — 사고가 나면 얼마나 나쁜가": text(sev.get(g)),
-         "F 빈도 — 얼마나 자주 일어날 수 있나": text(freq.get(g))}
+        {"등급": g, "심각도 — 사고가 나면 얼마나 나쁜가": text(sev.get(g)),
+         "빈도 — 얼마나 자주 일어날 수 있나": text(freq.get(g))}
         for g in range(max(criteria.s_max, criteria.f_max), 0, -1)
     ]
 
@@ -94,7 +94,7 @@ def criteria_rating_rows(criteria: Criteria) -> list[dict[str, object]]:
 def criteria_matrix_rows(criteria: Criteria) -> list[dict[str, object]]:
     """위험도 대조표(행 S 높은 순, 열 F) — 곱 기준도 같은 모양으로 보여 준다."""
     return [
-        {"S＼F": f"S{s}", **{f"F{f}": criteria.risk(s, f) for f in range(1, criteria.f_max + 1)}}
+        {"심각도＼빈도": f"심각도 {s}", **{f"빈도 {f}": criteria.risk(s, f) for f in range(1, criteria.f_max + 1)}}
         for s in range(criteria.s_max, 0, -1)
     ]
 
