@@ -131,3 +131,17 @@ def test_live_replay_baseline_logged(path: Path, caplog: pytest.LogCaptureFixtur
             path.stem, summary.total, summary.flagged, summary.by_rule, summary.missing_cells,
         )
     assert len(out) == len(payload["records"])
+
+
+def test_numbers_written_in_input_not_flagged() -> None:
+    """10/9 배포 실호출: 입력 안전장치의 설정값(95·100 MPa)과 MPa 로 적은 운전압력(90 MPa → 90000 kPa)이 🔴 로 잡혔다."""
+    from core.agent.generate import NodeMeta
+
+    meta = NodeMeta(node="X1", substance="수소", phase="gas", P_kPag=90000.0,
+                    equipment=["고압 저장용기"], safeguards=["고압 경보(설정 95 MPa)", "안전밸브(설정 100 MPa)"])
+    rec = {"id": "x1-001", "node": "X1", "node_meta": meta.model_dump(), "guideword": "More", "parameter": "압력",
+           "deviation": "과압", "causes": ["90 MPa 초과 운전"], "consequences": ["파열"],
+           "safeguards_before": ["고압 경보(설정 95 MPa)", "안전밸브(설정 100 MPa)"], "S": 4, "F": 2,
+           "recommendations": ["120 MPa 설계 검토"], "criteria_id": "kosha_cc37_2026"}
+    _, summary = verify([rec])
+    assert [f.matched for f in summary.flags] == ["120 MPa"]  # 입력에 없던 수치만
