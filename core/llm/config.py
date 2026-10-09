@@ -86,6 +86,7 @@ def _parse(raw: dict[str, Any]) -> ModelConfig:
         parallel_calls=_read_parallel_calls(raw["generation"]),
         enumerate_examples=_read_flag(raw["generation"], "enumerate_examples"),
         evidence_k=_read_evidence_k(raw["generation"]),
+        inference_boundary=_read_flag(raw["generation"], "inference_boundary"),
         gateway={k: str(v) for k, v in (raw.get("gateway") or {}).items() if v is not None},
     )
 

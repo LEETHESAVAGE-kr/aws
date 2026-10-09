@@ -38,8 +38,8 @@ QUANT_ROWS: Final[tuple[str, ...]] = (
 
 
 def select_top(rows: Sequence[WorksheetRow], top_n: int = DEFAULT_TOP_N) -> list[WorksheetRow]:
-    """위험도 내림차순, 동률은 No 오름차순 (R-07)."""
-    return sorted(rows, key=lambda r: (-r.risk_score, r.no))[:top_n]
+    """위험도 내림차순, 동률은 No 오름차순 (R-07). 위험도가 없는 보류 행(Z-3)은 고르지 않는다."""
+    return sorted((r for r in rows if r.risk_score is not None), key=lambda r: (-(r.risk_score or 0), r.no))[:top_n]
 
 
 def _section(k: int, r: WorksheetRow) -> list[str]:
@@ -52,7 +52,7 @@ def _section(k: int, r: WorksheetRow) -> list[str]:
         f"| 노드 | {r.node_label} |",
         f"| 가이드워드 | {r.guideword_label} |",
         f"| S / F | {r.S} / {r.F} |",
-        f"| 위험도({criteria.method_text()}) | {r.risk_score} — {risk_band(r.risk_score, criteria)} |",
+        f"| 위험도({criteria.method_text()}) | {r.risk_score} — {risk_band(r.risk_score or 0, criteria)} |",
         f"| 시나리오 연계 | {r.scenario or '-'} |",
         "",
         "### 시나리오 서술",

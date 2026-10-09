@@ -29,7 +29,11 @@
           "P_kPag": { "type": ["number", "null"] },
           "T_degC": { "type": ["number", "null"] },
           "equipment": { "type": "array", "items": { "type": "string" } },
-          "safeguards": { "type": "array", "items": { "type": "string" } }
+          "safeguards": { "type": "array", "items": { "type": "string" } },
+          "safeguards_known": {
+            "$comment": "Z-1 '없음'과 '모름'의 구분. safeguards 가 비었을 때 true = 사용자가 안전장치 없음을 명시, false/없음 = 입력에 없을 뿐(미상). 선택 속성.",
+            "type": "boolean"
+          }
         },
         "additionalProperties": false
       },
@@ -39,9 +43,9 @@
       "causes": { "type": "array", "items": { "type": "string" } },
       "consequences": { "type": "array", "items": { "type": "string" } },
       "safeguards_before": { "type": "array", "items": { "type": "string" } },
-      "S": { "type": "integer", "minimum": 1, "maximum": 5 },
-      "F": { "type": "integer", "minimum": 1, "maximum": 5 },
-      "risk_score": { "type": "integer", "minimum": 1, "maximum": 25 },
+      "S": { "type": ["integer", "null"], "minimum": 1, "maximum": 5, "$comment": "null 은 status=insufficient(정보 부족 보류) 행에서만 — 코드(DeviationRecord)가 강제" },
+      "F": { "type": ["integer", "null"], "minimum": 1, "maximum": 5 },
+      "risk_score": { "type": ["integer", "null"], "minimum": 1, "maximum": 25 },
       "recommendations": { "type": "array", "items": { "type": "string" } },
       "scenario": { "type": "string" },
       "evidence": {
@@ -59,11 +63,17 @@
         }
       },
       "citation_flags": { "type": "array", "items": { "type": "string" }, "$comment": "Y-3 인용 검사에서 지운 인용" },
+      "status": {
+        "$comment": "Z-3 셀 상태. insufficient = 미상(U) 정보 없이는 원인·S·F 를 정할 수 없어 보류한 행 — S·F·risk_score 는 null, missing 에 없는 정보. 선택 속성(없으면 applicable).",
+        "type": "string",
+        "enum": ["applicable", "insufficient"]
+      },
+      "missing": { "type": "array", "maxItems": 3, "items": { "type": "string" }, "$comment": "Z-3 보류 사유 — 없어서 판단하지 못한 정보" },
       "criteria_id": { "type": ["string", "null"], "$comment": "Y-2 S·F 평가기준 id (data/kb/criteria). null/없음 = 골드셋 NH3 기준" },
       "confidence": {
-        "$comment": "Y-4 4단계: grounded(서로 다른 문서 2건 이상 인용)·single_source(1건)·inferred(인용 없음)·review(검증 플래그). 전부 코드 판정(core/agent/verify.py).",
+        "$comment": "Z-3: 보류 행(플래그 없음)은 insufficient. Y-4 4단계: grounded(서로 다른 문서 2건 이상 인용)·single_source(1건)·inferred(인용 없음)·review(검증 플래그). 전부 코드 판정(core/agent/verify.py).",
         "type": "string",
-        "enum": ["grounded", "single_source", "inferred", "review"]
+        "enum": ["grounded", "single_source", "inferred", "review", "insufficient"]
       }
     },
     "additionalProperties": false

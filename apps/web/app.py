@@ -446,6 +446,9 @@ else:
     notice = service.criteria_notice(result)
     if notice:
         st.markdown(f":orange-background[평가기준] {notice}")
+    unknown = service.safeguards_notice(result)
+    if unknown:
+        st.markdown(f":orange-background[안전조치 미반영] {unknown}")
     view = service.process_view(result)
     cells = service.cells_label(result)
     tiles = [
@@ -589,6 +592,12 @@ else:
         if cited:
             with st.expander(f"근거 발췌 원문 — {len(cited)}건 (법령·고시 원문 그대로, 인용 검사 통과분만)", expanded=False):
                 st.dataframe(cited, hide_index=True, row_height=60)
+        held = service.held_rows(shown)
+        if held:
+            with st.expander(f"확인 필요 — 정보 부족으로 보류한 {len(held)}셀 (S·F·위험도를 매기지 않음)", expanded=False):
+                st.caption("입력에도 공식 문서에도 없는 사업장 정보가 있어야 판단할 수 있는 셀입니다. "
+                           "정보를 확인해 S·F 를 채우거나 기각하세요. Excel '확인 필요' 시트와 같은 내용입니다.")
+                st.dataframe(held, hide_index=True)
         if review_log:
             counts = {v: sum(e[1] == v for e in review_log) for v in ("채택", "수정", "기각")}
             st.caption(" · ".join(f"{k} {n}건" for k, n in counts.items()) + " — 다운로드에 반영됨")
@@ -701,6 +710,8 @@ with risk_tab:
     for note in shown.data.get("notes") or []:
         st.caption("· " + note)
 with read_tab:
+    st.markdown("**AI 가 쓰는 정보의 4단계** — 생성 프롬프트에 들어가는 문구와 같습니다")
+    st.table(guide.information_level_rows(), hide_index=True, border="horizontal")
     read_tab.html(
         '<div class="hz-info">'
         + "".join(
