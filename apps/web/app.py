@@ -100,6 +100,13 @@ st.html(
         --muted: #9b9ba8; --accent: #9046ff; --accent-text: #b996ff; --accent-soft: rgba(144,70,255,.16); }
     header[data-testid="stHeader"], #MainMenu, footer { display: none !important; }
     .stApp { background: var(--bg); }
+    .hz-full { max-height: 760px; overflow: auto; border: 1px solid var(--line); border-radius: 12px; }
+    .hz-full table { border-collapse: collapse; font-size: 13px; line-height: 1.5; width: max-content; min-width: 100%; }
+    .hz-full th { position: sticky; top: 0; z-index: 1; background: var(--card2); color: var(--muted); font-weight: 600;
+        text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+    .hz-full td { vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--line); color: var(--text);
+        white-space: normal; word-break: keep-all; overflow-wrap: anywhere; }
+    .hz-full tr:hover td { background: rgba(255,255,255,.03); }
     .block-container { padding-top: 0 !important; max-width: 1240px; }
     [data-testid="stVerticalBlockBorderWrapper"] { background: var(--card); border-radius: 16px !important;
         border-color: var(--line) !important; }
@@ -183,6 +190,7 @@ state.setdefault("quick_result", None)
 state.setdefault("node", None)
 state.setdefault("quick_text", "")
 state.setdefault("input_style", INPUT_TEXT)
+state.setdefault("table_style", service.TABLE_STYLES[0])
 for _k, _v in form.EMPTY.items():
     state.setdefault(form.KEYS[_k], _v)
 state.setdefault("mode", MODE_NL)
@@ -200,12 +208,14 @@ def _node_form() -> None:
     right.selectbox("상태", list(form.PHASES), key=form.KEYS["phase"])
     st.multiselect("설비 — 흐름 순서대로 고르세요", form.EQUIPMENT, key=form.KEYS["equipment"],
                    placeholder="예: 압축기 → 저장용기 → 디스펜서", accept_new_options=True)
-    p, pu, t_, d, du, c = st.columns([3, 2, 3, 3, 2, 3])
+    # 10/9 화면 캡처: 한 줄 6칸이면 단위 칸이 좁아 'MPa' 가 'M' 으로 잘린다 → 두 줄, 단위 칸 넓게
+    p, pu, t_ = st.columns([3, 2, 3])
     p.number_input("운전압력", key=form.KEYS["pressure"], min_value=0.0, placeholder="모름")
-    pu.selectbox("단위", form.UNITS, key=form.KEYS["pressure_unit"])
+    pu.selectbox("압력 단위", form.UNITS, key=form.KEYS["pressure_unit"])
     t_.number_input("온도(℃)", key=form.KEYS["temperature"], placeholder="모름")
+    d, du, c = st.columns([3, 2, 3])
     d.number_input("설계압력", key=form.KEYS["design_pressure"], min_value=0.0, placeholder="모름")
-    du.selectbox("단위 ", form.UNITS, key=form.KEYS["design_unit"])
+    du.selectbox("설계압력 단위", form.UNITS, key=form.KEYS["design_unit"])
     c.text_input("용량", key=form.KEYS["capacity"], placeholder="예: 200 kg")
     no_safeguards = st.checkbox("안전장치 없음 (모르면 체크하지 말고 비워 두세요)", key=form.KEYS["no_safeguards"])
     st.multiselect("기존 안전장치 — 설정값은 직접 입력(예: 고압 경보(설정 95 MPa))", form.SAFEGUARDS,
@@ -566,6 +576,9 @@ else:
             horizontal=True,
             label_visibility="collapsed",
         )
+        table_style = st.radio("표 모양", service.TABLE_STYLES, key="table_style", horizontal=True,
+                               label_visibility="collapsed")
+        full_text = table_style == service.TABLE_STYLES[0]
         editable = not result.is_gold and shown is result
         table = service.readable_rows(service.worksheet_table(shown))
         if not result.is_gold:  # 검토 열 — 다른 보기에서는 편집 결과를 읽기 전용으로 보여 준다
@@ -583,7 +596,7 @@ else:
         column_config["S(1-5)"] = st.column_config.NumberColumn(f"심각도(1-{crit.s_max})", width=76)
         column_config["F(1-5)"] = st.column_config.NumberColumn(f"빈도(1-{crit.f_max})", width=70)
         column_config[service.REVIEW_COLUMN] = st.column_config.Column(width=72, pinned=True)
-        if view_choice == service.VIEWS[0] and editable:
+        if view_choice == service.VIEWS[0] and editable and not full_text:
             st.caption(
                 "검토: 행마다 채택·기각을 고르고 원인·결과·권고·심각도·빈도를 고칠 수 있습니다(목록은 · 로 구분). "
                 "위 다운로드 3종에 바로 반영됩니다 — 기각 행은 빠지고, Excel 에 '검토 기록' 시트가 붙습니다. "
@@ -612,7 +625,9 @@ else:
                 },
             )
         else:
-            if editable:
+            if editable and full_text:
+                st.caption("글 전체를 줄바꿈해 보여 줍니다. 채택·기각·심각도·빈도 수정은 '편집 표'에서 합니다.")
+            elif editable:
                 st.caption("검토 편집은 '워크시트 순서' 보기에서 합니다. 여기서는 검토 결과를 함께 보여 줍니다.")
             if not result.is_gold:  # 편집 표가 이번 실행에 안 그려진다 — 돌아오면 저장본을 데이터에 넣어 그린다
                 review_base[review_key] = edits
@@ -621,13 +636,19 @@ else:
                 rows = [table[i] for i in indices]
                 kwargs = {"hide_index": True, "column_order": order, "column_config": column_config,
                           "row_height": service.REVIEW_ROW_HEIGHT}
-                if not head:  # 워크시트 순서(골드·시연 사본) — 묶음 없이 표 하나
-                    st.dataframe(rows, **kwargs)
+                def draw(rows: list[dict[str, object]], kwargs: dict[str, Any] = kwargs) -> None:
+                    if full_text:
+                        st.html(service.full_table_html(rows, order, service.result_criteria(result)))
+                    else:
+                        st.dataframe(rows, **kwargs)
+
+                if not head:  # 워크시트 순서(골드·시연 사본·펼쳐 보기) — 묶음 없이 표 하나
+                    draw(rows)
                     continue
                 focus = state.focus_guideword
                 with st.expander(head, expanded=focus is None or name == focus):
                     if rows:
-                        st.dataframe(rows, **kwargs)
+                        draw(rows)
                     else:
                         st.caption("이 묶음은 결과 행이 없습니다.")
         if not result.is_gold:

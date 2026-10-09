@@ -5,7 +5,7 @@ from __future__ import annotations
 import io
 import json
 from datetime import date
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import openpyxl
 import pytest
@@ -122,7 +122,7 @@ def test_app_preset_click_shows_table(monkeypatch: pytest.MonkeyPatch) -> None:
     from streamlit.testing.v1 import AppTest
 
     monkeypatch.delenv("HAZOP_ALLOW_LIVE", raising=False)
-    at = AppTest.from_file(str(_APP), default_timeout=30).run()
+    at = _grid(AppTest.from_file(str(_APP), default_timeout=30)).run()
     assert not at.exception
     at.radio(key="mode").set_value("실측 사례 재생").run()
     assert len(at.dataframe) == 1
@@ -228,7 +228,7 @@ def test_app_switches_between_processes_and_nodes(monkeypatch: pytest.MonkeyPatc
 
     monkeypatch.delenv("HAZOP_ALLOW_LIVE", raising=False)
     replays = load_replays()
-    at = AppTest.from_file(str(_APP), default_timeout=30).run()
+    at = _grid(AppTest.from_file(str(_APP), default_timeout=30)).run()
     assert not at.exception
     assert len(at.table) == 6  # 안내 탭 5(정보 4단계 — Z-1 · 가이드워드·S·F·위험도 대조표·위험도 구간 — Y-2) + 평가 요약 1
     assert next(e for e in at.expander if e.label.startswith("정확도")).proto.expanded is False
@@ -272,3 +272,9 @@ def test_verifier_flag_reaches_table_and_xlsx() -> None:
     assert [i for i, v in enumerate(labels) if v == review_label] == [2]
     assert records[2].confidence == "inferred"  # 원본 레코드는 격하되지 않는다
     assert result.verified is not None  # 표·내보내기가 같은 캐시를 썼다
+
+
+def _grid(at: Any) -> Any:
+    """기존 화면 시험은 편집 격자(st.dataframe·data_editor)를 본다 — 기본 표 모양은 10/9 부터 펼쳐 보기(HTML)."""
+    at.session_state["table_style"] = service.TABLE_STYLES[1]
+    return at
