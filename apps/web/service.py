@@ -330,30 +330,41 @@ PRESSURE_TO_KPA: Final[dict[str, float]] = {"kPa": 1.0, "bar": 100.0, "MPa": 100
 
 
 def _parse_schema() -> dict[str, Any]:
-    """입력 해석 호출의 응답 스키마 — 산출물 스키마의 `node_meta` 에서 `P_kPag` 만 {value, unit} 으로 바꾼다."""
+    """입력 해석 호출의 응답 스키마 — 산출물 스키마의 `node_meta` 에서 압력 칸(`P_kPag`·`design_P_kPag`)만 {value, unit} 으로 바꾼다."""
     schema = node_meta_schema()
     properties = {
         name: {k: v for k, v in spec.items() if k != "$comment"}
         for name, spec in schema["properties"].items()
-        if name != "P_kPag"
+        if name not in _PRESSURE_FIELDS
     }
-    properties["pressure"] = {
-        "type": ["object", "null"],
-        "required": ["value", "unit"],
-        "properties": {"value": {"type": "number"}, "unit": {"type": "string", "enum": list(PRESSURE_TO_KPA)}},
-        "additionalProperties": False,
-    }
-    required = ["node", *("pressure" if f == "P_kPag" else f for f in schema["required"])]
+    for name in _PRESSURE_FIELDS.values():
+        properties[name] = {
+            "type": ["object", "null"],
+            "required": ["value", "unit"],
+            "properties": {"value": {"type": "number"}, "unit": {"type": "string", "enum": list(PRESSURE_TO_KPA)}},
+            "additionalProperties": False,
+        }
+    # 설계압력·용량은 산출물 스키마에선 선택이지만 해석에서는 매번 답하게 한다(없으면 null)
+    required = ["node", *(_PRESSURE_FIELDS.get(f, f) for f in schema["required"]), "design_pressure", "capacity"]
     return {"type": "object", "required": required, "properties": properties, "additionalProperties": False}
 
 
+#: 산출물 필드 → 해석 응답의 {value, unit} 필드.
+_PRESSURE_FIELDS: Final[dict[str, str]] = {"P_kPag": "pressure", "design_P_kPag": "design_pressure"}
+
+
 def _to_node_meta_payload(reply: dict[str, Any]) -> dict[str, Any]:
-    """해석 응답의 `pressure` {value, unit} → `P_kPag`(kPa 게이지)."""
+    """해석 응답의 `pressure`·`design_pressure` {value, unit} → `P_kPag`·`design_P_kPag`(kPa 게이지)."""
     payload = dict(reply)
-    pressure = payload.pop("pressure", None)
-    payload["P_kPag"] = (
-        None if pressure is None else round(pressure["value"] * PRESSURE_TO_KPA[pressure["unit"]], 3)
-    )
+    for field, name in _PRESSURE_FIELDS.items():
+        pressure = payload.pop(name, None)
+        if pressure is None and field != "P_kPag":
+            continue  # 선택 속성은 비어 있으면 넣지 않는다(옛 레코드와 같은 모양)
+        payload[field] = (
+            None if pressure is None else round(pressure["value"] * PRESSURE_TO_KPA[pressure["unit"]], 3)
+        )
+    if not payload.get("capacity"):
+        payload.pop("capacity", None)
     return payload
 
 
@@ -361,6 +372,7 @@ def _mock_parse_factory(**_: Any) -> ConverseResponse:
     """mock 모드의 입력 해석 — 네트워크 없이 스키마를 통과하는 고정 응답."""
     payload = {
         "node": "X1", "substance": "수소", "phase": "gas", "pressure": None, "T_degC": None,
+        "design_pressure": None, "capacity": None,
         "equipment": ["수소 저장용기", "디스펜서"], "safeguards": ["긴급차단밸브"],
     }
     return ConverseResponse(content=json.dumps(payload, ensure_ascii=False))

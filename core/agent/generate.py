@@ -236,6 +236,9 @@ class NodeMeta(BaseModel):
     phase: str
     P_kPag: float | None = None
     T_degC: float | None = None
+    #: 10/9 사용자 결정(가): 추론 경계가 '용량·설계압력 미상'으로 보류하던 정보를 받을 칸. 없으면 미상.
+    design_P_kPag: float | None = None  # noqa: N815 — P_kPag 와 같은 표기(골드셋 node_meta 관례)
+    capacity: str | None = None  # 적힌 그대로("200 kg", "50 m³") — 단위가 설비마다 달라 환산하지 않는다
     equipment: list[str] = Field(default_factory=list)
     safeguards: list[str] = Field(default_factory=list)
     #: Z-1 "없음"과 "모름"의 구분. `safeguards` 가 비었을 때 true 면 사용자가 '안전장치 없음'을 명시(G),
@@ -428,6 +431,8 @@ class HazopGenerator:
                 "phase": node_meta.phase,
                 "P_kPag": _fmt_number(node_meta.P_kPag),
                 "T_degC": _fmt_number(node_meta.T_degC),
+                "design_P_kPag": _fmt_number(node_meta.design_P_kPag),
+                "capacity": node_meta.capacity or "미상",
                 "equipment": ", ".join(node_meta.equipment) or "미상",
                 "safeguards": self._safeguards_text(node_meta),
             },
@@ -469,6 +474,8 @@ class HazopGenerator:
                 "phase": node_meta.phase or "미상",
                 "P_kPag": _fmt_number(node_meta.P_kPag),
                 "T_degC": _fmt_number(node_meta.T_degC),
+                "design_P_kPag": _fmt_number(node_meta.design_P_kPag),
+                "capacity": node_meta.capacity or "미상",
                 "safeguards": self._safeguards_text(node_meta),
                 "guideword": guideword,
                 "guideword_definition": GUIDEWORD_DEFINITIONS.get(guideword, ""),

@@ -28,6 +28,8 @@
           "phase": { "type": "string", "enum": ["liquid", "gas", "liquid/gas", "unknown"] },
           "P_kPag": { "type": ["number", "null"] },
           "T_degC": { "type": ["number", "null"] },
+          "design_P_kPag": { "type": ["number", "null"], "$comment": "설계압력(kPa 게이지). 선택 속성 — 10/9 추가" },
+          "capacity": { "type": ["string", "null"], "$comment": "용량, 적힌 그대로(예: 200 kg). 선택 속성 — 10/9 추가" },
           "equipment": { "type": "array", "items": { "type": "string" } },
           "safeguards": { "type": "array", "items": { "type": "string" } },
           "safeguards_known": {

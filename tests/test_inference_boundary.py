@@ -256,3 +256,11 @@ def test_config_flag_read_and_validated() -> None:
 
     with pytest.raises(ConfigValidationError):
         _parse(raw)
+
+
+def test_design_pressure_and_capacity_reach_prompts() -> None:
+    meta = _META.model_copy(update={"design_P_kPag": 1800.0, "capacity": "50 m³"})
+    _, client, _ = _run(True, meta=meta)
+    for call in client.calls[:2]:
+        user = call["messages"][0].content
+        assert "1800" in user and "50 m³" in user

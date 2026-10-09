@@ -106,10 +106,11 @@ def _allowed_numbers(node_meta: NodeMeta) -> set[str]:
     사용자가 적은 안전장치·설비 문자열 속 수치("고압 경보(설정 95 MPa)"). 10/9 배포 실호출에서 입력 그대로의
     설정값이 64행 중 34행을 🔴 로 만들었다 — 입력(G)은 근거 없는 수치가 아니다.
     """
-    allowed = {_num(str(v)) for v in (node_meta.P_kPag, node_meta.T_degC) if v is not None}
-    if node_meta.P_kPag is not None:
-        allowed |= {_num(str(node_meta.P_kPag / 1000)), _num(str(node_meta.P_kPag / 100))}
-    for text in (*node_meta.safeguards, *node_meta.equipment):
+    allowed = {_num(str(v)) for v in (node_meta.T_degC,) if v is not None}
+    for kpa in (node_meta.P_kPag, node_meta.design_P_kPag):
+        if kpa is not None:
+            allowed |= {_num(str(kpa)), _num(str(kpa / 1000)), _num(str(kpa / 100))}
+    for text in (*node_meta.safeguards, *node_meta.equipment, node_meta.capacity or ""):
         allowed |= {_num(m.group(1)) for m in NUMBER_PATTERN.finditer(text)}
     return allowed
 
