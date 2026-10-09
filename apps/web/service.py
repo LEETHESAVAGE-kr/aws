@@ -875,23 +875,7 @@ def summary_line(result: Result) -> str:
     parts.append(f"지연 {latency:.0f}초" if latency is not None else "지연 해당 없음")
     cost = m.get("cost_usd")
     parts.append(f"비용 ${cost:.3f}" if cost is not None else "비용 해당 없음")
-    recall = m.get("recall")
-    node, split = m.get("node", "N1"), m.get("split", "—")
-    if m.get("combined"):
-        recalls = [f"{label} recall {a / b:.3f} ({a}/{b})" for label, a, b in m.get("recall_parts") or []]
-        parts.append(" · ".join(recalls) if recalls else "정성 검토용 — 대조 기준 없음")
-    elif recall and split == "external":
-        parts.append(
-            f"{node} 외부 공개 HAZOP 대비 recall {recall['recall']:.3f} ({recall['matched']}/{recall['total']})"
-        )
-    elif recall:
-        parts.append(
-            f"{node}({split}) recall {recall['recall']:.3f} ({recall['matched']}/{recall['total']})"
-        )
-    elif split == "none":
-        parts.append(f"{node} 정성 검토용 — 대조 기준 없음")
-    else:
-        parts.append(f"{node}({split}) recall 해당 없음")
+    # 정확도(recall)는 화면에 싣지 않는다(10/9 사용자 결정) — 재생 메타·README §6 에만 남는다.
     return " · ".join(parts)
 
 
