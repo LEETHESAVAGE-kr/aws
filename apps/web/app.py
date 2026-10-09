@@ -339,6 +339,9 @@ with tool.container(border=True, key="tool"):
         session_runs = 0 if BOOTH else state.live_runs
         quota = service.quota_block_reason(session_runs)
         blocked = live_reason is not None or quota is not None or not run_text.strip()
+        # §8 C: 한 번 생성(지금 방식)과 3번 생성해 공통 답 중 고른다 — 사용자 요청(10/9)으로 둘 다 남긴다.
+        mode = st.radio(service.GENERATION_MODE_LABEL, list(service.GENERATION_MODES), key="gen_mode", horizontal=True)
+        runs = service.GENERATION_MODES[mode]
         # 지시문 X-1: 기본 실행 = 가이드워드 전체. HAZOP 은 원래 전 가이드워드를 도는 방법이다.
         with st.container(key="cta"):
             clicked_full = st.button(
@@ -364,7 +367,7 @@ with tool.container(border=True, key="tool"):
                 state.live_runs += 1
                 mock_source = replays.get("N1") or next(iter(replays.values()))
                 # 진행 표시는 버튼 바로 아래 — 결과 영역은 첫 화면 밖이라 거기 두면 "아무 일도 없다"로 보인다(9/29 23:05).
-                expected = "약 1분" if clicked_quick else "약 1.5~2분"
+                expected = "약 1분" if clicked_quick else ("약 4분 · 3번 생성" if runs > 1 else "약 1.5~2분")
                 with st.status(
                     f"HAZOP 초안 생성 중 · {expected} — 이 화면에서 기다려 주세요", expanded=True
                 ) as status:
@@ -391,7 +394,7 @@ with tool.container(border=True, key="tool"):
                             )
                         else:
                             state.quick_result = service.run_live(
-                                run_text, mock_source, on_progress=on_progress
+                                run_text, mock_source, on_progress=on_progress, consensus_runs=runs
                             )
                     except Exception as exc:  # noqa: BLE001 — 사유를 보이고 앱은 계속 산다
                         state.live_runs -= 1  # 실패한 실행은 세션 횟수에서 빼지 않는다
@@ -668,6 +671,16 @@ else:
         if cited:
             with st.expander(f"인용한 법령·MSDS 원문 — {len(cited)}건 (원문 그대로, 인용 검사 통과분만)", expanded=False):
                 st.dataframe(cited, hide_index=True, row_height=60)
+        repeat = service.repeat_counts(shown)
+        if repeat:
+            st.caption("반복 일치 — " + repeat + ". ●●● 는 3번 다 나온 판단, ●●○ 는 3번 중 2번. "
+                       "반복해서 나온다는 뜻이지 내용이 맞다는 보증은 아닙니다.")
+        reference = service.reference_rows(shown)
+        if reference:
+            with st.expander(f"참고 — 3번 중 한 번만 나온 문장 {len(reference)}개 (워크시트 칸에서 뺌)", expanded=False):
+                st.caption("드문 시나리오일 수도 있어 버리지 않았습니다. 필요하면 '편집 표'에서 해당 행에 옮겨 적으세요. "
+                           "Excel '반복 일치' 시트에 같은 내용이 있습니다.")
+                st.dataframe(reference, hide_index=True)
         held = service.held_rows(shown)
         if held:
             with st.expander(f"확인 필요 — 정보 부족으로 보류한 {len(held)}셀 (심각도·빈도·위험도를 매기지 않음)", expanded=False):

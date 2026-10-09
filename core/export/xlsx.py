@@ -14,7 +14,7 @@ from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 
 from .report import rows_criteria
-from .rows import HEADERS, WorksheetRow
+from .rows import HEADERS, WorksheetRow, consensus_detail, consensus_verdict
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -50,6 +50,9 @@ EVIDENCE_EMPTY_NOTE: Final[str] = (
 CONFIDENCE_HEADERS: Final[tuple[str, ...]] = ("No", "confidence", "사유")
 #: Z-3 정보 부족 보류 행이 있을 때만 붙는 시트 — 무엇이 없어서 판단하지 않았는지.
 HELD_SHEET: Final[str] = "확인 필요"
+#: §8 C 합의 생성 — 같은 입력으로 판정을 N번 돌린 결과의 문장별 일치. 합의 결과일 때만 붙는다.
+REPEAT_SHEET: Final[str] = "반복 일치"
+REPEAT_HEADERS: Final[tuple[str, ...]] = ("No", "가이드워드", "판정", "구분", "문장·값", "일치", "반영")
 HELD_HEADERS: Final[tuple[str, ...]] = ("No", "가이드워드", "이탈 초안", "필요한 정보")
 HELD_LEGEND: Final[str] = "S·F·위험도 빈칸 = 정보 부족으로 판정 보류(입력·공식 문서에 없는 사업장 정보가 필요 — '확인 필요' 시트)."
 #: R-10 검토 기록 — 검토가 있을 때만 6번째 시트로 붙는다(AC-10-1). "원 No" 는 검토 전 화면 번호.
@@ -251,6 +254,17 @@ def export_xlsx(
             ws_held.column_dimensions[col].width = width
         for row in held:
             ws_held.append([row.no, row.guideword_label, row.deviation, " · ".join(row.missing)])
+    repeated = [row for row in rows if row.consensus]
+    if repeated:
+        ws_rep = wb.create_sheet(REPEAT_SHEET)
+        _write_header(ws_rep, REPEAT_HEADERS)
+        for col, width in zip("ABCDEFG", (6, 18, 30, 8, 60, 12, 18), strict=True):
+            ws_rep.column_dimensions[col].width = width
+        for row in repeated:
+            verdict = consensus_verdict(row.consensus, row.held)
+            details = consensus_detail(row.consensus) or [("", "", "", "")]
+            for kind, text, agree, used in details:
+                ws_rep.append([row.no, row.guideword_label, verdict, kind, text, agree, used])
     if review_log:
         ws_review = wb.create_sheet(REVIEW_SHEET)
         _write_header(ws_review, REVIEW_HEADERS)

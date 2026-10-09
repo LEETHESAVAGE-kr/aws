@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import itertools
 import json
+from collections import Counter
 from typing import Any
 
 import numpy as np
@@ -271,6 +272,60 @@ def test_measure_run_input_offline(monkeypatch: pytest.MonkeyPatch) -> None:
     assert 0 <= row["stability"]["single_mean_15pairs"] <= 1
     assert row["recall_internal"]["consensus_A"]["total"] == 8
     assert len(row["recall_internal"]["single_6"]) == 6
-    json.dumps({k: v for k, v in row.items()}, ensure_ascii=False)  # 저장 가능(발췌 객체 제거)
+    json.dumps(row, ensure_ascii=False)  # 저장 가능(발췌 객체 제거)
     v = mc.verdict([row])
     assert v["complete"] is False and v["latency_ok"] is False  # 직접 입력 없음 → 판정 불가 쪽
+
+
+# ── 화면·Excel (C-4·C-6) ──────────────────────────────────────────────────────
+def _consensus_result(monkeypatch: pytest.MonkeyPatch) -> Any:
+    from apps.web import service
+
+    monkeypatch.setattr(cs, "e5_similarity", lambda: None)
+    records = HazopGenerator(MockBedrockClient(response_factory=_factory(flip="Less", fail="Reverse")),
+                             GeneratorConfig(consensus_runs=3)).generate(META)
+    return service.Result(meta={"source": "live-run"}, records=records)
+
+
+def test_screen_repeat_column_and_reference_rows(monkeypatch: pytest.MonkeyPatch) -> None:
+    from apps.web import service
+
+    result = _consensus_result(monkeypatch)
+    table = service.worksheet_table(result)
+    more = next(row for row in table if str(row["가이드워드"]).startswith("More"))
+    assert more[service.REPEAT_COLUMN] == "판정 3/3 · 원인 ●●● · 결과 ●●● · 권고 ●●● (+참고 3) · 심각도 3·3·4 갈림"
+    less = next(row for row in table if str(row["가이드워드"]).startswith("Less"))
+    assert less[service.REPEAT_COLUMN].startswith("판정 2/3 · 원인 ●●○")
+    assert service.REPEAT_COLUMN in service.review_column_order(table)
+    reference = service.reference_rows(result)
+    assert {r["문장"] for r in reference} >= {"실행0 원인", "실행1 원인", "실행2 원인"}
+    assert all(r["구분"] == "원인" and r["일치"] == "●○○ 1/3" for r in reference)
+    assert service.repeat_counts(result).startswith("같은 입력으로 판정 3번 · 원인 문장")
+
+
+def test_screen_single_run_has_no_repeat_column() -> None:
+    from apps.web import service
+
+    records = HazopGenerator(MockBedrockClient(response_factory=_factory()), GeneratorConfig()).generate(META)
+    result = service.Result(meta={"source": "live-run"}, records=records)
+    assert service.REPEAT_COLUMN not in service.worksheet_table(result)[0]
+    assert service.reference_rows(result) == [] and service.repeat_counts(result) is None
+
+
+def test_excel_repeat_sheet(monkeypatch: pytest.MonkeyPatch, tmp_path: Any) -> None:
+    from openpyxl import load_workbook
+
+    from core.export import export_all
+    from core.export.xlsx import REPEAT_HEADERS, REPEAT_SHEET
+
+    result = _consensus_result(monkeypatch)
+    path = export_all(result.records, tmp_path)["xlsx"]
+    wb = load_workbook(path)
+    assert REPEAT_SHEET in wb.sheetnames
+    rows = list(wb[REPEAT_SHEET].iter_rows(values_only=True))
+    assert rows[0] == REPEAT_HEADERS
+    used = Counter(r[6] for r in rows[1:])
+    assert used["참고(한 번만 나옴)"] > 0 and used["워크시트"] > 0
+    assert any(r[3] == "심각도" and r[5] == "갈림" for r in rows[1:])
+    single = HazopGenerator(MockBedrockClient(response_factory=_factory()), GeneratorConfig()).generate(META)
+    assert REPEAT_SHEET not in load_workbook(export_all(single, tmp_path / "s")["xlsx"]).sheetnames

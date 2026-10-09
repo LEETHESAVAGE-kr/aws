@@ -8,7 +8,7 @@ AWS SDK 의존이 따라오므로, `DeviationRecord` 는 `model_dump()` 를 가�
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Final
 
 from core.criteria import load_criteria
@@ -57,6 +57,8 @@ class WorksheetRow:
     recommendations_list: tuple[str, ...]
     criteria_id: str | None = None  # Y-2 — None 이면 골드셋 NH3 기준
     missing: tuple[str, ...] = ()  # Z-3 — 비어 있지 않으면 정보 부족 보류 행
+    #: §8 C 합의 생성 내역(`DeviationRecord.consensus`). 단일 실행이면 None.
+    consensus: Mapping[str, Any] | None = field(default=None, hash=False, compare=False)
 
     @property
     def held(self) -> bool:
@@ -96,6 +98,87 @@ def _str_list(value: object) -> tuple[str, ...]:
     if isinstance(value, str):
         return (value,) if value else ()
     return tuple(str(v) for v in value)  # type: ignore[union-attr]
+
+
+# ── §8 C 합의 생성 표기(화면 '반복 일치' 열 · Excel '반복 일치' 시트 공통) ─────────────
+REPEAT_FIELDS: Final[tuple[tuple[str, str], ...]] = (
+    ("causes", "원인"), ("consequences", "결과"), ("recommendations", "권고"),
+)
+VOTE_LABELS: Final[dict[str, str]] = {
+    "applicable": "해당", "not_applicable": "해당 없음", "insufficient": "정보 부족", "missing": "실패",
+}
+GRADE_LABELS: Final[tuple[tuple[str, str], ...]] = (("S", "심각도"), ("F", "빈도"))
+
+
+def dots(agree: int, runs: int) -> str:
+    """●●○ — N번 중 몇 번 나왔나."""
+    return "●" * agree + "○" * (runs - agree)
+
+
+def is_kept(agree: int, runs: int) -> bool:
+    """워크시트 칸에 남은 문장(agree/N ≥ 2/3) — `core.agent.consensus.kept` 와 같은 규칙."""
+    return 3 * agree >= 2 * runs
+
+
+def _votes_text(votes: Mapping[str, Any]) -> str:
+    return ", ".join(f"{VOTE_LABELS.get(k, k)} {v}" for k, v in votes.items())
+
+
+def consensus_verdict(consensus: Mapping[str, Any], held: bool) -> str:
+    """셀 투표 결과 — "판정 3/3"(해당) · "판정 2/3 정보 부족" · "판정 갈림 — 해당 1, 해당 없음 1, 정보 부족 1"."""
+    runs = int(consensus["runs"])
+    votes: Mapping[str, Any] = consensus.get("votes") or {}
+    if not held:
+        return f"판정 {votes.get('applicable', 0)}/{runs}"
+    top = votes.get("insufficient", 0)
+    if top * 2 > sum(v for k, v in votes.items() if k != "missing"):
+        return f"판정 {top}/{runs} 정보 부족"
+    return f"판정 갈림 — {_votes_text(votes)}"
+
+
+def consensus_summary(consensus: Mapping[str, Any] | None, held: bool) -> str:
+    """'반복 일치' 열 한 칸. 예: "판정 3/3 · 원인 ●●● ●●○ · 결과 ●●● · 권고 ●●○ (+참고 2) · 심각도 3·4·4 갈림"."""
+    if not consensus:
+        return ""
+    runs = int(consensus["runs"])
+    if held:
+        return consensus_verdict(consensus, held)
+    parts = [consensus_verdict(consensus, held)]
+    extra = 0
+    for key, label in REPEAT_FIELDS:
+        clusters = consensus.get(key) or []
+        kept = [dots(c["agree"], runs) for c in clusters if is_kept(c["agree"], runs)]
+        extra += sum(not is_kept(c["agree"], runs) for c in clusters)
+        if kept:
+            parts.append(f"{label} {' '.join(kept)}")
+        elif clusters:
+            parts.append(f"{label} 일치 없음")
+    if extra:
+        parts[-1] += f" (+참고 {extra})"
+    for key, label in GRADE_LABELS:
+        values = consensus.get(f"{key}_values") or []
+        if len(set(values)) > 1:
+            parts.append(f"{label} {'·'.join(str(v) for v in values)} 갈림")
+    return " · ".join(parts)
+
+
+def consensus_detail(consensus: Mapping[str, Any] | None) -> list[tuple[str, str, str, str]]:
+    """문장별 (구분, 문장, 일치, 반영). 반영 = '워크시트'(≥2/3) 또는 '참고(한 번만 나옴)'. 심각도·빈도 값 포함."""
+    if not consensus:
+        return []
+    runs = int(consensus["runs"])
+    out: list[tuple[str, str, str, str]] = []
+    for key, label in REPEAT_FIELDS:
+        for c in consensus.get(key) or []:
+            kept = is_kept(c["agree"], runs)
+            out.append((label, str(c["text"]), f"{dots(c['agree'], runs)} {c['agree']}/{runs}",
+                        "워크시트" if kept else "참고(한 번만 나옴)"))
+    for key, label in GRADE_LABELS:
+        values = consensus.get(f"{key}_values") or []
+        if values:
+            split = "갈림" if len(set(values)) > 1 else "같음"
+            out.append((label, "·".join(str(v) for v in values), split, f"가운데 값 {sorted(values)[len(values) // 2]}"))
+    return out
 
 
 def node_label(node: str, equipment: Iterable[str]) -> str:
@@ -150,6 +233,7 @@ def normalize_rows(records: Iterable[object]) -> list[WorksheetRow]:
                 recommendations_list=recommendations,
                 criteria_id=m.get("criteria_id"),
                 missing=_str_list(m.get("missing")) if m.get("status") == "insufficient" else (),
+                consensus=m.get("consensus") or None,
             )
         )
     return rows
