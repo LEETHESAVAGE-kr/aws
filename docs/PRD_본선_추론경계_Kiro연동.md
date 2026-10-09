@@ -141,6 +141,10 @@ Kiro API 는 **형식이 아직 확인되지 않았다**(§6 Q-K1). Anthropic �
 
 ## 6. 결정 필요 (사용자)
 
+> **10/9 결정·확인**
+> - **Q-B1 = (가) + (나) 둘 다**: (가) 공정 배경정보를 사용자가 보완·갱신하는 흐름(Z-4 입력 충분성 점검 + 보완 후 재생성), (나) 근거 코퍼스 자동 최신화(법령 DRF·MSDS API 재수집 → 바뀐 문단 diff → 인덱스 재생성; 수집 스크립트 `tools/build_msds_corpus.py` 는 있음, 법령 재수집 스크립트는 아직 저장소에 없음 — scratchpad 에만 있었다).
+> - **Q-K1 = Anthropic 형식**(사용자). 전환 스위치 구현 완료(6b2e1f8, `HAZOP_PROVIDER=kiro`). **단 받은 것은 키 한 줄뿐** — `.env` `KIRO_API_KEY` 는 `sk-` 로 시작하는 25자로 Anthropic 직결 키(`sk-ant-`, 100자 안팎)가 아니다. **API 주소(base URL)를 운영 측에 확인해야** 호출할 수 있다. 주소 없이 여러 곳에 키를 보내 보지 않는다.
+
 | # | 질문 | 선택지 | 추천 |
 |---|---|---|---|
 | **Q-K1** | Kiro API 의 형식은? | A Anthropic 형식(엔드포인트가 `/v1/messages`) / B OpenAI 형식(`/v1/chat/completions`) / C AWS Bedrock / D 기타 | **받은 안내 문서나 메일의 엔드포인트 주소 한 줄을 보여 주면 판정한다**(키는 보내지 않아도 된다) |
