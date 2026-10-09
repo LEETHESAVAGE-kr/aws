@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 _APP = REPLAY_DIR.parents[1] / "apps" / "web" / "app.py"
 _MOCK_ENV = {"HAZOP_USE_MOCK": "true", "HAZOP_ALLOW_LIVE": "true"}
-_CASES = "실측 사례 재생"
+_CASES = "완성된 사례 보기"
 _GENERATE = "HAZOP 초안 생성"
 _SENTENCE = "수소충전소 압축기에서 디스펜서로 고압 수소를 보낸다. 안전장치는 긴급차단밸브."
 
@@ -221,7 +221,7 @@ def test_app_default_run_covers_all_guidewords(monkeypatch: pytest.MonkeyPatch, 
     assert not any("노드 전체" in b.label for b in at.button)
     assert not any("어떤 이탈" in m.value for m in at.markdown)  # X-G5 — 선택 질문 블록이 없다
     # 기본 = 문장 모드. 입력 칸은 비어 있고 예시는 칩이 맡는다 — 비어 있으면 버튼이 막힌다.
-    assert at.radio(key="mode").value == "문장으로 새 공정 분석"
+    assert at.radio(key="mode").value == "새로 만들기"
     assert at.text_area[0].value == "" and "예시" in at.text_area[0].placeholder
     assert _cta(at).label == service.LIVE_BUTTON and _cta(at).disabled is True
     at.text_area[0].input(_SENTENCE).run()
@@ -238,7 +238,7 @@ def test_app_default_run_covers_all_guidewords(monkeypatch: pytest.MonkeyPatch, 
     # 상한은 공용 — 1회 뒤엔 보조 실행 버튼도 막히고, 사례 모드로 안내한다.
     assert _cta(at).disabled and at.button(key="run_quick").disabled
     assert any("세션" in c.value for c in at.caption)
-    next(b for b in at.button if b.label == "실측 사례 보기").click().run()
+    next(b for b in at.button if b.label == "완성된 사례 보기").click().run()
     assert not at.exception and at.radio(key="mode").value == _CASES
 
 
@@ -395,7 +395,7 @@ def test_app_criteria_badge_visibility(monkeypatch: pytest.MonkeyPatch) -> None:
     assert not at.exception and len(at.dataframe) == 1 and not badge_shown(at)  # 사례 첫 화면 = N1(골드 공정)
     at.selectbox(key="process_name").select("LPG 저장탱크 출하").run()
     assert not at.exception and badge_shown(at)
-    at.radio(key="mode").set_value("문장으로 새 공정 분석").run()
+    at.radio(key="mode").set_value("새로 만들기").run()
     at.text_area[0].input(_SENTENCE).run()
     next(b for b in at.button if b.label.startswith(_GENERATE)).click().run()
     assert not at.exception and len(at.dataframe) == 1 and not badge_shown(at) and official_shown(at)  # Y-2
@@ -553,7 +553,7 @@ def test_app_starts_in_sentence_mode_with_empty_input(monkeypatch: pytest.Monkey
         monkeypatch.setenv(key, value)
     at = _grid(AppTest.from_file(str(_APP), default_timeout=30)).run()
     assert not at.exception
-    assert at.radio(key="mode").value == "문장으로 새 공정 분석"
+    assert at.radio(key="mode").value == "새로 만들기"
     assert at.session_state["quick_text"] == ""
     assert len(at.dataframe) == 0
     assert not any("빠른 실호출" in b.label or "직접 입력" in b.label for b in at.button)

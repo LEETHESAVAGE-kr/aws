@@ -440,8 +440,10 @@ def progress_text(
 ) -> tuple[int, str, str | None]:
     """진행 알림 → (줄 번호, 완료 문구, 다음 줄 대기 문구). 빠른 실호출이면 `quick_guideword` 를 준다."""
     if event == "parsed":
-        if payload.get("parsed_by") == "json":
-            return 0, "✅ 1/3 JSON 입력 — 해석 생략", STAGE_PENDING[1]
+        if payload.get("parsed_by") == "json":  # 항목 선택(또는 JSON) — 해석 호출 없음(U-6)
+            meta = payload.get("node_meta")
+            what = f" — {meta.substance} · 설비 {len(meta.equipment)}개" if meta is not None else ""
+            return 0, f"✅ 1/3 입력한 항목 확인{what} (해석 생략)", STAGE_PENDING[1]
         m = payload["node_meta"]
         equipment = ", ".join(m.equipment[:3]) or "미상"
         return 0, f"✅ 1/3 입력 해석 — {m.substance} · {m.phase} · 설비 {equipment}", STAGE_PENDING[1]
@@ -807,7 +809,7 @@ def accuracy_line(result: Result, replays: Mapping[str, Result]) -> str:
         parts = result.meta.get("recall_parts") or []
         line = " · ".join(f"{label} **{a / b:.1%}** ({a}/{b})" for label, a, b in parts)
         if any(label == "외부 대조" for label, _, _ in parts):
-            line += " — 외부 공개 워크시트의 공정변수 점검표와 대조한 후한 기준이며 NH3 골드셋과 같은 난이도가 아닙니다."
+            line += " — 외부 공개 워크시트의 공정변수 점검표와 대조한 후한 기준이며 NH3 전문가 정답지와 같은 난이도가 아닙니다."
         elif len(parts) > 1:
             line += " — 튜닝 노드(프롬프트를 맞춘 노드)와 처음 보는 홀드아웃 노드를 한 숫자로 합치지 않았습니다."
         return line or "대조 기준 없음"
@@ -815,10 +817,10 @@ def accuracy_line(result: Result, replays: Mapping[str, Result]) -> str:
         return (
             f"외부 공개 HAZOP 대비 **{recall['recall']:.1%}** ({recall['matched']}/{recall['total']}, 1회 실행) — "
             "인도 IOCL 충전소 워크시트(2014, 외부 팀 작성)의 공정변수 점검표 11행과 대조. 모델이 기본으로 내는 축과 겹쳐 "
-            "후하게 나오는 기준이며, NH3 골드셋과 같은 난이도가 아닙니다."
+            "후하게 나오는 기준이며, NH3 전문가 정답지와 같은 난이도가 아닙니다."
         )
     if not recall:
-        return "골드셋 재생 화면이라 정확도는 해당 없음."
+        return "전문가 정답지 화면이라 정확도는 해당 없음."
     line = f"전문가 결과물 대비 **{recall['recall']:.1%}** ({recall['matched']}/{recall['total']}, 1회 실행)"
     held = holdout_recall(replays)
     if result.meta.get("split") == "tune" and held:
@@ -858,7 +860,7 @@ def summary_line(result: Result) -> str:
     review = m.get("review_guidewords") or []
     parts.append(f"review 가이드워드 {', '.join(review) if review else '없음'}")
     if result.is_gold:
-        parts.append("검증 해당 없음(골드 재생)")
+        parts.append("검증 해당 없음(전문가 작성 결과)")
     else:
         by_rule = verified(result)[1].by_rule
         n_review = sum(r.confidence == "review" for r in verified(result)[0])
@@ -932,7 +934,7 @@ def provenance_line(result: Result) -> str:
             f"{cost_part} · 노드마다 캡처 시각·프롬프트가 다릅니다(아래 '노드별 출처')"
         )
     if result.is_gold:
-        return f"전문가 골드셋 재생 — LLM 생성 결과 아님 ({_kst(m.get('captured_at'))} 저장)"
+        return f"전문가 정답지(사람이 직접 작성한 HAZOP) — AI 생성 결과 아님 ({_kst(m.get('captured_at'))} 저장)"
     if source == "live":
         stale = " · **M-01 이전 프롬프트**(판정 단계에 기존 안전장치·운전조건 미전달)" if _before_m01(m) else ""
         return f"{_kst(m.get('captured_at'))} 실호출 캡처를 재생{tail}{stale}"
@@ -1125,7 +1127,7 @@ def evaluation_table(results: Mapping[str, Result]) -> list[dict[str, str]]:
                 "recall(m/n)": (
                     f"{recall['recall']:.3f} ({recall['matched']}/{recall['total']})"
                     if recall
-                    else ("골드 재생 — 해당 없음" if results[node].is_gold else "—")
+                    else ("전문가 정답지 — 해당 없음" if results[node].is_gold else "—")
                 ),
             }
         )
@@ -1143,7 +1145,7 @@ def evaluation_table(results: Mapping[str, Result]) -> list[dict[str, str]]:
         label = "홀드아웃 합계"
     else:
         scope = f"{'·'.join(measured)} 만" if measured else "측정 노드 없음"
-        label = f"홀드아웃 합계 ({scope} — 골드 {gold}/{HOLDOUT_GOLD_TOTAL}건)"
+        label = f"홀드아웃 합계 ({scope} — 정답 {gold}/{HOLDOUT_GOLD_TOTAL}건)"
     rows.append(
         {
             "노드": label,
@@ -1186,6 +1188,10 @@ REVIEW_WIDTHS: Final[dict[str, int]] = {
     "가이드워드": 130, "이탈": 300, "원인": 300, "결과": 300, "기존 안전장치(Before)": 220, "권고": 300,
 }
 REVIEW_ROW_HEIGHT: Final[int] = 84
+#: 결과 읽는 순서(PRD 첫화면 U-7).
+READING_ORDER: Final[str] = (
+    "읽는 순서: ① 표를 읽고 → ② 🔴 검토 필요·⚪ 정보 부족 행을 먼저 확인 → ③ '편집 표'에서 채택·기각·수정 → ④ 위에서 내려받기"
+)
 #: 표 모양(10/9 사용자 피드백 "항목이 잘려 늘려서 봐야 한다"). 펼쳐 보기 = 글 전체 줄바꿈(읽기), 편집 표 = 기존 격자(검토·수정).
 TABLE_STYLES: Final[tuple[str, ...]] = ("펼쳐 보기 — 글 전체", "편집 표 — 채택·기각·수정")
 #: 펼쳐 보기 열 너비(px). 없는 열은 내용 길이대로.
