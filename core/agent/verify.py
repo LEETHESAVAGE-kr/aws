@@ -123,7 +123,11 @@ def _record_flags(record: DeviationRecord) -> list[Flag]:
         for m in _STANDARD_RE.finditer(text):
             if _norm(m.group(0)) not in evidence:
                 add("unverified_standard", field, m.group(0))
-    allowed = _allowed_numbers(record.node_meta)
+    # 인용 구절에 그대로 있는 수치(예: MSDS 폭발범위 15 / 33.6 %)는 근거 있는 수치다(Y-3)
+    allowed = _allowed_numbers(record.node_meta) | {
+        _num(m.group(1)) for e in record.evidence if isinstance(e, dict)
+        for m in NUMBER_PATTERN.finditer(str(e.get("quote", "")))
+    }
     for field, text in _iter_text_fields(record, _NUMBER_FIELDS):
         for m in NUMBER_PATTERN.finditer(text):
             if _num(m.group(1)) not in allowed:

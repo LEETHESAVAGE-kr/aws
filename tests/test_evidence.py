@@ -28,7 +28,8 @@ def test_corpus_is_laws_and_notices_only_with_manifest() -> None:
     assert len(corpus) >= 150 and len({p.chunk_id for p in corpus}) == len(corpus)
     rows = list(csv.DictReader((_ROOT / "data" / "kb" / "manifest.csv").open(encoding="utf-8")))
     assert {r["code"] for r in rows} == {p.source_id for p in corpus}
-    assert all("저작권법 제7조" in r["license"] for r in rows)
+    assert all("저작권법 제7조" in r["license"] or "이용허락범위 제한 없음" in r["license"] for r in rows)
+    assert {r["code"].split("-")[0] for r in rows} == {"LAW", "NOTICE", "MSDS"}
     for path in (_ROOT / "data" / "kb" / "law").glob("*.json"):
         for e in json.loads(path.read_text(encoding="utf-8")):
             assert e["url"].startswith("https://www.law.go.kr/") and e["locator"] and e["version"]
@@ -145,3 +146,15 @@ def test_standard_number_backed_by_evidence_is_not_flagged() -> None:
     assert verify([rec])[0][0].confidence == "single_source"
     bare = rec.model_copy(update={"evidence": []})
     assert verify([bare])[0][0].confidence == "review"
+
+
+def test_number_quoted_in_evidence_is_not_flagged() -> None:
+    """MSDS 인용 구절에 있는 수치(폭발범위 등)는 근거 있는 수치 — 인용이 없으면 여전히 review(R-02)."""
+    msds = next(p for p in load_corpus() if p.chunk_id.startswith("MSDS-7664-41-7#091"))
+    quote = "인화 또는 폭발 범위의 상한/하한: 15 / 33.6 %"
+    assert quote in msds.text
+    _, _, out = _run(lambda ps: [])
+    rec = out[0].model_copy(update={"consequences": [f"폭발범위({quote}) 안에서 점화"], "confidence": "inferred"})
+    assert verify([rec])[0][0].confidence == "review"
+    cited = rec.model_copy(update={"evidence": [msds.evidence(quote)]})
+    assert verify([cited])[0][0].confidence == "single_source"
