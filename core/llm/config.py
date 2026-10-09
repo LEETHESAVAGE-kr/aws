@@ -17,7 +17,7 @@ from .types import ModelConfig, ModelProfile
 
 _CONFIG_PATH = Path(__file__).parent.parent.parent / "config" / "models.yaml"
 _G0_HINT = "config/models.yaml 미완성 — docs/G0_bedrock_access_*.md 참조(모델 ID 확정 후 기입)"
-_PROVIDERS = frozenset({"bedrock", "anthropic"})
+_PROVIDERS = frozenset({"bedrock", "anthropic", "gateway"})
 
 
 class ConfigValidationError(ValueError):
@@ -86,6 +86,7 @@ def _parse(raw: dict[str, Any]) -> ModelConfig:
         parallel_calls=_read_parallel_calls(raw["generation"]),
         enumerate_examples=_read_flag(raw["generation"], "enumerate_examples"),
         evidence_k=_read_evidence_k(raw["generation"]),
+        gateway={k: str(v) for k, v in (raw.get("gateway") or {}).items() if v is not None},
     )
 
 

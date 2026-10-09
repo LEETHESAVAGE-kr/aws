@@ -85,10 +85,12 @@ class ModelConfig:
     guardrails_id: str | None
     cost_limit_usd: float = 0.30
     # REQ-12: LLM 공급자. `anthropic` 이면 region·embedding·guardrails 는 쓰이지 않는다.
-    provider: Literal["bedrock", "anthropic"] = "bedrock"
+    provider: Literal["bedrock", "anthropic", "gateway"] = "bedrock"
     # R-10: 가이드워드 판정 동시 호출 수(`generation.parallel_calls`). 1 이면 순차.
     parallel_calls: int = 4
     # R-12: 열거 프롬프트에 공개 HAZOP 예시(data/kb/hazop_param_examples.json)를 덧붙일지. 기본 false.
     enumerate_examples: bool = False
     # Y-3: 판정 호출에 넣는 공식 문서 발췌 — 파라미터당 검색 수. 0 이면 근거 인용 끔(프롬프트 바이트 불변).
     evidence_k: int = 0
+    # 대회 AI 모델 게이트웨이(OpenAI 호환) — base_url · generation_model_id · verifier_model_id (별칭)
+    gateway: dict[str, str] = field(default_factory=dict)
