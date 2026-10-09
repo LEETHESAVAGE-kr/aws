@@ -245,6 +245,8 @@ class NodeMeta(BaseModel):
 
 #: 셀 상태(Z-3). 판정한 셀 = 해당(레코드) · 해당 없음(레코드 아님) · 정보 부족(보류 레코드).
 INSUFFICIENT: Final[str] = "insufficient"
+#: 보류 셀에 모델이 이탈 초안을 적지 않았을 때의 표기 — 지어내지 않고 비었다고 쓴다.
+HELD_NO_DRAFT: Final[str] = "(이탈 초안 없음 — 정보 부족으로 보류)"
 
 
 class DeviationRecord(BaseModel):
@@ -579,7 +581,9 @@ def _build_records(
             judged += 1  # 보류 셀도 판정한 셀이다 — 건너뛴 것이 아니라 판단의 결과(Z-3-5)
             if not cell.get("applicable", False):
                 continue
-            if cell.get(INSUFFICIENT) and cell.get("deviation"):
+            if cell.get(INSUFFICIENT) or (cell.get("missing") and not _cell_is_complete(cell)):
+                # 보류 표시만 하고 이탈 초안을 비우거나, 보류 표시 없이 missing 만 적고 S·F 를 비운 셀도 보류로 받는다 —
+                # 10/9 실호출에서 No 행 11셀이 '필수 필드 결측'으로 통째로 버려졌다.
                 records.append(_held_record(node_meta, guideword, cell, len(records) + 1, criteria_id))
                 continue
             if not _cell_is_complete(cell):
@@ -629,7 +633,7 @@ def _held_record(
         node_meta=node_meta,
         guideword=guideword,
         parameter=str(cell["parameter"]),
-        deviation=str(cell["deviation"]),
+        deviation=str(cell.get("deviation") or "") or HELD_NO_DRAFT,
         consequences=list(cell.get("consequences", [])),
         safeguards_before=_normalize_safeguards(
             node_meta, guideword, str(cell["parameter"]), cell.get("safeguards_before", [])
