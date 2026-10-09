@@ -87,6 +87,7 @@ def _parse(raw: dict[str, Any]) -> ModelConfig:
         enumerate_examples=_read_flag(raw["generation"], "enumerate_examples"),
         evidence_k=_read_evidence_k(raw["generation"]),
         inference_boundary=_read_flag(raw["generation"], "inference_boundary"),
+        consensus_runs=_read_consensus_runs(raw["generation"]),
         gateway={k: str(v) for k, v in (raw.get("gateway") or {}).items() if v is not None},
     )
 
@@ -104,6 +105,14 @@ def _read_evidence_k(section: dict[str, Any]) -> int:
     value = section.get("evidence_k", 0)
     if isinstance(value, bool) or not isinstance(value, int) or not 0 <= value <= 5:
         raise ConfigValidationError(f"generation.evidence_k must be an integer 0-5: {value!r}")
+    return value
+
+
+def _read_consensus_runs(section: dict[str, Any]) -> int:
+    """§8 C. 누락 시 1(합의 끔). 1 또는 3 만 — 2 는 동률이 잦아 쓰지 않는다(PRD Q-C1)."""
+    value = section.get("consensus_runs", 1)
+    if isinstance(value, bool) or value not in (1, 3):
+        raise ConfigValidationError(f"generation.consensus_runs must be 1 or 3: {value!r}")
     return value
 
 
