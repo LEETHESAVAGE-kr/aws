@@ -94,5 +94,6 @@ class ModelConfig:
     evidence_k: int = 0
     # Z-1~Z-3: 추론 경계(정보 4단계·노드 유형별 경계표·셀 보류). 기본 false — 프롬프트 바이트 불변.
     inference_boundary: bool = False
+    consensus_runs: int = 1  # §8 C 합의 생성 — 가이드워드 판정 반복 횟수(1 또는 3)
     # 대회 AI 모델 게이트웨이(OpenAI 호환) — base_url · generation_model_id · verifier_model_id (별칭)
     gateway: dict[str, str] = field(default_factory=dict)

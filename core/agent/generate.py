@@ -25,9 +25,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Final
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, model_serializer, model_validator
 
 from core import policy
+from core.agent import consensus
 from core.criteria import GOLD_CRITERIA, Criteria, load_criteria
 from core.llm import (
     AbstractBedrockClient,
@@ -204,6 +205,8 @@ class GeneratorConfig:
     evidence_k: int = 0
     # Z-1~Z-3: 추론 경계. false 면 판정·열거 프롬프트와 스키마가 Z 이전과 바이트 동일.
     inference_boundary: bool = False
+    # §8 C 합의 생성: 가이드워드 판정 반복 횟수. 1 이면 지금 경로 그대로(프롬프트·스키마·레코드 바이트 동일).
+    consensus_runs: int = 1
 
 
 def load_generator_config() -> GeneratorConfig:
@@ -224,6 +227,7 @@ def load_generator_config() -> GeneratorConfig:
         enumerate_examples=cfg.enumerate_examples,
         evidence_k=cfg.evidence_k,
         inference_boundary=cfg.inference_boundary,
+        consensus_runs=cfg.consensus_runs,
     )
 
 
@@ -279,6 +283,15 @@ class DeviationRecord(BaseModel):
     #: Z-3 "applicable" | "insufficient"(정보 부족 보류). 보류 행의 `missing` 은 없어서 보류한 정보(1~3개).
     status: str = "applicable"
     missing: list[str] = Field(default_factory=list)
+    #: §8 C 합의 생성 내역(셀 투표·문장별 agree·S/F 값). 단일 실행(consensus_runs=1)이면 None — 직렬화에서 빠진다.
+    consensus: dict[str, Any] | None = None
+
+    @model_serializer(mode="wrap")
+    def _drop_empty_consensus(self, handler: Any) -> dict[str, Any]:
+        data = handler(self)
+        if self.consensus is None:
+            data.pop("consensus", None)  # 합의 이전 레코드·재생 파일과 바이트 동일하게
+        return data
 
     @model_validator(mode="after")
     def _compute_risk_score(self) -> DeviationRecord:
@@ -315,6 +328,10 @@ class HazopGenerator:
         self.expected_cells: int = 0
         self.judged_cells: int = 0
         self.parameters: list[str] = []  # 마지막 실행에서 열거된 파라미터 이름(R-11)
+        self.parameter_items: list[dict[str, str]] = []  # 이름+근거(실측 도구가 같은 목록으로 재판정할 때)
+        #: §8 C: 가이드워드 → 실행별 원시 판정 묶음(실패는 None). 단일 실행이면 비어 있다.
+        self.consensus_raw: dict[str, list[dict[str, Any] | None]] = {}
+        self.consensus_costs: dict[str, list[float]] = {}  # 같은 키, 실행별 판정 비용
 
     # -- 공개 진입점 ---------------------------------------------------------
     def generate(
@@ -327,46 +344,63 @@ class HazopGenerator:
 
         # 가이드워드 판정은 서로 독립이다(R-10). 각 호출은 (batch, 비용) 을 **반환**만 하고
         # 공유 상태는 건드리지 않는다 — 합산·review 기록은 아래에서 목록 순서대로 단일 스레드로 한다.
-        outcomes: list[tuple[dict[str, Any] | None, float] | None] = [None] * len(guidewords)
+        runs = max(1, self._config.consensus_runs)
+        # 판정 작업 = (실행, 가이드워드). 실행 우선 순서로 넣어 첫 물결이 단일 실행 한 벌이 되게 한다(§8 C-1).
+        jobs = [(run, gi) for run in range(runs) for gi in range(len(guidewords))]
+        outcomes: list[tuple[dict[str, Any] | None, float] | None] = [None] * len(jobs)
         partial: list[list[DeviationRecord]] = [[] for _ in guidewords]
 
         def collect(index: int, outcome: tuple[dict[str, Any] | None, float]) -> None:
-            # 완료 순서로 알리고(R-11), 결과는 축 인덱스 자리에 둔다 — 최종 조립은 공정 순서(Y-1, process_order).
+            # 완료 순서로 알리고(R-11), 결과는 작업 인덱스 자리에 둔다 — 최종 조립은 공정 순서(Y-1, process_order).
             outcomes[index] = outcome
             if on_progress is None:
                 return
-            # 중간 표는 묶음별로 한 번만 만든다. id 는 묶음 안 임시 번호 — 최종 id 는 아래 _assemble 이 매긴다.
-            if outcome[0] is not None:
-                partial[index] = _build_records(node_meta, [outcome[0]], self.criteria.id)[0]
+            gi = jobs[index][1]
+            # 중간 표는 가이드워드별 처음 도착한 묶음으로 한 번만. id 는 임시 번호 — 최종 id 는 _assemble 이 매긴다.
+            if outcome[0] is not None and not partial[gi]:
+                partial[gi] = _build_records(node_meta, [outcome[0]], self.criteria.id)[0]
             self._notify(on_progress, "guideword", {
-                "guideword": guidewords[index],
+                "guideword": guidewords[gi],
                 "done": sum(o is not None for o in outcomes),
-                "total": len(guidewords),
+                "total": len(jobs),
                 "records": process_order([r for rows in partial for r in rows], self.parameters, renumber=False),
             })
 
         workers = max(1, self._config.parallel_calls)
         if workers == 1:
-            for index, gw in enumerate(guidewords):
-                collect(index, self._generate_batch(node_meta, parameters, gw))
+            for index, (_, gi) in enumerate(jobs):
+                collect(index, self._generate_batch(node_meta, parameters, guidewords[gi]))
         else:
             with ThreadPoolExecutor(max_workers=workers) as pool:
                 futures = {
-                    pool.submit(self._generate_batch, node_meta, parameters, gw): index
-                    for index, gw in enumerate(guidewords)
+                    pool.submit(self._generate_batch, node_meta, parameters, guidewords[gi]): index
+                    for index, (_, gi) in enumerate(jobs)
                 }
                 for future in as_completed(futures):
                     collect(futures[future], future.result())
 
+        similarity = consensus.e5_similarity() if runs > 1 else None
         batches: list[dict[str, Any]] = []
-        for guideword, outcome in zip(guidewords, outcomes, strict=True):
-            assert outcome is not None  # 모든 future 가 collect 를 거쳤다
-            batch, cost = outcome
-            self.total_cost_usd += cost
+        for gi, guideword in enumerate(guidewords):
+            run_batches: list[dict[str, Any] | None] = []
+            for run in range(runs):
+                outcome = outcomes[run * len(guidewords) + gi]
+                assert outcome is not None  # 모든 future 가 collect 를 거쳤다
+                self.total_cost_usd += outcome[1]
+                run_batches.append(outcome[0])
+            if runs > 1:
+                self.consensus_raw[guideword] = run_batches
+                self.consensus_costs[guideword] = [
+                    outcomes[run * len(guidewords) + gi][1] for run in range(runs)  # type: ignore[index]
+                ]
+                batch = consensus.merge_batches(run_batches, self.parameters, similarity)
+            else:
+                batch = run_batches[0]
             if batch is None:
                 if parameters:
                     self.review_guidewords.append(guideword)
                 continue
+            batch["guideword"] = guideword
             batches.append(batch)
 
         records = self._assemble(node_meta, batches)
@@ -401,7 +435,10 @@ class HazopGenerator:
         self.total_cost_usd = 0.0
         self.expected_cells = 0
         self.judged_cells = 0
+        self.consensus_raw = {}
+        self.consensus_costs = {}
         parameters = self._enumerate_parameters(node_meta)
+        self.parameter_items = [dict(p) for p in parameters]
         self.parameters = [p["name"] for p in parameters]
         self._notify(on_progress, "parameters", {"parameters": list(self.parameters)})
         return parameters
@@ -621,6 +658,7 @@ def _build_records(
                     **_checked_evidence(cell.get("evidence") or [], allowed),
                     confidence="inferred",
                     criteria_id=criteria_id,
+                    consensus=cell.get("_consensus"),
                 )
             )
     return records, judged
@@ -649,6 +687,7 @@ def _held_record(
         criteria_id=criteria_id,
         status=INSUFFICIENT,
         missing=missing or ["(모델이 적지 않음)"],
+        consensus=cell.get("_consensus"),
     )
 
 
