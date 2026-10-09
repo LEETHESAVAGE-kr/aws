@@ -4,7 +4,7 @@
       "id": "nh3_sts",
       "name": "암모니아 선박 간(STS) 벙커링",
       "gold": true,
-      "description": "공급선 → 이송 호스 → 수급선으로 액체 암모니아를 이송하는 공정. 전문가 HAZOP 골드셋 34건 보유.",
+      "description": "공급선 → 이송 호스 → 수급선으로 액체 암모니아를 이송하는 공정. 전문가가 직접 작성한 HAZOP 34건(정답지) 보유.",
       "nodes": [
         {"id": "N1", "label": "① 공급선(벙커링선) 매니폴드",
          "node_meta": {"node": "N1", "substance": "NH3", "phase": "unknown", "P_kPag": null, "T_degC": null,

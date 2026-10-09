@@ -124,7 +124,7 @@ def test_app_preset_click_shows_table(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("HAZOP_ALLOW_LIVE", raising=False)
     at = _grid(AppTest.from_file(str(_APP), default_timeout=30)).run()
     assert not at.exception
-    at.radio(key="mode").set_value("실측 사례 재생").run()
+    at.radio(key="mode").set_value("완성된 사례 보기").run()
     assert len(at.dataframe) == 1
     assert len(at.dataframe[0].value) == len(load_replay().records)
     at.button(key="preset_N2").click().run()
@@ -183,7 +183,7 @@ def test_uncaptured_nodes_are_absent_and_not_counted(tmp_path: Path) -> None:
     assert "N2" not in replays and "N4" not in replays
     table = service.evaluation_table(replays)
     assert [r["노드"].split()[0] for r in table[:-1]] == ["N1", "N3"]
-    assert table[1]["recall(m/n)"] == "골드 재생 — 해당 없음"  # 골드 재생은 측정이 아니다
+    assert table[1]["recall(m/n)"] == "전문가 정답지 — 해당 없음"  # 골드 재생은 측정이 아니다
     assert "측정 노드 없음" in table[-1]["노드"] and table[-1]["recall(m/n)"] == "—"
     (tmp_path / "n1.json").unlink()
     with pytest.raises(FileNotFoundError):
@@ -201,7 +201,7 @@ def test_holdout_total_recall_denominator(tmp_path: Path) -> None:
     assert total["recall(m/n)"] == f"{12 / 26:.3f} (12/26)"  # N1(tune) 7/8 은 섞이지 않는다
     (tmp_path / "n4.json").unlink()
     total = service.evaluation_table(load_replays(tmp_path))[-1]
-    assert total["노드"] == "홀드아웃 합계 (N2·N3 만 — 골드 16/26건)"
+    assert total["노드"] == "홀드아웃 합계 (N2·N3 만 — 정답 16/26건)"
     assert total["recall(m/n)"] == "0.500 (8/16)"
     markdown = service.evaluation_markdown(load_replays(tmp_path))
     assert len(markdown.splitlines()) == 2 + 3 + 1  # 머리·구분 + N1·N2·N3 + 합계
@@ -232,7 +232,7 @@ def test_app_switches_between_processes_and_nodes(monkeypatch: pytest.MonkeyPatc
     assert not at.exception
     assert len(at.table) == 6  # 안내 탭 5(정보 4단계 — Z-1 · 가이드워드·S·F·위험도 대조표·위험도 구간 — Y-2) + 평가 요약 1
     assert next(e for e in at.expander if e.label.startswith("정확도")).proto.expanded is False
-    at.radio(key="mode").set_value("실측 사례 재생").run()
+    at.radio(key="mode").set_value("완성된 사례 보기").run()
     assert at.selectbox(key="process_name").options == [p["name"] for p in service.CATALOG]
     for process in service.CATALOG:
         at.selectbox(key="process_name").select(process["name"]).run()

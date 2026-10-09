@@ -1,4 +1,4 @@
-"""'골라서 입력' 양식(10/9 사용자 요청) — 양식 값 → NodeMeta JSON, 예시 버튼이 양식을 채운다, mock 으로 끝까지 돈다."""
+"""'항목 선택' 양식(10/9 사용자 요청) — 양식 값 → NodeMeta JSON, 예시 버튼이 양식을 채운다, mock 으로 끝까지 돈다."""
 
 from __future__ import annotations
 
@@ -55,7 +55,7 @@ def test_app_form_chip_fills_and_runs(monkeypatch: pytest.MonkeyPatch) -> None:
     for key, value in _MOCK_ENV.items():
         monkeypatch.setenv(key, value)
     at = _grid(AppTest.from_file(str(_APP), default_timeout=60)).run()
-    at.radio(key="input_style").set_value("골라서 입력").run()
+    at.radio(key="input_style").set_value("항목 선택").run()
     cta = next(b for b in at.button if b.label.startswith("HAZOP 초안 생성"))
     assert cta.disabled  # 물질·설비가 비면 막힌다
     next(b for b in at.button if b.label == "수소충전소").click().run()
@@ -97,3 +97,39 @@ def test_full_table_html_escapes_and_splits_lists() -> None:
     out = service.full_table_html([{"원인": "<b>밸브</b> · 펌프 정지", "S(1-5)": 3.0, "F(1-5)": float("nan")}],
                                   ["원인", "S(1-5)", "F(1-5)"], load_criteria("kosha_cc37_2026"))
     assert "&lt;b&gt;밸브&lt;/b&gt;<br>• 펌프 정지" in out and ">3<" in out and "nan" not in out
+
+
+def test_chip_fills_only_chosen_input_style(monkeypatch: pytest.MonkeyPatch) -> None:
+    """PRD 첫화면 U-3: 입력 방식을 먼저 고르고, 예시 칩은 그 방식의 칸만 채운다."""
+    from streamlit.testing.v1 import AppTest
+
+    for key, value in _MOCK_ENV.items():
+        monkeypatch.setenv(key, value)
+    at = AppTest.from_file(str(_APP), default_timeout=60).run()
+    assert at.radio(key="input_style").value == "문장으로 설명"
+    next(b for b in at.button if b.label == "수소충전소").click().run()
+    assert "수소" in at.session_state["quick_text"] and at.session_state[form.KEYS["substance"]] is None
+    at2 = AppTest.from_file(str(_APP), default_timeout=60).run()
+    at2.radio(key="input_style").set_value("항목 선택").run()
+    next(b for b in at2.button if b.label == "수소충전소").click().run()
+    assert at2.session_state[form.KEYS["substance"]] == "수소" and at2.session_state["quick_text"] == ""
+
+
+def test_progress_line_for_selected_items_has_no_json_word() -> None:
+    from core.agent import NodeMeta
+
+    meta = NodeMeta(node="X1", substance="수소", phase="gas", equipment=["압축기", "디스펜서"])
+    _, text, _ = service.progress_text("parsed", {"parsed_by": "json", "node_meta": meta}, None)
+    assert text == "✅ 1/3 입력한 항목 확인 — 수소 · 설비 2개 (해석 생략)" and "JSON" not in text
+
+
+def test_first_screen_title_is_service_name_and_shows_three_paths(monkeypatch: pytest.MonkeyPatch) -> None:
+    from streamlit.testing.v1 import AppTest
+
+    for key, value in _MOCK_ENV.items():
+        monkeypatch.setenv(key, value)
+    at = AppTest.from_file(str(_APP), default_timeout=60).run()
+    hero = next(h.proto.body for h in at.get("html") if "hz-h1" in h.proto.body)
+    assert '<div class="hz-h1">HAZOP Copilot</div>' in hero
+    assert all(p in hero for p in ("문장으로 설명", "항목 선택", "완성된 사례 보기"))
+    assert "골드셋" not in hero
