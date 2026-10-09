@@ -9,6 +9,7 @@ Y-4(10/9): 신뢰도 4단계를 여기서 매긴다 — 전부 코드 판정, �
   grounded      플래그 0 + 서로 다른 문서 2건 이상 인용(같은 법령의 다른 조는 1건으로 센다)
   single_source 플래그 0 + 문서 1건 인용
   inferred      플래그 0 + 인용 없음
+  insufficient  플래그 0 + 정보 부족 보류 행(Z-3, 추론 경계를 켠 실행에서만)
 근거가 붙었다고 내용이 맞는 것은 아니다 — "공식 문서가 같은 위험을 다룬다"는 뜻이다.
 """
 
@@ -18,7 +19,7 @@ import re
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Final, Literal
 
-from .generate import DeviationRecord
+from .generate import INSUFFICIENT, DeviationRecord
 
 if TYPE_CHECKING:
     from collections.abc import Iterator, Mapping, Sequence
@@ -141,9 +142,14 @@ def cited_documents(record: DeviationRecord) -> set[str]:
 
 
 def confidence_tier(record: DeviationRecord, flagged: bool) -> str:
-    """Y-4 4단계(모듈 설명). 이미 review 인 레코드(스키마 2회 실패)는 그대로 review."""
+    """Y-4 4단계(모듈 설명). 이미 review 인 레코드(스키마 2회 실패)는 그대로 review.
+
+    Z-3 보류 행은 플래그가 없으면 `insufficient`(⚪ 정보 부족) — 판정을 하지 않은 행이라 근거 단계를 매기지 않는다.
+    """
     if flagged or record.confidence == "review":
         return "review"
+    if record.status == INSUFFICIENT:
+        return INSUFFICIENT
     docs = len(cited_documents(record))
     return "grounded" if docs >= 2 else "single_source" if docs == 1 else "inferred"
 

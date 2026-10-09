@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Final
 
 from core.agent.generate import GUIDEWORD_DEFINITIONS, STANDARD_GUIDEWORDS
+from core.policy import load_policy
 
 if TYPE_CHECKING:
     from core.criteria import Criteria
@@ -47,6 +48,8 @@ READING_GUIDE: Final[tuple[tuple[str, str], ...]] = (
     ("🟡 추론", "인용 없이 모델이 추론한 행"),
     ("🔴 검토 필요", "형식 검증 실패, 근거 없는 규격 번호·수치, 또는 원문과 한 글자라도 다른 인용이 있어 사람이 꼭 봐야 하는 행. "
      "근거가 붙었다는 것은 '공식 문서가 같은 위험을 다룬다'는 뜻이지 내용이 맞다는 보증이 아니다"),
+    ("⚪ 정보 부족", "입력에도 공식 문서에도 없는 사업장 정보(인터록 설정값, 입력에 없는 안전장치의 유무 등)가 있어야 판단할 수 있어 "
+     "S·F 를 매기지 않고 보류한 행. 무엇이 없는지 함께 적는다 — 모르는 것을 메우느니 덜 쓰는 편이 낫다는 원칙(추론 경계를 켠 실행에서만)"),
     ("검토 열", "행마다 채택·기각을 고르고 원인·결과·권고·S·F 를 고친다. 다운로드 Excel 에 그대로 반영되고 '검토 기록' 시트가 붙는다"),
     ("보기 전환", "워크시트 순서(공정 순서 — 파라미터마다 No·More·Less… 가 붙어 나온다, Excel No 와 같다) · 가이드워드별(예: More 만 모아 보기) · 파라미터별(예: 압력만 모아 보기). "
      "보는 순서만 바뀌고 내용·다운로드는 같다"),
@@ -100,6 +103,14 @@ def criteria_band_rows(criteria: Criteria) -> list[dict[str, str]]:
     return [
         {"위험도": b["range"], "판정": b["judgement"], "조치": str(b["action"]).split(" — ")[0]}
         for b in criteria.data["risk_bands"]
+    ]
+
+
+def information_level_rows() -> list[dict[str, str]]:
+    """정보 4단계(Z-1) — `data/kb/inference_policy.json` 문구 그대로(프롬프트와 같은 말)."""
+    return [
+        {"단계": f"{lv['code']} {lv['name']}", "표시": lv["badge"], "뜻": lv["definition"], "AI 는": lv["rule"], "예": lv["example"]}
+        for lv in load_policy()["levels"]
     ]
 
 

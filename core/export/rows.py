@@ -43,19 +43,25 @@ class WorksheetRow:
     causes: str
     consequences: str
     safeguards_before: str
-    S: int  # 도메인 표기(S·F 등급)를 골드셋·DeviationRecord 와 맞춘다
-    F: int
+    S: int | None  # 도메인 표기(S·F 등급)를 골드셋·DeviationRecord 와 맞춘다. None = 정보 부족 보류(Z-3)
+    F: int | None
     recommendations: str
     scenario: str
     # 워크시트 밖 정보
     node: str
-    risk_score: int
+    risk_score: int | None
     evidence: tuple[dict[str, Any], ...]
     confidence: str | None
     causes_list: tuple[str, ...]
     safeguards_list: tuple[str, ...]
     recommendations_list: tuple[str, ...]
     criteria_id: str | None = None  # Y-2 — None 이면 골드셋 NH3 기준
+    missing: tuple[str, ...] = ()  # Z-3 — 비어 있지 않으면 정보 부족 보류 행
+
+    @property
+    def held(self) -> bool:
+        """정보 부족 보류 행(Z-3) — 위험도 순위·분포에서 뺀다."""
+        return self.risk_score is None
 
     def cells(self) -> list[object]:
         """12열 값. 위험도(J) 자리는 `None` — 수식은 xlsx 쪽이 행 번호로 만든다."""
@@ -112,8 +118,8 @@ def normalize_rows(records: Iterable[object]) -> list[WorksheetRow]:
         node = str(m.get("node", ""))
         meta = m.get("node_meta") or {}
         equipment = _str_list(meta.get("equipment") if isinstance(meta, Mapping) else None)
-        s = int(m["S"])
-        f = int(m["F"])
+        s = None if m.get("S") is None else int(m["S"])
+        f = None if m.get("F") is None else int(m["F"])
         causes = _str_list(m.get("causes"))
         safeguards = _str_list(m.get("safeguards_before"))
         recommendations = _str_list(m.get("recommendations"))
@@ -136,13 +142,14 @@ def normalize_rows(records: Iterable[object]) -> list[WorksheetRow]:
                 scenario=str(m.get("scenario", "") or ""),
                 node=node,
                 # 입력값이 있어도 재계산 — 워크시트 수식과 일치시킨다(Y-2: 기준이 대조표면 표 값)
-                risk_score=load_criteria(m.get("criteria_id")).risk(s, f),
+                risk_score=None if s is None or f is None else load_criteria(m.get("criteria_id")).risk(s, f),
                 evidence=evidence,
                 confidence=str(confidence) if confidence is not None else None,
                 causes_list=causes,
                 safeguards_list=safeguards,
                 recommendations_list=recommendations,
                 criteria_id=m.get("criteria_id"),
+                missing=_str_list(m.get("missing")) if m.get("status") == "insufficient" else (),
             )
         )
     return rows
