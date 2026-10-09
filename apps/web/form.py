@@ -29,7 +29,7 @@ SAFEGUARDS: Final[tuple[str, ...]] = (
 )
 UNITS: Final[tuple[str, ...]] = tuple(PRESSURE_TO_KPA)
 
-#: 양식 위젯 키 — 예시 버튼이 같은 키에 값을 넣는다.
+#: 양식 위젯 키.
 KEYS: Final[dict[str, str]] = {
     "substance": "f_substance", "phase": "f_phase", "equipment": "f_equipment",
     "pressure": "f_pressure", "pressure_unit": "f_pressure_unit", "temperature": "f_temperature",
@@ -41,33 +41,6 @@ EMPTY: Final[dict[str, Any]] = {
     "temperature": None, "design_pressure": None, "design_unit": "MPa", "capacity": "",
     "safeguards": [], "no_safeguards": False,
 }
-
-#: 예시 버튼이 채우는 값 — 문장 예시(`app.EXAMPLES`)와 같은 공정. 문장에 없던 설계압력·용량·설정값을 더 채웠다
-#: (골라서 입력의 장점: 추론 경계가 '미상'으로 보류하던 정보를 칸으로 받는다). 값은 설명용 예시다(실제 설비 아님).
-EXAMPLES: Final[dict[str, dict[str, Any]]] = {
-    "수소충전소": {
-        "substance": "수소", "phase": "기체", "equipment": ["튜브트레일러", "압축기", "고압 저장용기", "디스펜서"],
-        "pressure": 90.0, "pressure_unit": "MPa", "design_pressure": 100.0, "design_unit": "MPa", "capacity": "200 kg",
-        "safeguards": ["안전밸브", "긴급차단밸브", "가스누출감지기", "고압 경보(설정 95 MPa)"],
-    },
-    "메탄올 하역": {
-        "substance": "메탄올", "phase": "액체", "equipment": ["탱크로리", "하역 펌프", "저장탱크"],
-        "pressure_unit": "kPa", "temperature": 30.0, "capacity": "50 m³",
-        "safeguards": ["질소 블랭킷", "브리더밸브", "가스누출감지기", "긴급차단밸브", "방유제"],
-    },
-    "실란 가스 캐비닛": {
-        "substance": "실란", "phase": "기체", "equipment": ["실린더", "가스 캐비닛", "감압밸브", "배관"],
-        "pressure": 0.5, "pressure_unit": "MPa", "capacity": "47 L 실린더",
-        "safeguards": ["캐비닛 배기", "가스누출감지기", "과류차단밸브", "긴급차단밸브"],
-    },
-}
-
-
-def example_state(name: str) -> dict[str, Any]:
-    """예시 → 위젯 키별 값(빈 양식 위에 덮는다 — 이전 예시 값이 남지 않게)."""
-    values = {**EMPTY, **EXAMPLES[name]}
-    return {KEYS[k]: v for k, v in values.items()}
-
 
 def _kpa(value: float | None, unit: str) -> float | None:
     return None if value is None else round(float(value) * PRESSURE_TO_KPA[unit], 3)
@@ -105,5 +78,4 @@ def to_node_json(values: dict[str, Any]) -> str:
     return json.dumps(payload, ensure_ascii=False)
 
 
-__all__ = ["EMPTY", "EQUIPMENT", "EXAMPLES", "KEYS", "PHASES", "SAFEGUARDS", "SUBSTANCES", "UNITS",
-           "example_state", "missing_fields", "to_node_json"]
+__all__ = ["EMPTY", "EQUIPMENT", "KEYS", "PHASES", "SAFEGUARDS", "SUBSTANCES", "UNITS", "missing_fields", "to_node_json"]

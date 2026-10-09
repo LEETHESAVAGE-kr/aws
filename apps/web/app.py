@@ -28,11 +28,8 @@ MODE_CASES = "완성된 사례 보기"
 #: 항목 선택은 JSON 으로 넘어가 문장 해석 호출이 없다.
 INPUT_TEXT = "문장으로 설명"
 INPUT_FORM = "항목 선택"
-#: 예시 칩 아래 안내 — 고른 입력 방식에 따라(U-3).
-CHIP_HINT = {
-    INPUT_TEXT: "예시를 누르면 아래 칸에 예시 문장이 채워집니다. 그대로 써도, 고쳐 써도 됩니다.",
-    INPUT_FORM: "예시를 누르면 아래 칸에 예시 값이 채워집니다. 그대로 써도, 바꿔 골라도 됩니다.",
-}
+#: 예시 칩 안내 — 문장으로 설명에만 예시가 있다(10/9 사용자: "항목 선택일 때는 예시가 없어졌으면").
+CHIP_HINT = "공정 예시 — 누르면 아래 칸에 예시 문장이 채워집니다. 그대로 써도, 고쳐 써도 됩니다."
 GUIDEWORDS = STANDARD_GUIDEWORDS + PROCEDURAL_GUIDEWORDS
 REPO = "https://github.com/LEETHESAVAGE-kr/aws"
 README_EVAL = f"{REPO}/blob/main/README.md#-6-평가-결과"
@@ -143,9 +140,6 @@ st.html(
     .hz-step li { font-size: 13px; color: var(--muted); margin: 2px 0; }
     .hz-step em { font-style: normal; color: var(--accent-text); font-weight: 600; margin-right: 4px; }
     .hz-sub b { color: var(--text); font-weight: 600; }
-    .hz-trust { display: flex; gap: 8px; flex-wrap: wrap; }
-    .hz-trust span { font-size: 12px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line);
-        color: var(--muted); }
     .hz-progress { height: 4px; background: var(--card2); border-radius: 4px; overflow: hidden; margin: 4px 0 18px; }
     .hz-progress div { height: 100%; background: var(--accent); border-radius: 4px; }
     .hz-q-step { font-size: 12px; color: var(--muted); margin: 0 0 4px; letter-spacing: .3px; }
@@ -240,14 +234,9 @@ def _combined(process_id: str) -> service.Result | None:
     return service.combine_replays(next(p for p in service.CATALOG if p["id"] == process_id), replays)
 
 
-def _fill(text: str, guideword: str | None = None, label: str | None = None) -> None:
-    """예시 칩 — 고른 입력 방식의 칸만 채운다(U-3). 항목 예시가 없는 칩(부스)은 문장 방식으로 바꿔 채운다."""
-    if state.input_style == INPUT_FORM and label in form.EXAMPLES:
-        for key, value in form.example_state(label).items():
-            state[key] = value
-    else:
-        state.input_style = INPUT_TEXT
-        state.quick_text = text
+def _fill(text: str, guideword: str | None = None) -> None:
+    """예시 칩 — 문장 칸을 채운다. 칩은 '문장으로 설명'에서만 보인다."""
+    state.quick_text = text
     if guideword:  # 칩이 지정한 가이드워드(V-6 · X-4) — 결과는 가이드워드별 보기에서 그 묶음을 펼친다
         state.guideword = guideword
         state.view_pref = service.VIEWS[1]
@@ -306,10 +295,7 @@ intro.html(
         <span>점검할 항목을 스스로 정하고, 벗어나는 경우마다 원인·결과·심각도·빈도·권고를 씁니다</span></div></div>
       <div class="hz-step"><b>3</b><div><strong>검토하고 내려받기</strong>
         <span>표를 읽고 채택·기각·수정 → Excel 워크시트 · LOPA 초안 Word · 신뢰도 리포트</span></div></div>
-    </div>
-    <div class="hz-trust"><span>실제 LLM 생성 (Claude)</span><span>전문가가 작성한 HAZOP 34건과 정확도 비교</span>
-    <span>법령·MSDS 근거 인용</span><span>모르는 정보는 ‘정보 부족’으로</span>
-    <span>근거 없는 규격 번호 자동 표시</span></div>"""
+    </div>"""
 )
 
 result = None
@@ -325,13 +311,12 @@ with tool.container(border=True, key="tool"):
             '<p class="hz-q-help">물질·설비·압력·온도·설계압력·용량·안전장치를 넣을수록 정확해집니다. 먼저 입력 방식을 고르세요.</p>'
         )
         input_style = st.radio("입력 방식", [INPUT_TEXT, INPUT_FORM], key="input_style", horizontal=True)
-        st.html(f'<p class="hz-q-help">공정 예시 — {CHIP_HINT[input_style]}</p>')
-        for i, (column, (label, text, *chip_guideword)) in enumerate(
-            zip(st.columns(len(EXAMPLES)), BOOTH_EXAMPLES if BOOTH else EXAMPLES, strict=True)
-        ):
-            column.button(label, key=f"chip_{i}", on_click=_fill,
-                          args=(text, chip_guideword[0] if chip_guideword else None, label), width="stretch")
         if input_style == INPUT_TEXT:
+            st.html(f'<p class="hz-q-help">{CHIP_HINT}</p>')
+            for i, (column, (label, text, *chip_guideword)) in enumerate(
+                zip(st.columns(len(EXAMPLES)), BOOTH_EXAMPLES if BOOTH else EXAMPLES, strict=True)
+            ):
+                column.button(label, key=f"chip_{i}", on_click=_fill, args=(text, *chip_guideword), width="stretch")
             st.text_area(
                 "공정 설명",
                 key="quick_text",
