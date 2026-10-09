@@ -100,8 +100,18 @@ def _num(text: str) -> str:
 
 
 def _allowed_numbers(node_meta: NodeMeta) -> set[str]:
-    """`P_kPag`·`T_degC` 를 정규화한 문자열(350 과 350.0 은 같은 "350")."""
-    return {_num(str(v)) for v in (node_meta.P_kPag, node_meta.T_degC) if v is not None}
+    """입력에 있던 수치(정규화 — 350 과 350.0 은 같은 "350").
+
+    `P_kPag`·`T_degC` + 압력을 MPa·bar 로 쓴 표기(입력 해석이 "90 MPa" 를 90000 kPa 로 바꿔 저장한다) +
+    사용자가 적은 안전장치·설비 문자열 속 수치("고압 경보(설정 95 MPa)"). 10/9 배포 실호출에서 입력 그대로의
+    설정값이 64행 중 34행을 🔴 로 만들었다 — 입력(G)은 근거 없는 수치가 아니다.
+    """
+    allowed = {_num(str(v)) for v in (node_meta.P_kPag, node_meta.T_degC) if v is not None}
+    if node_meta.P_kPag is not None:
+        allowed |= {_num(str(node_meta.P_kPag / 1000)), _num(str(node_meta.P_kPag / 100))}
+    for text in (*node_meta.safeguards, *node_meta.equipment):
+        allowed |= {_num(m.group(1)) for m in NUMBER_PATTERN.finditer(text)}
+    return allowed
 
 
 def _record_flags(record: DeviationRecord) -> list[Flag]:
