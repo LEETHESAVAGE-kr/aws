@@ -37,6 +37,8 @@
 - 상(phase): {phase}
 - 운전압력: {P_kPag} kPag
 - 운전온도: {T_degC} °C
+- 설계압력: {design_P_kPag} kPag
+- 용량: {capacity}
 - 설비: {equipment}
 - 기존 안전장치: {safeguards}
 

@@ -145,3 +145,13 @@ def test_numbers_written_in_input_not_flagged() -> None:
            "recommendations": ["120 MPa 설계 검토"], "criteria_id": "kosha_cc37_2026"}
     _, summary = verify([rec])
     assert [f.matched for f in summary.flags] == ["120 MPa"]  # 입력에 없던 수치만
+
+
+def test_design_pressure_and_capacity_numbers_not_flagged() -> None:
+    from core.agent.generate import NodeMeta
+
+    meta = NodeMeta(node="X1", substance="수소", phase="gas", design_P_kPag=100000.0, capacity="200 kg")
+    rec = {"id": "x1-001", "node": "X1", "node_meta": meta.model_dump(), "guideword": "More", "parameter": "압력",
+           "deviation": "과압", "causes": ["설계압력 100 MPa 초과"], "consequences": ["200 kg 전량 누출"],
+           "S": 4, "F": 2, "criteria_id": "kosha_cc37_2026"}
+    assert verify([rec])[1].flags == ()

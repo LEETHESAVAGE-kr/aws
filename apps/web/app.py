@@ -30,7 +30,7 @@ README_EVAL = f"{REPO}/blob/main/README.md#-6-평가-결과"
 #: 입력 칸 placeholder — 예시 문장은 칩이 맡고, 여기엔 쓰는 요령만.
 DIRECT_PLACEHOLDER = (
     "예시를 누르거나 공정을 직접 적어 보세요.\n"
-    "물질 · 설비(흐름 순서) · 압력 · 온도 · 안전장치를 적을수록 구체적입니다. 모르는 값은 빼도 됩니다.\n"
+    "물질 · 설비(흐름 순서) · 운전압력 · 온도 · 설계압력 · 용량 · 안전장치(설정값 포함)를 적을수록 구체적입니다. 모르는 값은 빼도 됩니다.\n"
     '(NodeMeta JSON 도 받습니다: {"node": "X1", "substance": "프로판", "P_kPag": 800, ...})'
 )
 #: 예시 칩 (라벨, 문장) — PRD §4-4.
@@ -260,7 +260,7 @@ with tool.container(border=True, key="tool"):
         st.html(
             f'<div class="hz-progress"><div style="width:{done * 33.4:.0f}%"></div></div>'
             '<p class="hz-q">어떤 공정을 분석할까요?</p>'
-            '<p class="hz-q-help">물질·설비·압력·온도·안전장치를 적을수록 정확해집니다. 예시를 눌러도 됩니다.</p>'
+            '<p class="hz-q-help">물질·설비·압력·온도·설계압력·용량·안전장치를 적을수록 정확해집니다. 예시를 눌러도 됩니다.</p>'
         )
         for i, (column, (label, text, *chip_guideword)) in enumerate(
             zip(st.columns(len(EXAMPLES)), BOOTH_EXAMPLES if BOOTH else EXAMPLES, strict=True)
