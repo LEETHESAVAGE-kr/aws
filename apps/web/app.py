@@ -285,12 +285,13 @@ intro.html(
     생기나”</b>를 빠짐없이 따져 HAZOP(위험과 운전 분석) 표 초안을 만듭니다. 근거가 있는 내용에는 법령·MSDS 원문을
     붙이고, 모르는 정보는 지어내지 않고 ‘정보 부족’으로 남깁니다. 최종 판단은 전문가가 합니다.</p>
     <div class="hz-steps">
-      <div class="hz-step"><b>1</b><div><strong>공정 정보 넣기 — 세 가지 중 하나</strong>
+      <div class="hz-step"><b>1</b><div><strong>공정 정보 넣기 — 두 가지 방법</strong>
         <ul>
-          <li><em>문장으로 설명</em> 예시 공정을 누르면 예시 문장이 채워지고, 고쳐 쓰면 됩니다</li>
+          <li><em>문장으로 설명</em> 공정을 한 문단으로 적습니다</li>
           <li><em>항목 선택</em> 물질·설비·압력·안전장치를 목록에서 고릅니다(없으면 직접 입력)</li>
-          <li><em>완성된 사례 보기</em> 기다리기 싫다면, 저장해 둔 실제 결과를 바로 엽니다 → 3번으로</li>
-        </ul></div></div>
+        </ul>
+        <span>무엇을 넣을지 모르겠다면 예시부터 — 문장으로 설명의 <em>예시 공정</em> 버튼을 누르거나,
+        <em>완성된 사례 보기</em>에서 실제 결과를 먼저 보세요</span></div></div>
       <div class="hz-step"><b>2</b><div><strong>AI 가 HAZOP 표 만들기 · 약 1.5–2분</strong>
         <span>점검할 항목을 스스로 정하고, 벗어나는 경우마다 원인·결과·심각도·빈도·권고를 씁니다</span></div></div>
       <div class="hz-step"><b>3</b><div><strong>검토하고 내려받기</strong>
