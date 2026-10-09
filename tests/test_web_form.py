@@ -54,7 +54,7 @@ def test_app_form_chip_fills_and_runs(monkeypatch: pytest.MonkeyPatch) -> None:
 
     for key, value in _MOCK_ENV.items():
         monkeypatch.setenv(key, value)
-    at = AppTest.from_file(str(_APP), default_timeout=60).run()
+    at = _grid(AppTest.from_file(str(_APP), default_timeout=60)).run()
     at.radio(key="input_style").set_value("골라서 입력").run()
     cta = next(b for b in at.button if b.label.startswith("HAZOP 초안 생성"))
     assert cta.disabled  # 물질·설비가 비면 막힌다
@@ -67,3 +67,33 @@ def test_app_form_chip_fills_and_runs(monkeypatch: pytest.MonkeyPatch) -> None:
     assert not at.exception and len(at.dataframe) >= 1
     assert at.session_state["quick_result"].meta["parsed_by"] == "json"
     assert at.session_state["quick_result"].meta["node_meta"]["capacity"] == "200 kg"
+
+
+def _grid(at: Any) -> Any:
+    """기존 화면 시험은 편집 격자(st.dataframe·data_editor)를 본다 — 기본 표 모양은 10/9 부터 펼쳐 보기(HTML)."""
+    at.session_state["table_style"] = service.TABLE_STYLES[1]
+    return at
+
+
+def test_full_text_table_is_default_and_not_truncated(monkeypatch: pytest.MonkeyPatch) -> None:
+    """10/9 피드백 "항목이 잘려 늘려서 봐야 한다" — 기본은 글 전체를 줄바꿈하는 표, 편집 격자는 고를 때만."""
+    from streamlit.testing.v1 import AppTest
+
+    for key, value in _MOCK_ENV.items():
+        monkeypatch.setenv(key, value)
+    at = AppTest.from_file(str(_APP), default_timeout=60).run()
+    next(b for b in at.button if b.label == "수소충전소").click().run()
+    next(b for b in at.button if b.label.startswith("HAZOP 초안 생성")).click().run()
+    assert not at.exception and at.radio(key="table_style").value == service.TABLE_STYLES[0]
+    record = at.session_state["quick_result"].records[0]
+    htmls = [h.proto.body for h in at.get("html") if "hz-full" in h.proto.body]
+    assert htmls and record.deviation in htmls[0] and "심각도(1-" in htmls[0]  # 이탈 전문 그대로·우리말 머리글
+    assert len(at.dataframe) == 0
+
+
+def test_full_table_html_escapes_and_splits_lists() -> None:
+    from core.criteria import load_criteria
+
+    out = service.full_table_html([{"원인": "<b>밸브</b> · 펌프 정지", "S(1-5)": 3.0, "F(1-5)": float("nan")}],
+                                  ["원인", "S(1-5)", "F(1-5)"], load_criteria("kosha_cc37_2026"))
+    assert "&lt;b&gt;밸브&lt;/b&gt;<br>• 펌프 정지" in out and ">3<" in out and "nan" not in out
