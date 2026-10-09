@@ -61,7 +61,6 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--only", choices=["N1", "N2", "direct"], default=None)
     args = parser.parse_args(argv)
     _load_dotenv()
-    service.apply_provider(os.environ)  # HAZOP_PROVIDER=kiro 면 Kiro API 로
     os.environ.setdefault("HAZOP_ALLOW_LIVE", "true")
     config = dataclasses.replace(load_generator_config(), evidence_k=args.k)
     capture_replay.load_generator_config = lambda: config  # type: ignore[assignment]

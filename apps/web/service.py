@@ -43,9 +43,11 @@ from core.llm import (
     ConverseResponse,
     Message,
     MockBedrockClient,
+    effective_provider,
     get_bedrock_client,
     load_model_config,
 )
+from core.llm.gateway_client import GatewayClient, gateway_key
 
 from .catalog import load_catalog, node_meta_schema, nodes_by_id, validate_node_meta
 from .docx_export import lopa_markdown_to_docx
@@ -84,10 +86,10 @@ SECRET_KEYS: Final[tuple[str, ...]] = (
     "HAZOP_ALLOW_LIVE", "HAZOP_LIVE_SCOPE", "ANTHROPIC_API_KEY", "HAZOP_SESSION_LIMIT", "HAZOP_DAILY_LIMIT",
     # 본선 F-01: 대회 게이트웨이가 Anthropic 형식이면 SDK 가 이 둘을 환경변수에서 읽는다(core/llm 무변경).
     "ANTHROPIC_BASE_URL", "ANTHROPIC_AUTH_TOKEN", "HAZOP_ENDPOINT_LABEL",
-    # PRD 추론경계·Kiro K-1~K-4: Kiro API(Anthropic 형식) 전환 스위치와 그 주소·키
-    "HAZOP_PROVIDER", "KIRO_BASE_URL", "KIRO_API_KEY", "KIRO_API_KEY_FILE", "KIRO_AUTH",
+    # PRD 추론경계·Kiro K-1~K-4: 대회 AI 모델 게이트웨이(OpenAI 호환) 선택과 그 키
+    "HAZOP_PROVIDER", "KIRO_API_KEY", "HAZOP_GATEWAY_KEY",
 )
-KIRO_LABEL: Final[str] = "Kiro API"
+GATEWAY_LABEL: Final[str] = "대회 AI 게이트웨이"
 #: `ANTHROPIC_BASE_URL` 이 있을 때 출처 줄에 붙는 경유 표시. Bedrock 경유는 운영사 확인 뒤에만
 #: Secrets `HAZOP_ENDPOINT_LABEL` 로 바꾼다(PRD 본선 F-01-5) — 코드 기본값은 확인 전 문구.
 DEFAULT_ENDPOINT_LABEL: Final[str] = "대회 제공 API"
@@ -135,45 +137,21 @@ def sync_secrets(secrets: Mapping[str, object], environ: MutableMapping[str, str
             environ[key] = str(secrets[key]).strip()
         elif key in environ and environ[key] != environ[key].strip():
             environ[key] = environ[key].strip()
-    apply_provider(environ)
 
 
 def provider_problem(environ: Mapping[str, str] = os.environ) -> str | None:
-    """`HAZOP_PROVIDER=kiro` 인데 주소·키가 없으면 사유. 직결로 몰래 넘어가지 않게 실호출을 막는다(K-4)."""
-    if environ.get("HAZOP_PROVIDER", "anthropic").strip().lower() != "kiro":
+    """대회 게이트웨이를 고른 상태(`HAZOP_PROVIDER=gateway|kiro`)인데 키가 없으면 사유 — 직결로 넘어가지 않는다(K-4)."""
+    if _provider(environ) != "gateway":
         return None
-    if not environ.get("KIRO_BASE_URL", "").strip():
-        return "실호출 비활성 — HAZOP_PROVIDER=kiro 인데 KIRO_BASE_URL 이 없습니다."
-    if not _kiro_key(environ):
-        return "실호출 비활성 — HAZOP_PROVIDER=kiro 인데 KIRO_API_KEY(또는 KIRO_API_KEY_FILE)가 없습니다."
+    if not gateway_key(environ):
+        return "실호출 비활성 — HAZOP_PROVIDER=gateway 인데 게이트웨이 키(KIRO_API_KEY)가 없습니다."
     return None
 
 
-def _kiro_key(environ: Mapping[str, str]) -> str:
-    key = environ.get("KIRO_API_KEY", "").strip()
-    path = environ.get("KIRO_API_KEY_FILE", "").strip()
-    if not key and path:
-        file = Path(path) if Path(path).is_absolute() else Path(__file__).resolve().parents[2] / path
-        key = file.read_text(encoding="utf-8-sig").strip() if file.exists() else ""
-    return key
-
-
-def apply_provider(environ: MutableMapping[str, str] = os.environ) -> str:
-    """`HAZOP_PROVIDER=kiro` 면 Kiro 주소·키를 Anthropic SDK 환경변수로 옮긴다(Kiro API 는 Anthropic 형식).
-
-    `KIRO_AUTH=bearer` 면 `ANTHROPIC_AUTH_TOKEN`(Authorization: Bearer), 아니면 `ANTHROPIC_API_KEY`(x-api-key).
-    전환하면 반대쪽 키 변수는 지운다 — 직결 키가 Kiro 로, Kiro 키가 직결로 새지 않게. 출처 줄 표시는 "Kiro API".
-    설정이 모자라면 아무것도 바꾸지 않고 `live_block_reason` 이 실호출을 막는다. 반환: 적용한 공급자 이름.
-    """
-    if environ.get("HAZOP_PROVIDER", "anthropic").strip().lower() != "kiro" or provider_problem(environ):
-        return "anthropic"
-    key = _kiro_key(environ)
-    environ["ANTHROPIC_BASE_URL"] = environ["KIRO_BASE_URL"].strip()
-    bearer = environ.get("KIRO_AUTH", "x-api-key").strip().lower() == "bearer"
-    environ["ANTHROPIC_AUTH_TOKEN" if bearer else "ANTHROPIC_API_KEY"] = key
-    environ.pop("ANTHROPIC_API_KEY" if bearer else "ANTHROPIC_AUTH_TOKEN", None)
-    environ.setdefault("HAZOP_ENDPOINT_LABEL", KIRO_LABEL)
-    return "kiro"
+def _provider(environ: Mapping[str, str]) -> str:
+    with contextlib.suppress(ConfigValidationError):
+        return effective_provider(load_model_config(), environ)
+    return "anthropic"
 
 
 _KEY_CHARS: Final[frozenset[str]] = frozenset(
@@ -224,6 +202,8 @@ def endpoint_label(environ: Mapping[str, str] = os.environ) -> str | None:
 
     기본 엔드포인트를 명시한 경우(이 PC 셸에 `https://api.anthropic.com` 이 설정돼 있다)도 직결로 본다.
     """
+    if _provider(environ) == "gateway":
+        return GATEWAY_LABEL
     if environ.get("ANTHROPIC_BASE_URL", "").strip().rstrip("/") in ("", DIRECT_BASE_URL):
         return None
     return environ.get("HAZOP_ENDPOINT_LABEL", "").strip() or DEFAULT_ENDPOINT_LABEL
@@ -252,7 +232,7 @@ def live_block_reason(environ: Mapping[str, str] = os.environ) -> str | None:
         return "실호출 비활성 — 공개 데모는 재생 모드만 제공합니다(HAZOP_ALLOW_LIVE 미설정)."
     if not is_mock(environ) and (problem := provider_problem(environ)):
         return problem
-    if not environ.get(_key_name(environ), "").strip() and not is_mock(environ):
+    if _provider(environ) != "gateway" and not environ.get(_key_name(environ), "").strip() and not is_mock(environ):
         return "실호출 비활성 — ANTHROPIC_API_KEY 가 없습니다."
     return None
 
@@ -388,7 +368,10 @@ def _mock_parse_factory(**_: Any) -> ConverseResponse:
 def _parser_client() -> AbstractBedrockClient:
     """입력 해석은 저비용 `verifier` 프로필(config/models.yaml)로 부른다 — 필드 추출일 뿐이라서다."""
     config = load_model_config()
-    client_cls = AnthropicClient if config.provider == "anthropic" else BedrockClient
+    provider = effective_provider(config)
+    if provider == "gateway":
+        return GatewayClient(config=config, profile="verifier")
+    client_cls = AnthropicClient if provider == "anthropic" else BedrockClient
     return client_cls(config=config, profile="verifier")
 
 
@@ -482,7 +465,9 @@ def _model_info() -> tuple[str | None, str | None, int | None]:
     """(provider, 생성 모델 ID, max_tokens) — 설정을 못 읽으면 None."""
     with contextlib.suppress(ConfigValidationError):
         config = load_model_config()
-        return config.provider, config.generation.model_id, config.generation.max_tokens
+        provider = effective_provider(config)
+        model_id = config.gateway.get("generation_model_id") if provider == "gateway" else config.generation.model_id
+        return provider, model_id, config.generation.max_tokens
     return None, None, None
 
 

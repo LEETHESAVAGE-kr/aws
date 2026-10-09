@@ -143,7 +143,8 @@ Kiro API 는 **형식이 아직 확인되지 않았다**(§6 Q-K1). Anthropic �
 
 > **10/9 결정·확인**
 > - **Q-B1 = (가) + (나) 둘 다**: (가) 공정 배경정보를 사용자가 보완·갱신하는 흐름(Z-4 입력 충분성 점검 + 보완 후 재생성), (나) 근거 코퍼스 자동 최신화(법령 DRF·MSDS API 재수집 → 바뀐 문단 diff → 인덱스 재생성; 수집 스크립트 `tools/build_msds_corpus.py` 는 있음, 법령 재수집 스크립트는 아직 저장소에 없음 — scratchpad 에만 있었다).
-> - **Q-K1 = Anthropic 형식**(사용자). 전환 스위치 구현 완료(6b2e1f8, `HAZOP_PROVIDER=kiro`). **단 받은 것은 키 한 줄뿐** — `.env` `KIRO_API_KEY` 는 `sk-` 로 시작하는 25자로 Anthropic 직결 키(`sk-ant-`, 100자 안팎)가 아니다. **API 주소(base URL)를 운영 측에 확인해야** 호출할 수 있다. 주소 없이 여러 곳에 키를 보내 보지 않는다.
+> - **Q-K1 정정(10/9 가이드 확인)**: 「AI 모델 API 사용 가이드」 기준 **OpenAI 호환 게이트웨이**다(Anthropic 형식 아님). base_url `https://52.79.201.46/v1`(가이드 1쪽), Bearer, 모델 별칭. → `core/llm/gateway_client.py`(K-2 B) 구현, `HAZOP_PROVIDER=gateway`. 실측: sonnet-5 별칭 호출 성공(2.1초). **opus·haiku 는 403 — 허용 목록 첫·끝 별칭에 따옴표가 붙은 운영 측 설정 오타**, 슬랙 문의 필요. TLS 는 certifi 묶음으로 검증(파이썬 기본 저장소는 'expired' 오판). 아래 줄의 Anthropic 형식 스위치는 철회.
+> - (철회) Q-K1 = Anthropic 형식(사용자). 전환 스위치 구현 완료(6b2e1f8, `HAZOP_PROVIDER=kiro`). **단 받은 것은 키 한 줄뿐** — `.env` `KIRO_API_KEY` 는 `sk-` 로 시작하는 25자로 Anthropic 직결 키(`sk-ant-`, 100자 안팎)가 아니다. **API 주소(base URL)를 운영 측에 확인해야** 호출할 수 있다. 주소 없이 여러 곳에 키를 보내 보지 않는다.
 
 | # | 질문 | 선택지 | 추천 |
 |---|---|---|---|
