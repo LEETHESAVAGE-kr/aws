@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import contextlib
+import dataclasses
 import html
 import json
 import logging
@@ -36,7 +37,7 @@ from core.criteria import (  # all_criteria 는 app.py 안내 탭이 service.all
     load_criteria,
 )
 from core.export import export_all, normalize_rows
-from core.export.rows import HEADERS
+from core.export.rows import HEADERS, consensus_detail, consensus_summary
 from core.export.xlsx import confidence_label
 from core.llm import (
     AnthropicClient,
@@ -67,6 +68,13 @@ LIVE_NOTE: Final[str] = "가이드워드 전체 · 약 1.5~2분 · 약 $0.75"
 LIVE_BUTTON: Final[str] = "HAZOP 초안 생성 (가이드워드 전체 · 약 1.5–2분)"
 QUICK_NOTE: Final[str] = "약 1분 · API 호출 3회(입력 해석 1 + 파라미터 열거 1 + 가이드워드 1, JSON 입력이면 2회)"
 #: 보조 실행 "가이드워드 하나만 빠르게"(지시문 X-1b) 문구 — 실무 기능이다. 이 묶음에 '부스'·'관람객' 을 쓰지 않는다(시험).
+#: §8 C 생성 방식(10/9 사용자: "3가지 공통 답만이 아니라 지금처럼 한 AI 의 답을 고르는 버튼도 남기기").
+#: 값 = 가이드워드 판정 반복 횟수. 기본은 첫 항목(지금 방식).
+GENERATION_MODES: Final[dict[str, int]] = {
+    "한 번 생성 — 지금처럼 AI 답 하나": 1,
+    "3번 생성해 공통 답 — 반복해서 나온 판단만 남김 (시간·비용 약 3배)": 3,
+}
+GENERATION_MODE_LABEL: Final[str] = "생성 방식"
 QUICK_EXPANDER: Final[str] = "가이드워드 하나만 빠르게 보기 — 특정 이탈 방향만 먼저 확인할 때 (약 1분)"
 QUICK_QUESTION: Final[str] = "어떤 가이드워드만 볼까요?"
 QUICK_BUTTON: Final[str] = "이 가이드워드만 생성 (약 1분 · 약 $0.15)"
@@ -104,6 +112,8 @@ FLAG_COLUMN: Final[str] = "검증 플래그"
 #: 10/9 사용자: '근거' 빈칸이 "근거 없음"으로 읽힌다 → 무엇을 붙이는 칸인지 이름으로. 빈칸은 EVIDENCE_NONE.
 EVIDENCE_COLUMN: Final[str] = "관련 법령·MSDS"
 EVIDENCE_NONE: Final[str] = "인용 없음 (AI 추론)"
+#: §8 C 합의 생성 — 같은 입력으로 판정을 3번 돌려 몇 번 같은 판단이 나왔나. 신뢰도 단계와 별개(C-6). 합의 결과에만 생긴다.
+REPEAT_COLUMN: Final[str] = "반복 일치"
 #: 공정 카탈로그(J-01, `data/presets.json`). 노드 id → 노드(+ `process`).
 CATALOG: Final[list[dict[str, Any]]] = load_catalog()
 NODES: Final[dict[str, dict[str, Any]]] = nodes_by_id(CATALOG)
@@ -534,8 +544,11 @@ def run_live(
     replay: Result,
     environ: Mapping[str, str] = os.environ,
     on_progress: ProgressCallback | None = None,
+    consensus_runs: int | None = None,
 ) -> Result:
     """노드 1건 전체 생성(가이드워드 7~10종) — 직접 입력의 기본 실행(지시문 X-1).
+
+    `consensus_runs` 는 화면 '생성 방식'(§8 C) — None 이면 models.yaml 값, 1 = 한 번 생성, 3 = 3번 생성해 공통 답.
 
     `node_text` 는 NodeMeta JSON 또는 자연어 공정 설명(`parse_node_text`). mock 모드면 재생 레코드를
     돌려주는 모의 클라이언트로 끝까지 돈다(H-02 ⑦). 가이드워드 판정이 끝날 때마다 `on_progress` 로
@@ -549,6 +562,8 @@ def run_live(
     )
     raw_calls = _observe_calls(client)
     gen_config = load_generator_config()
+    if consensus_runs is not None:
+        gen_config = dataclasses.replace(gen_config, consensus_runs=consensus_runs)
     # Y-2: 직접 입력은 골드셋 공정이 아니다 — 공식 HAZOP 기준(steering domain.md §4 적용 범위)
     generator = HazopGenerator(client, gen_config, criteria_id=OFFICIAL_CRITERIA)
     judged: list[str] = []  # 판정한 가이드워드(완료 순서) — 결과 묶음 보기의 축
@@ -566,6 +581,7 @@ def run_live(
     meta["guidewords"] = [g for g in STANDARD_GUIDEWORDS + PROCEDURAL_GUIDEWORDS if g in judged]
     meta["criteria_id"] = generator.criteria.id
     meta["parallel_calls"] = gen_config.parallel_calls
+    meta["consensus_runs"] = gen_config.consensus_runs
     return Result(meta=meta, records=records)
 
 
@@ -722,6 +738,34 @@ def held_rows(result: Result) -> list[dict[str, object]]:
     ]
 
 
+def reference_rows(result: Result) -> list[dict[str, object]]:
+    """합의 생성(§8 C-4)에서 3번 중 한 번만 나와 워크시트 칸에서 뺀 문장 — 버리지 않고 '참고'로 보인다.
+
+    Excel '반복 일치' 시트의 '참고(한 번만 나옴)' 행과 같은 내용.
+    """
+    rows: list[dict[str, object]] = []
+    for no, r in enumerate(verified(result)[0], start=1):
+        if r.status == INSUFFICIENT:
+            continue
+        for kind, text, agree, used in consensus_detail(r.consensus):
+            if used.startswith("참고"):
+                rows.append({"No": no, "가이드워드": f"{r.guideword} ({r.parameter})", "구분": kind,
+                             "문장": text, "일치": agree})
+    return rows
+
+
+def repeat_counts(result: Result) -> str | None:
+    """합의 결과 한 줄 — "같은 입력으로 판정 3번 · 원인 문장 41개 중 3/3 20 · 2/3 9 · 참고(1/3) 12". 단일 실행이면 None."""
+    records = [r for r in verified(result)[0] if r.consensus and r.status != INSUFFICIENT]
+    if not records:
+        return None
+    runs = int(records[0].consensus["runs"])
+    agrees = Counter(c["agree"] for r in records for c in r.consensus.get("causes") or [])
+    total = sum(agrees.values())
+    parts = [f"{k}/{runs} {agrees.get(k, 0)}" for k in range(runs, 0, -1)]
+    return f"같은 입력으로 판정 {runs}번 · 원인 문장 {total}개 중 " + " · ".join(parts)
+
+
 def safeguards_notice(result: Result) -> str | None:
     """추론 경계를 켠 실행에서 안전장치가 '모름'이었으면 F 가 안전조치 미반영이라는 알림(Q-Z2 a)."""
     m = result.meta
@@ -761,6 +805,8 @@ def worksheet_table(result: Result) -> list[dict[str, object]]:
         entry[EVIDENCE_COLUMN] = (
             "" if record.status == INSUFFICIENT else evidence_label(record.evidence) or EVIDENCE_NONE
         )
+        if any(r.consensus for r in records):  # 단일 실행 결과의 표는 지금과 같은 열
+            entry[REPEAT_COLUMN] = consensus_summary(record.consensus, record.status == INSUFFICIENT)
         table.append(entry)
     return table
 
@@ -1170,7 +1216,9 @@ EDITABLE_COLUMNS: Final[dict[str, str]] = {
 REVIEW_PINNED: Final[tuple[str, ...]] = (REVIEW_COLUMN, "No", "가이드워드")
 #: 고정 열 다음에 오는 판단 열 — 우선순위(위험도·S·F·신뢰도)가 가로 스크롤 없이 보이게 이탈 바로 뒤에 둔다.
 #: 화면 순서일 뿐이다. 다운로드 xlsx 는 표준 12열 순서(R-02) 그대로.
-REVIEW_FRONT: Final[tuple[str, ...]] = ("이탈", "위험도", "S(1-5)", "F(1-5)", CONFIDENCE_COLUMN, EVIDENCE_COLUMN)
+REVIEW_FRONT: Final[tuple[str, ...]] = (
+    "이탈", "위험도", "S(1-5)", "F(1-5)", CONFIDENCE_COLUMN, REPEAT_COLUMN, EVIDENCE_COLUMN,
+)
 #: 글 열 너비(px) — 'large' 는 열 4개가 화면을 다 먹어 숫자 열이 밀려난다(10/8 1440px 캡처).
 REVIEW_WIDTHS: Final[dict[str, int]] = {
     "가이드워드": 130, "이탈": 300, "원인": 300, "결과": 300, "기존 안전장치(Before)": 220, "권고": 300,
@@ -1185,7 +1233,7 @@ TABLE_STYLES: Final[tuple[str, ...]] = ("펼쳐 보기 — 글 전체", "편집 
 #: 펼쳐 보기 열 너비(px). 없는 열은 내용 길이대로.
 FULL_WIDTHS: Final[dict[str, int]] = {
     "No": 36, "검토": 56, "가이드워드": 120, "이탈": 240, "위험도": 52, "S(1-5)": 56, "F(1-5)": 48,
-    "신뢰도": 170, "관련 법령·MSDS": 200, "원인": 260, "결과": 260, "기존 안전장치(Before)": 180, "권고": 260,
+    "신뢰도": 170, "반복 일치": 220, "관련 법령·MSDS": 200, "원인": 260, "결과": 260, "기존 안전장치(Before)": 180, "권고": 260,
     "노드": 160, "시나리오 연계": 120, "검증 플래그": 180,
 }
 _LIST_COLUMNS: Final[tuple[str, ...]] = ("원인", "결과", "기존 안전장치(Before)", "권고")
