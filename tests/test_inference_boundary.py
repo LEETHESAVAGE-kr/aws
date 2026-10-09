@@ -46,6 +46,7 @@ def _factory(held: set[str], extra: dict[str, Any] | None = None) -> Any:
                                     "recommendations": ["유무 확인"], "evidence": [], "confidence": "inferred"}
             if n in held:
                 cell.update({"insufficient": True, "missing": ["액위 경보 설정값", "방유제 유무"], **(extra or {})})
+                cell = {k: v for k, v in cell.items() if v is not None}  # None = 그 키를 빼고 보낸다(스키마는 null 불허)
             cells.append(cell)
         return ConverseResponse(content=json.dumps({"guideword": gw, "cells": cells}, ensure_ascii=False))
 
@@ -125,6 +126,19 @@ def test_held_cell_drops_causes_and_grades() -> None:
     assert all(x.S is not None for x in records if x.status != INSUFFICIENT)
 
 
+@pytest.mark.parametrize("extra", [
+    {"deviation": ""},  # 보류 표시는 했는데 이탈 초안을 비움
+    {"insufficient": False, "S": None, "F": None},  # 보류 표시 없이 missing 만 적고 S·F 를 뺌
+])
+def test_held_without_draft_or_flag_is_kept_not_dropped(extra: dict[str, Any]) -> None:
+    """10/9 실호출: No 행 11셀이 '필수 필드 결측'으로 버려졌다 — 보류로 남아야 한다(결함 재삽입 대상)."""
+    _, _, records = _run(True, held={"준위"}, extra=extra)
+    held = [r for r in records if r.status == INSUFFICIENT]
+    assert len(held) == 7 and all(r.S is None for r in held)
+    if extra.get("deviation") == "":
+        assert held[0].deviation.startswith("(이탈 초안 없음")
+
+
 def test_insufficient_ignored_when_boundary_off() -> None:
     """끈 실행에서는 스키마에 없는 키다 — 모델이 넣어도 보류하지 않는다(판정 그대로)."""
     _, _, records = _run(False, held={"준위"})
@@ -201,7 +215,7 @@ def test_screen_labels_held_rows_and_counts() -> None:
     assert service.cell_breakdown(result) == "판정 42셀 = 해당 35 · 해당 없음 0 · 정보 부족 7(보류)"
     assert "정보 부족 7(보류)" in service.summary_line(result)
     assert service.confidence_counts(result).endswith("⚪ 정보 부족 7")
-    assert service.f_distribution(result) == "F=2 비율 100%"
+    assert service.f_distribution(result) == "빈도=2 비율 100%"
 
 
 def test_safeguards_notice_only_when_unknown() -> None:

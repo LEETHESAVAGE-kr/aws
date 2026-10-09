@@ -688,7 +688,7 @@ def confidence_counts(result: Result) -> str:
 HELD_BADGE: Final[str] = "⚪"
 #: Q-Z2 (a)(PRD 추천안 — 사용자 미결정): 안전장치를 모르면 F 는 매기되 '안전조치 미반영'을 알린다.
 SAFEGUARDS_UNKNOWN_NOTICE: Final[str] = (
-    "기존 안전장치가 입력에 없어 '없음'이 아니라 '모름'으로 다뤘습니다 — F(빈도)는 현재 안전조치를 반영하지 못한 값입니다."
+    "기존 안전장치가 입력에 없어 '없음'이 아니라 '모름'으로 다뤘습니다 — 빈도는 현재 안전조치를 반영하지 못한 값입니다. 안전장치가 있으면 입력에 적고 다시 생성하세요."
 )
 
 
@@ -747,9 +747,9 @@ def worksheet_table(result: Result) -> list[dict[str, object]]:
 
 
 #: 골드셋 없는 공정에 NH3 기준이 쓰인 결과(10/9 이전 캡처)에 붙는 불일치 배지(지시문 M-03, 실무자평가 P-3).
-CRITERIA_NOTICE = "S·F 등급 정의는 NH3 선박 벙커링 기준(선내·항만 영향)입니다 — 이 공정에는 참고용."
+CRITERIA_NOTICE = "심각도·빈도 등급 정의는 NH3 선박 벙커링 기준(선내·항만 영향)입니다 — 이 공정에는 참고용."
 #: 공식 기준으로 매긴 결과의 배지(Y-2). 〈이름〉·〈위치〉는 기준 파일에서.
-OFFICIAL_NOTICE = "이 결과의 S·F·위험도는 {name} 기준으로 매겼습니다({locator}). 공식 예시 기준이라 사업장 자체 기준이 있으면 그것이 우선합니다."
+OFFICIAL_NOTICE = "이 결과의 심각도·빈도·위험도는 {name} 기준으로 매겼습니다({locator}). 공식 예시 기준이라 사업장 자체 기준이 있으면 그것이 우선합니다."
 
 
 def result_criteria(result: Result) -> Criteria:
@@ -770,9 +770,9 @@ def f_distribution(result: Result) -> str:
     """가장 많은 F 값과 그 비율(실무자평가 P-2 공개). 동률이면 작은 F. 레코드가 없으면 해당 없음."""
     counts = Counter(r.F for r in result.records if r.F is not None)  # 보류 행(Z-3)은 F 가 없다
     if not counts:
-        return "F 분포 해당 없음"
+        return "빈도 분포 해당 없음"
     value, count = max(counts.items(), key=lambda kv: (kv[1], -kv[0]))
-    return f"F={value} 비율 {count / sum(counts.values()):.0%}"
+    return f"빈도={value} 비율 {count / sum(counts.values()):.0%}"
 
 
 def holdout_recall(replays: Mapping[str, Result]) -> tuple[int, int] | None:
@@ -975,7 +975,7 @@ def failed_guidewords_line(result: Result) -> str | None:
 def partial_rows(records: list[DeviationRecord]) -> list[dict[str, object]]:
     """생성 중 부분 표(X-1c) — 가볍게 6열. 레코드는 생성기가 공정 순서(Y-1)로 준다."""
     return [
-        {"가이드워드": r.guideword, "파라미터": r.parameter, "이탈": r.deviation, "S": r.S, "F": r.F, "위험도": r.risk_score}
+        {"가이드워드": r.guideword, "파라미터": r.parameter, "이탈": r.deviation, "심각도": r.S, "빈도": r.F, "위험도": r.risk_score}
         for r in records
     ]
 
@@ -1177,6 +1177,9 @@ _LIST_COLUMNS: Final[tuple[str, ...]] = ("원인", "결과", "기존 안전장�
 _HIDE_IF_UNIFORM: Final[tuple[str, ...]] = ("노드", "시나리오 연계", FLAG_COLUMN, EVIDENCE_COLUMN)
 
 
+_KOREAN: Final[dict[str, str]] = {"S": "심각도", "F": "빈도"}
+
+
 def _blank(value: object) -> bool:
     """data_editor 의 빈 숫자 칸 — None 또는 NaN."""
     return value is None or (isinstance(value, float) and value != value)
@@ -1262,13 +1265,13 @@ def apply_review(
             if field in ("S", "F"):
                 if _blank(value):  # 보류 행(Z-3)만 빈칸을 허용 — 판정한 행의 등급은 지울 수 없다
                     if record.get("status") != INSUFFICIENT:
-                        raise ValueError(f"{column} 는 비울 수 없습니다(정보 부족 보류 행만 빈칸)")
+                        raise ValueError(f"{_KOREAN[field]} 는 비울 수 없습니다(정보 부족 보류 행만 빈칸)")
                     record[field] = None
                     changed.append(column)
                     continue
                 grade = int(value)
                 if grade != value or not 1 <= grade <= limits[field]:
-                    raise ValueError(f"{column} 는 1~{limits[field]} 정수여야 합니다({criteria.short}): {value!r}")
+                    raise ValueError(f"{_KOREAN[field]} 는 1~{limits[field]} 정수여야 합니다({criteria.short}): {value!r}")
                 record[field] = grade
             else:
                 record[field] = _split_list(value)
