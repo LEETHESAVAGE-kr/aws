@@ -167,14 +167,14 @@ def test_screening_matrix_formulas(tmp_path: Path) -> None:
 
 # ── R-04 근거 / R-05 신뢰도 ───────────────────────────────────────────────────
 def test_evidence_sheet_has_note_when_empty(tmp_path: Path) -> None:
-    ws = _wb(tmp_path)["근거"]
+    ws = _wb(tmp_path)["법령·MSDS 인용"]
     assert [c.value for c in ws[1]] == list(EVIDENCE_HEADERS)
     assert ws.max_row == 2 and ws["A2"].value == EVIDENCE_EMPTY_NOTE
 
 
 def test_evidence_sheet_lists_attached_evidence(tmp_path: Path) -> None:
     rows = normalize_rows([_record_with_evidence()])
-    ws = _wb(tmp_path, rows)["근거"]
+    ws = _wb(tmp_path, rows)["법령·MSDS 인용"]
     assert ws.max_row == 2
     assert [c.value for c in ws[2]] == [1, "KOSHA-P-1", "가이드", "§3", "인용문"]
 
@@ -191,7 +191,7 @@ def test_confidence_sheet_shows_labels(tmp_path: Path) -> None:
     gold[1] = {**gold[1], "confidence": "review"}
     gold[2] = {**gold[2], "confidence": "grounded"}
     ws = _wb(tmp_path, normalize_rows(gold))["신뢰도"]
-    assert [ws.cell(row=r, column=2).value for r in (2, 3, 4)] == ["추론", "검토 필요", "근거 다수"]  # Y-4 표기
+    assert [ws.cell(row=r, column=2).value for r in (2, 3, 4)] == ["AI 추론", "검토 필요", "문서 2건 이상 인용"]  # Y-4 표기
 
 
 # ── R-06 리포트 ───────────────────────────────────────────────────────────────
@@ -292,8 +292,8 @@ def test_fr03_mock_output_exports_through_same_path(tmp_path: Path) -> None:
     ws = wb[SHEET_ORDER[0]]
     assert ws.max_row == len(records) + 3
     assert ws["J2"].value == "=H2*I2"
-    assert {wb["신뢰도"].cell(row=r, column=2).value for r in range(2, len(records) + 2)} == {"추론"}
-    assert wb["근거"]["A2"].value == EVIDENCE_EMPTY_NOTE
+    assert {wb["신뢰도"].cell(row=r, column=2).value for r in range(2, len(records) + 2)} == {"AI 추론"}
+    assert wb["법령·MSDS 인용"]["A2"].value == EVIDENCE_EMPTY_NOTE
     rep = json.loads(paths["report"].read_text(encoding="utf-8"))
     assert rep["confidence_distribution"]["inferred"] == len(records)
     assert rep["matrix_coverage"]["ratio"] == 1.0
@@ -329,7 +329,7 @@ def _snapshot(tmp_path: Path) -> dict[str, Any]:
         },
         "rating": {"max_row": wb["평가기준"].max_row, "max_column": wb["평가기준"].max_column},
         "screening": {"b3": wb["스크리닝"]["B3"].value, "max_row": wb["스크리닝"].max_row},
-        "evidence": {"max_row": wb["근거"].max_row},
+        "evidence": {"max_row": wb["법령·MSDS 인용"].max_row},
         "confidence": {
             "max_row": wb["신뢰도"].max_row,
             "values": sorted({wb["신뢰도"].cell(row=r, column=2).value for r in range(2, 36)}),
