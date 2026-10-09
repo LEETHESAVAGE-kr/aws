@@ -22,11 +22,17 @@ from apps.web import form, guide, service  # noqa: E402
 from apps.web.replay import load_replays  # noqa: E402
 from core.agent.generate import PROCEDURAL_GUIDEWORDS, STANDARD_GUIDEWORDS  # noqa: E402
 
-MODE_NL = "문장으로 새 공정 분석"
-MODE_CASES = "실측 사례 재생"
-#: 입력 방식(10/9 사용자 요청 — 서술형 말고 클릭으로도). 골라서 입력은 JSON 으로 넘어가 문장 해석 호출이 없다.
-INPUT_TEXT = "문장으로 쓰기"
-INPUT_FORM = "골라서 입력"
+#: 모드·입력 방식 이름(PRD_본선_첫화면_사용흐름 Q-U2·Q-U3, 10/9 결정). 첫 화면 흐름 카드·안내 탭이 같은 말을 쓴다.
+MODE_NL = "새로 만들기"
+MODE_CASES = "완성된 사례 보기"
+#: 항목 선택은 JSON 으로 넘어가 문장 해석 호출이 없다.
+INPUT_TEXT = "문장으로 설명"
+INPUT_FORM = "항목 선택"
+#: 예시 칩 아래 안내 — 고른 입력 방식에 따라(U-3).
+CHIP_HINT = {
+    INPUT_TEXT: "예시를 누르면 아래 칸에 예시 문장이 채워집니다. 그대로 써도, 고쳐 써도 됩니다.",
+    INPUT_FORM: "예시를 누르면 아래 칸에 예시 값이 채워집니다. 그대로 써도, 바꿔 골라도 됩니다.",
+}
 GUIDEWORDS = STANDARD_GUIDEWORDS + PROCEDURAL_GUIDEWORDS
 REPO = "https://github.com/LEETHESAVAGE-kr/aws"
 README_EVAL = f"{REPO}/blob/main/README.md#-6-평가-결과"
@@ -123,7 +129,7 @@ st.html(
     .hz-nav a:hover { color: var(--text); }
     @media (max-width: 900px) { .hz-nav { display: none; } }
     .hz-eyebrow { font-size: 13px; font-weight: 600; color: var(--accent-text); margin: 8px 0 8px; }
-    .hz-h1 { font-size: 28px; letter-spacing: -0.4px; font-weight: 700; line-height: 1.4; margin: 0 0 12px;
+    .hz-h1 { font-size: 34px; letter-spacing: -0.4px; font-weight: 700; line-height: 1.4; margin: 0 0 12px;
         color: var(--text); }
     .hz-sub { font-size: 15px; color: var(--muted); margin: 0 0 26px; line-height: 1.65; }
     .hz-steps { display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; }
@@ -133,6 +139,10 @@ st.html(
         color: var(--accent-text); font-size: 14px; display: flex; align-items: center; justify-content: center; }
     .hz-step strong { display: block; font-size: 15px; color: var(--text); }
     .hz-step span { font-size: 13px; color: var(--muted); }
+    .hz-step ul { margin: 4px 0 0; padding-left: 16px; }
+    .hz-step li { font-size: 13px; color: var(--muted); margin: 2px 0; }
+    .hz-step em { font-style: normal; color: var(--accent-text); font-weight: 600; margin-right: 4px; }
+    .hz-sub b { color: var(--text); font-weight: 600; }
     .hz-trust { display: flex; gap: 8px; flex-wrap: wrap; }
     .hz-trust span { font-size: 12px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line);
         color: var(--muted); }
@@ -201,12 +211,13 @@ state.setdefault("focus_guideword", None)
 
 
 def _node_form() -> None:
-    """골라서 입력 — 목록에서 고르고, 없으면 직접 적는다(accept_new_options). 값은 `form.KEYS` 상태에 있다."""
+    """항목 선택 — 목록에서 고르고, 없으면 직접 적는다(accept_new_options). 값은 `form.KEYS` 상태에 있다."""
+    st.caption("필수는 물질·설비 둘뿐입니다. 나머지는 모르면 비워 두세요 — 비운 정보는 ‘정보 부족’으로 다룹니다.")
     left, right = st.columns([3, 2])
-    left.selectbox("물질", form.SUBSTANCES, key=form.KEYS["substance"],
+    left.selectbox("물질 (필수)", form.SUBSTANCES, key=form.KEYS["substance"],
                    placeholder="고르거나 직접 입력", accept_new_options=True)
     right.selectbox("상태", list(form.PHASES), key=form.KEYS["phase"])
-    st.multiselect("설비 — 흐름 순서대로 고르세요", form.EQUIPMENT, key=form.KEYS["equipment"],
+    st.multiselect("설비 (필수) — 흐름 순서대로: 받는 곳 → 내보내는 곳", form.EQUIPMENT, key=form.KEYS["equipment"],
                    placeholder="예: 압축기 → 저장용기 → 디스펜서", accept_new_options=True)
     # 10/9 화면 캡처: 한 줄 6칸이면 단위 칸이 좁아 'MPa' 가 'M' 으로 잘린다 → 두 줄, 단위 칸 넓게
     p, pu, t_ = st.columns([3, 2, 3])
@@ -217,7 +228,8 @@ def _node_form() -> None:
     d.number_input("설계압력", key=form.KEYS["design_pressure"], min_value=0.0, placeholder="모름")
     du.selectbox("설계압력 단위", form.UNITS, key=form.KEYS["design_unit"])
     c.text_input("용량", key=form.KEYS["capacity"], placeholder="예: 200 kg")
-    no_safeguards = st.checkbox("안전장치 없음 (모르면 체크하지 말고 비워 두세요)", key=form.KEYS["no_safeguards"])
+    no_safeguards = st.checkbox("안전장치가 정말 없음", key=form.KEYS["no_safeguards"],
+                                help="모르면 체크하지 말고 아래를 비워 두세요 — '없음'과 '모름'은 다르게 다룹니다.")
     st.multiselect("기존 안전장치 — 설정값은 직접 입력(예: 고압 경보(설정 95 MPa))", form.SAFEGUARDS,
                    key=form.KEYS["safeguards"], disabled=no_safeguards, accept_new_options=True,
                    placeholder="비워 두면 '모름'으로 다룹니다")
@@ -229,10 +241,13 @@ def _combined(process_id: str) -> service.Result | None:
 
 
 def _fill(text: str, guideword: str | None = None, label: str | None = None) -> None:
-    state.quick_text = text
-    if label in form.EXAMPLES:  # 골라서 입력 양식도 같은 예시로 채운다 — 어느 방식으로 보고 있든 같은 공정
+    """예시 칩 — 고른 입력 방식의 칸만 채운다(U-3). 항목 예시가 없는 칩(부스)은 문장 방식으로 바꿔 채운다."""
+    if state.input_style == INPUT_FORM and label in form.EXAMPLES:
         for key, value in form.example_state(label).items():
             state[key] = value
+    else:
+        state.input_style = INPUT_TEXT
+        state.quick_text = text
     if guideword:  # 칩이 지정한 가이드워드(V-6 · X-4) — 결과는 가이드워드별 보기에서 그 묶음을 펼친다
         state.guideword = guideword
         state.view_pref = service.VIEWS[1]
@@ -251,7 +266,7 @@ def _failure_hint(exc: BaseException) -> str:
     if code == 429:
         return (
             "원인: 429 — API 키의 분당 사용량 한도에 걸렸습니다(여러 명이 연달아 누른 경우). "
-            '1분쯤 뒤 다시 누르거나, 기다리는 동안 "실측 사례 재생"을 보세요. 이번 실패는 횟수에 넣지 않았습니다.'
+            '1분쯤 뒤 다시 누르거나, 기다리는 동안 "완성된 사례 보기"를 보세요. 이번 실패는 횟수에 넣지 않았습니다.'
         )
     if code == 529 or (isinstance(code, int) and code >= 500):
         return (
@@ -275,18 +290,25 @@ st.html(
 # ── 작업 영역: 왼쪽 소개 · 오른쪽 도구 ───────────────────────────────────────
 intro, tool = st.columns([5, 7], gap="large")
 intro.html(
-    """<div class="hz-eyebrow">AI 위험성평가 코파일럿</div>
-    <div class="hz-h1">공정을 한 문단으로 쓰면,<br>HAZOP 워크시트 초안이 나옵니다.</div>
-    <p class="hz-sub">며칠짜리 HAZOP 회의의 첫 초안을 AI 가 몇 분 안에 채웁니다. 전문가는 검토와 승인만 하세요.</p>
+    """<div class="hz-eyebrow">AI 위험성평가 초안 도우미</div>
+    <div class="hz-h1">HAZOP Copilot</div>
+    <p class="hz-sub">화학공장·가스설비의 공정 정보를 넣으면, AI 가 <b>“설비가 원래 하려던 일에서 벗어나면 무슨 일이
+    생기나”</b>를 빠짐없이 따져 HAZOP(위험과 운전 분석) 표 초안을 만듭니다. 근거가 있는 내용에는 법령·MSDS 원문을
+    붙이고, 모르는 정보는 지어내지 않고 ‘정보 부족’으로 남깁니다. 최종 판단은 전문가가 합니다.</p>
     <div class="hz-steps">
-      <div class="hz-step"><b>1</b><div><strong>공정을 문장으로 설명</strong>
-        <span>예시 버튼 하나로 바로 시작</span></div></div>
-      <div class="hz-step"><b>2</b><div><strong>AI 가 가이드워드 전 셀 판정</strong>
-        <span>파라미터를 스스로 세우고 이탈·원인·결과·심각도·빈도·위험도·권고까지</span></div></div>
+      <div class="hz-step"><b>1</b><div><strong>공정 정보 넣기 — 세 가지 중 하나</strong>
+        <ul>
+          <li><em>문장으로 설명</em> 예시 공정을 누르면 예시 문장이 채워지고, 고쳐 쓰면 됩니다</li>
+          <li><em>항목 선택</em> 물질·설비·압력·안전장치를 목록에서 고릅니다(없으면 직접 입력)</li>
+          <li><em>완성된 사례 보기</em> 기다리기 싫다면, 저장해 둔 실제 결과를 바로 엽니다 → 3번으로</li>
+        </ul></div></div>
+      <div class="hz-step"><b>2</b><div><strong>AI 가 HAZOP 표 만들기 · 약 1.5–2분</strong>
+        <span>점검할 항목을 스스로 정하고, 벗어나는 경우마다 원인·결과·심각도·빈도·권고를 씁니다</span></div></div>
       <div class="hz-step"><b>3</b><div><strong>검토하고 내려받기</strong>
-        <span>PSM 양식 Excel · LOPA 초안 Word · 신뢰도 리포트</span></div></div>
+        <span>표를 읽고 채택·기각·수정 → Excel 워크시트 · LOPA 초안 Word · 신뢰도 리포트</span></div></div>
     </div>
-    <div class="hz-trust"><span>실제 LLM 생성 (Claude)</span><span>전문가 골드셋 34건 대비 정확도 공개</span>
+    <div class="hz-trust"><span>실제 LLM 생성 (Claude)</span><span>전문가가 작성한 HAZOP 34건과 정확도 비교</span>
+    <span>법령·MSDS 근거 인용</span><span>모르는 정보는 ‘정보 부족’으로</span>
     <span>근거 없는 규격 번호 자동 표시</span></div>"""
 )
 
@@ -300,14 +322,15 @@ with tool.container(border=True, key="tool"):
         st.html(
             f'<div class="hz-progress"><div style="width:{done * 33.4:.0f}%"></div></div>'
             '<p class="hz-q">어떤 공정을 분석할까요?</p>'
-            '<p class="hz-q-help">물질·설비·압력·온도·설계압력·용량·안전장치를 적을수록 정확해집니다. 예시를 눌러도 됩니다.</p>'
+            '<p class="hz-q-help">물질·설비·압력·온도·설계압력·용량·안전장치를 넣을수록 정확해집니다. 먼저 입력 방식을 고르세요.</p>'
         )
+        input_style = st.radio("입력 방식", [INPUT_TEXT, INPUT_FORM], key="input_style", horizontal=True)
+        st.html(f'<p class="hz-q-help">공정 예시 — {CHIP_HINT[input_style]}</p>')
         for i, (column, (label, text, *chip_guideword)) in enumerate(
             zip(st.columns(len(EXAMPLES)), BOOTH_EXAMPLES if BOOTH else EXAMPLES, strict=True)
         ):
             column.button(label, key=f"chip_{i}", on_click=_fill,
                           args=(text, chip_guideword[0] if chip_guideword else None, label), width="stretch")
-        input_style = st.radio("입력 방식", [INPUT_TEXT, INPUT_FORM], key="input_style", horizontal=True)
         if input_style == INPUT_TEXT:
             st.text_area(
                 "공정 설명",
@@ -390,7 +413,7 @@ with tool.container(border=True, key="tool"):
                         st.error(f"생성 실패: {type(exc).__name__}: {exc}")
                         st.caption(_failure_hint(exc))
                         st.button(
-                            "실측 사례 보기 — 완성된 결과를 바로 확인",
+                            "완성된 사례 보기 — 저장된 결과를 바로 확인",
                             key="fail_to_cases",
                             on_click=_to_cases,
                             width="stretch",
@@ -408,9 +431,9 @@ with tool.container(border=True, key="tool"):
             scope = "이 세션에" if "세션" in quota else "오늘"
             st.caption(
                 f"이 세션 남은 횟수 {left_runs}/{service.SESSION_LIMIT} · {scope} 준비된 실행 횟수를 모두 썼습니다. "
-                "실측 사례에서 같은 화면을 볼 수 있습니다."
+                "'완성된 사례 보기'에서 같은 화면을 볼 수 있습니다."
             )
-            st.button("실측 사례 보기", on_click=_to_cases, width="stretch")
+            st.button("완성된 사례 보기", on_click=_to_cases, width="stretch")
         elif BOOTH:
             st.caption(
                 f"부스 모드 · 오늘 남은 {service.daily_left()}회 · 생성 약 1.5~2분 — "
@@ -438,7 +461,7 @@ with tool.container(border=True, key="tool"):
             st.markdown(f":blue-background[공개 HAZOP 대조 · 외부 팀 작성] {process['description']}")
         elif process["gold"]:
             st.markdown(
-                ":green-background[골드셋 34건 · recall 실측] 액체 암모니아(NH3) 이송 — "
+                ":green-background[전문가 정답지 34건 · 정확도 실측] 액체 암모니아(NH3) 이송 — "
                 "전문가가 직접 수행한 HAZOP 34건과 대조합니다."
             )
         else:
@@ -481,8 +504,8 @@ st.html('<div id="result" class="hz-section">분석 결과</div>')
 if result is None:
     st.html(
         '<div class="hz-empty"><strong>아직 결과가 없습니다</strong>'
-        '위에서 예시를 누르고 "HAZOP 초안 생성"을 누르면 가이드워드 판정이 끝날 때마다 여기에 워크시트가 채워집니다(전체 약 1.5~2분).<br>'
-        '기다리기 싫다면 "실측 사례 재생"에서 완성된 결과를 바로 볼 수 있습니다.</div>'
+        '위에서 입력 방식과 예시를 고르고 "HAZOP 초안 생성"을 누르면, 판정이 끝나는 대로 여기에 표가 채워집니다(전체 약 1.5~2분).<br>'
+        '기다리기 싫다면 "완성된 사례 보기"에서 저장된 결과를 바로 볼 수 있습니다.</div>'
     )
 else:
     if result.is_gold:
@@ -495,12 +518,14 @@ else:
     failed = service.failed_guidewords_line(result)
     if failed:
         st.warning(failed)
-    notice = service.criteria_notice(result)
-    if notice:
-        st.markdown(f":orange-background[평가기준] {notice}")
-    unknown = service.safeguards_notice(result)
-    if unknown:
-        st.markdown(f":orange-background[안전조치 미반영] {unknown}")
+    notices = [(label, text) for label, text in (("평가기준", service.criteria_notice(result)),
+                                                 ("안전조치 미반영", service.safeguards_notice(result))) if text]
+    if notices:  # U-7 결과 위 알림을 한 상자에
+        with st.container(border=True):
+            for label, text in notices:
+                st.markdown(f":orange-background[{label}] {text}")
+    if not result.is_gold:
+        st.caption(service.READING_ORDER)
     view = service.process_view(result)
     cells = service.cells_label(result)
     tiles = [
@@ -673,7 +698,7 @@ else:
         node_meta = result.meta.get("node_meta", {})
         left, right = st.columns(2)
         with left, st.container(border=True):
-            kind = "문장" if result.meta.get("node_text") else "JSON"
+            kind = "문장" if result.meta.get("node_text") else "항목 선택"
             st.markdown(
                 f"**사용자가 준 것 ({kind})** — 노드({node_meta.get('node') or '—'}), "
                 f"취급 물질({node_meta.get('substance') or '—'}), "
@@ -739,9 +764,13 @@ for column, (title, headline, rows) in zip(st.columns(3), INTRO_CARDS, strict=Tr
         + "</div>"
     )
 st.html('<div style="height:14px"></div>')
-example_tab, gw_tab, risk_tab, read_tab, compare_tab = st.tabs(
-    ["① 한 줄이 만들어지는 과정", "② 가이드워드 7종", "③ 위험도 (심각도·빈도)", "④ 결과 화면 읽는 법", "⑤ 회의와 비교"]
+howto_tab, example_tab, gw_tab, risk_tab, read_tab, compare_tab = st.tabs(
+    ["⓪ 이렇게 쓰세요", "① 한 줄이 만들어지는 과정", "② 가이드워드 7종", "③ 위험도 (심각도·빈도)", "④ 결과 화면 읽는 법", "⑤ 회의와 비교"]
 )
+with howto_tab:
+    for path_name, steps in guide.HOW_TO:
+        st.markdown(f"**{path_name}**")
+        st.markdown("\n".join(f"{i}. {s}" for i, s in enumerate(steps, start=1)))
 with example_tab:
     st.caption("워크시트 한 줄은 아래 순서로 채워집니다. 값은 이해를 돕는 설명용 예시입니다(실제 생성 결과 아님).")
     example_tab.html(
@@ -764,7 +793,7 @@ with gw_tab:
 with risk_tab:
     st.caption(
         "심각도와 빈도를 등급으로 매기고, 둘을 조합한 값이 위험도입니다. 위험도가 높은 줄부터 대책을 세웁니다. "
-        "기준은 결과마다 하나입니다 — 직접 입력은 KOSHA C-C-37(공식 HAZOP 기술지원규정), NH3 골드셋 노드는 골드셋 평가기준. "
+        "기준은 결과마다 하나입니다 — 직접 입력은 KOSHA C-C-37(공식 HAZOP 기술지원규정), NH3 정답지 노드는 그 정답지의 평가기준. "
         "기준마다 단계 수와 계산법이 달라 섞거나 평균내지 않습니다."
     )
     crit_by_name = {c.short: c for c in service.all_criteria()}
@@ -795,7 +824,7 @@ with compare_tab:
 
 # ── 정확도 (기본 접힘) ───────────────────────────────────────────────────────
 st.html('<div id="eval"></div>')
-with st.expander("정확도 — 골드셋 대비 recall (n=1), 불리한 값까지 공개", expanded=False):
+with st.expander("정확도 — 전문가 정답지 대비 재현율(recall, n=1), 불리한 값까지 공개", expanded=False):
     st.caption(
         "NH3 벙커링 4노드만 해당(공개 HAZOP 대조 LPG 공정은 기준이 달라 각 결과 화면에 따로 표시, 예시 공정은 대조 기준 없음). 하네스 미구현 — `tools/capture_replay.py` 로 "
         f"노드별 1회 실측. 규칙·해석은 [README §6]({README_EVAL})."
