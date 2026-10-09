@@ -282,7 +282,7 @@ intro.html(
     """<div class="hz-eyebrow">AI 위험성평가 초안 도우미</div>
     <div class="hz-h1">HAZOP Copilot</div>
     <p class="hz-sub">화학공장·가스설비의 공정 정보를 넣으면, AI 가 <b>“설비가 원래 하려던 일에서 벗어나면 무슨 일이
-    생기나”</b>를 빠짐없이 따져 HAZOP(위험과 운전 분석) 표 초안을 만듭니다. 근거가 있는 내용에는 법령·MSDS 원문을
+    생기나”</b>를 빠짐없이 따져 HAZOP(위험과 운전 분석) 표 초안을 만듭니다. 공식 문서가 다루는 위험에는 법령·MSDS 원문을
     붙이고, 모르는 정보는 지어내지 않고 ‘정보 부족’으로 남깁니다. 최종 판단은 전문가가 합니다.</p>
     <div class="hz-steps">
       <div class="hz-step"><b>1</b><div><strong>공정 정보 넣기 — 두 가지 방법</strong>
@@ -664,10 +664,10 @@ else:
                         st.caption("이 묶음은 결과 행이 없습니다.")
         if not result.is_gold:
             st.caption("신뢰도 " + service.confidence_counts(shown)
-                       + " — 근거가 붙었다는 것은 '공식 문서가 같은 위험을 다룬다'는 뜻이지 내용이 맞다는 보증이 아닙니다.")
+                       + " — 문서가 인용됐다는 것은 '공식 문서가 같은 위험을 다룬다'는 뜻이지 내용이 맞다는 보증이 아닙니다.")
         cited = service.evidence_rows(shown)
         if cited:
-            with st.expander(f"근거 발췌 원문 — {len(cited)}건 (법령·고시 원문 그대로, 인용 검사 통과분만)", expanded=False):
+            with st.expander(f"인용한 법령·MSDS 원문 — {len(cited)}건 (원문 그대로, 인용 검사 통과분만)", expanded=False):
                 st.dataframe(cited, hide_index=True, row_height=60)
         held = service.held_rows(shown)
         if held:
