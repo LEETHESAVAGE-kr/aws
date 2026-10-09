@@ -215,7 +215,7 @@ def test_app_default_run_covers_all_guidewords(monkeypatch: pytest.MonkeyPatch, 
 
     for key, value in {**_MOCK_ENV, "HAZOP_LIVE_SCOPE": scope}.items():
         monkeypatch.setenv(key, value)
-    at = AppTest.from_file(str(_APP), default_timeout=60).run()
+    at = _grid(AppTest.from_file(str(_APP), default_timeout=60)).run()
     assert not at.exception
     assert len(at.dataframe) == 0
     assert not any("노드 전체" in b.label for b in at.button)
@@ -248,7 +248,7 @@ def test_app_quick_run_is_one_guideword_and_says_so(monkeypatch: pytest.MonkeyPa
 
     for key, value in _MOCK_ENV.items():
         monkeypatch.setenv(key, value)
-    at = AppTest.from_file(str(_APP), default_timeout=30).run()
+    at = _grid(AppTest.from_file(str(_APP), default_timeout=30)).run()
     assert at.expander[0].label == service.QUICK_EXPANDER and at.selectbox(key="guideword").label == (
         service.QUICK_QUESTION
     )
@@ -276,7 +276,7 @@ def test_app_direct_input_disabled_without_allow(monkeypatch: pytest.MonkeyPatch
     from streamlit.testing.v1 import AppTest
 
     monkeypatch.delenv("HAZOP_ALLOW_LIVE", raising=False)
-    at = AppTest.from_file(str(_APP), default_timeout=30).run()
+    at = _grid(AppTest.from_file(str(_APP), default_timeout=30)).run()
     assert not at.exception
     assert [b.disabled for b in at.button if b.label.startswith(_GENERATE)] == [True]
     assert all(not b.disabled for b in at.button if (b.key or "").startswith("chip_"))
@@ -336,7 +336,7 @@ def test_app_shows_key_hint_on_auth_error(monkeypatch: pytest.MonkeyPatch) -> No
         raise AuthenticationError("Error code: 401 - API key is invalid.")
 
     monkeypatch.setattr(service, "run_live", _reject)
-    at = AppTest.from_file(str(_APP), default_timeout=30).run()
+    at = _grid(AppTest.from_file(str(_APP), default_timeout=30)).run()
     at.text_area[0].input(_SENTENCE).run()
     next(b for b in at.button if b.label.startswith(_GENERATE)).click().run()
     assert not at.exception
@@ -390,7 +390,7 @@ def test_app_criteria_badge_visibility(monkeypatch: pytest.MonkeyPatch) -> None:
     def official_shown(at: AppTest) -> bool:
         return any("C-C-37-2026" in m.value and "평가기준" in m.value for m in at.markdown)
 
-    at = AppTest.from_file(str(_APP), default_timeout=30).run()
+    at = _grid(AppTest.from_file(str(_APP), default_timeout=30)).run()
     at.radio(key="mode").set_value(_CASES).run()
     assert not at.exception and len(at.dataframe) == 1 and not badge_shown(at)  # 사례 첫 화면 = N1(골드 공정)
     at.selectbox(key="process_name").select("LPG 저장탱크 출하").run()
@@ -521,7 +521,7 @@ def test_app_verifier_demo_toggle(monkeypatch: pytest.MonkeyPatch) -> None:
         return real_export(result, edits)
 
     monkeypatch.setattr(service, "export_files", spy)
-    at = AppTest.from_file(str(_APP), default_timeout=30).run()
+    at = _grid(AppTest.from_file(str(_APP), default_timeout=30)).run()
     assert not at.exception
     at.radio(key="mode").set_value(_CASES).run()
     at.selectbox(key="process_name").select("LPG 저장탱크 출하").run()
@@ -551,7 +551,7 @@ def test_app_starts_in_sentence_mode_with_empty_input(monkeypatch: pytest.Monkey
 
     for key, value in _MOCK_ENV.items():
         monkeypatch.setenv(key, value)
-    at = AppTest.from_file(str(_APP), default_timeout=30).run()
+    at = _grid(AppTest.from_file(str(_APP), default_timeout=30)).run()
     assert not at.exception
     assert at.radio(key="mode").value == "문장으로 새 공정 분석"
     assert at.session_state["quick_text"] == ""
@@ -564,7 +564,7 @@ def test_app_example_chip_fills_input(monkeypatch: pytest.MonkeyPatch) -> None:
 
     for key, value in _MOCK_ENV.items():
         monkeypatch.setenv(key, value)
-    at = AppTest.from_file(str(_APP), default_timeout=30).run()
+    at = _grid(AppTest.from_file(str(_APP), default_timeout=30)).run()
     chips = [b for b in at.button if (b.key or "").startswith("chip_")]
     assert len(chips) == 3
     at.button(key="chip_0").click().run()
@@ -622,7 +622,7 @@ def test_app_writes_stages_as_they_finish(monkeypatch: pytest.MonkeyPatch) -> No
         raise TimeoutError("판정 중 끊김")
 
     monkeypatch.setattr(service, "run_quick", partial_then_fail)
-    at = AppTest.from_file(str(_APP), default_timeout=30).run()
+    at = _grid(AppTest.from_file(str(_APP), default_timeout=30)).run()
     at.text_area[0].input(_SENTENCE).run()
     at.button(key="run_quick").click().run()
     shown = [m.value for m in at.markdown]
@@ -763,7 +763,7 @@ def test_app_passes_review_edits_to_downloads(monkeypatch: pytest.MonkeyPatch) -
         return real_export(result, edits)
 
     monkeypatch.setattr(service, "export_files", spy)
-    at = AppTest.from_file(str(_APP), default_timeout=30).run()
+    at = _grid(AppTest.from_file(str(_APP), default_timeout=30)).run()
     at.text_area[0].input(_SENTENCE).run()
     next(b for b in at.button if b.label.startswith(_GENERATE)).click().run()
     assert at.dataframe and list(at.dataframe[0].value.columns)[0] == service.REVIEW_COLUMN  # 검토 열이 맨 앞
@@ -806,7 +806,7 @@ def test_app_shows_external_badge_instead_of_no_gold(monkeypatch: pytest.MonkeyP
 
     for key, value in _MOCK_ENV.items():
         monkeypatch.setenv(key, value)
-    at = AppTest.from_file(str(_APP), default_timeout=30).run()
+    at = _grid(AppTest.from_file(str(_APP), default_timeout=30)).run()
     at.radio(key="mode").set_value(_CASES).run()
     at.selectbox(key="process_name").select("LPG 충전소 (공개 HAZOP 대조)").run()
     shown = " ".join(m.value for m in at.markdown)
@@ -866,7 +866,7 @@ def test_app_draws_partial_table_per_guideword(monkeypatch: pytest.MonkeyPatch) 
         return real(records)
 
     monkeypatch.setattr(service, "partial_rows", spy)
-    at = AppTest.from_file(str(_APP), default_timeout=60).run()
+    at = _grid(AppTest.from_file(str(_APP), default_timeout=60)).run()
     at.text_area[0].input(_SENTENCE).run()
     _cta(at).click().run()
     assert not at.exception and len(calls) == 7 and calls == sorted(calls)
@@ -909,7 +909,7 @@ def test_app_view_switch_keeps_edits_in_worksheet_view_only(monkeypatch: pytest.
 
     for key, value in _MOCK_ENV.items():
         monkeypatch.setenv(key, value)
-    at = AppTest.from_file(str(_APP), default_timeout=60).run()
+    at = _grid(AppTest.from_file(str(_APP), default_timeout=60)).run()
     at.text_area[0].input(_SENTENCE).run()
     _cta(at).click().run()
     result = at.session_state["quick_result"]
@@ -971,7 +971,7 @@ def test_app_whole_process_replay(monkeypatch: pytest.MonkeyPatch) -> None:
 
     for key, value in _MOCK_ENV.items():
         monkeypatch.setenv(key, value)
-    at = AppTest.from_file(str(_APP), default_timeout=60).run()
+    at = _grid(AppTest.from_file(str(_APP), default_timeout=60)).run()
     at.radio(key="mode").set_value(_CASES).run()
     at.button(key="preset_all").click().run()
     assert not at.exception
@@ -1055,7 +1055,7 @@ def test_app_renders_intro_tabs(monkeypatch: pytest.MonkeyPatch) -> None:
 
     for key, value in _MOCK_ENV.items():
         monkeypatch.setenv(key, value)
-    at = AppTest.from_file(str(_APP), default_timeout=30).run()
+    at = _grid(AppTest.from_file(str(_APP), default_timeout=30)).run()
     assert not at.exception
     labels = [t.label for t in at.tabs]
     assert {"① 한 줄이 만들어지는 과정", "② 가이드워드 7종", "③ 위험도 (심각도·빈도)", "④ 결과 화면 읽는 법", "⑤ 회의와 비교"} <= set(labels)
@@ -1098,3 +1098,9 @@ def test_screen_xlsx_review_index_share_process_order() -> None:
     # 검토 편집 인덱스 0 = 화면 첫 행 = xlsx 첫 행
     kept, _ = service.apply_review(result, {0: {service.REVIEW_COLUMN: "기각"}})
     assert table[0]["이탈"] not in [k["deviation"] for k in kept]
+
+
+def _grid(at: Any) -> Any:
+    """기존 화면 시험은 편집 격자(st.dataframe·data_editor)를 본다 — 기본 표 모양은 10/9 부터 펼쳐 보기(HTML)."""
+    at.session_state["table_style"] = service.TABLE_STYLES[1]
+    return at

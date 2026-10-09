@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import contextlib
+import html
 import json
 import logging
 import os
@@ -1185,6 +1186,14 @@ REVIEW_WIDTHS: Final[dict[str, int]] = {
     "가이드워드": 130, "이탈": 300, "원인": 300, "결과": 300, "기존 안전장치(Before)": 220, "권고": 300,
 }
 REVIEW_ROW_HEIGHT: Final[int] = 84
+#: 표 모양(10/9 사용자 피드백 "항목이 잘려 늘려서 봐야 한다"). 펼쳐 보기 = 글 전체 줄바꿈(읽기), 편집 표 = 기존 격자(검토·수정).
+TABLE_STYLES: Final[tuple[str, ...]] = ("펼쳐 보기 — 글 전체", "편집 표 — 채택·기각·수정")
+#: 펼쳐 보기 열 너비(px). 없는 열은 내용 길이대로.
+FULL_WIDTHS: Final[dict[str, int]] = {
+    "No": 36, "검토": 56, "가이드워드": 120, "이탈": 240, "위험도": 52, "S(1-5)": 56, "F(1-5)": 48,
+    "신뢰도": 170, "근거": 200, "원인": 260, "결과": 260, "기존 안전장치(Before)": 180, "권고": 260,
+    "노드": 160, "시나리오 연계": 120, "검증 플래그": 180,
+}
 _LIST_COLUMNS: Final[tuple[str, ...]] = ("원인", "결과", "기존 안전장치(Before)", "권고")
 _HIDE_IF_UNIFORM: Final[tuple[str, ...]] = ("노드", "시나리오 연계", FLAG_COLUMN, EVIDENCE_COLUMN)
 
@@ -1224,6 +1233,30 @@ def with_edits(table: list[dict[str, object]], edits: Mapping[int, Mapping[str, 
         if 0 <= int(i) < len(out):
             out[int(i)].update({k: v for k, v in edit.items() if k in out[int(i)]})
     return out
+
+
+def full_table_html(rows: list[dict[str, object]], columns: list[str], criteria: Criteria) -> str:
+    """펼쳐 보기 표 — 글을 자르지 않고 줄바꿈. 목록 열(원인·결과·안전장치·권고)은 항목마다 한 줄. 값은 전부 이스케이프."""
+    labels = {"S(1-5)": f"심각도(1-{criteria.s_max})", "F(1-5)": f"빈도(1-{criteria.f_max})"}
+
+    def cell(column: str, value: object) -> str:
+        if value is None or (isinstance(value, float) and value != value):
+            return ""
+        if column in _LIST_COLUMNS:
+            items = _split_list(value)
+            return "<br>".join(f"• {html.escape(i)}" for i in items) if len(items) > 1 else html.escape(" ".join(items))
+        if isinstance(value, float) and value.is_integer():
+            value = int(value)
+        return html.escape(str(value))
+
+    def width(column: str) -> str:
+        return f' style="min-width:{FULL_WIDTHS[column]}px;max-width:{FULL_WIDTHS[column]}px"' if column in FULL_WIDTHS else ""
+
+    head = "".join(f"<th{width(c)}>{html.escape(labels.get(c, c))}</th>" for c in columns)
+    body = "".join(
+        "<tr>" + "".join(f"<td{width(c)}>{cell(c, row.get(c))}</td>" for c in columns) + "</tr>" for row in rows
+    )
+    return f'<div class="hz-full"><table><thead><tr>{head}</tr></thead><tbody>{body}</tbody></table></div>'
 
 
 def readable_rows(table: list[dict[str, object]]) -> list[dict[str, object]]:
