@@ -102,7 +102,7 @@ def test_run_quick_makes_two_calls_for_one_guideword() -> None:
     assert (m["source"], m["mock"], m["guidewords"], m["recall"]) == ("quick", True, ["More"], None)
     assert m["expected_cells"] == len(m["parameters"]) == m["judged_cells"]
     assert {r.node for r in result.records} == {"X1"}
-    assert "X1 정성 검토용 — 대조 기준 없음" in service.summary_line(result)
+    assert "recall" not in service.summary_line(result)
     assert set(service.export_files(result)) == {"xlsx", "lopa", "report"}
     assert service.process_view(result)["api_calls"] == 2
 
@@ -792,7 +792,7 @@ def test_external_result_is_labelled_and_kept_out_of_nh3_table() -> None:
     meta = {**replays["N2"].meta, "node": "I2", "split": "external",
             "recall": {"recall": 9 / 11, "matched": 9, "total": 11}}
     result = service.Result(meta=meta, records=replays["N2"].records)
-    assert "외부 공개 HAZOP 대비 recall 0.818 (9/11)" in service.summary_line(result)
+    assert "recall" not in service.summary_line(result)  # 정확도는 화면에서 뺐다(10/9)
     line = service.accuracy_line(result, replays)
     assert "외부 공개 HAZOP 대비" in line and "후하게" in line  # 쉬운 기준이라는 고지가 함께 붙는다
     assert service.criteria_notice(result) == service.CRITERIA_NOTICE
@@ -812,7 +812,7 @@ def test_app_shows_external_badge_instead_of_no_gold(monkeypatch: pytest.MonkeyP
     shown = " ".join(m.value for m in at.markdown)
     assert "공개 HAZOP 대조 · 외부 팀 작성" in shown and "골드셋 없음" not in shown
     labels = [m.label for m in at.metric]
-    assert "외부 대조 recall" in labels and "전문가 대비 recall" not in labels
+    assert not any("recall" in label for label in labels)  # 정확도 타일은 10/9 에 뺐다
     at.selectbox(key="process_name").select("LPG 저장탱크 출하").run()
     shown = " ".join(m.value for m in at.markdown)
     assert "예시 공정 · 정성 검토용" in shown and "골드셋 없음" not in shown
@@ -977,7 +977,7 @@ def test_app_whole_process_replay(monkeypatch: pytest.MonkeyPatch) -> None:
     assert not at.exception
     nodes = {str(v).split(" ")[0] for v in at.dataframe[0].value["노드"]}
     assert nodes == {"N1", "N2", "N3", "N4"}  # 노드가 여러 개라 노드 열을 숨기지 않는다
-    assert {"튜닝 recall", "홀드아웃 recall"} <= {m.label for m in at.metric}
+    assert not any("recall" in m.label for m in at.metric)  # 정확도 타일은 10/9 에 뺐다
     assert any(e.label == "노드별 출처" for e in at.expander)
 
 

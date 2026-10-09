@@ -1,7 +1,7 @@
 """HAZOP 코파일럿 데모 화면 — FR-10 UX v3.1 (docs/PRD_UX_v3.md + 사용자 피드백 9/29 22:40 "문서 같다, 앱 같지 않다").
 
 흐름: 상단바 → [왼쪽: 한 줄 정의·3단계 흐름 | 오른쪽: 작업 카드(모드·입력·실행)] → 결과(지표 타일 → 내보내기 → 탭) →
-HAZOP 이 처음이라면(짧은 3카드·절차 비교) → 정확도(접힘) → 푸터.
+HAZOP 이 처음이라면(짧은 3카드·절차 비교) → 푸터. 정확도(recall) 화면은 10/9 사용자 결정으로 뺐다 — 수치는 README §6.
 위젯 배선만 한다. 로직은 `apps/web/service.py`·`apps/web/replay.py`·`apps/web/catalog.py` 에 있다.
 실행: `streamlit run apps/web/app.py`
 """
@@ -272,7 +272,7 @@ def _failure_hint(exc: BaseException) -> str:
 # ── 상단바 ───────────────────────────────────────────────────────────────────
 st.html(
     """<div class="hz-bar"><span class="hz-logo"><i></i>HAZOP Copilot</span>
-    <span class="hz-nav"><a href="#result">결과</a><a href="#intro">HAZOP 이란</a><a href="#eval">정확도</a>
+    <span class="hz-nav"><a href="#result">결과</a><a href="#intro">HAZOP 이란</a>
     <a href="https://github.com/LEETHESAVAGE-kr/aws" target="_blank">GitHub</a></span></div>"""
 )
 
@@ -447,8 +447,8 @@ with tool.container(border=True, key="tool"):
             st.markdown(f":blue-background[공개 HAZOP 대조 · 외부 팀 작성] {process['description']}")
         elif process["gold"]:
             st.markdown(
-                ":green-background[전문가 정답지 34건 · 정확도 실측] 액체 암모니아(NH3) 이송 — "
-                "전문가가 직접 수행한 HAZOP 34건과 대조합니다."
+                ":green-background[전문가 정답지 34건] 액체 암모니아(NH3) 이송 — "
+                "전문가가 직접 수행한 HAZOP 34건이 있는 공정입니다."
             )
         else:
             st.markdown(f":orange-background[예시 공정 · 정성 검토용] {process['description']}")
@@ -519,7 +519,6 @@ else:
         ("판정 셀 (누락 0)", cells),
         ("소요 시간", "—" if view["latency_s"] is None else f"{view['latency_s']:.0f}초"),
         ("비용", "—" if view["cost_usd"] is None else f"${view['cost_usd']:.2f}"),
-        *service.recall_tiles(result),
     ]
     if result.meta.get("combined"):  # 공정 전체는 노드별 실행이라 지연 합이 의미 없다 — 타일 6개면 값이 잘린다
         tiles = [t for t in tiles if t[0] != "소요 시간"]
@@ -680,7 +679,7 @@ else:
             st.caption(" · ".join(f"{k} {n}건" for k, n in counts.items()) + " — 다운로드에 반영됨")
     with process_tab:
         calls = "—" if view["api_calls"] is None else f"{view['api_calls']}회"
-        st.markdown(f"**정확도** {service.accuracy_line(result, replays)} · API 호출 {calls}")
+        st.markdown(f"API 호출 {calls}")
         node_meta = result.meta.get("node_meta", {})
         left, right = st.columns(2)
         with left, st.container(border=True):
@@ -807,15 +806,6 @@ with compare_tab:
         "실측: 노드 1건 약 1.5–2분 · 약 $0.75 (2026-10-08, 가이드워드 7종 동시 판정, 3회 79–126초). "
         "회의 시간 단축을 잰 것은 아닙니다 — 이 앱이 만드는 것은 회의에서 검토할 초안입니다."
     )
-
-# ── 정확도 (기본 접힘) ───────────────────────────────────────────────────────
-st.html('<div id="eval"></div>')
-with st.expander("정확도 — 전문가 정답지 대비 재현율(recall, n=1), 불리한 값까지 공개", expanded=False):
-    st.caption(
-        "NH3 벙커링 4노드만 해당(공개 HAZOP 대조 LPG 공정은 기준이 달라 각 결과 화면에 따로 표시, 예시 공정은 대조 기준 없음). 하네스 미구현 — `tools/capture_replay.py` 로 "
-        f"노드별 1회 실측. 규칙·해석은 [README §6]({README_EVAL})."
-    )
-    st.table(service.evaluation_table(replays))
 
 # ── 푸터 ─────────────────────────────────────────────────────────────────────
 st.divider()

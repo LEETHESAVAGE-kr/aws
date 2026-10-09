@@ -215,7 +215,7 @@ def test_recall_key_compat(tmp_path: Path, key: str) -> None:
     result = load_replay(tmp_path)
     assert result.meta["recall"] == {"recall": 0.875, "matched": 7, "total": 8}
     assert "recall_n1" not in result.meta
-    assert "N1(tune) recall 0.875 (7/8)" in service.summary_line(result)
+    assert "recall" not in service.summary_line(result)  # 정확도는 화면에서 뺐다(10/9) — 메타에는 남는다
 
 
 def test_committed_n1_replay_reads_recall_n1_key() -> None:
@@ -230,8 +230,8 @@ def test_app_switches_between_processes_and_nodes(monkeypatch: pytest.MonkeyPatc
     replays = load_replays()
     at = _grid(AppTest.from_file(str(_APP), default_timeout=30)).run()
     assert not at.exception
-    assert len(at.table) == 6  # 안내 탭 5(정보 4단계 — Z-1 · 가이드워드·S·F·위험도 대조표·위험도 구간 — Y-2) + 평가 요약 1
-    assert next(e for e in at.expander if e.label.startswith("정확도")).proto.expanded is False
+    assert len(at.table) == 5  # 안내 탭 5(정보 4단계 — Z-1 · 가이드워드·S·F·위험도 대조표·위험도 구간 — Y-2). 정확도 표는 10/9 에 뺐다
+    assert not any(e.label.startswith("정확도") for e in at.expander)  # 10/9 사용자 결정으로 뺐다
     at.radio(key="mode").set_value("완성된 사례 보기").run()
     assert at.selectbox(key="process_name").options == [p["name"] for p in service.CATALOG]
     for process in service.CATALOG:
