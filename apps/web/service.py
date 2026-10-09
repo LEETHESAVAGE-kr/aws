@@ -101,7 +101,9 @@ LIVE_SCOPES: Final[tuple[str, ...]] = ("quick", "full")
 BADGES: Final[dict[str | None, str]] = {"grounded": "🟢", "single_source": "🔵", "inferred": "🟡", "review": "🔴"}
 CONFIDENCE_COLUMN: Final[str] = "신뢰도"
 FLAG_COLUMN: Final[str] = "검증 플래그"
-EVIDENCE_COLUMN: Final[str] = "근거"
+#: 10/9 사용자: '근거' 빈칸이 "근거 없음"으로 읽힌다 → 무엇을 붙이는 칸인지 이름으로. 빈칸은 EVIDENCE_NONE.
+EVIDENCE_COLUMN: Final[str] = "관련 법령·MSDS"
+EVIDENCE_NONE: Final[str] = "인용 없음 (AI 추론)"
 #: 공정 카탈로그(J-01, `data/presets.json`). 노드 id → 노드(+ `process`).
 CATALOG: Final[list[dict[str, Any]]] = load_catalog()
 NODES: Final[dict[str, dict[str, Any]]] = nodes_by_id(CATALOG)
@@ -756,7 +758,9 @@ def worksheet_table(result: Result) -> list[dict[str, object]]:
             held_label(record) if row.confidence == INSUFFICIENT else f"{BADGES.get(row.confidence, '⚪')} {label}"
         )
         entry[FLAG_COLUMN] = "; ".join(flags.get(record.id, []))
-        entry[EVIDENCE_COLUMN] = evidence_label(record.evidence)
+        entry[EVIDENCE_COLUMN] = (
+            "" if record.status == INSUFFICIENT else evidence_label(record.evidence) or EVIDENCE_NONE
+        )
         table.append(entry)
     return table
 
@@ -1197,7 +1201,7 @@ TABLE_STYLES: Final[tuple[str, ...]] = ("펼쳐 보기 — 글 전체", "편집 
 #: 펼쳐 보기 열 너비(px). 없는 열은 내용 길이대로.
 FULL_WIDTHS: Final[dict[str, int]] = {
     "No": 36, "검토": 56, "가이드워드": 120, "이탈": 240, "위험도": 52, "S(1-5)": 56, "F(1-5)": 48,
-    "신뢰도": 170, "근거": 200, "원인": 260, "결과": 260, "기존 안전장치(Before)": 180, "권고": 260,
+    "신뢰도": 170, "관련 법령·MSDS": 200, "원인": 260, "결과": 260, "기존 안전장치(Before)": 180, "권고": 260,
     "노드": 160, "시나리오 연계": 120, "검증 플래그": 180,
 }
 _LIST_COLUMNS: Final[tuple[str, ...]] = ("원인", "결과", "기존 안전장치(Before)", "권고")
