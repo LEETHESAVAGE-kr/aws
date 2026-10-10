@@ -143,12 +143,13 @@ def consensus_summary(consensus: Mapping[str, Any] | None, held: bool) -> str:
     runs = int(consensus["runs"])
     if held:
         return consensus_verdict(consensus, held)
+    union = consensus.get("merge") == "union"
     parts = [consensus_verdict(consensus, held)]
     extra = 0
     for key, label in REPEAT_FIELDS:
         clusters = consensus.get(key) or []
-        kept = [dots(c["agree"], runs) for c in clusters if is_kept(c["agree"], runs)]
-        extra += sum(not is_kept(c["agree"], runs) for c in clusters)
+        kept = [dots(c["agree"], runs) for c in clusters if union or is_kept(c["agree"], runs)]
+        extra += sum(not (union or is_kept(c["agree"], runs)) for c in clusters)
         if kept:
             parts.append(f"{label} {' '.join(kept)}")
         elif clusters:
@@ -163,21 +164,25 @@ def consensus_summary(consensus: Mapping[str, Any] | None, held: bool) -> str:
 
 
 def consensus_detail(consensus: Mapping[str, Any] | None) -> list[tuple[str, str, str, str]]:
-    """문장별 (구분, 문장, 일치, 반영). 반영 = '워크시트'(≥2/3) 또는 '참고(한 번만 나옴)'. 심각도·빈도 값 포함."""
+    """문장별 (구분, 문장, 일치, 반영). 반영 = '워크시트'(≥2/3) 또는 '참고(한 번만 나옴)'. 심각도·빈도 값 포함.
+
+    합치기(`merge == "union"`)면 모든 문장이 '워크시트(합침)', 심각도·빈도는 최댓값.
+    """
     if not consensus:
         return []
     runs = int(consensus["runs"])
+    union = consensus.get("merge") == "union"
     out: list[tuple[str, str, str, str]] = []
     for key, label in REPEAT_FIELDS:
         for c in consensus.get(key) or []:
-            kept = is_kept(c["agree"], runs)
-            out.append((label, str(c["text"]), f"{dots(c['agree'], runs)} {c['agree']}/{runs}",
-                        "워크시트" if kept else "참고(한 번만 나옴)"))
+            used = "워크시트(합침)" if union else "워크시트" if is_kept(c["agree"], runs) else "참고(한 번만 나옴)"
+            out.append((label, str(c["text"]), f"{dots(c['agree'], runs)} {c['agree']}/{runs}", used))
     for key, label in GRADE_LABELS:
         values = consensus.get(f"{key}_values") or []
         if values:
             split = "갈림" if len(set(values)) > 1 else "같음"
-            out.append((label, "·".join(str(v) for v in values), split, f"가운데 값 {sorted(values)[len(values) // 2]}"))
+            chosen = f"최댓값 {max(values)}" if union else f"가운데 값 {sorted(values)[len(values) // 2]}"
+            out.append((label, "·".join(str(v) for v in values), split, chosen))
     return out
 
 

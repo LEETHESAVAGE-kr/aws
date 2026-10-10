@@ -340,7 +340,7 @@ with tool.container(border=True, key="tool"):
         session_runs = 0 if BOOTH else state.live_runs
         quota = service.quota_block_reason(session_runs)
         blocked = live_reason is not None or quota is not None or not run_text.strip()
-        # §8 C: 한 번 생성(지금 방식)과 3번 생성해 공통 답 중 고른다 — 사용자 요청(10/9)으로 둘 다 남긴다.
+        # §8 C: 한 번 생성(지금 방식)과 3번 생성해 합치기 중 고른다 — 사용자 요청(10/9·10/10).
         gen_mode = st.radio(service.GENERATION_MODE_LABEL, list(service.GENERATION_MODES), key="gen_mode", horizontal=True)
         runs = service.GENERATION_MODES[gen_mode]
         # 지시문 X-1: 기본 실행 = 가이드워드 전체. HAZOP 은 원래 전 가이드워드를 도는 방법이다.
@@ -442,7 +442,7 @@ with tool.container(border=True, key="tool"):
                         else:
                             state.quick_result = service.run_live(
                                 run_text, mock_source, on_progress=on_progress, consensus_runs=runs,
-                                pre_parsed=pre_parsed,
+                                consensus_union=True, pre_parsed=pre_parsed,
                             )
                     except Exception as exc:  # noqa: BLE001 — 사유를 보이고 앱은 계속 산다
                         state.live_runs -= 1  # 실패한 실행은 세션 횟수에서 빼지 않는다
@@ -721,8 +721,9 @@ else:
                 st.dataframe(cited, hide_index=True, row_height=60)
         repeat = service.repeat_counts(shown)
         if repeat:
-            st.caption("반복 일치 — " + repeat + ". ●●● 는 3번 다 나온 판단, ●●○ 는 3번 중 2번. "
-                       "반복해서 나온다는 뜻이지 내용이 맞다는 보증은 아닙니다.")
+            st.caption("반복 일치 — " + repeat + ". 3번의 결과를 합쳐 한 번만 나온 판단(●○○)도 남겼습니다. "
+                       "●●● 는 3번 다 나온 판단이고, 심각도·빈도는 3번 중 가장 높은 값입니다. "
+                       "여러 번 나왔다는 뜻이지 내용이 맞다는 보증은 아닙니다.")
         reference = service.reference_rows(shown)
         if reference:
             with st.expander(f"참고 — 3번 중 한 번만 나온 문장 {len(reference)}개 (워크시트 칸에서 뺌)", expanded=False):
