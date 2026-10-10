@@ -55,10 +55,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--out", type=Path)
     parser.add_argument("--only", default=None, help="source_id 하나만")
     parser.add_argument("--limit", type=int, default=None, help="노드 수 상한(시험용)")
+    parser.add_argument("--nodes", default=None, help="쉼표로 구분한 노드 id만(접속 오류 노드 재측정용)")
+    parser.add_argument("--resume", action="store_true", help="--out 의 per_node.json 을 읽어 이어 쓴다")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args(argv)
     data = load_eval()
-    nodes = [n for n in data["nodes"] if not args.only or n["source_id"] == args.only][: args.limit]
+    wanted = set(args.nodes.split(",")) if args.nodes else None
+    nodes = [n for n in data["nodes"] if (not args.only or n["source_id"] == args.only)
+             and (wanted is None or n["id"] in wanted)][: args.limit]
     gold = defaultdict(list)
     for r in data["records"]:
         gold[r["node"]].append(r)
@@ -79,7 +83,10 @@ def main(argv: list[str] | None = None) -> int:
     out = args.out if args.out.is_absolute() else REPO_ROOT / args.out
     out.mkdir(parents=True, exist_ok=True)
     per_node: dict[str, dict[str, Any]] = {}
-    cost = 0.0
+    if args.resume and (out / "per_node.json").exists():
+        per_node = json.loads((out / "per_node.json").read_text(encoding="utf-8"))
+    rerun = {n["id"] for n in nodes}
+    cost = sum(r.get("cost_usd", 0.0) for nid, r in per_node.items() if nid not in rerun)
     for n in nodes:
         started = time.perf_counter()
         gen = HazopGenerator(get_bedrock_client(), config, criteria_id=OFFICIAL_CRITERIA)
