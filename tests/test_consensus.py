@@ -329,3 +329,45 @@ def test_excel_repeat_sheet(monkeypatch: pytest.MonkeyPatch, tmp_path: Any) -> N
     assert any(r[3] == "심각도" and r[5] == "갈림" for r in rows[1:])
     single = HazopGenerator(MockBedrockClient(response_factory=_factory()), GeneratorConfig()).generate(META)
     assert REPEAT_SHEET not in load_workbook(export_all(single, tmp_path / "s")["xlsx"]).sheetnames
+
+
+# ── 합치기(합집합, 10/10 화면 '생성 방식') ─────────────────────────────────────
+def test_union_keeps_every_cluster_and_max_grades() -> None:
+    runs = [
+        _batch(_cell("유량", causes=["가", "나"], s=3, f=2), _na("압력")),
+        _batch(_cell("유량", causes=["가"], s=4, f=1), _na("압력")),
+        _batch(_cell("유량", causes=["가", "다"], s=2, f=3), _cell("압력", causes=["라"], s=5, f=1)),
+    ]
+    cells = cs.merge_batches(runs, ["유량", "압력"], None, union=True)["cells"]
+    flow, pressure = cells
+    assert flow["causes"] == ["가", "나", "다"]  # 1/3 문장도 칸에 남는다
+    assert (flow["S"], flow["F"]) == (4, 3)  # 최댓값
+    assert flow["_consensus"]["merge"] == "union"
+    assert pressure["applicable"] is True and pressure["causes"] == ["라"]  # 한 번만 '해당'이어도 행
+    assert pressure["_consensus"]["votes"] == {cs.NOT_APPLICABLE: 2, cs.APPLICABLE: 1}
+    # 공통 답(교집합) 규칙은 그대로 남아 있다
+    flow_i, pressure_i = cs.merge_batches(runs, ["유량", "압력"], None)["cells"]
+    assert flow_i["causes"] == ["가"] and pressure_i["applicable"] is False
+
+
+def test_union_without_applicable_falls_back_to_vote() -> None:
+    runs = [_batch(_na("유량")), _batch(_held("유량")), _batch(_na("유량"))]
+    assert cs.merge_batches(runs, ["유량"], None, union=True)["cells"][0]["applicable"] is False
+
+
+def test_generate_union_and_display(monkeypatch: pytest.MonkeyPatch) -> None:
+    from apps.web import service
+    from core.export.rows import consensus_detail
+
+    monkeypatch.setattr(cs, "e5_similarity", lambda: None)
+    records = HazopGenerator(MockBedrockClient(response_factory=_factory(flip="Less", fail="Reverse")),
+                             GeneratorConfig(consensus_runs=3, consensus_union=True)).generate(META)
+    more = next(r for r in records if r.guideword == "More")
+    assert more.causes[:1] == ["공통 원인"] and set(more.causes[1:]) == {"실행0 원인", "실행1 원인", "실행2 원인"}
+    assert more.S == 4
+    result = service.Result(meta={"source": "live-run"}, records=records)
+    row = next(r for r in service.worksheet_table(result) if str(r["가이드워드"]).startswith("More"))
+    assert row[service.REPEAT_COLUMN] == "판정 3/3 · 원인 ●●● ●○○ ●○○ ●○○ · 결과 ●●● · 권고 ●●● · 심각도 3·3·4 갈림"
+    assert service.reference_rows(result) == []  # 뺀 문장이 없다
+    used = {u for *_, u in consensus_detail(more.consensus)}
+    assert "참고(한 번만 나옴)" not in used and "워크시트(합침)" in used and "최댓값 4" in used

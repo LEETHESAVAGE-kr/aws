@@ -109,8 +109,13 @@ def merge_batches(
     parameters: Sequence[str],
     similarity: Similarity | None = None,
     tau: float = TAU,
+    union: bool = False,
 ) -> dict[str, Any] | None:
     """한 가이드워드의 N개 판정 묶음 → 합친 묶음. 전부 실패면 None(그 가이드워드는 review).
+
+    `union=False`(공통 답·교집합, 사전등록 §1): 셀 다수결 · 문장 agree ≥ 2/3 · S/F 가운데 값.
+    `union=True`(합치기·합집합, 10/10 화면): 한 번이라도 '해당'이면 해당 · 묶은 문장 전부 남김 · S/F 최댓값.
+    한 번 생성에서 빠질 수 있는 원인까지 모으려는 것이다(정확도는 재지 않았다).
 
     합친 셀은 기존 레코드 조립 규칙을 그대로 탄다: 해당 셀은 완전한 셀, 보류 셀은 `insufficient`+`missing`,
     해당 없음은 `applicable=false`. 셀마다 `_consensus` 에 투표·문장 일치 내역을 싣는다.
@@ -128,18 +133,20 @@ def merge_batches(
     for key in order:
         run_cells = [m.get(key) for m in by_run]
         states = [cell_state(c) for c in run_cells]
-        winner = vote(states)
+        winner = APPLICABLE if union and APPLICABLE in states else vote(states)
         if winner is None:
             continue  # 세 실행 모두 누락 — 판정하지 않은 셀(커버리지 경고로 드러난다)
         votes = dict(Counter(states))
         name = next(str(c["parameter"]) for c in run_cells if c is not None)
         meta: dict[str, Any] = {"runs": n, "votes": votes, "states": states}
+        if union:
+            meta["merge"] = "union"
         if winner == NOT_APPLICABLE:
             cells.append({"parameter": name, "applicable": False, "_consensus": meta})
         elif winner == HELD:
             cells.append(_held_cell(name, run_cells, states, meta))
         else:
-            cells.append(_applicable_cell(name, run_cells, states, meta, n, similarity, tau))
+            cells.append(_applicable_cell(name, run_cells, states, meta, n, similarity, tau, union))
     return {"guideword": alive[0].get("guideword", ""), "cells": cells, "_passages": passages}
 
 
@@ -167,17 +174,19 @@ def _applicable_cell(
     n: int,
     similarity: Similarity | None,
     tau: float,
+    union: bool = False,
 ) -> dict[str, Any]:
     used = [c for c, s in zip(run_cells, states, strict=True) if s == APPLICABLE and c is not None]
     base = dict(used[0])
     for field in LIST_FIELDS:
         clusters = cluster_sentences([c.get(field) or [] for c in used], n, similarity, tau)
         meta[field] = clusters
-        base[field] = [c["text"] for c in clusters if kept(c["agree"], n)]
+        base[field] = [c["text"] for c in clusters if union or kept(c["agree"], n)]
     for grade in ("S", "F"):
         values = sorted(int(c[grade]) for c in used)
         meta[f"{grade}_values"] = values
-        base[grade] = values[len(values) // 2]  # 짝수 개면 위쪽 — 위험을 낮춰 잡지 않는다
+        # 공통 답은 가운데 값(짝수 개면 위쪽), 합치기는 최댓값 — 둘 다 위험을 낮춰 잡지 않는다
+        base[grade] = values[-1] if union else values[len(values) // 2]
     base["safeguards_before"] = list(dict.fromkeys(s for c in used for s in c.get("safeguards_before") or []))
     evidence: list[Any] = []
     for c in used:
