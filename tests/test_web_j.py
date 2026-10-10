@@ -1058,7 +1058,7 @@ def test_app_renders_intro_tabs(monkeypatch: pytest.MonkeyPatch) -> None:
     at = _grid(AppTest.from_file(str(_APP), default_timeout=30)).run()
     assert not at.exception
     labels = [t.label for t in at.tabs]
-    assert {"① 한 줄이 만들어지는 과정", "② 가이드워드 7종", "③ 위험도 (심각도·빈도)", "④ 결과 화면 읽는 법", "⑤ 회의와 비교"} <= set(labels)
+    assert {"① 한 줄이 만들어지는 과정", "② 가이드워드 7종", "③ 위험도 (심각도·빈도)", "④ 결과 화면 읽는 법", "⑤ 회의와 비교", "⑥ 공정안전보고서와 HAZOP"} <= set(labels)
     assert len(at.table) >= 3 and len(at.dataframe) == 0  # 안내 표는 st.table — 결과 표 시험과 섞이지 않는다
 
 
