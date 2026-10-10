@@ -34,7 +34,7 @@
     },
     {
       "id": "cl2_unloading",
-      "name": "염소 톤컨테이너 하역·기화",
+      "name": "염소 톤컨테이너 기화",
       "gold": false,
       "description": "톤컨테이너의 액염소를 배관으로 기화기까지 보내 기상 염소로 공급하는 공정. 정성 검토용 예시(대조 기준 없음).",
       "nodes": [
@@ -52,7 +52,7 @@
       "description": "탱크로리 인수 → 저장 → 충전 펌프 → 용기 충전 → 잔류 LPG 회수. 인도 IOCL 충전소의 공개 HAZOP 워크시트(2014, 외부 팀 작성)와 대조한다.",
       "nodes": [
         {"id": "I1", "label": "① 탱크로리 인수·저장",
-         "node_meta": {"node": "I1", "substance": "LPG(프로판·부탄)", "phase": "liquid/gas", "P_kPag": null, "T_degC": null, "equipment": ["탱크로리 하역장", "LPG 압축기", "구형 저장탱크", "불릿형 저장탱크"], "safeguards": []}},
+         "node_meta": {"node": "I1", "substance": "LPG(프로판·부탄)", "phase": "liquid/gas", "P_kPag": null, "T_degC": null, "equipment": ["탱크로리 인수장", "LPG 압축기", "구형 저장탱크", "불릿형 저장탱크"], "safeguards": []}},
         {"id": "I2", "label": "② 충전 펌프",
          "node_meta": {"node": "I2", "substance": "LPG(프로판·부탄)", "phase": "liquid", "P_kPag": null, "T_degC": null, "equipment": ["불릿형 저장탱크", "구형 저장탱크", "LPG 충전 펌프", "충전기 공급 배관"], "safeguards": []}},
         {"id": "I3", "label": "③ 용기 충전 캐러셀",

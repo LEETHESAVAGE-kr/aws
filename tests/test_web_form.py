@@ -112,7 +112,7 @@ def test_chips_only_in_sentence_style(monkeypatch: pytest.MonkeyPatch) -> None:
     next(b for b in at.button if b.label == "수소충전소").click().run()
     assert "수소" in at.session_state["quick_text"] and at.session_state[form.KEYS["substance"]] is None
     at.radio(key="input_style").set_value("항목 선택").run()
-    assert not any(b.label in ("수소충전소", "메탄올 하역", "실란 가스 캐비닛") for b in at.button)
+    assert not any(b.label in ("수소충전소", "메탄올 저장탱크", "실란 가스 캐비닛") for b in at.button)
     assert not any("공정 예시" in h.proto.body for h in at.get("html"))
 
 

@@ -653,7 +653,7 @@ def _cta(at: Any) -> Any:
 
 
 def test_default_screen_keeps_original_chips(monkeypatch: pytest.MonkeyPatch) -> None:
-    assert _chips(_booth_app(monkeypatch, booth=False)) == ["수소충전소", "메탄올 하역", "실란 가스 캐비닛"]  # V-1
+    assert _chips(_booth_app(monkeypatch, booth=False)) == ["수소충전소", "메탄올 저장탱크", "실란 가스 캐비닛"]  # V-1
 
 
 def test_booth_swaps_chips_and_fills_input(monkeypatch: pytest.MonkeyPatch) -> None:
