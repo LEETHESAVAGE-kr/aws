@@ -440,6 +440,47 @@ def parse_node_text(
     }
 
 
+#: 생성 전 '입력 확인'(10/10 사용자 요청) — 문장 해석 뒤 비어 있는 정보를 사람이 채우게 한다.
+#: (NodeMeta 필드, 화면 라벨). 비어 있으면 생성은 되지만 그 정보가 필요한 칸은 '정보 부족'으로 보류된다.
+INPUT_CHECK_FIELDS: Final[tuple[tuple[str, str], ...]] = (
+    ("P_kPag", "운전압력 (kPag)"),
+    ("T_degC", "운전온도 (℃)"),
+    ("design_P_kPag", "설계압력 (kPag)"),
+    ("capacity", "용량 (예: 50 m³)"),
+    ("safeguards", "안전장치 (쉼표로 구분, 없으면 '없음')"),
+)
+
+
+def missing_inputs(meta: NodeMeta) -> list[str]:
+    """해석 결과에서 비어 있는 확인 대상 필드. 안전장치는 '없음'이 명시됐으면(safeguards_known) 빈 것이 아니다."""
+    missing = []
+    for field, _ in INPUT_CHECK_FIELDS:
+        value = getattr(meta, field)
+        if field == "safeguards":
+            if not value and not meta.safeguards_known:
+                missing.append(field)
+        elif value is None or (isinstance(value, str) and not value.strip()):
+            missing.append(field)
+    return missing
+
+
+def fill_node_meta(meta: NodeMeta, values: Mapping[str, Any]) -> tuple[NodeMeta, list[str]]:
+    """'입력 확인'에서 사람이 채운 값을 덧붙인다 → (보완된 NodeMeta, 채운 필드). 빈 값은 그대로 둔다."""
+    update: dict[str, Any] = {}
+    for field in ("P_kPag", "T_degC", "design_P_kPag"):
+        if values.get(field) is not None:
+            update[field] = float(values[field])
+    capacity = str(values.get("capacity") or "").strip()
+    if capacity:
+        update["capacity"] = capacity
+    guards = str(values.get("safeguards") or "").strip()
+    if guards in ("없음", "없다", "none"):
+        update.update(safeguards=[], safeguards_known=True)
+    elif guards:
+        update["safeguards"] = [g.strip() for g in guards.replace("·", ",").split(",") if g.strip()]
+    return validate_node_meta({**meta.model_dump(), **update}), list(update.keys() - {"safeguards_known"})
+
+
 #: 단계별 대기 문구(R-11 T-12). 소요 시간은 실측 2회 — J-03(열거 22·판정 41초), 10/8(해석 5·열거 14·판정 53초).
 STAGE_PENDING: Final[tuple[str, str]] = (
     "⏳ 1/3 문장을 노드 입력으로 해석 중 (약 3초)",
@@ -477,10 +518,16 @@ def progress_text(
 
 
 def _parse_and_notify(
-    node_text: str, environ: Mapping[str, str], on_progress: ProgressCallback | None
+    node_text: str,
+    environ: Mapping[str, str],
+    on_progress: ProgressCallback | None,
+    pre_parsed: tuple[NodeMeta, dict[str, Any]] | None = None,
 ) -> tuple[NodeMeta, dict[str, Any]]:
-    """입력 해석 + `"parsed"` 알림. 해석은 웹 소관이라 생성기 대신 여기서 알린다(design §10)."""
-    node_meta, parsed = parse_node_text(node_text, environ)
+    """입력 해석 + `"parsed"` 알림. 해석은 웹 소관이라 생성기 대신 여기서 알린다(design §10).
+
+    `pre_parsed` 는 화면 '입력 확인' 단계에서 이미 해석·보완한 값 — 다시 해석하지 않는다.
+    """
+    node_meta, parsed = pre_parsed if pre_parsed is not None else parse_node_text(node_text, environ)
     if on_progress is not None:
         try:
             on_progress("parsed", {"node_meta": node_meta, "parsed_by": parsed["parsed_by"]})
@@ -545,6 +592,7 @@ def run_live(
     environ: Mapping[str, str] = os.environ,
     on_progress: ProgressCallback | None = None,
     consensus_runs: int | None = None,
+    pre_parsed: tuple[NodeMeta, dict[str, Any]] | None = None,
 ) -> Result:
     """노드 1건 전체 생성(가이드워드 7~10종) — 직접 입력의 기본 실행(지시문 X-1).
 
@@ -555,7 +603,7 @@ def run_live(
     부분 레코드가 온다(R-11).
     """
     started = time.perf_counter()
-    node_meta, parsed = _parse_and_notify(node_text, environ, on_progress)
+    node_meta, parsed = _parse_and_notify(node_text, environ, on_progress, pre_parsed)
     mock = is_mock(environ)
     client: AbstractBedrockClient = (
         MockBedrockClient(response_factory=_mock_factory(replay)) if mock else get_bedrock_client()
@@ -605,6 +653,7 @@ def run_quick(
     replay: Result,
     environ: Mapping[str, str] = os.environ,
     on_progress: ProgressCallback | None = None,
+    pre_parsed: tuple[NodeMeta, dict[str, Any]] | None = None,
 ) -> Result:
     """직접 입력 빠른 실호출(J-03): 파라미터 열거 1회 + 가이드워드 1종 판정 1회 = `converse` 2회.
 
@@ -616,7 +665,7 @@ def run_quick(
     if guideword not in GUIDEWORD_DEFINITIONS:
         raise ValueError(f"알 수 없는 가이드워드: {guideword}")
     started = time.perf_counter()
-    node_meta, parsed = _parse_and_notify(node_text, environ, on_progress)
+    node_meta, parsed = _parse_and_notify(node_text, environ, on_progress, pre_parsed)
     mock = is_mock(environ)
     client: AbstractBedrockClient = (
         MockBedrockClient(response_factory=_mock_factory(replay)) if mock else get_bedrock_client()

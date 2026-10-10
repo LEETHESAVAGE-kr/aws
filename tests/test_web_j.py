@@ -25,6 +25,12 @@ _GENERATE = "HAZOP 초안 생성"
 _SENTENCE = "수소충전소 압축기에서 디스펜서로 고압 수소를 보낸다. 안전장치는 긴급차단밸브."
 
 
+
+def _skip_check(at):  # noqa: ANN001, ANN202 — 생성 전 '입력 확인' 단계가 뜨면 '이대로 생성'(10/10)
+    if any(b.key == "check_skip" for b in at.button):
+        at.button(key="check_skip").click().run()
+    return at
+
 @pytest.fixture(autouse=True)
 def _reset_daily_counter() -> None:
     service._daily_runs.clear()
@@ -227,6 +233,7 @@ def test_app_default_run_covers_all_guidewords(monkeypatch: pytest.MonkeyPatch, 
     at.text_area[0].input(_SENTENCE).run()
     assert _cta(at).disabled is False
     _cta(at).click().run()
+    _skip_check(at)
     assert not at.exception
     assert len(at.dataframe) == 1
     from core.agent.generate import STANDARD_GUIDEWORDS
@@ -255,6 +262,7 @@ def test_app_quick_run_is_one_guideword_and_says_so(monkeypatch: pytest.MonkeyPa
     at.text_area[0].input(_SENTENCE).run()
     at.selectbox(key="guideword").select("Less").run()
     at.button(key="run_quick").click().run()
+    _skip_check(at)
     assert not at.exception
     assert _guidewords_in(at.dataframe[0]) == {"Less"}
     assert any("API 호출 3회" in m.value for m in at.markdown)  # 해석 1 + 열거 1 + 판정 1
@@ -339,6 +347,7 @@ def test_app_shows_key_hint_on_auth_error(monkeypatch: pytest.MonkeyPatch) -> No
     at = _grid(AppTest.from_file(str(_APP), default_timeout=30)).run()
     at.text_area[0].input(_SENTENCE).run()
     next(b for b in at.button if b.label.startswith(_GENERATE)).click().run()
+    _skip_check(at)
     assert not at.exception
     assert any("AuthenticationError" in e.value for e in at.error)
     hints = [c.value for c in at.caption if c.value.startswith("키 진단")]
@@ -398,6 +407,7 @@ def test_app_criteria_badge_visibility(monkeypatch: pytest.MonkeyPatch) -> None:
     at.radio(key="mode").set_value("새로 만들기").run()
     at.text_area[0].input(_SENTENCE).run()
     next(b for b in at.button if b.label.startswith(_GENERATE)).click().run()
+    _skip_check(at)
     assert not at.exception and len(at.dataframe) == 1 and not badge_shown(at) and official_shown(at)  # Y-2
 
 
@@ -615,7 +625,9 @@ def test_app_writes_stages_as_they_finish(monkeypatch: pytest.MonkeyPatch) -> No
     for key, value in _MOCK_ENV.items():
         monkeypatch.setenv(key, value)
 
-    def partial_then_fail(text: str, guideword: str, replay: object, *_: object, on_progress: Any = None) -> None:
+    def partial_then_fail(
+        text: str, guideword: str, replay: object, *_: object, on_progress: Any = None, **__: object
+    ) -> None:
         on_progress("parsed", {"node_meta": NodeMeta(substance="수소", phase="gas", equipment=["압축기"]),
                                "parsed_by": "llm"})
         on_progress("parameters", {"parameters": ["유량", "압력"]})
@@ -625,6 +637,7 @@ def test_app_writes_stages_as_they_finish(monkeypatch: pytest.MonkeyPatch) -> No
     at = _grid(AppTest.from_file(str(_APP), default_timeout=30)).run()
     at.text_area[0].input(_SENTENCE).run()
     at.button(key="run_quick").click().run()
+    _skip_check(at)
     shown = [m.value for m in at.markdown]
     assert "✅ 1/3 입력 해석 — 수소 · gas · 설비 압축기" in shown
     assert "✅ 2/3 파라미터 2개 — 유량, 압력" in shown
@@ -766,6 +779,7 @@ def test_app_passes_review_edits_to_downloads(monkeypatch: pytest.MonkeyPatch) -
     at = _grid(AppTest.from_file(str(_APP), default_timeout=30)).run()
     at.text_area[0].input(_SENTENCE).run()
     next(b for b in at.button if b.label.startswith(_GENERATE)).click().run()
+    _skip_check(at)
     assert at.dataframe and list(at.dataframe[0].value.columns)[0] == service.REVIEW_COLUMN  # 검토 열이 맨 앞
     result = at.session_state["quick_result"]
     key = service.review_key(result)
@@ -869,6 +883,7 @@ def test_app_draws_partial_table_per_guideword(monkeypatch: pytest.MonkeyPatch) 
     at = _grid(AppTest.from_file(str(_APP), default_timeout=60)).run()
     at.text_area[0].input(_SENTENCE).run()
     _cta(at).click().run()
+    _skip_check(at)
     assert not at.exception and len(calls) == 7 and calls == sorted(calls)
 
 
@@ -912,6 +927,7 @@ def test_app_view_switch_keeps_edits_in_worksheet_view_only(monkeypatch: pytest.
     at = _grid(AppTest.from_file(str(_APP), default_timeout=60)).run()
     at.text_area[0].input(_SENTENCE).run()
     _cta(at).click().run()
+    _skip_check(at)
     result = at.session_state["quick_result"]
     table = service.worksheet_table(result)
     target = len(table) - 1  # 마지막 행을 기각 — 묶음 보기에서 같은 No 에 붙어야 한다
@@ -988,6 +1004,7 @@ def test_booth_pool_chip_opens_as_well_as_group(monkeypatch: pytest.MonkeyPatch)
     assert at.session_state["view_pref"] == service.VIEWS[1]
     assert at.selectbox(key="guideword").value == "As well as"
     _cta(at).click().run()
+    _skip_check(at)
     assert not at.exception
     assert _view(at).value == service.VIEWS[1] and _view(at).index == 1  # 화면 선택 표시도 같은 값(index 로 생성)
     groups = [e for e in at.expander if e.label.split(" — ")[0] in service.GUIDEWORD_DEFINITIONS]
@@ -1120,6 +1137,7 @@ def test_app_generation_mode_single_default_and_consensus(monkeypatch: pytest.Mo
     assert at.radio(key="gen_mode").value == single
     at.text_area[0].input(_SENTENCE).run()
     _cta(at).click().run()
+    _skip_check(at)
     assert not at.exception
     first = at.session_state["quick_result"]
     assert first.meta["consensus_runs"] == 1 and not any(r.consensus for r in first.records)
@@ -1128,9 +1146,53 @@ def test_app_generation_mode_single_default_and_consensus(monkeypatch: pytest.Mo
     at.session_state["live_runs"] = 0  # 세션 상한(기본 1회)을 비워 두 번째 생성을 허용
     at.radio(key="gen_mode").set_value(multi).run()
     _cta(at).click().run()
+    _skip_check(at)
     assert not at.exception
     second = at.session_state["quick_result"]
     assert second.meta["consensus_runs"] == 3 and all(r.consensus for r in second.records)
     assert service.REPEAT_COLUMN in service.worksheet_table(second)[0]
     assert service.repeat_counts(second).startswith("같은 입력으로 판정 3번")
     assert any(c.value.startswith("반복 일치 — 같은 입력으로 판정 3번") for c in at.caption)  # 화면에 보인다
+
+
+# ── 생성 전 입력 확인 (10/10 사용자 요청) ────────────────────────────────────────
+def test_missing_inputs_and_fill_node_meta() -> None:
+    meta = NodeMeta(substance="수소", phase="gas", equipment=["압축기"])
+    assert service.missing_inputs(meta) == ["P_kPag", "T_degC", "design_P_kPag", "capacity", "safeguards"]
+    known = meta.model_copy(update={"safeguards_known": True})
+    assert "safeguards" not in service.missing_inputs(known)  # '없음' 명시는 빈 것이 아니다
+    filled, fields = service.fill_node_meta(meta, {"P_kPag": 800, "capacity": "50 m³", "safeguards": "안전밸브, 긴급차단밸브"})
+    assert (filled.P_kPag, filled.capacity, filled.safeguards) == (800.0, "50 m³", ["안전밸브", "긴급차단밸브"])
+    assert set(fields) == {"P_kPag", "capacity", "safeguards"} and filled.T_degC is None
+    none, _ = service.fill_node_meta(meta, {"safeguards": "없음"})
+    assert none.safeguards == [] and none.safeguards_known is True
+    same, nothing = service.fill_node_meta(meta, {})
+    assert same == meta and nothing == []
+
+
+def test_app_input_check_before_generation(monkeypatch: pytest.MonkeyPatch) -> None:
+    """문장 입력은 해석 뒤 바로 생성하지 않고, 비어 있는 정보를 보여 채우게 한다 — 채운 값이 생성 입력에 들어간다."""
+    from streamlit.testing.v1 import AppTest
+
+    for key, value in _MOCK_ENV.items():
+        monkeypatch.setenv(key, value)
+    at = _grid(AppTest.from_file(str(_APP), default_timeout=60)).run()
+    at.text_area[0].input(_SENTENCE).run()
+    _cta(at).click().run()
+    assert not at.exception
+    assert at.session_state["quick_result"] is None  # 아직 생성하지 않았다
+    assert any(m.value.startswith("입력에 없는 정보: 운전압력") for m in at.markdown)
+    at.number_input(key="check_P_kPag").set_value(800).run()
+    at.text_input(key="check_capacity").input("50 m³").run()
+    at.button(key="check_fill").click().run()
+    assert not at.exception
+    meta = at.session_state["quick_result"].meta
+    assert meta["node_meta"]["P_kPag"] == 800 and meta["node_meta"]["capacity"] == "50 m³"
+    assert meta["parsed_by"] == "llm"  # 해석 정보(문장·해석 모델)는 그대로 남는다
+    assert not any(b.key == "check_fill" for b in at.button)  # 생성 뒤 확인 상자는 사라진다
+
+
+def test_missing_inputs_empty_when_all_given() -> None:
+    """다 적힌 입력이면 확인 상자를 띄우지 않고 바로 생성한다."""
+    assert service.missing_inputs(NodeMeta(substance="수소", phase="gas", P_kPag=1, T_degC=1, design_P_kPag=1,
+                                           capacity="1", safeguards=["안전밸브"])) == []
