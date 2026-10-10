@@ -28,7 +28,7 @@
      "infer": ["폭주 반응 같은 일반 모드"],
      "unknown": ["반응열", "냉각 용량", "원료 비율"],
      "required": ["반응 물질"]},
-    {"id": "procedure", "label": "운전 절차(충전·하역·절체)", "keywords": ["절차", "운전", "조작", "순서", "작업", "충전", "하역", "절체", "procedure", "operation"],
+    {"id": "procedure", "label": "운전 절차(충전·절체)", "keywords": ["절차", "운전", "조작", "순서", "작업", "충전", "절체", "procedure", "operation"],
      "infer": ["순서 착오", "조기·지연 조작"],
      "unknown": ["절차서 내용", "작업자 수", "확인 단계"],
      "required": ["절차 단계 목록"]}

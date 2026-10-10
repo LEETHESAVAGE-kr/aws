@@ -1,0 +1,4262 @@
+{
+  "schema_version": 1,
+  "source": "live",
+  "captured_at": "2026-10-10T11:19:15+00:00",
+  "node": "I1",
+  "split": "external",
+  "provider": "anthropic",
+  "model_id": "claude-opus-4-8",
+  "node_meta": {
+    "node": "I1",
+    "substance": "LPG(프로판·부탄)",
+    "phase": "liquid/gas",
+    "P_kPag": null,
+    "T_degC": null,
+    "design_P_kPag": null,
+    "capacity": null,
+    "equipment": [
+      "탱크로리 인수장",
+      "LPG 압축기",
+      "구형 저장탱크",
+      "불릿형 저장탱크"
+    ],
+    "safeguards": [],
+    "safeguards_known": false
+  },
+  "latency_s": 121.9,
+  "cost_usd": 0.9455,
+  "expected_cells": 84,
+  "judged_cells": 84,
+  "review_guidewords": [],
+  "recall": {
+    "recall": 1.0,
+    "matched": 11,
+    "total": 11
+  },
+  "parameters": [
+    "유량",
+    "압력",
+    "온도",
+    "준위",
+    "조성",
+    "상(相) 거동",
+    "하역 연결/호스 완결성",
+    "압축기 기동정지",
+    "저장탱크 기밀/누출",
+    "유틸리티",
+    "유지보수/퍼지",
+    "계장/제어"
+  ],
+  "max_tokens": 16384,
+  "parallel_calls": 7,
+  "raw_calls": [
+    {
+      "tokens_out": 1021,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3265,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3557,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 3900,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 4083,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 4128,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 4222,
+      "stop_reason": "tool_use"
+    },
+    {
+      "tokens_out": 4489,
+      "stop_reason": "tool_use"
+    }
+  ],
+  "truncated_calls": 0,
+  "records": [
+    {
+      "id": "i1-001",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "유량",
+      "deviation": "탱크로리 인수→압축기→저장탱크 이송 경로에서 LPG 흐름이 전혀 형성되지 않음(무유량)",
+      "causes": [
+        "인수 밸브 오조작·폐쇄로 흡입 차단",
+        "압축기 정지 또는 흡입측 막힘",
+        "배관 폐색·동결로 경로 차단"
+      ],
+      "consequences": [
+        "압축기 흡입 차단 상태 지속 시 체절 운전·과열로 기계 손상",
+        "하역 지연·공정 중단",
+        "밀폐 구간 압력 이상 유발 가능"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "흡입측 저유량·무유량 검지 및 압축기 자동정지 인터록 설치 검토",
+        "이송 경로 밸브 정렬 확인 절차 마련"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-002",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "유량",
+      "deviation": "하역·충전 시 설계 의도보다 과대한 LPG 유량이 배관·압축기 계통에 발생",
+      "causes": [
+        "탱크로리 가압 과다 또는 압축기 토출 유량 과대",
+        "하류 밸브 개도 과대 또는 유량 조절 실패",
+        "저장탱크 측 저압으로 인한 과도한 이송"
+      ],
+      "consequences": [
+        "배관·호스 내 유속 과대로 인한 수격·진동 및 연결부 피로 손상",
+        "과대 유량이 과충전·과압으로 전이되어 LPG 누출 시 극인화성 가스 확산·점화·화재/폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "하역·충전 라인 유량 제한(오리피스·유량조절) 및 유량 상한 경보 검토",
+        "압축기 토출 유량 관리 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [
+        "MSDS-74-98-6#051-1: 극인화성 가스"
+      ],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-003",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "유량",
+      "deviation": "탱크로리 인수→압축기→저장탱크 이송 경로에서 LPG 하역·충전 유량이 설계 의도보다 과소하게 흐른다",
+      "causes": [
+        "하역 호스·배관 부분 막힘 또는 밸브 개도 부족",
+        "압축기 토출 저하",
+        "탱크로리 잔량 저하로 인수 유량 감소"
+      ],
+      "consequences": [
+        "이송 시간 지연으로 하역 장시간화",
+        "압축기가 낮은 유량 상태에서 운전되어 과열·손상 가능",
+        "공정 전체 처리능력 저하"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 3,
+      "risk_score": 6,
+      "recommendations": [
+        "이송 라인 유량 지시·저유량 경보 설치 검토",
+        "하역 전 밸브 라인업 점검 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-004",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "유량",
+      "deviation": "저장탱크·압축기 토출측에서 상류(탱크로리 또는 저압측)로 LPG가 역류한다",
+      "causes": [
+        "압축기 정지 시 토출측 가압 유체가 흡입측으로 되돌아 흐름",
+        "탱크로리 인수 완료 후 저장탱크측 압력이 높아 하역라인으로 역류",
+        "체크밸브 누설 또는 미설치로 역류 차단 실패"
+      ],
+      "consequences": [
+        "탱크로리 또는 저압 설비로 고압 LPG가 역류하여 과압·파열",
+        "역류에 따른 누출 시 극인화성 가스 확산으로 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "압축기 토출 및 하역라인에 역류방지용 체크밸브 설치 및 정기 작동시험",
+        "역류 감지 시 긴급차단되는 인터록 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [
+        "MSDS-74-98-6#051-1: 극인화성 가스"
+      ],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-005",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "유량",
+      "deviation": "설계 의도인 LPG가 아닌 다른 물질(이종 가스·공기·물)이 하역·이송 라인을 통해 유입되어 흐른다",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "인수 물질 식별·샘플링 절차",
+        "교차 연결 차단밸브 유무"
+      ]
+    },
+    {
+      "id": "i1-006",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "유량",
+      "deviation": "이송되는 LPG 중 일부 성분(경질분)만 선택적으로 이송되어 설계한 조성·유량의 일부만 저장탱크로 전달됨",
+      "causes": [
+        "탱크로리 내 경질분(프로판) 우선 플래싱으로 기상만 이송",
+        "부분 개방 밸브·부분 막힘으로 설계 유량의 일부만 통과",
+        "압축기 부분 능력 운전으로 설계 이송량 일부만 달성"
+      ],
+      "consequences": [
+        "저장탱크 충전 지연 및 조성 편중",
+        "탱크로리 측 잔류 중질분 축적으로 후속 이송 불균형",
+        "압축기 부분부하 장기 운전으로 과열·효율 저하"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 3,
+      "risk_score": 6,
+      "recommendations": [
+        "이송 유량·누적량 계측 및 설계치 대비 감시",
+        "조성 편중 방지를 위한 이송 순서·속도 운전절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-007",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "유량",
+      "deviation": "의도한 LPG 이송과 함께 공기·수분·타 물질 등 추가 성분이 유로에 함께 흐름",
+      "causes": [
+        "탱크로리 교체·전환 시 이종 성분 혼입",
+        "불완전 퍼지 상태에서 이송 개시로 공기가 LPG와 함께 유입",
+        "커플링 개방 중 외기·수분 유입"
+      ],
+      "consequences": [
+        "유로 내 가연성 혼합물 형성으로 점화 시 화재·폭발",
+        "수분 혼입에 의한 밸브·배관 결빙 및 운전 장애"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "이송 전 라인 퍼지·치환 확인 절차 수립",
+        "이송 개시 전 산소농도·순도 확인"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-74-98-6#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 프로페인",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "공기와 폭발성 혼합물을 형성함"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-008",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "압력",
+      "deviation": "설비 전 구간에 설계 의도 압력이 전혀 형성되지 않음(압력 상실/대기압 수준)",
+      "causes": [
+        "대형 누출로 계통 압력 급감",
+        "압축기 정지로 승압 미형성",
+        "배관 파단"
+      ],
+      "consequences": [
+        "LPG 대량 누출 시 지면 확산·역화로 화재·폭발",
+        "액화가스 증기가 점화원까지 이동하여 광범위 점화"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "계통 저압 경보 및 긴급차단밸브(ESD) 연계 검토",
+        "가스감지기·누출 검지 체계 보강"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-74-98-6#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 프로페인",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "증기는 점화원까지 이동하여 역화(flash back)할 수 있음"
+        },
+        {
+          "source_id": "MSDS-74-98-6#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 프로페인",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "액화가스 증기는 공기보다 무겁기 때문에 지면을 따라 확산하니"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-009",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "압력",
+      "deviation": "압축기 승압·주위온도 상승 등으로 계통 압력이 설계 의도 이상으로 상승",
+      "causes": [
+        "압축기 토출 과승압",
+        "저장탱크 외부 가열·화재 노출에 의한 내압 상승",
+        "하류 차단 상태에서의 이송 지속(체절)"
+      ],
+      "consequences": [
+        "설계압 초과 시 저장탱크·배관·압축기 손상 및 파열",
+        "가열 시 용기 폭발과 대량 LPG 방출로 화재·폭발(BLEVE 가능)"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "설계압력 및 안전밸브 설정·설치 현황 확인",
+        "압축기 토출 고압 트립·압력 경보 설정 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-106-97-8#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 부탄",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "가열시 용기가 폭발할 수 있음"
+        },
+        {
+          "source_id": "MSDS-74-98-6#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 프로페인",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "고압가스 포함 ; 가열하면 폭발할 수 있음"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-010",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "압력",
+      "deviation": "전 구간에서 LPG 계통 압력이 설계 의도보다 낮게 유지된다",
+      "causes": [
+        "압축기 토출 저하 또는 무부하 운전",
+        "상류 공급 부족",
+        "누출로 인한 압력 저하"
+      ],
+      "consequences": [
+        "이송 능력 저하로 하역 지연",
+        "압력 저하에 따른 플래싱·베이퍼락 유발 가능",
+        "누출 동반 시 공기보다 무거운 가연성 증기 지면 확산 및 점화 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "계통 압력 지시·저압 경보 설치 검토",
+        "누출 수반 저압 조기 식별을 위한 가스감지기 배치"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-74-98-6#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 프로페인",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "액화가스 증기는 공기보다 무겁기 때문에 지면을 따라 확산하니 주의하시오"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-011",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "압력",
+      "deviation": "역류로 인해 저압측 설비 또는 탱크로리가 설계압을 초과하는 과압 상태가 된다",
+      "causes": [
+        "압축기 토출측 고압 유체가 흡입측·하역측으로 역류하여 저압 설비 가압",
+        "체크밸브 불량으로 승압된 유체가 상류로 전파"
+      ],
+      "consequences": [
+        "저압 설계 설비·호스의 과압 파열",
+        "파열부 LPG 대량 누출로 증기운 형성 및 점화 시 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "역류 경로 상 저압측에 안전밸브 설치 여부 확인",
+        "압축기 흡입·토출 압력 감시 및 역류 시 자동정지 인터록"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-74-98-6#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 프로페인",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "가열하면 폭발할 수 있음"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-012",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "압력",
+      "deviation": "설계 물질이 아닌 이종 가스나 비정상 조성이 유입되어 증기압 특성이 달라져 예상과 다른 계통 압력이 형성된다",
+      "causes": [
+        "탱크로리에 LPG가 아닌 고증기압 물질 또는 혼입물 적재",
+        "서로 다른 성분비 LPG 이입으로 증기압 상이"
+      ],
+      "consequences": [
+        "설계압과 다른 운전압으로 과압 또는 저압 발생",
+        "안전밸브 설정과 불일치하여 방호 적정성 상실 가능",
+        "압축기 토출 조건 변동으로 기기 부하 이상"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "이입 전 물질 식별 및 증기압 확인 절차 수립",
+        "탱크로리 인수 샘플링·성적서 대조 운영"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-013",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "압력",
+      "deviation": "전 구간에 설계 압력이 고르게 유지되지 못하고 일부 구간만 승압되어 압력 분포가 불균일함",
+      "causes": [
+        "압축기 토출 일부 구간만 승압되고 하류 밸브 부분 폐쇄",
+        "부분 막힘으로 특정 구간 압력 상승·타 구간 저압"
+      ],
+      "consequences": [
+        "국부 과압으로 배관·접속부 응력 집중 및 누출 경로 형성",
+        "누출 시 극인화성 LPG가 지면을 따라 확산하여 점화·화재"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "구간별 압력 계측 및 과압 방출장치 설치 확인",
+        "압력 불균형 경보 및 운전절차 정비"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-74-98-6#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 프로페인",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "액화가스 증기는 공기보다 무겁기 때문에 지면을 따라 확산하니 주의하시오"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-014",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "압력",
+      "deviation": "정상 운전압에 더해 열팽창·외부 입열 등 추가 압력 상승 요인이 중첩됨",
+      "causes": [
+        "주위온도 상승·화재 노출로 인한 액 열팽창 중첩",
+        "압축기 승압과 기존 정압이 더해짐"
+      ],
+      "consequences": [
+        "설계압 초과로 용기·배관 파열 및 LPG 대량 누출",
+        "가열 시 용기 폭발로 화재·BLEVE 가능"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "과압 방호장치(안전밸브 등) 설치·설정 확인"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-74-98-6#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 프로페인",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "가열하면 폭발할 수 있음"
+        },
+        {
+          "source_id": "LAW-OSH-STD-RULE#38",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제261조(안전밸브 등의 설치)",
+          "quote": "과압에 따른 폭발을 방지하기 위하여"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-015",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "온도",
+      "deviation": "저장·이송 설계 온도 조건이 전혀 유지되지 않음(제어 상실)",
+      "causes": [
+        "주위온도 급상승·화재 노출로 탱크 가열",
+        "온도 관리 수단 상실"
+      ],
+      "consequences": [
+        "가열에 의한 내압 상승으로 용기 폭발·BLEVE 가능",
+        "고온 분해로 독성가스 발생 가능"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 2,
+      "risk_score": 10,
+      "recommendations": [
+        "탱크 살수·냉각설비 및 복사열 차단 검토",
+        "화염 노출 시 긴급대응 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-74-98-6#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 프로페인",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "가열하면 폭발할 수 있음"
+        },
+        {
+          "source_id": "MSDS-74-98-6#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 프로페인",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "가열시 용기가 폭발할 수 있음"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-016",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "온도",
+      "deviation": "주위온도 상승·화재 노출로 저장탱크·배관 내 LPG 온도가 설계 의도보다 상승",
+      "causes": [
+        "여름철 직사·화재 노출 등 외부 입열",
+        "압축 과정의 열 발생"
+      ],
+      "consequences": [
+        "온도 상승에 따른 증기압 증가로 내압 상승·과압 파열",
+        "가열된 용기 폭발과 대량 가연성 가스 방출로 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "저장탱크 살수·냉각설비 및 복사열 차단 조치 확인",
+        "온도 상승 감지·경보 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-106-97-8#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 부탄",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "가열시 용기가 폭발할 수 있음"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-017",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "온도",
+      "deviation": "저장·이송 LPG 온도가 설계 의도보다 낮아져 저온 상태가 된다",
+      "causes": [
+        "급격한 감압에 따른 자가냉각(플래싱)",
+        "저온 액 유입"
+      ],
+      "consequences": [
+        "저온 취성에 의한 재질 손상 가능",
+        "베이퍼락·이송 불량",
+        "계측·운전 이상"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "저온 플래싱 발생 구간 온도 감시 검토",
+        "저온 서비스 재질 적합성 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-018",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "온도",
+      "deviation": "설계와 다른 조성·물질이 유입되어 상변화 온도 특성이 달라져 예상과 다른 플래싱·저온이 발생한다",
+      "causes": [
+        "고휘발성 이종 물질 혼입으로 플래싱 거동 변화",
+        "수분 혼입에 의한 하이드레이트·동결"
+      ],
+      "consequences": [
+        "급격한 플래싱으로 저온 취성 및 배관 취화",
+        "밸브·계장 동결로 제어 불능",
+        "누출 시 저온 화상"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "이입 물질 수분·불순물 관리 기준 수립",
+        "저온 취성 대비 재질 적정성 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-019",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "온도",
+      "deviation": "저장·이송 중 일부만 설계 온도에 도달하고 일부 구간은 상변화 온도 영역에 머물러 부분 플래싱이 발생함",
+      "causes": [
+        "주위온도 상승으로 탱크 상부 기상만 승온",
+        "감압 구간에서 일부 액상만 플래싱하여 부분 기화"
+      ],
+      "consequences": [
+        "부분 기화로 배관·기기 내 기액 혼재 및 압력 변동",
+        "온도 상승 시 저장탱크 내압 증가로 과압 위험"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 3,
+      "risk_score": 6,
+      "recommendations": [
+        "저장탱크 표면온도·내압 감시 및 살수·차양 등 온도상승 억제 설비 확인",
+        "부분 플래싱 구간 운전조건 점검"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-020",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "온도",
+      "deviation": "정상 온도에 더해 외부 입열·화재 복사열이 추가되어 내부 온도가 중첩 상승",
+      "causes": [
+        "인접 화재 복사열 노출",
+        "하절기 직사광선 등 외부 입열 중첩"
+      ],
+      "consequences": [
+        "증기압 상승에 따른 과압·용기 폭발",
+        "가열된 용기 파열로 가연성 가스 대량 방출"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "탱크 살수·냉각설비 및 복사열 차단 조치 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-74-98-6#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 프로페인",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "화재에 노출된 실린더는 가연성 가스를 방출할 수 있음"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-021",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "준위",
+      "deviation": "구형·불릿형 저장탱크에 설계 의도 액위가 전혀 형성되지 않음(액위 상실 또는 제어 불능)",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "용량",
+        "액위 계측·경보의 유무와 설정값"
+      ]
+    },
+    {
+      "id": "i1-022",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "준위",
+      "deviation": "구형·불릿형 저장탱크 액위가 설계 허용치를 초과(과충전)하여 액팽창 공간 상실",
+      "causes": [],
+      "consequences": [
+        "액팽창 공간 상실 후 온도 상승 시 수압파열·안전밸브로의 액 방출",
+        "대량 LPG 누출 시 극인화성 가스 확산·화재/폭발"
+      ],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [
+        "액위 상한 경보·과충전 방지 인터록 유무와 설정값 확인",
+        "충전량 관리 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "용량",
+        "액위 계측·경보의 유무와 설정값",
+        "설계압력"
+      ]
+    },
+    {
+      "id": "i1-023",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "준위",
+      "deviation": "구형·불릿형 저장탱크 액위가 설계 의도보다 낮게 유지된다",
+      "causes": [],
+      "consequences": [
+        "펌프·압축기 흡입측 기화·베이퍼락 가능",
+        "공급 차질"
+      ],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [
+        "저액위 경보·인터록 설정 확인",
+        "최소 운전 액위 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "액위 계측·경보의 유무와 설정값",
+        "용량"
+      ]
+    },
+    {
+      "id": "i1-024",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "준위",
+      "deviation": "역류로 유출되어야 할 액이 저장탱크로 되돌아와 예상치 못한 준위 상승이 발생한다",
+      "causes": [
+        "하류 역류로 저장탱크에 액이 재유입",
+        "이송 정지 후 하류 고압 유체가 탱크로 역류"
+      ],
+      "consequences": [
+        "과충전으로 액팽창 공간 상실 시 수압파열 위험",
+        "파열부 누출로 가연성 가스 확산"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "저장탱크 유입라인 체크밸브 설치",
+        "액위 고고 경보·인터록 유무 및 설정값 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-025",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "준위",
+      "deviation": "설계 물질이 아닌 밀도가 다른 물질이 저장탱크에 들어가 지시 준위와 실제 액량이 불일치한다",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "액위 계측·경보의 유무와 설정값",
+        "용량"
+      ]
+    },
+    {
+      "id": "i1-026",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "준위",
+      "deviation": "저장탱크 설계 액위 중 일부 범위만 정상 제어되고 일부 범위에서 과충전되어 액팽창 공간이 잠식됨",
+      "causes": [],
+      "consequences": [
+        "액팽창 공간 상실 시 온도 상승에 따른 수압 파열 및 대량 누출",
+        "누출 LPG 점화 시 대규모 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [
+        "과충전 방지 고액위 경보·자동차단 설치·설정값 검증",
+        "액위 계측 다중화 및 주기 점검"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "용량",
+        "설계압력",
+        "액위 계측·경보의 유무와 설정값"
+      ]
+    },
+    {
+      "id": "i1-027",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "준위",
+      "deviation": "의도한 저장 액량에 더해 과충전으로 액팽창 공간이 추가로 잠식됨",
+      "causes": [],
+      "consequences": [
+        "액팽창 공간 상실로 수압 파열 및 LPG 누출",
+        "안전밸브 토출 시 액상 방출로 다량 가연성 증기운 형성"
+      ],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [
+        "고액위 경보·충전정지 인터록 설정값 검증"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "용량",
+        "액위 계측·경보의 유무와 설정값"
+      ]
+    },
+    {
+      "id": "i1-028",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "조성",
+      "deviation": "이송·저장 물질이 설계 의도 조성과 전혀 다름(규격 외 물질 혼입/오충전)",
+      "causes": [
+        "탱크로리 오인수로 상이 물질 혼입",
+        "수분·불순물 과다 혼입"
+      ],
+      "consequences": [
+        "증기압 이상으로 과압·운전 불능",
+        "불순물에 의한 부식·밸브 고착으로 누출 경로 형성"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "인수 전 물질·규격 확인 및 샘플링 절차 마련",
+        "수분·불순물 관리 기준 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-029",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "조성",
+      "deviation": "프로판 비율 증가 등 혼합비 변동으로 증기압이 설계 의도보다 높아짐",
+      "causes": [
+        "프로판·부탄 혼합비 관리 실패",
+        "탱크로리 인수 물량의 조성 편차"
+      ],
+      "consequences": [
+        "증기압 증가로 저장탱크 내압 상승·과압 위험",
+        "운전조건 불일치로 안전밸브·계장 설계값 초과"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "인수 물량 조성 확인 절차 및 증기압 관리 기준 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-030",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "조성",
+      "deviation": "프로판·부탄 혼합물 중 경질분(프로판) 비율이 의도보다 낮아 증기압이 저하된다",
+      "causes": [
+        "탱크로리 공급 조성 변동",
+        "분리·층분리"
+      ],
+      "consequences": [
+        "증기압 저하로 이송 성능 저하",
+        "제품 규격 이탈"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 3,
+      "risk_score": 6,
+      "recommendations": [
+        "인수 로트별 조성 확인 절차",
+        "증기압 모니터링 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-031",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "조성",
+      "deviation": "설계 의도인 프로판·부탄 조성에서 벗어나 수분·불순물·이종 성분이 혼입된 상태로 저장·이송된다",
+      "causes": [
+        "탱크로리 혼적·오충전",
+        "하역 라인 잔류물 혼입",
+        "수분 침투"
+      ],
+      "consequences": [
+        "증기압·발열량 규격 이탈로 운전 불안정",
+        "수분에 의한 부식 및 동결로 설비 손상",
+        "부적합 제품 출하"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "이입 시 조성 분석·성적서 확인 체계 운영",
+        "탱크로리 전용화 또는 교차오염 방지 절차"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-032",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "조성",
+      "deviation": "설계한 프로판·부탄 혼합비 중 일부 성분만 전달되거나 수분·불순물이 함께 들어와 조성이 설계 의도의 일부만 충족됨",
+      "causes": [
+        "탱크로리 간 조성 상이 및 경질분 우선 이송",
+        "수분·불순물 혼입"
+      ],
+      "consequences": [
+        "증기압 변동으로 저장·운전 압력 설계와 불일치",
+        "수분 혼입 시 동결·부식으로 밸브·계장 오작동"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 3,
+      "risk_score": 6,
+      "recommendations": [
+        "인수 전 조성·수분 분석 및 수입 기준 운영",
+        "탈수·필터 설비 점검"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-033",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "조성",
+      "deviation": "의도한 프로판·부탄 조성에 더해 수분·불순물 등 추가 성분이 혼입됨",
+      "causes": [
+        "탱크로리 공급원 품질 편차로 불순물 유입",
+        "라인 잔류수·퍼지가스 혼입"
+      ],
+      "consequences": [
+        "수분 혼입 시 저온부 결빙으로 밸브·계장 작동 불량",
+        "증기압 특성 변화로 과압·운전 이상"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "인수 시 조성·수분 분석 및 수취 기준 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-034",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "상(相) 거동",
+      "deviation": "압축기에 기상 대신 액상이 유입되어 설계 의도 상(기상 압축)이 전혀 성립하지 않음(액동)",
+      "causes": [
+        "흡입측 기액분리 불량으로 액 carryover",
+        "플래싱·응축에 의한 액 유입"
+      ],
+      "consequences": [
+        "압축기 액압축으로 밸브·로드 손상 및 케이싱 파손",
+        "파손부 LPG 누출로 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "흡입 녹아웃 드럼·액면 보호 및 압축기 트립 연계 검토",
+        "흡입측 액 검지 경보 설치"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-106-97-8#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 부탄",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "공기와 폭발성 혼합물을 형성함"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-035",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "상(相) 거동",
+      "deviation": "기상 흡입 설계인 압축기에 과다한 액이 유입되어 액동(liquid carryover) 발생",
+      "causes": [
+        "기액분리 불량 또는 흡입측 액 동반 증가",
+        "저장탱크·배관 플래싱으로 흡입 상 조건 변동"
+      ],
+      "consequences": [
+        "압축기 액압축으로 밸브·로드·실린더 손상 및 케이싱 파손",
+        "손상부 LPG 누출 시 극인화성 가스 확산·화재/폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "압축기 흡입측 기액분리기·액면 보호·액동 트립 유무 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [
+        "MSDS-106-97-8#051-1: 극인화성 가스"
+      ],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-036",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "상(相) 거동",
+      "deviation": "의도한 액상보다 기화(증기) 비율이 증가해 상이 치우친다(플래싱·베이퍼락)",
+      "causes": [
+        "압력 저하·온도 상승에 의한 플래싱",
+        "흡입측 베이퍼락"
+      ],
+      "consequences": [
+        "압축기 흡입측 가스화로 토출 저하·공회전",
+        "이송 불안정",
+        "증기는 점화원까지 이동하여 역화 가능"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "흡입측 액/기 상태 감시 검토",
+        "플래싱 방지 운전조건 관리"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-74-98-6#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 프로페인",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "증기는 점화원까지 이동하여 역화(flash back)할 수 있음"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-037",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "상(相) 거동",
+      "deviation": "역류 시 흡입측으로 되돌아온 액이 압축기로 유입되어 액압축(liquid carryover)이 발생한다",
+      "causes": [
+        "토출측 응축액·액상 LPG가 정지 시 압축기 흡입측으로 역류",
+        "역류 차단 실패로 액이 실린더로 유입"
+      ],
+      "consequences": [
+        "비압축성 액에 의한 압축기 액압축으로 밸브·로드 손상",
+        "손상부 누출로 극인화성 가스 방출 및 점화 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "압축기 흡입측 녹아웃 드럼·액분리기 설치 검토",
+        "역류 방지 체크밸브 및 정지 시 흡입측 격리 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-038",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "상(相) 거동",
+      "deviation": "설계 의도와 다른 상(기상 라인에 액, 액상 라인에 증기)이 존재하여 압축기로 액이 유입된다",
+      "causes": [
+        "이종 조성 혼입으로 응축 거동 변화",
+        "분리 부족으로 액 캐리오버"
+      ],
+      "consequences": [
+        "압축기 액압축으로 밸브·로드 손상",
+        "기기 파손 및 LPG 누출·화재",
+        "역화에 의한 폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "압축기 흡입측 기액분리기 및 액유입 보호 검토",
+        "조성 변동 시 응축 거동 평가"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-74-98-6#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 프로페인",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "증기는 점화원까지 이동하여 역화(flash back)할 수 있음"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-039",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "상(相) 거동",
+      "deviation": "액상 이송 구간에 기상이 부분 혼입되거나 기상 이송 구간에 액적이 일부 동반되어 단일상 설계 의도가 부분적으로만 유지됨",
+      "causes": [
+        "감압부 부분 플래싱으로 기액 혼재",
+        "압축기 흡입측으로 액적 일부 동반(carryover)",
+        "베이퍼락"
+      ],
+      "consequences": [
+        "압축기 액압축으로 밸브·로드 손상 및 기계적 파손",
+        "손상부 누출 시 극인화성 가스 확산·점화"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "압축기 흡입측 기액분리기(녹아웃 드럼) 설치·점검",
+        "흡입 액적 검출 및 트립 로직 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [
+        "MSDS-106-97-8#051-1: 극인화성 가스"
+      ],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-040",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "상(相) 거동",
+      "deviation": "압축기로 유입되는 기상에 더해 액상이 함께 캐리오버되어 들어옴",
+      "causes": [
+        "기액분리 불량으로 액적이 기상과 동반 유입",
+        "플래싱 미발생 구간에서 액 잔류가 흡입측에 중첩"
+      ],
+      "consequences": [
+        "압축기 액압축(liquid slug)으로 밸브·로드 손상",
+        "기계적 파손 부위로 LPG 누출 및 화재"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "흡입측 액분리기·고액위 트립 설치 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-041",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "하역 연결/호스 완결성",
+      "deviation": "하역 연결부가 완결되지 않거나 파단되어 폐쇄계 이송이 전혀 성립하지 않음",
+      "causes": [
+        "호스·커플링 체결 불량·탈락",
+        "미분리 발차(drive-away)로 연결부 파단"
+      ],
+      "consequences": [
+        "하역 중 LPG 대량 누출로 지면 확산·역화 화재·폭발",
+        "선내·인근 영향"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "긴급분리커플링(브레이크어웨이)·일탈방지 인터록 설치 검토",
+        "하역 전 체결 확인 및 차량 고정 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-106-97-8#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 부탄",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "증기는 점화원까지 이동하여 역화(flash back)할 수 있음"
+        },
+        {
+          "source_id": "MSDS-106-97-8#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 부탄",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "액화가스 증기는 공기보다 무겁기 때문에 지면을 따라 확산하니"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-042",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "하역 연결/호스 완결성",
+      "deviation": "하역 중 호스·커플링에 설계 이상의 응력·압력이 걸려 연결부 파단·탈락",
+      "causes": [
+        "과대 유량·과압 하역",
+        "미분리 발차(drive-away) 등 연결부 과도 인장",
+        "커플링 체결 불량"
+      ],
+      "consequences": [
+        "연결부 파단으로 LPG 대량 누출",
+        "지면 확산 가연성 증기의 점화로 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "긴급분리커플링(브레이크어웨이)·미분리 발차 방지 인터록 유무 확인",
+        "하역 전 체결·압력 점검 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-74-98-6#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 프로페인",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "액화가스 증기는 공기보다 무겁기 때문에 지면을 따라 확산하니"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-043",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "하역 연결/호스 완결성",
+      "deviation": "하역 커플링·호스 연결이 불완전해 유효 이송 단면이 축소된다(부분 결합·부분 개방)",
+      "causes": [
+        "커플링 불완전 체결",
+        "호스 부분 막힘·꺾임"
+      ],
+      "consequences": [
+        "이송 유량 감소·하역 지연",
+        "연결부 누출 시 가연성 증기 지면 확산 및 점화 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "하역 전 연결부 체결·기밀 점검 절차",
+        "연결부 누출 감지 배치 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-106-97-8#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 부탄",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "열, 스파크, 화염에 의해 쉽게 점화함"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-044",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "하역 연결/호스 완결성",
+      "deviation": "하역 완료·중단 후 저장탱크측 고압 LPG가 호스·커플링을 통해 탱크로리 방향으로 역류한다",
+      "causes": [
+        "하역 종료 시 라인 격리 미흡으로 저장측 압력이 호스로 역전파",
+        "커플링 분리 전 잔압·역류 미처리"
+      ],
+      "consequences": [
+        "역류 압력 하에서 커플링 분리 시 LPG 대량 분출",
+        "지면을 따라 확산하는 증기운 점화로 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "하역라인 체크밸브 및 분리 전 잔압 배출·격리 절차 수립",
+        "긴급차단밸브 및 역류 감지 인터록 적용 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-74-98-6#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 프로페인",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "액화가스 증기는 공기보다 무겁기 때문에 지면을 따라 확산하니 주의하시오"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-045",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "하역 연결/호스 완결성",
+      "deviation": "설계 의도와 다른 탱크로리·호스·커플링이 연결되거나 부적합 물질 라인과 오접속되어 이종 물질이 인입된다",
+      "causes": [
+        "커플링 규격 불일치 강제 연결",
+        "인수 라인 오접속",
+        "표식 오인"
+      ],
+      "consequences": [
+        "이종 물질 유입 또는 누출",
+        "LPG 누출 시 증기운 확산·점화로 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "전용 커플링·오접속 방지 설계 적용",
+        "연결 전 물질·라인 식별 확인 절차"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-74-98-6#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 프로페인",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "액화가스 증기는 공기보다 무겁기 때문에 지면을 따라 확산하니 주의하시오"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-046",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "하역 연결/호스 완결성",
+      "deviation": "하역 연결부 체결이 완전하지 못해 일부만 접속된 상태로 이송이 진행되어 연결부에서 지속 누출됨",
+      "causes": [
+        "커플링 부분 체결·미분리 발차(drive-away)",
+        "호스 열화·부분 파단"
+      ],
+      "consequences": [
+        "연결부 LPG 누출 및 지면 확산 후 점화원 도달 시 화재·폭발",
+        "역화(flash back)로 하역장 전체 확대"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "긴급분리커플링(브레이크어웨이)·일탈방지 인터록 설치 확인",
+        "하역 전 체결 확인 절차 및 호스 주기 검사"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-106-97-8#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 부탄",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "증기는 점화원까지 이동하여 역화(flash back)할 수 있음"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-047",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "하역 연결/호스 완결성",
+      "deviation": "정상 하역 연결에 더해 이송 중 미분리 발차·커플링 외력 등 추가 교란이 연결부에 가해짐",
+      "causes": [
+        "미분리 상태 발차(drive-away)로 호스에 인장력 추가",
+        "커플링 체결 중 이물·외력 작용"
+      ],
+      "consequences": [
+        "호스·커플링 파단으로 LPG 대량 누출",
+        "지면 확산 증기운 점화 시 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "긴급차단·분리커플링 및 발차방지 인터록 설치 확인"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-74-98-6#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 프로페인",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "액화가스 증기는 공기보다 무겁기 때문에 지면을 따라 확산하니 주의하시오"
+        },
+        {
+          "source_id": "LAW-HPGAS-RULE#23",
+          "doc_title": "고압가스 안전관리법 시행규칙",
+          "issuer": "산업통상부",
+          "locator": "별표 8(고압가스 저장·사용의 시설·기술·검사 기준) 1. 고압가스 저장 > 나. 기술기준 > 1) 안전유지기준 > 타)",
+          "quote": "긴급차단장치는 그 성능이 원격조작에 의하여 작동되고"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-048",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "압축기 기동정지",
+      "deviation": "압축기 기동·정지·무부하 전환이 설계 의도대로 전혀 이루어지지 않음(기동 실패/비정상 정지)",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "트립 설정값",
+        "최소유량 보호 유무",
+        "예비기 유무"
+      ]
+    },
+    {
+      "id": "i1-049",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "압축기 기동정지",
+      "deviation": "기동·정지·무부하 전환 시 과도한 토출압·서지 등 과대 부하 발생",
+      "causes": [],
+      "consequences": [
+        "체절·과압으로 압축기·배관 손상 및 과열",
+        "손상부 LPG 누출 시 화재/폭발"
+      ],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [
+        "최소유량 보호·토출 고압 트립·기동 인터록 유무와 설정값 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "최소유량 보호 유무",
+        "트립 설정값",
+        "예비기 유무"
+      ]
+    },
+    {
+      "id": "i1-050",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "압축기 기동정지",
+      "deviation": "LPG 압축기가 설계 최소유량 미만으로 운전된다(저유량 운전)",
+      "causes": [],
+      "consequences": [
+        "체절·저유량 운전에 의한 과열·손상",
+        "밀봉부 손상 시 누출"
+      ],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [
+        "최소유량 보호·저유량 트립 적용 여부 확인",
+        "기동정지 절차 정비"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "최소유량 보호 유무",
+        "트립 설정값",
+        "예비기 유무"
+      ]
+    },
+    {
+      "id": "i1-051",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "압축기 기동정지",
+      "deviation": "압축기 정지·역회전 시 토출측 고압 유체가 흡입측으로 역류하여 역회전·역류가 발생한다",
+      "causes": [
+        "정지 시 토출측 가압 유체가 체크밸브 불량으로 역류",
+        "전원 상실·트립 후 역류에 의한 임펠러·크랭크 역회전"
+      ],
+      "consequences": [
+        "역회전·역류로 인한 압축기 내부 손상",
+        "손상부 밀봉 파손 시 극인화성 가스 누출 및 점화"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "토출측 체크밸브 및 정지 시 토출 격리밸브 자동 폐쇄 검토",
+        "역회전 방지장치 및 트립 연동 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-052",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "압축기 기동정지",
+      "deviation": "설계 의도와 다른 조성·상의 유체가 유입된 상태에서 압축기가 기동되어 비정상 유체를 압축한다",
+      "causes": [
+        "기동 전 라인 내 이종 물질·응축액 잔류",
+        "조성 변동 상태에서 기동"
+      ],
+      "consequences": [
+        "액압축·서지로 압축기 손상",
+        "기기 파손에 의한 LPG 누출·화재"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "기동 전 라인 상태·조성 확인 절차",
+        "흡입측 액유입 보호 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-053",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "압축기 기동정지",
+      "deviation": "기동·정지 시 일부 계통만 정상 전환되고 일부는 무부하·체절 상태로 남아 부분 운전조건이 발생함",
+      "causes": [],
+      "consequences": [
+        "체절·공회전으로 과열 및 기계적 손상",
+        "손상부 누출 시 극인화성 가스 방출"
+      ],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [
+        "기동 전 밸브 정렬 확인 및 최소유량·토출압 보호 적용",
+        "무부하 운전 시간 제한 로직 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "최소유량 보호 유무",
+        "트립 설정값",
+        "예비기 유무"
+      ]
+    },
+    {
+      "id": "i1-054",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "압축기 기동정지",
+      "deviation": "기동·정지 전환 시 의도한 운전에 더해 서지·액압축 등 과도 현상이 추가로 발생",
+      "causes": [],
+      "consequences": [
+        "과도 하중으로 압축기·배관 손상 및 누출",
+        "누출 LPG 점화로 화재"
+      ],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [
+        "기동·정지 시퀀스 및 역류방지 조치 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "트립 설정값",
+        "최소유량 보호 유무"
+      ]
+    },
+    {
+      "id": "i1-055",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "저장탱크 기밀/누출",
+      "deviation": "구형·불릿형 저장탱크의 기밀 완결성이 전혀 유지되지 않음(용접부·노즐·밸브 누출)",
+      "causes": [
+        "용접부·노즐 결함 또는 부식 누설",
+        "밸브·플랜지 실링 파손"
+      ],
+      "consequences": [
+        "LPG 누출·증기운 확산 후 점화로 화재·폭발, 화염 노출 시 BLEVE 가능",
+        "다수 인명·인접 영향"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "정기 기밀·두께 검사 및 가스감지·살수설비 검토",
+        "누출 조기검지 및 긴급차단 체계 보강"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-74-98-6#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 프로페인",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "화재에 노출된 실린더는 가연성 가스를 방출할 수 있음"
+        },
+        {
+          "source_id": "MSDS-74-98-6#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 프로페인",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "가열시 용기가 폭발할 수 있음"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-056",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "저장탱크 기밀/누출",
+      "deviation": "과압·과충전 등 과대 하중으로 구형·불릿형 탱크 용접부·노즐·밸브 누출 확대",
+      "causes": [
+        "내압 상승·부식 누설",
+        "과충전 후 온도 상승에 따른 응력 증가"
+      ],
+      "consequences": [
+        "LPG 누출로 지면 확산·화재",
+        "화재 노출 지속 시 가열된 용기 폭발(BLEVE)과 선외 영향"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "가스검지·긴급차단장치 유무 확인 및 정기 기밀·부식 검사 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-106-97-8#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 부탄",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "가열시 용기가 폭발할 수 있음"
+        },
+        {
+          "source_id": "LAW-HPGAS-RULE#22",
+          "doc_title": "고압가스 안전관리법 시행규칙",
+          "issuer": "산업통상부",
+          "locator": "별표 8(고압가스 저장·사용의 시설·기술·검사 기준) 1. 고압가스 저장 > 나. 기술기준 > 1) 안전유지기준 > 차)",
+          "quote": "가스를 송출 또는 이입하는 때 외에는 잠가 둘 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-057",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "저장탱크 기밀/누출",
+      "deviation": "탱크 용접부·노즐·밸브의 미세 누출로 계통 보유량이 서서히 감소한다",
+      "causes": [
+        "부식에 의한 미세 누설",
+        "노즐·밸브 패킹 열화"
+      ],
+      "consequences": [
+        "가연성 증기 누출·지면 확산 및 점화 위험",
+        "보유량 손실"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "주기적 기밀·두께 점검",
+        "가스감지기 배치 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [
+        "MSDS-74-98-6#051-1: 극인화성 가스"
+      ],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-058",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "저장탱크 기밀/누출",
+      "deviation": "역류로 유입된 유체가 탱크 노즐·밸브 부위에 비정상 압력을 가해 기밀부에서 누출이 발생한다",
+      "causes": [
+        "하류 역류로 탱크 유입 노즐·밸브에 비정상 역압 작용",
+        "역류 반복에 따른 밸브 시트·용접부 피로·누설"
+      ],
+      "consequences": [
+        "노즐·밸브부 누출로 가연성 LPG 방출",
+        "증기운 점화 시 화재, 화염 노출 지속 시 BLEVE 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "탱크 유입·유출 밸브의 누설 점검 및 긴급차단밸브 적용 확인",
+        "저장탱크 부근 밸브 평상시 폐쇄 관리 준수"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-HPGAS-RULE#22",
+          "doc_title": "고압가스 안전관리법 시행규칙",
+          "issuer": "산업통상부",
+          "locator": "별표 8(고압가스 저장·사용의 시설·기술·검사 기준) 1. 고압가스 저장 > 나. 기술기준 > 1) 안전유지기준 > 차)",
+          "quote": "그 저장탱크의 가장 가까운 부근에 설치한 밸브는 가스를 송출 또는 이입하는 때 외에는 잠가 둘 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-059",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "저장탱크 기밀/누출",
+      "deviation": "설계 물질이 아닌 수분·불순물 혼입으로 내부 부식이 진행되어 용접부·노즐에서 누출이 발생한다",
+      "causes": [
+        "수분 혼입에 의한 내부 부식",
+        "이종 물질에 의한 재질 적합성 저하"
+      ],
+      "consequences": [
+        "저장탱크 누설로 가연성 증기운 형성",
+        "점화 시 화재·폭발 및 BLEVE 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "이입 물질 수분·불순물 관리 및 내부 부식 점검",
+        "정기 기밀·두께 검사 수행"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-106-97-8#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 부탄",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "가열시 용기가 폭발할 수 있음"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-060",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "저장탱크 기밀/누출",
+      "deviation": "탱크 기밀 경계 중 일부(용접부·노즐·밸브)에서만 밀폐가 유지되지 못해 미세·부분 누출이 발생함",
+      "causes": [
+        "용접부·노즐 부식 누설",
+        "밸브 패킹·플랜지 부분 누출"
+      ],
+      "consequences": [
+        "누출 LPG의 지면 확산 및 점화 시 화재, 화염 노출 지속 시 BLEVE",
+        "용기 폭발 및 파편 비산"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "정기 기밀·두께 검사 및 가스감지기 배치 확인",
+        "방유·방류 설비 및 소화 수단 점검"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-74-98-6#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 프로페인",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "가열시 용기가 폭발할 수 있음"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-061",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "저장탱크 기밀/누출",
+      "deviation": "정상 저장 상태에 더해 부식·용접부 결함 등 추가 열화로 미세 누출이 중첩됨",
+      "causes": [
+        "용접부·노즐·밸브 경년 열화에 부식이 더해짐",
+        "외부 손상과 내압이 중첩되어 기밀 저하"
+      ],
+      "consequences": [
+        "LPG 누설로 가연성 증기운 형성 및 점화 시 화재·폭발",
+        "화재 지속 시 BLEVE로 용기 폭발"
+      ],
+      "safeguards_before": [],
+      "S": 5,
+      "F": 3,
+      "risk_score": 15,
+      "recommendations": [
+        "부식방지 조치 및 정기 기밀·두께 검사 이행"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-74-98-6#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 프로페인",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "가열시 용기가 폭발할 수 있음"
+        },
+        {
+          "source_id": "LAW-HPGAS-RULE#19",
+          "doc_title": "고압가스 안전관리법 시행규칙",
+          "issuer": "산업통상부",
+          "locator": "별표 8(고압가스 저장·사용의 시설·기술·검사 기준) 1. 고압가스 저장 > 가. 시설기준 > 6) 사고예방설비기준 > 바)",
+          "quote": "저장탱크가 부식되는 것을 방지하기 위하여 필요한 조치를 할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-062",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "유틸리티",
+      "deviation": "압축기 동력·계장공기·질소 등 유틸리티가 전혀 공급되지 않음(전면 상실)",
+      "causes": [
+        "정전으로 동력 상실",
+        "계장용 공기 공급 중단",
+        "질소 공급 중단"
+      ],
+      "consequences": [
+        "압축기·제어·안전조치 동시 기능 상실로 운전 중단 및 방호 무력화",
+        "안전밸브·인터록 미동작 시 과압·누출 위험 증대"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "유틸리티 상실 시 페일세이프(안전측) 설계 확인",
+        "비상전원·공기 저장 용량 확보 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-063",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "유틸리티",
+      "deviation": "계장공기·질소 등 유틸리티 공급 압력이 설계 의도보다 과대 공급됨",
+      "causes": [
+        "질소 퍼지·계장공기 공급 압력 조정 실패"
+      ],
+      "consequences": [
+        "질소 과압 유입 시 탱크·배관 과압 손상",
+        "계장 오동작으로 방호 기능 교란"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "질소·계장공기 공급압 조절·감압·역류방지 설비 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-064",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "유틸리티",
+      "deviation": "압축기 동력·계장용 공기·질소 등 유틸리티 공급이 설계보다 부족·저하된다",
+      "causes": [
+        "동력 전압 저하",
+        "계장 공기압 저하",
+        "질소 공급 저하"
+      ],
+      "consequences": [
+        "압축기 성능 저하·운전 중단",
+        "계장·인터록 동작 신뢰성 저하",
+        "퍼지 불충분"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "유틸리티 저압 경보 및 안전측 동작 설계 확인",
+        "예비 공급 대책 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-065",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "유틸리티",
+      "deviation": "압축기 동력 상실 등 유틸리티 정지로 토출측 유체가 흡입측으로 역류한다",
+      "causes": [
+        "동력 상실로 압축기 급정지 시 토출측 가압 유체가 역류",
+        "계장공기 상실로 역류방지용 밸브 작동 실패"
+      ],
+      "consequences": [
+        "역류로 저압측·흡입측 과압 및 설비 손상",
+        "손상·누출 시 극인화성 가스 확산"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "동력 상실 시 토출 격리·체크밸브 페일세이프 설계 확인",
+        "계장공기 상실 시 안전측 작동(fail-safe) 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-066",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "유틸리티",
+      "deviation": "퍼지·불활성화에 설계 의도와 다른 매체(예: 질소 대신 공기)가 공급되어 계통에 산소가 유입된다",
+      "causes": [
+        "퍼지 매체 오배관·오접속",
+        "질소 공급 불량으로 공기 유입"
+      ],
+      "consequences": [
+        "계통 내 가연성 혼합기 형성",
+        "점화 시 내부 폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "퍼지·불활성 매체 라인 식별 및 오접속 방지",
+        "퍼지 후 산소 농도 측정 절차"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-74-98-6#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 프로페인",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "공기와 폭발성 혼합물을 형성함"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-067",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "유틸리티",
+      "deviation": "동력·계장용 공기·질소 중 일부만 공급되어 일부 안전·운전 기능만 유지되는 부분 유틸리티 상실 상태가 됨",
+      "causes": [],
+      "consequences": [
+        "일부 안전밸브·인터록 무력화로 과충전·과압 방호 실패",
+        "제어 상실 구간에서 누출·과압 전개"
+      ],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [
+        "유틸리티 상실 시 페일세이프 포지션 설정 확인",
+        "계장공기·질소 공급 감시 및 백업 확보"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "입력에 없는 안전장치의 존재·작동 여부",
+        "페일세이프 설정"
+      ]
+    },
+    {
+      "id": "i1-068",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "유틸리티",
+      "deviation": "정상 운전 중 유틸리티 공급에 더해 오염된 계장공기·질소 등 추가 불순 유체가 혼입됨",
+      "causes": [
+        "계장용 공기에 수분·오일 혼입",
+        "질소 퍼지 라인에 타 유틸리티 교차 연결"
+      ],
+      "consequences": [
+        "계장 오작동으로 안전장치 기능 저하",
+        "퍼지 불량에 기인한 혼합물 형성 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 3,
+      "risk_score": 9,
+      "recommendations": [
+        "유틸리티 품질 관리 및 교차연결 방지 조치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-069",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "유지보수/퍼지",
+      "deviation": "저장탱크·배관 개방정비 시 잔류 LPG 퍼지·치환이 전혀 수행되지 않음",
+      "causes": [
+        "퍼지·치환 절차 누락",
+        "격리·블라인드 불량으로 잔류 가스 체류"
+      ],
+      "consequences": [
+        "개방 시 가연성 가스 잔류로 화재·폭발",
+        "밀폐공간 산소결핍·질식"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "개방정비 전 질소 퍼지·가스농도 측정 및 작업허가 절차 수립",
+        "격리·블라인드 관리 강화"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-74-98-6#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 프로페인",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "증기는 자각 없이 현기증 또는 질식을 유발할 수 있음"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [
+        "MSDS-74-98-6#051-1: 극인화성 가스"
+      ],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-070",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "유지보수/퍼지",
+      "deviation": "개방정비 전 퍼지 중 질소·치환매체 공급압이 과대하여 계통 과압",
+      "causes": [
+        "퍼지 압력 관리 실패",
+        "개방 전 치환압 설정 과다"
+      ],
+      "consequences": [
+        "과압에 의한 배관·개방부 손상",
+        "잔류 LPG 분출 시 화재·질식"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 6,
+      "recommendations": [
+        "퍼지 압력 상한 관리 및 치환·가스농도 확인 정비 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-74-98-6#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 프로페인",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "증기는 자각 없이 현기증 또는 질식을 유발할 수 있음"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-071",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "유지보수/퍼지",
+      "deviation": "개방정비 전 LPG 퍼지·치환이 불충분해 잔류 가연성 농도가 기준 미만으로 낮아지지 않는다",
+      "causes": [
+        "퍼지 시간·유량 부족",
+        "치환 매체 공급 부족"
+      ],
+      "consequences": [
+        "개방 시 가연성 증기 잔류로 화재·폭발 위험",
+        "밀폐공간 질식 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "퍼지 완료 가스농도 확인 절차 수립",
+        "밀폐공간 진입 전 산소·가연성 측정"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-74-98-6#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 프로페인",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "증기는 자각 없이 현기증 또는 질식을 유발할 수 있음"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-072",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "유지보수/퍼지",
+      "deviation": "개방정비 중 격리 불량으로 운전 구간에서 정비 구간으로 LPG가 역류·유입된다",
+      "causes": [
+        "정비 격리밸브 누설·오개방으로 가압 구간에서 역방향 유입",
+        "퍼지 중 역압 발생으로 치환가스가 역류"
+      ],
+      "consequences": [
+        "개방부로 잔류·역류 LPG 방출되어 정비 작업자 화재·질식 노출",
+        "점화원 존재 시 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 8,
+      "recommendations": [
+        "정비 전 이중 격리·블라인드 및 역류 차단 확인 절차 수립",
+        "퍼지·치환 완료 확인(가스농도 측정) 후 개방"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-74-98-6#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 프로페인",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "증기는 자각 없이 현기증 또는 질식을 유발할 수 있음"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-073",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "유지보수/퍼지",
+      "deviation": "개방정비 시 LPG가 아닌 치환 매체로 완전 퍼지되지 않아 설계 의도와 다른 잔류 가연성 혼합기가 남는다",
+      "causes": [
+        "퍼지·치환 불량",
+        "잔류 LPG와 공기 혼입"
+      ],
+      "consequences": [
+        "정비 중 화재·폭발",
+        "질식 등 작업자 피해"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "개방 전 치환·가스농도 측정 및 작업허가 절차 운영",
+        "불활성화 확인 기준 수립"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-106-97-8#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 부탄",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "증기는 자각 없이 현기증 또는 질식을 유발할 수 있음"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-074",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "유지보수/퍼지",
+      "deviation": "개방정비 전 퍼지·치환이 일부만 수행되어 계통 내 잔류 LPG가 부분적으로 남은 상태에서 개방됨",
+      "causes": [
+        "퍼지 시간·치환 횟수 부족",
+        "사각지대 잔류로 불완전 치환"
+      ],
+      "consequences": [
+        "개방 시 잔류 LPG 누출로 화재·폭발",
+        "밀폐공간 작업 시 질식"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "개방 전 가스농도 측정 및 치환 완료 기준 운영",
+        "질소 퍼지 절차·격리(블라인드) 확인"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-74-98-6#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 프로페인",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "증기는 자각 없이 현기증 또는 질식을 유발할 수 있음"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-075",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "유지보수/퍼지",
+      "deviation": "개방 정비 시 의도한 치환에 더해 잔류 LPG가 남아 작업 분위기에 추가됨",
+      "causes": [
+        "퍼지·치환 불량으로 LPG 잔류",
+        "격리 불충분으로 인근 라인에서 LPG 역유입"
+      ],
+      "consequences": [
+        "개방부 가연성 분위기 형성 및 점화 시 화재·폭발",
+        "밀폐공간 질식 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 3,
+      "risk_score": 12,
+      "recommendations": [
+        "개방 전 치환·가스농도 측정 및 격리 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-74-98-6#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 프로페인",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "증기는 자각 없이 현기증 또는 질식을 유발할 수 있음"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": []
+    },
+    {
+      "id": "i1-076",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "계장/제어",
+      "deviation": "준위·압력 계장 및 인터록이 전혀 동작하지 않음(계측·방호 기능 상실)",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "준위·압력 계장·인터록의 유무와 설정값",
+        "안전장치의 존재·작동 여부"
+      ]
+    },
+    {
+      "id": "i1-077",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "계장/제어",
+      "deviation": "준위·압력 계장이 실제보다 높은 값을 나타내거나 제어가 과도 응답하여 오조작 유발",
+      "causes": [],
+      "consequences": [
+        "과충전·과압 방호 실패로 탱크·배관 파열 및 LPG 누출",
+        "화재/폭발로 전이"
+      ],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [
+        "준위·압력 계장 및 인터록 유무·설정값·시험주기 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "준위·압력 계장·인터록의 유무",
+        "인터록 설정값",
+        "계장 시험주기"
+      ]
+    },
+    {
+      "id": "i1-078",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "계장/제어",
+      "deviation": "준위·압력 계장 또는 인터록의 출력이 실제값보다 낮게 표시·동작하여 방호가 둔감해진다",
+      "causes": [],
+      "consequences": [
+        "과충전·과압 방호 실패로 이어질 수 있음",
+        "운전원 오판"
+      ],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [
+        "계장 주기 교정·검증",
+        "인터록 작동시험 주기화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "준위·압력 계장과 인터록의 유무·설정값",
+        "안전장치 작동 여부"
+      ]
+    },
+    {
+      "id": "i1-079",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "계장/제어",
+      "deviation": "역류방지 인터록·체크 신호의 오작동으로 역류가 감지·차단되지 못한다",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "역류·압력 인터록의 유무와 설정값",
+        "입력에 없는 안전장치의 존재·작동 여부"
+      ]
+    },
+    {
+      "id": "i1-080",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "계장/제어",
+      "deviation": "설계와 다른 물질·조성에 대해 교정된 계장이 지시를 잘못 내어 과충전·과압 방호가 실제 상태와 어긋난다",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "준위·압력 계장과 인터록의 유무·설정값",
+        "물질별 계장 교정 기준"
+      ]
+    },
+    {
+      "id": "i1-081",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "계장/제어",
+      "deviation": "준위·압력 계장과 인터록 중 일부 채널만 정상 동작하여 방호 기능이 부분적으로만 작동함",
+      "causes": [],
+      "consequences": [
+        "과충전·과압 방호 부분 실패로 수압파열·누출 전개",
+        "누출 시 극인화성 가스 확산·점화"
+      ],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [
+        "계장 다중화·주기 교정 및 인터록 기능시험 주기화",
+        "바이패스 관리 절차 운영"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "준위·압력 계장과 인터록의 유무와 설정값",
+        "입력에 없는 안전장치의 작동 여부"
+      ]
+    },
+    {
+      "id": "i1-082",
+      "node": "I1",
+      "node_meta": {
+        "node": "I1",
+        "substance": "LPG(프로판·부탄)",
+        "phase": "liquid/gas",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "탱크로리 인수장",
+          "LPG 압축기",
+          "구형 저장탱크",
+          "불릿형 저장탱크"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "계장/제어",
+      "deviation": "정상 제어 신호에 더해 노이즈·오신호 등 추가 입력으로 방호 로직이 교란됨",
+      "causes": [],
+      "consequences": [
+        "과충전·과압 방호 실패로 누출·파열",
+        "누출 LPG 점화 시 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [
+        "계장 신호 건전성·인터록 기능시험 주기화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "nh3_sts_bunkering",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "준위·압력 계장·인터록의 유무와 설정값",
+        "입력에 없는 안전장치의 존재·작동 여부"
+      ]
+    }
+  ]
+}

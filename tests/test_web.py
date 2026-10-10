@@ -246,8 +246,10 @@ def test_app_switches_between_processes_and_nodes(monkeypatch: pytest.MonkeyPatc
                 continue
             button.click().run()
             assert not at.exception
-            assert len(at.dataframe) == 1
-            assert len(at.dataframe[0].value) == len(replays[nid].records)
+            # 검토 표는 1개 — 추론 경계·근거가 켜진 캡처(10/10 I1)는 보조 표가 더 붙는다
+            review = [d for d in at.dataframe if (d.key or "").startswith("review_")]
+            assert len(review) == 1
+            assert len(review[0].value) == len(replays[nid].records)
             assert any(nid in m.value for m in at.markdown)
 
 
