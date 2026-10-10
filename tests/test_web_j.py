@@ -1124,7 +1124,7 @@ def _grid(at: Any) -> Any:
 
 
 def test_app_generation_mode_single_default_and_consensus(monkeypatch: pytest.MonkeyPatch) -> None:
-    """§8 C 생성 방식(10/9 사용자): 기본은 한 번 생성(지금 방식, '반복 일치' 열 없음), 고르면 3번 생성해 공통 답."""
+    """§8 C 생성 방식(10/9·10/10 사용자): 기본은 한 번 생성(지금 방식, '반복 일치' 열 없음), 고르면 3번 생성해 합치기."""
     from streamlit.testing.v1 import AppTest
 
     from core.agent import consensus
@@ -1153,6 +1153,10 @@ def test_app_generation_mode_single_default_and_consensus(monkeypatch: pytest.Mo
     assert service.REPEAT_COLUMN in service.worksheet_table(second)[0]
     assert service.repeat_counts(second).startswith("같은 입력으로 판정 3번")
     assert any(c.value.startswith("반복 일치 — 같은 입력으로 판정 3번") for c in at.caption)  # 화면에 보인다
+    # 화면은 합치기(합집합) — 공통 답(교집합)이 아니다
+    assert "합치기" in multi and "공통 답" not in multi
+    assert all(r.consensus["merge"] == "union" for r in second.records)
+    assert any("한 번만 나온 판단(●○○)도 남겼습니다" in c.value for c in at.caption)
 
 
 # ── 생성 전 입력 확인 (10/10 사용자 요청) ────────────────────────────────────────

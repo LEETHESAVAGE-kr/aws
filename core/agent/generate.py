@@ -207,6 +207,8 @@ class GeneratorConfig:
     inference_boundary: bool = False
     # §8 C 합의 생성: 가이드워드 판정 반복 횟수. 1 이면 지금 경로 그대로(프롬프트·스키마·레코드 바이트 동일).
     consensus_runs: int = 1
+    # 합치기(합집합) — true 면 반복 중 한 번이라도 나온 판단을 모두 남긴다. 화면 '생성 방식'만 켠다.
+    consensus_union: bool = False
 
 
 def load_generator_config() -> GeneratorConfig:
@@ -393,7 +395,9 @@ class HazopGenerator:
                 self.consensus_costs[guideword] = [
                     outcomes[run * len(guidewords) + gi][1] for run in range(runs)  # type: ignore[index]
                 ]
-                batch = consensus.merge_batches(run_batches, self.parameters, similarity)
+                batch = consensus.merge_batches(
+                    run_batches, self.parameters, similarity, union=self._config.consensus_union
+                )
             else:
                 batch = run_batches[0]
             if batch is None:

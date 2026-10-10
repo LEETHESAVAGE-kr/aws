@@ -68,11 +68,11 @@ LIVE_NOTE: Final[str] = "가이드워드 전체 · 약 1.5~2분 · 약 $0.75"
 LIVE_BUTTON: Final[str] = "HAZOP 초안 생성 (가이드워드 전체 · 약 1.5–2분)"
 QUICK_NOTE: Final[str] = "약 1분 · API 호출 3회(입력 해석 1 + 파라미터 열거 1 + 가이드워드 1, JSON 입력이면 2회)"
 #: 보조 실행 "가이드워드 하나만 빠르게"(지시문 X-1b) 문구 — 실무 기능이다. 이 묶음에 '부스'·'관람객' 을 쓰지 않는다(시험).
-#: §8 C 생성 방식(10/9 사용자: "3가지 공통 답만이 아니라 지금처럼 한 AI 의 답을 고르는 버튼도 남기기").
-#: 값 = 가이드워드 판정 반복 횟수. 기본은 첫 항목(지금 방식).
+#: §8 C 생성 방식(10/9 사용자: "지금처럼 한 AI 의 답을 고르는 버튼도 남기기"). 10/10 공통 답(교집합) → 합치기(합집합):
+#: 교집합은 한 번만 나온 타당한 원인을 버린다. 값 = 가이드워드 판정 반복 횟수. 기본은 첫 항목(지금 방식).
 GENERATION_MODES: Final[dict[str, int]] = {
     "한 번 생성 — 단일 모델": 1,
-    "3번 생성해 공통 답 — 반복해서 나온 판단만 남김 (시간·비용 약 3배)": 3,
+    "3번 생성해 합치기 — 한 번에 빠진 원인까지 모음 (시간·비용 약 3배)": 3,
 }
 GENERATION_MODE_LABEL: Final[str] = "생성 방식"
 QUICK_EXPANDER: Final[str] = "가이드워드 하나만 빠르게 보기 — 특정 이탈 방향만 먼저 확인할 때 (약 1분)"
@@ -592,11 +592,13 @@ def run_live(
     environ: Mapping[str, str] = os.environ,
     on_progress: ProgressCallback | None = None,
     consensus_runs: int | None = None,
+    consensus_union: bool = False,
     pre_parsed: tuple[NodeMeta, dict[str, Any]] | None = None,
 ) -> Result:
     """노드 1건 전체 생성(가이드워드 7~10종) — 직접 입력의 기본 실행(지시문 X-1).
 
-    `consensus_runs` 는 화면 '생성 방식'(§8 C) — None 이면 models.yaml 값, 1 = 한 번 생성, 3 = 3번 생성해 공통 답.
+    `consensus_runs` 는 화면 '생성 방식'(§8 C) — None 이면 models.yaml 값, 1 = 한 번 생성, 3 = 3번 생성.
+    `consensus_union` 이 참이면 3번을 합친다(합집합), 거짓이면 공통 답(교집합).
 
     `node_text` 는 NodeMeta JSON 또는 자연어 공정 설명(`parse_node_text`). mock 모드면 재생 레코드를
     돌려주는 모의 클라이언트로 끝까지 돈다(H-02 ⑦). 가이드워드 판정이 끝날 때마다 `on_progress` 로
@@ -612,6 +614,7 @@ def run_live(
     gen_config = load_generator_config()
     if consensus_runs is not None:
         gen_config = dataclasses.replace(gen_config, consensus_runs=consensus_runs)
+    gen_config = dataclasses.replace(gen_config, consensus_union=consensus_union)
     # Y-2: 직접 입력은 골드셋 공정이 아니다 — 공식 HAZOP 기준(steering domain.md §4 적용 범위)
     generator = HazopGenerator(client, gen_config, criteria_id=OFFICIAL_CRITERIA)
     judged: list[str] = []  # 판정한 가이드워드(완료 순서) — 결과 묶음 보기의 축
