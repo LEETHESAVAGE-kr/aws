@@ -194,6 +194,7 @@ state.setdefault("quick_result", None)
 state.setdefault("node", None)
 state.setdefault("quick_text", "")
 state.setdefault("input_style", INPUT_TEXT)
+state.setdefault("parse_pending", None)
 state.setdefault("table_style", service.TABLE_STYLES[0])
 for _k, _v in form.EMPTY.items():
     state.setdefault(form.KEYS[_k], _v)
@@ -359,6 +360,52 @@ with tool.container(border=True, key="tool"):
                 format_func=lambda g: f"{g} — {GUIDEWORD_MEANING[g]}" if g in GUIDEWORD_MEANING else g,
             )
             clicked_quick = st.button(service.QUICK_BUTTON, key="run_quick", disabled=blocked, width="stretch")
+        # 생성 전 '입력 확인'(10/10 사용자 요청): 문장 입력은 먼저 해석만 하고, 비어 있는 정보를 사람이 채운 뒤 생성한다.
+        # 질문 누락은 매트릭스가 막지만 입력 누락은 사람만 메울 수 있다 — 그 빈칸을 생성 전에 보여 준다.
+        pre_parsed = None
+        if (clicked_quick or clicked_full) and input_style == INPUT_TEXT:
+            state.parse_pending = None
+            try:
+                parsed_meta, parse_info = service.parse_node_text(run_text)
+            except Exception:  # noqa: BLE001 — 해석 실패는 아래 생성 경로가 같은 사유로 다시 보여 준다
+                parsed_meta = None
+            if parsed_meta is not None:
+                if service.missing_inputs(parsed_meta):
+                    state.parse_pending = {"meta": parsed_meta, "info": parse_info, "text": run_text,
+                                           "quick": bool(clicked_quick)}
+                    clicked_quick = clicked_full = False
+                else:
+                    pre_parsed = (parsed_meta, parse_info)
+        pending = state.get("parse_pending")
+        if pending is not None and (input_style != INPUT_TEXT or pending["text"] != run_text):
+            state.parse_pending = pending = None  # 입력을 바꾸면 확인 단계를 버린다
+        if pending is not None:
+            meta = pending["meta"]
+            missing = service.missing_inputs(meta)
+            labels = dict(service.INPUT_CHECK_FIELDS)
+            with st.container(border=True, key="input_check"):
+                st.markdown("**입력 확인 — 생성 전에 빠진 정보를 채우세요**")
+                st.caption(
+                    f"해석 결과: 물질 {meta.substance} · 상태 {meta.phase} · "
+                    f"설비 {', '.join(meta.equipment) or '—'}"
+                    + (f" · 안전장치 {', '.join(meta.safeguards)}" if meta.safeguards else "")
+                )
+                st.markdown("입력에 없는 정보: " + " · ".join(labels[f].split(" (")[0] for f in missing))
+                values: dict[str, Any] = {}
+                for column, field in zip(st.columns(len(missing)), missing, strict=True):
+                    if field in ("P_kPag", "T_degC", "design_P_kPag"):
+                        values[field] = column.number_input(labels[field], value=None, key=f"check_{field}")
+                    else:
+                        values[field] = column.text_input(labels[field], key=f"check_{field}")
+                st.caption("비워 두면 그 정보가 필요한 칸은 지어내지 않고 '⚪ 정보 부족'으로 보류됩니다.")
+                fill_col, skip_col = st.columns(2)
+                go_fill = fill_col.button("채운 값으로 생성", type="primary", key="check_fill", width="stretch")
+                go_skip = skip_col.button("이대로 생성", key="check_skip", width="stretch")
+            if go_fill or go_skip:
+                filled_meta, filled = service.fill_node_meta(meta, values if go_fill else {})
+                pre_parsed = (filled_meta, {**pending["info"], "filled_after_parse": filled})
+                clicked_quick, clicked_full = pending["quick"], not pending["quick"]
+                state.parse_pending = None
         if clicked_quick or clicked_full:
             reason = service.reserve_live_run(session_runs)
             if reason:
@@ -390,11 +437,12 @@ with tool.container(border=True, key="tool"):
                     try:
                         if clicked_quick:
                             state.quick_result = service.run_quick(
-                                run_text, guideword, mock_source, on_progress=on_progress
+                                run_text, guideword, mock_source, on_progress=on_progress, pre_parsed=pre_parsed
                             )
                         else:
                             state.quick_result = service.run_live(
-                                run_text, mock_source, on_progress=on_progress, consensus_runs=runs
+                                run_text, mock_source, on_progress=on_progress, consensus_runs=runs,
+                                pre_parsed=pre_parsed,
                             )
                     except Exception as exc:  # noqa: BLE001 — 사유를 보이고 앱은 계속 산다
                         state.live_runs -= 1  # 실패한 실행은 세션 횟수에서 빼지 않는다

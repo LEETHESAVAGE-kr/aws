@@ -14,6 +14,12 @@ _APP = Path(__file__).parent.parent / "apps" / "web" / "app.py"
 _MOCK_ENV = {"HAZOP_USE_MOCK": "true", "HAZOP_ALLOW_LIVE": "true"}
 
 
+
+def _skip_check(at):  # noqa: ANN001, ANN202 — 생성 전 '입력 확인' 단계가 뜨면 '이대로 생성'(10/10)
+    if any(b.key == "check_skip" for b in at.button):
+        at.button(key="check_skip").click().run()
+    return at
+
 def _values(**kw: Any) -> dict[str, Any]:
     return {**form.EMPTY, **kw}
 
@@ -66,6 +72,7 @@ def test_app_form_chip_fills_and_runs(monkeypatch: pytest.MonkeyPatch) -> None:
     at.text_input(key=form.KEYS["capacity"]).set_value("200 kg").run()
     assert not at.exception
     next(b for b in at.button if b.label.startswith("HAZOP 초안 생성")).click().run()
+    _skip_check(at)
     assert not at.exception and len(at.dataframe) >= 1
     assert at.session_state["quick_result"].meta["parsed_by"] == "json"
     assert at.session_state["quick_result"].meta["node_meta"]["capacity"] == "200 kg"
@@ -86,6 +93,7 @@ def test_full_text_table_is_default_and_not_truncated(monkeypatch: pytest.Monkey
     at = AppTest.from_file(str(_APP), default_timeout=60).run()
     next(b for b in at.button if b.label == "수소충전소").click().run()
     next(b for b in at.button if b.label.startswith("HAZOP 초안 생성")).click().run()
+    _skip_check(at)
     assert not at.exception and at.radio(key="table_style").value == service.TABLE_STYLES[0]
     record = at.session_state["quick_result"].records[0]
     htmls = [h.proto.body for h in at.get("html") if "hz-full" in h.proto.body]
