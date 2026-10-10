@@ -762,8 +762,9 @@ for column, (title, headline, rows) in zip(st.columns(3), INTRO_CARDS, strict=Tr
         + "</div>"
     )
 st.html('<div style="height:14px"></div>')
-howto_tab, example_tab, gw_tab, risk_tab, read_tab, compare_tab = st.tabs(
-    ["⓪ 이렇게 쓰세요", "① 한 줄이 만들어지는 과정", "② 가이드워드 7종", "③ 위험도 (심각도·빈도)", "④ 결과 화면 읽는 법", "⑤ 회의와 비교"]
+howto_tab, example_tab, gw_tab, risk_tab, read_tab, compare_tab, psm_tab = st.tabs(
+    ["⓪ 이렇게 쓰세요", "① 한 줄이 만들어지는 과정", "② 가이드워드 7종", "③ 위험도 (심각도·빈도)", "④ 결과 화면 읽는 법", "⑤ 회의와 비교",
+     "⑥ 공정안전보고서와 HAZOP"]
 )
 with howto_tab:
     for path_name, steps in guide.HOW_TO:
@@ -818,6 +819,23 @@ with compare_tab:
     st.caption(
         "실측: 노드 1건 약 1.5–2분 · 약 $0.75 (2026-10-08, 가이드워드 7종 동시 판정, 3회 79–126초). "
         "회의 시간 단축을 잰 것은 아닙니다 — 이 앱이 만드는 것은 회의에서 검토할 초안입니다."
+    )
+
+with psm_tab:
+    st.caption("공정안전보고서는 위험물질 설비를 돌리기 위한 허가 서류이고, HAZOP 은 그 안의 위험성평가에 쓰는 대표 기법입니다.")
+    psm_tab.html(
+        '<div class="hz-info">'
+        + "".join(f"<div class='hz-info-r'><span style='width:110px'>{k}</span><b style='flex:1'>{v}</b></div>" for k, v in guide.PSM_WHY)
+        + "</div>"
+    )
+    st.markdown("**보고서가 쓰이는 흐름**")
+    st.table(guide.psm_flow_rows(), hide_index=True, border="horizontal")
+    st.caption(
+        "공정이 바뀔 때마다 보고서를 보완해야 하므로 HAZOP 도 한 번 쓰고 끝나지 않습니다. "
+        "HAZOP 권고가 안전운전계획·비상조치계획으로 이어지는 것은 일반적인 실무 흐름이며 조문 문구는 아닙니다. "
+        "출처: [산업안전보건법 제44~46조](https://www.law.go.kr/법령/산업안전보건법) · "
+        "[시행령 제43조](https://www.law.go.kr/법령/산업안전보건법시행령) · "
+        "[시행규칙 제50조](https://www.law.go.kr/법령/산업안전보건법시행규칙) (2026-10-10 확인)"
     )
 
 # ── 푸터 ─────────────────────────────────────────────────────────────────────
