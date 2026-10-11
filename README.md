@@ -61,7 +61,7 @@ Too early·Too late·Wrong action 같은 절차형 가이드워드를 쓴다. �
 - **외부 공개 HAZOP 대조 공정**(본선, 지시문 W): LPG 충전소 4노드(I1~I4). 대조 기준은 인도 IOCL 충전소 공개 HAZOP
   워크시트(2014)의 (가이드워드, 파라미터) 쌍 44개만 옮긴 [data/reference/iocl_lpg_2014.json](data/reference/iocl_lpg_2014.json).
   **골드셋이 아니다** — 외부 팀이 쓴 다른 설비의 워크시트이고, 4노드 모두 같은 공정변수 점검표라 쉬운 기준이다(§6).
-- **실데이터 금지**: KECC 고객사 실데이터·개인정보는 쓰지 않는다([CLAUDE.md](CLAUDE.md) 불변규칙 1).
+- **실데이터 금지**: KECC 고객사 실데이터·개인정보는 쓰지 않는다(개발 불변규칙 1).
 - **글꼴**: 데모 화면에 S-Core 에스코어 드림을 쓴다 — S-Core 무료 배포 글꼴(개인·기업 무료, 수정·판매 금지, 출처 표기 권장).
   웹폰트는 눈누가 jsDelivr 에 올린 파일(`projectnoonnu/noonfonts_six@1.2`)을 `.streamlit/config.toml` 에서 불러온다.
 - 예선에서 KOSHA Guide 발췌·물질 DB·고장률 대장(`data/kb/`)은 만들지 않았다(§7).
