@@ -157,8 +157,13 @@ def provider_problem(environ: Mapping[str, str] = os.environ) -> str | None:
     """대회 게이트웨이를 고른 상태(`HAZOP_PROVIDER=gateway|kiro`)인데 키가 없으면 사유 — 직결로 넘어가지 않는다(K-4)."""
     if _provider(environ) != "gateway":
         return None
-    if not gateway_key(environ):
+    key = gateway_key(environ)
+    if not key:
         return "실호출 비활성 — HAZOP_PROVIDER=gateway 인데 게이트웨이 키(KIRO_API_KEY)가 없습니다."
+    if not key.isascii() or any(c.isspace() for c in key):
+        # 10/11 배포: 안내문 "대회에서 받은 sk- 로 시작하는 키"가 그대로 Secrets 에 들어가 'latin-1' 인코딩 오류로 죽었다
+        return ("실호출 비활성 — 게이트웨이 키(KIRO_API_KEY)에 한글·공백 등 키가 아닌 글자가 있습니다. "
+                "Streamlit Secrets 에 실제 키(sk- 로 시작)를 넣으세요.")
     return None
 
 

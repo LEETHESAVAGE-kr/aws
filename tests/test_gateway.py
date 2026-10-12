@@ -164,3 +164,13 @@ def test_provider_switch_selects_gateway_and_blocks_without_key(monkeypatch: pyt
     assert service.live_block_reason(os.environ) is None
     assert isinstance(get_bedrock_client(), GatewayClient)
     assert service.endpoint_label(os.environ) == service.GATEWAY_LABEL
+
+
+@pytest.mark.parametrize("key", ["대회에서 받은 sk- 로 시작하는 키", "sk-abc def"])
+def test_non_key_text_blocks_live_with_reason(key: str) -> None:
+    """10/11 배포: 키 자리에 안내 문장이 들어가 HTTP 헤더 인코딩 오류(latin-1)로 실패 — 생성 전에 막고 이유를 말한다."""
+    from apps.web import service
+
+    reason = service.provider_problem({"HAZOP_PROVIDER": "gateway", "KIRO_API_KEY": key})
+    assert reason is not None and "키가 아닌 글자" in reason
+    assert service.provider_problem({"HAZOP_PROVIDER": "gateway", "KIRO_API_KEY": "sk-abcdef0123456789abcdef"}) is None
