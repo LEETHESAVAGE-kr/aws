@@ -114,6 +114,7 @@ def run_node(name: str, config: Any, judge: Judge) -> dict[str, Any]:
         "latency_s": round(latency, 1),
         "cost_usd": round(gen.total_cost_usd, 4),
         "failed_runs": {gw: sum(b is None for b in r) for gw, r in raw.items()},
+        "valid": all(b is not None for r in raw.values() for b in r),  # 부록 A — 실패 판정이 있으면 합산 제외
         "cause_recall": {"total": causes["total"], "hits": causes["hits"]},
         "cell_recall": {n: recall_for_node(recs, gold)["matched"] for n, recs in modes.items()},
         "burden": {n: burden(recs) for n, recs in modes.items()},
@@ -122,12 +123,14 @@ def run_node(name: str, config: Any, judge: Judge) -> dict[str, Any]:
 
 
 def summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    excluded = [r["node"] for r in rows if not r.get("valid", True)]
+    rows = [r for r in rows if r.get("valid", True)]
     total = sum(r["cause_recall"]["total"] for r in rows)
 
     def pooled(metric: str, mode: str) -> int:
         return sum(r[metric]["hits"][mode] if metric == "cause_recall" else r[metric][mode] for r in rows)
 
-    out: dict[str, Any] = {"nodes": [r["node"] for r in rows], "gold_total": total}
+    out: dict[str, Any] = {"nodes": [r["node"] for r in rows], "excluded_invalid": excluded, "gold_total": total}
     for metric in ("cause_recall", "cell_recall"):
         singles = [pooled(metric, f"single{k}") for k in (1, 2, 3)]
         out[metric] = {"single": singles, "single_mean": round(mean(singles), 2),
