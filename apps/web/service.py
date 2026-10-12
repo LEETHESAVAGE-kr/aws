@@ -708,7 +708,7 @@ def verified(result: Result) -> tuple[list[DeviationRecord], VerifySummary]:
 
 #: verifier 시연 토글(지시문 O-3). 실측 플래그가 0 이라 심사위원이 🔴 를 볼 수 없어서, **표시용 사본**에만
 #: 근거 없는 규격 번호 1개를 붙인다. 재생 파일·`Result` 원본·다운로드 3개는 삽입 없는 원본 그대로다.
-DEMO_TOGGLE_LABEL: Final[str] = "verifier 시연 — 결함 1건 삽입(근거 없는 규격 번호)"
+DEMO_TOGGLE_LABEL: Final[str] = "검사 기능 시연 — 일부러 틀린 규격 번호 1개 넣어 보기"
 DEMO_SUFFIX: Final[str] = " (KOSHA GUIDE P-999 참조)"
 DEMO_BANNER: Final[str] = (
     ":red-background[시연] 아래 1행의 규격 번호는 시연용으로 삽입한 것입니다 — 원본 재생 데이터에는 없습니다."
