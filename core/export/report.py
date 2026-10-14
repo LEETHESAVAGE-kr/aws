@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Final
 
 from pydantic import BaseModel, Field
 
-from core.criteria import Criteria, load_criteria
+from core.criteria import GOLD_CRITERIA, Criteria, load_criteria
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -37,8 +37,12 @@ PENDING_REASONS: Final[dict[str, str]] = {
 
 
 def rows_criteria(rows: Sequence[WorksheetRow]) -> Criteria:
-    """산출물 1벌의 평가기준(Y-2). 기준이 섞이면 위험도·구간을 한 표로 셀 수 없으므로 거부한다."""
-    ids = {r.criteria_id or None for r in rows}
+    """산출물 1벌의 평가기준(Y-2). 기준이 섞이면 위험도·구간을 한 표로 셀 수 없으므로 거부한다.
+
+    `criteria_id` 가 비어 있는 옛 레코드는 골드셋 기준으로 생성됐다(`load_criteria(None)` 과 같은 뜻) — 같은 기준으로 센다.
+    10/10 I1 재캡처(기준 명시)와 10/8 I2~I4(빈 값)를 '공정 전체 보기'로 잇자 섞였다고 거부해 화면이 죽었다.
+    """
+    ids = {r.criteria_id or GOLD_CRITERIA for r in rows}
     if len(ids) > 1:
         raise ValueError(f"한 산출물에 평가기준이 섞였다: {sorted(map(str, ids))}")
     return load_criteria(ids.pop() if ids else None)
