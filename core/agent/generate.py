@@ -181,12 +181,21 @@ def render_param_examples(path: Path = _PARAM_EXAMPLES_PATH) -> str:
     return "\n".join(lines)
 
 
-def batch_schema(criteria: Criteria, with_evidence: bool = False, boundary: bool = False) -> dict[str, Any]:
-    """판정 호출 스키마 — S·F 상한을 기준의 단계 수로 좁힌다(Y-2). 골드셋 기준이면 `DEVIATION_BATCH_SCHEMA` 와 같다."""
+def batch_schema(
+    criteria: Criteria, with_evidence: bool = False, boundary: bool = False, frequency_basis: bool = False
+) -> dict[str, Any]:
+    """판정 호출 스키마 — S·F 상한을 기준의 단계 수로 좁힌다(Y-2). 골드셋 기준이면 `DEVIATION_BATCH_SCHEMA` 와 같다.
+
+    `frequency_basis`(질문봉쇄 Q-03): 셀마다 빈도 근거 한 줄을 **필수**로 받는다 — 해당 없음 셀은 빈 문자열.
+    """
     schema = json.loads(json.dumps(DEVIATION_BATCH_SCHEMA))
     cell = schema["properties"]["cells"]["items"]["properties"]
     cell["S"]["maximum"] = criteria.s_max
     cell["F"]["maximum"] = criteria.f_max
+    if frequency_basis:
+        cell["frequency_basis"] = {"type": "string"}
+        schema["properties"]["cells"]["items"]["required"] = [
+            *schema["properties"]["cells"]["items"]["required"], "frequency_basis"]
     if boundary:  # Z-3: 셀 보류 — 미상(U) 정보 없이는 정할 수 없는 셀. 원인·S·F 는 코드가 지운다
         cell["insufficient"] = {"type": "boolean"}
         cell["missing"] = {"type": "array", "maxItems": 3, "items": {"type": "string", "minLength": 1}}
@@ -219,6 +228,8 @@ class GeneratorConfig:
     consensus_runs: int = 1
     # 합치기(합집합) — true 면 반복 중 한 번이라도 나온 판단을 모두 남긴다. 화면 '생성 방식'만 켠다.
     consensus_union: bool = False
+    # 질문봉쇄 Q-03: 빈도 근거 필수(공식 기준에서만). false 면 판정 프롬프트·스키마·레코드 바이트 동일.
+    frequency_basis: bool = False
 
 
 def load_generator_config() -> GeneratorConfig:
@@ -240,6 +251,7 @@ def load_generator_config() -> GeneratorConfig:
         evidence_k=cfg.evidence_k,
         inference_boundary=cfg.inference_boundary,
         consensus_runs=cfg.consensus_runs,
+        frequency_basis=cfg.frequency_basis,
     )
 
 
@@ -297,12 +309,16 @@ class DeviationRecord(BaseModel):
     missing: list[str] = Field(default_factory=list)
     #: §8 C 합의 생성 내역(셀 투표·문장별 agree·S/F 값). 단일 실행(consensus_runs=1)이면 None — 직렬화에서 빠진다.
     consensus: dict[str, Any] | None = None
+    #: Q-03 빈도 근거 — 어떤 기존 안전장치를 반영해 이 F 인지 한 줄. 이 기능 이전 레코드·보류 행은 None(직렬화에서 빠진다).
+    frequency_basis: str | None = None
 
     @model_serializer(mode="wrap")
     def _drop_empty_consensus(self, handler: Any) -> dict[str, Any]:
         data = handler(self)
         if self.consensus is None:
             data.pop("consensus", None)  # 합의 이전 레코드·재생 파일과 바이트 동일하게
+        if self.frequency_basis is None:
+            data.pop("frequency_basis", None)  # Q-03 이전 레코드와 바이트 동일하게
         return data
 
     @model_validator(mode="after")
@@ -332,6 +348,8 @@ class HazopGenerator:
         self._client = client
         self._config = config or GeneratorConfig()
         self.criteria = load_criteria(criteria_id)  # Y-2: S·F 등급표·위험도 산정 기준
+        #: Q-03 빈도 근거 — 설정으로 켜고, 공식 기준(현재 안전조치를 고려해 빈도를 정하라는 기준)에서만. 끄면 바이트 동일.
+        self.frequency_basis = self._config.frequency_basis and self.criteria.id != GOLD_CRITERIA
         self._retriever = retriever  # Y-3: evidence_k > 0 일 때만 쓴다(없으면 프로세스 공용 검색기)
         self.inference_boundary = self._config.inference_boundary  # Z: 결과 메타에 남긴다
         # 한 번의 generate() 실행 결과를 관측하기 위한 상태 (R-06 수용 기준·비용 집계)
@@ -516,6 +534,9 @@ class HazopGenerator:
         boundary = self._config.inference_boundary
         if boundary:  # Z-1: 노드와 무관한 고정 문구라 시스템 끝에 둔다(캐시 유지)
             system = system + "\n\n" + policy.judge_system_block()
+        basis = self.frequency_basis
+        if basis:  # Q-03: 빈도에 현재 안전조치 반영 + 근거 한 줄. 노드와 무관한 고정 문구라 시스템 끝(캐시 유지)
+            system = system + "\n\n" + _split_prompt(_load_prompt("frequency_basis.md"))[0]
         user = _fill(
             user_template,
             {
@@ -548,7 +569,9 @@ class HazopGenerator:
             response = self._client.converse(
                 system=system,
                 messages=[Message(role="user", content=user)],
-                response_schema=batch_schema(self.criteria, with_evidence=bool(passages), boundary=boundary),
+                response_schema=batch_schema(
+                    self.criteria, with_evidence=bool(passages), boundary=boundary, frequency_basis=basis
+                ),
                 context={"node": node_meta.node},
             )
         except Exception:
@@ -673,9 +696,25 @@ def _build_records(
                     confidence="inferred",
                     criteria_id=criteria_id,
                     consensus=cell.get("_consensus"),
+                    frequency_basis=_frequency_basis(node_meta, cell),
                 )
             )
     return records, judged
+
+
+#: Q-03 — 입력에 안전장치 정보가 없을 때의 고정 문구. 모델이 무엇을 적었든 이 문구로 둔다(지어낸 근거 차단).
+FREQUENCY_BASIS_UNKNOWN: Final[str] = "안전장치 정보 없음 — 보수적 상한"
+#: 모델이 근거 칸을 비웠을 때 — 빈 값으로 두지 않고 비었다고 적는다.
+FREQUENCY_BASIS_EMPTY: Final[str] = "(모델이 빈도 근거를 적지 않음 — 검토 필요)"
+
+
+def _frequency_basis(node_meta: NodeMeta, cell: dict[str, Any]) -> str | None:
+    """판정 셀의 빈도 근거(Q-03). 이 기능을 켠 호출(스키마 필수 키)이 아니면 None — 옛 경로는 그대로."""
+    if "frequency_basis" not in cell:
+        return None
+    if not node_meta.safeguards and not node_meta.safeguards_known:
+        return FREQUENCY_BASIS_UNKNOWN
+    return str(cell["frequency_basis"]).strip() or FREQUENCY_BASIS_EMPTY
 
 
 def _held_record(

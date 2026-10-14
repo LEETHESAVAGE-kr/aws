@@ -72,6 +72,7 @@
       },
       "missing": { "type": "array", "maxItems": 3, "items": { "type": "string" }, "$comment": "Z-3 보류 사유 — 없어서 판단하지 못한 정보" },
       "criteria_id": { "type": ["string", "null"], "$comment": "Y-2 S·F 평가기준 id (data/kb/criteria). null/없음 = 골드셋 NH3 기준" },
+      "frequency_basis": { "type": "string", "minLength": 1, "$comment": "Q-03(질문봉쇄) 빈도 근거 — 어떤 기존 안전장치를 반영해 이 F 인지. 공식 기준 생성 결과에만, 선택 속성(없으면 이 기능 이전)." },
       "confidence": {
         "$comment": "Z-3: 보류 행(플래그 없음)은 insufficient. Y-4 4단계: grounded(서로 다른 문서 2건 이상 인용)·single_source(1건)·inferred(인용 없음)·review(검증 플래그). 전부 코드 판정(core/agent/verify.py).",
         "type": "string",
