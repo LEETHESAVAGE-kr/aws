@@ -1,0 +1,222 @@
+{
+  "id": "ipl_credit",
+  "name": "IPL 빈도 크레딧 — 입력 안전장치를 독립방호계층(IPL)으로 인정하는 보수적 분류",
+  "short": "IPL 크레딧(KOSHA C-C-62-2026)",
+  "issuer": "한국산업안전보건공단",
+  "doc": "C-C-62-2026 방호계층분석(LOPA)기법에 관한 기술지원규정 (공표 2026-01-30, 2009-09 제정·2023-07 개정 후 2026-01 개정)",
+  "locator": "3.(1)(나) 독립방호계층 정의·(카) 방호계층 정의·(차) 작동요구시 고장확률(인쇄 1~2쪽), SIL 별 PFD 표(인쇄 3쪽, SIL 1 = PFD ≥10^-2~10^-1·위험감소 >10~≤100), 6.2(4) 4단계 독립방호계층 규명·PFD 평가(인쇄 7쪽), 6.3 <표 1> LOPA '방호계층' = HAZOP '기존 안전장치'(인쇄 7쪽)",
+  "url": "https://portal.kosha.or.kr/archive/resources/tech-support/search/chemistry",
+  "retrieved_at": "2026-10-14",
+  "license": "공공누리 표시 없음(2026-10-14 목록·상세 확인). 정의 문구는 요지만 옮기고 원문 재배포 아님. 기술적 권고규정(구속력 없음).",
+  "sources": [
+    {
+      "id": "kosha_cc62_2026",
+      "issuer": "한국산업안전보건공단",
+      "doc": "C-C-62-2026 방호계층분석(LOPA)기법에 관한 기술지원규정",
+      "published": "2026-01-30",
+      "url": "https://portal.kosha.or.kr/archive/resources/tech-support/search/chemistry",
+      "verified": "2026-10-14 포털 목록(화학안전분야 '방호계층' 검색 3건 중 1건, 상태 '개정')·상세·문서뷰어 미리보기 26쪽 중 표지·개요·1~9쪽을 눈으로 확인. PDF 는 내려받지 않았다.",
+      "used_for": [
+        "IPL 정의 — 초기사고·다른 방호계층의 작동과 관계없이(독립) 원하지 않는 결과로의 전개를 막는 장치·시스템·동작",
+        "LOPA 의 '방호계층'은 HAZOP 워크시트의 '기존 안전장치'에서 온다(<표 1>)",
+        "SIL 1 계층 하나의 위험감소 = 10~100배 → 3단계 빈도 척도에서 1등급 하향을 '한 자릿수' 크레딧으로 쓴다"
+      ],
+      "not_verified": "구 번호 'KOSHA GUIDE P-111' 과의 연계는 이 문서 개요에 적혀 있지 않다(제·개정 경과만 있음). 연계표(공지사항)는 열지 않았다."
+    },
+    {
+      "id": "ccps_lopa_2001",
+      "issuer": "Center for Chemical Process Safety (CCPS), AIChE",
+      "doc": "Layer of Protection Analysis: Simplified Process Risk Assessment",
+      "published": "2001-10, Wiley/AIChE, ISBN 978-0-8169-0811-0, 292쪽",
+      "url": "https://ccps.aiche.org/publications/books/layer-protection-analysis-simplified-process-risk-assessment",
+      "verified": "2026-10-14 서지(제목·출판 2001-10·ISBN·쪽수)만 출판사 목록·검색 결과로 확인. CCPS 페이지는 403 으로 열리지 않았고 책 본문은 보지 못했다.",
+      "used_for": [],
+      "not_verified": "IPL 3조건(독립성·유효성·감사가능성)·IPL 1개당 PFD 10^-1~10^-2 는 2차 요약에서만 보았다 — 이 파일의 규칙 근거로 쓰지 않는다. 본문 확인 전에는 화면·프롬프트에서 CCPS 에 귀속하지 않는다."
+    }
+  ],
+  "rules": {
+    "credit_per_ipl": 1,
+    "min_frequency": 1,
+    "max_credits": 2,
+    "severity_credit": false,
+    "formula": "frequency = max(min_frequency, frequency_base - min(max_credits, len(ipl_credited)))",
+    "severity_note": "강도는 현재 안전조치를 고려하지 않는다 — KOSHA C-C-37-2026 notes 2(\"발생빈도는 현재 안전조치를 고려하여 결정하나, 강도는 현재 안전조치를 고려하지 않는다.\")",
+    "max_credits_note": "빈도는 3단계 척도(C-C-37-2026 <표 4>)라 2등급을 넘게 내릴 수 없다(3→1)."
+  },
+  "safeguard_classes": [
+    {
+      "key": "esv",
+      "label": "긴급차단밸브(ESV/ESD 연동)",
+      "match": [
+        "긴급차단",
+        "ESV",
+        "ESD",
+        "비상차단",
+        "자동차단",
+        "차단 연동",
+        "차단연동"
+      ],
+      "class": "prevention",
+      "ipl_eligible": true,
+      "reason": "이탈을 감지해 원인 흐름을 자동으로 끊는다 — 초기사고와 독립이면 IPL"
+    },
+    {
+      "key": "interlock",
+      "label": "고압/고온 인터록",
+      "match": [
+        "인터록",
+        "인터로크",
+        "interlock",
+        "SIS",
+        "트립",
+        "trip"
+      ],
+      "class": "prevention",
+      "ipl_eligible": true,
+      "reason": "설정값 초과 시 자동 정지 — 제어계(BPCS)와 독립이면 IPL"
+    },
+    {
+      "key": "relief",
+      "label": "안전밸브/파열판",
+      "match": [
+        "안전밸브",
+        "파열판",
+        "릴리프",
+        "relief",
+        "PSV",
+        "PRV",
+        "rupture"
+      ],
+      "class": "prevention",
+      "ipl_eligible": true,
+      "applies_to": [
+        "More/압력"
+      ],
+      "reason": "과압 이탈에서만 사고 전개를 막는다 — 다른 이탈에는 듣지 않는다"
+    },
+    {
+      "key": "check_valve",
+      "label": "역류방지밸브",
+      "match": [
+        "역류방지",
+        "체크밸브",
+        "check valve",
+        "역지밸브"
+      ],
+      "class": "prevention",
+      "ipl_eligible": true,
+      "applies_to": [
+        "Reverse/유량"
+      ],
+      "reason": "역류 이탈에서만 듣는다"
+    },
+    {
+      "key": "breakaway",
+      "label": "브레이크어웨이 커플링/ERC",
+      "match": [
+        "브레이크어웨이",
+        "breakaway",
+        "ERC",
+        "긴급분리",
+        "비상분리"
+      ],
+      "class": "prevention",
+      "ipl_eligible": true,
+      "applies_to": [
+        "호스 분리·이탈(선박 이동·차량 출발로 호스가 당겨짐)"
+      ],
+      "reason": "호스 분리 이탈에서만 양쪽을 막는다"
+    },
+    {
+      "key": "detector",
+      "label": "가스누출감지기",
+      "match": [
+        "감지기",
+        "검지기",
+        "감지",
+        "검지",
+        "detector"
+      ],
+      "class": "detection_only",
+      "ipl_eligible": false,
+      "reason": "감지만으로는 사고를 막지 못함 — 차단 연동 시 prevention 으로 재분류"
+    },
+    {
+      "key": "alarm",
+      "label": "압력/온도 경보(차단 연동 없음)",
+      "match": [
+        "경보",
+        "알람",
+        "alarm"
+      ],
+      "class": "detection_only",
+      "ipl_eligible": false,
+      "reason": "감지만으로는 사고를 막지 못함 — 차단 연동 시 prevention 으로 재분류"
+    },
+    {
+      "key": "watch",
+      "label": "CCTV·육안 감시",
+      "match": [
+        "CCTV",
+        "육안",
+        "감시",
+        "VTS",
+        "모니터링",
+        "순찰"
+      ],
+      "class": "detection_only",
+      "ipl_eligible": false,
+      "reason": "감지만으로는 사고를 막지 못함 — 차단 연동 시 prevention 으로 재분류"
+    },
+    {
+      "key": "mitigation",
+      "label": "스크러버·방류벽·살수설비·대피 방송·비상 조명",
+      "match": [
+        "스크러버",
+        "scrubber",
+        "방류벽",
+        "방유제",
+        "살수",
+        "물분무",
+        "워터커튼",
+        "water curtain",
+        "대피",
+        "방송",
+        "비상 조명",
+        "비상조명",
+        "소화"
+      ],
+      "class": "mitigation",
+      "ipl_eligible": false,
+      "reason": "결과를 줄이지 발생을 막지 않음, KOSHA 는 심각도에 안전조치 미반영"
+    },
+    {
+      "key": "procedural",
+      "label": "작업 절차서·교육·점검 주기",
+      "match": [
+        "절차",
+        "교육",
+        "점검",
+        "시험",
+        "검사",
+        "훈련",
+        "매뉴얼",
+        "procedure"
+      ],
+      "class": "procedural",
+      "ipl_eligible": false,
+      "reason": "절차·교육은 감사 가능한 수행 기록과 실패확률 근거가 있어야 방호계층으로 볼 수 있음 — 입력 문장만으로 판단 불가"
+    }
+  ],
+  "unknown": {
+    "class": "unknown",
+    "ipl_eligible": false,
+    "reason": "분류표에 없음 — 검토 필요"
+  },
+  "notes": [
+    "이 표는 IPL 일반 원칙(KOSHA C-C-62-2026 독립방호계층 정의)을 입력 문장 수준에서 적용하기 위한 보수적 분류다. 사업장 LOPA 가 있으면 그것이 우선한다.",
+    "분류는 장치 이름의 낱말로만 한다 — 이름이 같아도 실제 독립성·PFD 는 현장 검증 대상이다.",
+    "감지·경보·감시 장치라도 이름에 차단 연동 낱말('차단 연동'·ESV·ESD)이 있으면 위쪽 긴급차단 항목에 먼저 걸려 prevention 으로 분류된다.",
+    "match 는 위에서부터 첫 일치 — prevention 이 앞에 있어 '긴급차단밸브 연동 가스감지기' 는 긴급차단으로 잡힌다."
+  ]
+}
