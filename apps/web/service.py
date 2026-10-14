@@ -388,6 +388,41 @@ def _to_node_meta_payload(reply: dict[str, Any]) -> dict[str, Any]:
     return payload
 
 
+def _guard_pressure(reply: dict[str, Any], text: str) -> tuple[dict[str, Any], list[str]]:
+    """해석 응답의 압력 칸 보정(Q-04). 설명에 '설계'라는 말이 없는데 압력이 설계압력 칸에만 들어왔으면 운전압력으로 옮긴다.
+
+    10/14 배포 실측: "약 90 MPa 까지 올려" 가 design_pressure 로 가서 '입력에 없는 정보: 운전압력' 이 떴다.
+    프롬프트에도 규칙을 넣었지만 모델이 다시 어겨도 화면이 틀리지 않게 코드가 한 번 더 본다. 고친 내역은 돌려준다.
+    """
+    fixes: list[str] = []
+    if reply.get("pressure") is None and reply.get("design_pressure") is not None and "설계" not in text:
+        reply = {**reply, "pressure": reply["design_pressure"], "design_pressure": None}
+        fixes.append("설계압력 칸의 압력을 운전압력으로 옮김(설명에 '설계' 없음)")
+    return reply, fixes
+
+
+def parsed_values_line(meta: NodeMeta, info: Mapping[str, Any]) -> str:
+    """입력 확인 상자의 '해석된 값' 줄(Q-04-4) — 적힌 단위 그대로와 환산값을 함께. 비어 있는 칸은 빼고 아래 목록이 맡는다."""
+    written = info.get("pressure_as_written") or {}
+    parts: list[str] = [f"물질 {meta.substance}"]
+    for field, name, label in (("P_kPag", "pressure", "운전압력"), ("design_P_kPag", "design_pressure", "설계압력")):
+        kpa = getattr(meta, field)
+        if kpa is None:
+            continue
+        raw = written.get(name)
+        as_written = f"{raw['value']:g} {raw['unit']}" if raw else f"{kpa:,.0f} kPag"
+        parts.append(f"{label} {as_written}" + (f"(={kpa:,.0f} kPag)" if raw and raw["unit"] != "kPa" else ""))
+    if meta.T_degC is not None:
+        parts.append(f"온도 {meta.T_degC:g} ℃")
+    if meta.capacity:
+        parts.append(f"용량 {meta.capacity}")
+    parts.append(f"상 {meta.phase}")
+    parts.append(f"설비 {len(meta.equipment)}개")
+    if meta.safeguards:
+        parts.append(f"안전장치 {len(meta.safeguards)}개")
+    return "해석된 값: " + " · ".join(parts)
+
+
 def _mock_parse_factory(**_: Any) -> ConverseResponse:
     """mock 모드의 입력 해석 — 네트워크 없이 스키마를 통과하는 고정 응답."""
     payload = {
@@ -437,10 +472,14 @@ def parse_node_text(
         raise ValueError(
             "공정 설명을 노드 입력으로 바꾸지 못했습니다(응답 스키마 2회 위반). 물질·설비를 넣어 다시 적어 주세요."
         )
-    node_meta = validate_node_meta(_to_node_meta_payload(json.loads(response.content)))
+    reply, fixes = _guard_pressure(json.loads(response.content), stripped)
+    written = {name: reply.get(name) for name in _PRESSURE_FIELDS.values() if reply.get(name)}
+    node_meta = validate_node_meta(_to_node_meta_payload(reply))
     return node_meta, {
         "parsed_by": "llm",
         "node_text": stripped,
+        "pressure_as_written": written,
+        "parse_fixes": fixes,
         "parse_model": client.model_short,
         "raw_calls": [{**c, "stage": "parse"} for c in calls],
         "cost_usd": response.cost_usd,
