@@ -204,3 +204,70 @@ def test_v_ipl_3_ineligible() -> None:
 def test_records_without_credit_fields_are_untouched() -> None:
     records, _ = _run(on=False)
     assert _flags(records[0]) == {"confidence": ["inferred"]}
+
+
+# ── S-4 화면 ──────────────────────────────────────────────────────────────────
+def _credit_result(credited: list[dict[str, Any]]) -> Any:
+    from apps.web.replay import Result
+
+    records, _ = _run(credited=[], f=3)  # 기본 3 · 인정 0 · 반영 3
+    first = records[0].model_copy(update={"frequency_base": 3, "ipl_credited": credited,
+                                          "F": ipl.expected_frequency(3, len(credited))})
+    return Result(meta={"source": "live-run", "criteria_id": OFFICIAL_CRITERIA}, records=[first, *records[1:]])
+
+
+def test_table_shows_base_to_credited_and_prefix() -> None:
+    from apps.web import service
+
+    table = service.worksheet_table(_credit_result(_TWO))
+    assert table[0][service.FREQ_SHIFT_COLUMN] == "3→1" and table[1][service.FREQ_SHIFT_COLUMN] == "3"
+    assert table[0][service.BASIS_COLUMN].startswith(
+        "✓ 안전밸브(예방) · ✓ 긴급차단밸브(ESV)(예방) · – 가스누출감지기(감지만) — ")
+    assert table[1][service.BASIS_COLUMN].startswith("– 안전밸브(예방) · – 긴급차단밸브(ESV)(예방) · – 가스누출감지기(감지만) — ")
+    order = service.review_column_order(table)
+    assert order.index(service.FREQ_SHIFT_COLUMN) + 1 == order.index("F(1-5)")  # 편집 표: 읽기 전용 표시 + 반영 후 숫자
+    assert "F(1-5)" not in service.read_only_order(order)  # 읽기 보기: 한 열
+    edited = service.with_edits(table, {0: {"F(1-5)": 2}})
+    assert edited[0][service.FREQ_SHIFT_COLUMN] == "3→2"
+
+
+def test_summary_and_warning_lines() -> None:
+    from apps.web import service
+
+    result = _credit_result(_TWO)
+    assert "IPL 인정 1행 / 검토 0행" in service.summary_line(result)
+    assert service.concentration_warning(result) == service.CONCENTRATION_WARNING_IPL  # 안전장치 입력 있음 + F=3 몰림
+    bad = _credit_result([_TWO[0], {"name": "가스누출감지기", "class": "prevention", "applies": True}])
+    assert "IPL 인정 1행 / 검토 1행" in service.summary_line(bad)
+    records, _ = _run(on=False)
+    assert service.ipl_line(type(result)(meta=result.meta, records=records)) is None  # 이전 결과엔 줄 없음
+
+
+def test_unknown_safeguards_keep_old_warning() -> None:
+    from apps.web import service
+    from apps.web.replay import Result
+
+    records, _ = _run(credited=[], f=3)
+    bare = [r.model_copy(update={"node_meta": r.node_meta.model_copy(update={"safeguards": []})}) for r in records]
+    result = Result(meta={"source": "live-run", "criteria_id": OFFICIAL_CRITERIA}, records=bare)
+    assert service.concentration_warning(result) == service.CONCENTRATION_WARNING
+
+
+@pytest.mark.parametrize(("credited", "shown", "line"), [(_TWO, "3→1", "IPL 인정 1행"), ([], ">3<", "IPL 인정 0행")])
+def test_app_shows_credit(monkeypatch: pytest.MonkeyPatch, credited: list[dict[str, Any]], shown: str, line: str) -> None:
+    """S-4-6 AppTest — 인정 2건이면 `3→1`·요약 n=1, 비면 `3` 만."""
+    from pathlib import Path
+
+    from streamlit.testing.v1 import AppTest
+
+    monkeypatch.setenv("HAZOP_USE_MOCK", "true")
+    at = AppTest.from_file(str(Path(__file__).parents[1] / "apps" / "web" / "app.py"), default_timeout=60).run()
+    at.session_state["quick_result"] = _credit_result(credited)
+    at.run()
+    assert not at.exception
+    assert any(line in c.value for c in at.caption)
+    full = next(h.proto.body for h in at.get("html") if "hz-full" in h.proto.body)
+    assert "빈도 (기본→반영)" in full and shown in full
+    if not credited:
+        assert "→" not in full.split("<tbody>")[1]  # 인정 0 이면 화살표 없이 값 하나
+    assert any("IPL 적격 장치가 적습니다" in c.value for c in at.caption)  # 안전장치 입력 있음 + F=3 몰림

@@ -681,7 +681,8 @@ else:
                         f"심각도(1-{crit.s_max})", min_value=1, max_value=crit.s_max, step=1, width=76
                     ),
                     "F(1-5)": st.column_config.NumberColumn(
-                        f"빈도(1-{crit.f_max})", min_value=1, max_value=crit.f_max, step=1, width=70
+                        f"빈도 반영 후(1-{crit.f_max})" if table and service.FREQ_SHIFT_COLUMN in table[0] else f"빈도(1-{crit.f_max})",
+                        min_value=1, max_value=crit.f_max, step=1, width=70,
                     ),
                 },
             )
@@ -693,6 +694,7 @@ else:
             if not result.is_gold:  # 편집 표가 이번 실행에 안 그려진다 — 돌아오면 저장본을 데이터에 넣어 그린다
                 review_base[review_key] = edits
             table = service.with_edits(table, edits)
+            order = service.read_only_order(order)  # S-4-1 읽기 보기는 `기본→반영` 한 열
             for name, head, indices in service.view_groups(shown, view_choice):
                 rows = [table[i] for i in indices]
                 kwargs = {"hide_index": True, "column_order": order, "column_config": column_config,
@@ -853,6 +855,9 @@ with risk_tab:
     st.table(guide.criteria_band_rows(shown), hide_index=True, border="horizontal")
     for note in shown.data.get("notes") or []:
         st.caption("· " + note)
+    st.markdown("**빈도와 기존 안전장치(IPL)**")
+    for line in guide.IPL_LINES:
+        st.caption("· " + line)
 with read_tab:
     st.markdown("**AI 가 쓰는 정보의 4단계** — 생성 프롬프트에 들어가는 문구와 같습니다")
     st.table(guide.information_level_rows(), hide_index=True, border="horizontal")
