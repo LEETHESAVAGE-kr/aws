@@ -9,6 +9,10 @@ Y-4(10/9): 신뢰도 4단계를 여기서 매긴다 — 전부 코드 판정, �
   grounded      플래그 0 + 서로 다른 문서 2건 이상 인용(같은 법령의 다른 조는 1건으로 센다)
   single_source 플래그 0 + 문서 1건 인용
   inferred      플래그 0 + 인용 없음
+지시문 S-3(10/14): IPL 빈도 크레딧 산수 — 레코드에 `ipl_credited` 가 있을 때만(이 기능 이전 결과는 무관).
+  V-IPL-1 ipl_arithmetic   F ≠ max(1, frequency_base − min(2, 인정 수))     "빈도 산수 불일치"
+  V-IPL-2 ipl_not_in_input 인정한 장치 이름이 입력 safeguards 에 없음          "입력에 없는 안전장치 인정"
+  V-IPL-3 ipl_ineligible   인정한 장치가 분류표상 IPL 비적격(감지만·완화·절차·미분류) "IPL 비적격 장치 인정"
   insufficient  플래그 0 + 정보 부족 보류 행(Z-3, 추론 경계를 켠 실행에서만)
 근거가 붙었다고 내용이 맞는 것은 아니다 — "공식 문서가 같은 위험을 다룬다"는 뜻이다.
 """
@@ -19,6 +23,8 @@ import re
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Final, Literal
 
+from core import ipl
+
 from .generate import INSUFFICIENT, DeviationRecord
 
 if TYPE_CHECKING:
@@ -26,8 +32,20 @@ if TYPE_CHECKING:
 
     from .generate import NodeMeta
 
-Rule = Literal["unverified_standard", "unsupported_number", "fabricated_citation"]
-RULES: Final[tuple[str, ...]] = ("unverified_standard", "unsupported_number", "fabricated_citation")
+Rule = Literal[
+    "unverified_standard", "unsupported_number", "fabricated_citation", "ipl_arithmetic", "ipl_not_in_input",
+    "ipl_ineligible",
+]
+RULES: Final[tuple[str, ...]] = (
+    "unverified_standard", "unsupported_number", "fabricated_citation", "ipl_arithmetic", "ipl_not_in_input",
+    "ipl_ineligible",
+)
+#: S-3 검증기 사유(지시문 문구 그대로) — 화면 '검증 플래그' 열에 `규칙: 사유 (세부)` 로 보인다.
+IPL_RULES: Final[dict[str, str]] = {
+    "ipl_arithmetic": "빈도 산수 불일치",
+    "ipl_not_in_input": "입력에 없는 안전장치 인정",
+    "ipl_ineligible": "IPL 비적격 장치 인정",
+}
 
 #: R-01 규격·문헌 번호. 대소문자 무시·공백 유연. 각 줄 주석은 매치 예시.
 STANDARD_PATTERNS: Final[tuple[re.Pattern[str], ...]] = tuple(
@@ -144,7 +162,32 @@ def _record_flags(record: DeviationRecord) -> list[Flag]:
         for m in NUMBER_PATTERN.finditer(text):
             if _num(m.group(1)) not in allowed:
                 add("unsupported_number", field, m.group(0))
+    for rule, field, detail in ipl_flags(record):
+        add(rule, field, f"{IPL_RULES[rule]} ({detail})")
     return flags
+
+
+def ipl_flags(record: DeviationRecord) -> list[tuple[Rule, str, str]]:
+    """V-IPL-1~3. `ipl_credited` 가 없는 레코드(이 기능 이전·골드·보류)는 빈 목록."""
+    credited = record.ipl_credited
+    if credited is None or record.F is None or record.frequency_base is None:
+        return []
+    out: list[tuple[Rule, str, str]] = []
+    expected = ipl.expected_frequency(record.frequency_base, len(credited))
+    if expected != record.F:
+        out.append(("ipl_arithmetic", "F",
+                    f"기본 {record.frequency_base} − 인정 {len(credited)} → {expected}, 기록 {record.F}"))
+    for i, item in enumerate(credited):
+        name = str(item.get("name", ""))
+        if not ipl.same_device(name, record.node_meta.safeguards):
+            out.append(("ipl_not_in_input", f"ipl_credited[{i}]", name or "(이름 없음)"))
+        table_class = ipl.classify(name)
+        declared = str(item.get("class", ""))
+        declared_ok = declared == "prevention"
+        if not (table_class.eligible and declared_ok and item.get("applies", False)):
+            why = table_class.cls if not table_class.eligible else (declared if not declared_ok else "applies=false")
+            out.append(("ipl_ineligible", f"ipl_credited[{i}]", f"{name} — {ipl.CLASS_LABELS.get(why, why)}"))
+    return out
 
 
 def cited_documents(record: DeviationRecord) -> set[str]:
