@@ -158,3 +158,49 @@ def test_output_schema_takes_the_three_fields_together() -> None:
     assert list(Draft7Validator(schema).iter_errors([partial]))  # 하나만 빠져도 떨어진다
     old = {k: v for k, v in full.items() if k not in ("frequency_base", "ipl_credited")}
     assert not list(Draft7Validator(schema).iter_errors([old]))  # 이 기능 이전 레코드는 그대로 통과
+
+
+# ── S-3 검증기 산수 규칙 ──────────────────────────────────────────────────────
+def _flags(record: Any) -> dict[str, list[str]]:
+    from core.agent import verify
+
+    out, summary = verify([record])
+    by: dict[str, list[str]] = {}
+    for f in summary.flags:
+        by.setdefault(f.rule, []).append(f.matched)
+    return {"confidence": [out[0].confidence], **by}
+
+
+def _record(**update: Any) -> Any:
+    records, _ = _run()
+    return records[0].model_copy(update=update)
+
+
+def test_clean_credit_is_not_flagged() -> None:
+    assert _flags(_record()) == {"confidence": ["inferred"]}
+
+
+def test_v_ipl_1_arithmetic() -> None:
+    got = _flags(_record(F=2))  # 기본 3 − 인정 2 = 1 인데 2
+    assert got["confidence"] == ["review"] and got["ipl_arithmetic"][0].startswith("빈도 산수 불일치")
+    assert _flags(_record(frequency_base=3, ipl_credited=[], F=3)) == {"confidence": ["inferred"]}
+
+
+def test_v_ipl_2_not_in_input() -> None:
+    got = _flags(_record(ipl_credited=[*_TWO[:1], {"name": "고압 인터록", "class": "prevention", "applies": True}]))
+    assert got["confidence"] == ["review"]
+    assert got["ipl_not_in_input"] == ["입력에 없는 안전장치 인정 (고압 인터록)"]
+    assert "ipl_ineligible" not in got  # 인터록 자체는 적격 — 입력에 없다는 것만 문제
+
+
+def test_v_ipl_3_ineligible() -> None:
+    detector = {"name": "가스누출감지기", "class": "prevention", "applies": True}  # 모델이 예방이라 우겨도
+    got = _flags(_record(ipl_credited=[_TWO[0], detector]))
+    assert got["confidence"] == ["review"] and got["ipl_ineligible"] == ["IPL 비적격 장치 인정 (가스누출감지기 — 감지만)"]
+    declared = _flags(_record(ipl_credited=[_TWO[0], {**_TWO[1], "class": "mitigation"}]))
+    assert declared["ipl_ineligible"] == ["IPL 비적격 장치 인정 (긴급차단밸브(ESV) — 완화)"]
+
+
+def test_records_without_credit_fields_are_untouched() -> None:
+    records, _ = _run(on=False)
+    assert _flags(records[0]) == {"confidence": ["inferred"]}
