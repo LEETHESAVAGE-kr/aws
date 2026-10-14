@@ -377,6 +377,12 @@ def _mock_factory(replay: Result) -> Callable[..., ConverseResponse]:
             for cell in cells:
                 record = by_key.get((guideword, cell["parameter"]))
                 cell["frequency_basis"] = "" if record is None else (record.frequency_basis or "mock: 재생 기록에 빈도 근거 없음")
+        if "ipl_credited" in required:  # S-2 — 재생 레코드에 크레딧 칸이 없으면 기본=반영 후, 인정 0(산수가 맞는 값)
+            for cell in cells:
+                record = by_key.get((guideword, cell["parameter"]))
+                credited = (record.ipl_credited if record is not None else None) or []
+                cell["ipl_credited"] = credited
+                cell["frequency_base"] = (record.frequency_base if record is not None else None) or cell.get("F", 1)
         body = {"guideword": guideword, "cells": cells}
         return ConverseResponse(content=json.dumps(body, ensure_ascii=False))
 

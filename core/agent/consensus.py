@@ -188,7 +188,10 @@ def _applicable_cell(
         # 공통 답은 가운데 값(짝수 개면 위쪽), 합치기는 최댓값 — 둘 다 위험을 낮춰 잡지 않는다
         base[grade] = values[-1] if union else values[len(values) // 2]
     if "frequency_basis" in base:  # Q-03 근거는 채택한 F 를 낸 실행의 것 — 다른 실행의 근거가 F 와 엇갈리지 않게
-        base["frequency_basis"] = next(c.get("frequency_basis", "") for c in used if int(c["F"]) == base["F"])
+        chosen = next(c for c in used if int(c["F"]) == base["F"])
+        base["frequency_basis"] = chosen.get("frequency_basis", "")
+        if "ipl_credited" in base:  # S-2 산수(base − 인정 수 = F)가 한 실행 안에서 맞물리게 같은 실행의 칸을 쓴다
+            base["frequency_base"], base["ipl_credited"] = chosen["frequency_base"], chosen["ipl_credited"]
     base["safeguards_before"] = list(dict.fromkeys(s for c in used for s in c.get("safeguards_before") or []))
     evidence: list[Any] = []
     for c in used:
