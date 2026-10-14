@@ -88,6 +88,7 @@ def _parse(raw: dict[str, Any]) -> ModelConfig:
         evidence_k=_read_evidence_k(raw["generation"]),
         inference_boundary=_read_flag(raw["generation"], "inference_boundary"),
         frequency_basis=_read_flag(raw["generation"], "frequency_basis"),
+        ipl_credit=_read_flag(raw["generation"], "ipl_credit"),
         consensus_runs=_read_consensus_runs(raw["generation"]),
         gateway={k: str(v) for k, v in (raw.get("gateway") or {}).items() if v is not None},
     )

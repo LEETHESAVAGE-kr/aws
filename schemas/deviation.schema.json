@@ -73,12 +73,32 @@
       "missing": { "type": "array", "maxItems": 3, "items": { "type": "string" }, "$comment": "Z-3 보류 사유 — 없어서 판단하지 못한 정보" },
       "criteria_id": { "type": ["string", "null"], "$comment": "Y-2 S·F 평가기준 id (data/kb/criteria). null/없음 = 골드셋 NH3 기준" },
       "frequency_basis": { "type": "string", "minLength": 1, "$comment": "Q-03(질문봉쇄) 빈도 근거 — 어떤 기존 안전장치를 반영해 이 F 인지. 공식 기준 생성 결과에만, 선택 속성(없으면 이 기능 이전)." },
+      "frequency_base": { "type": "integer", "minimum": 1, "maximum": 5, "$comment": "지시문 S-2 안전장치를 고려하지 않은 빈도. F 는 IPL 크레딧 반영 후. ipl_credited·frequency_basis 와 함께만 온다(dependencies)." },
+      "ipl_credited": {
+        "$comment": "지시문 S-2 인정한 독립방호계층 — name 은 입력 안전장치 이름, class 는 data/kb/criteria/ipl_credit.json 분류. 없으면 []. F = max(1, frequency_base − min(2, 개수)) 는 검증기 V-IPL-1 이 본다.",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["name", "class", "applies"],
+          "properties": {
+            "name": { "type": "string", "minLength": 1 },
+            "class": { "type": "string", "enum": ["prevention", "detection_only", "mitigation", "procedural", "unknown"] },
+            "applies": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        }
+      },
       "confidence": {
         "$comment": "Z-3: 보류 행(플래그 없음)은 insufficient. Y-4 4단계: grounded(서로 다른 문서 2건 이상 인용)·single_source(1건)·inferred(인용 없음)·review(검증 플래그). 전부 코드 판정(core/agent/verify.py).",
         "type": "string",
         "enum": ["grounded", "single_source", "inferred", "review", "insufficient"]
       }
     },
-    "additionalProperties": false
+    "additionalProperties": false,
+    "$comment": "dependencies — S-2 세 칸(frequency_base·ipl_credited·frequency_basis)은 함께 필수: 하나라도 있으면 셋 다. 무조건 required 로 두면 이 기능 이전 재생 레코드가 전부 떨어진다.",
+    "dependencies": {
+      "frequency_base": ["ipl_credited", "frequency_basis"],
+      "ipl_credited": ["frequency_base", "frequency_basis"]
+    }
   }
 }

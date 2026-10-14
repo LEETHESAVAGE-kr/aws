@@ -27,7 +27,7 @@ from typing import Any, Final
 
 from pydantic import BaseModel, Field, model_serializer, model_validator
 
-from core import policy
+from core import ipl, policy
 from core.agent import consensus
 from core.criteria import GOLD_CRITERIA, Criteria, load_criteria
 from core.llm import (
@@ -182,11 +182,16 @@ def render_param_examples(path: Path = _PARAM_EXAMPLES_PATH) -> str:
 
 
 def batch_schema(
-    criteria: Criteria, with_evidence: bool = False, boundary: bool = False, frequency_basis: bool = False
+    criteria: Criteria,
+    with_evidence: bool = False,
+    boundary: bool = False,
+    frequency_basis: bool = False,
+    ipl_credit: bool = False,
 ) -> dict[str, Any]:
     """판정 호출 스키마 — S·F 상한을 기준의 단계 수로 좁힌다(Y-2). 골드셋 기준이면 `DEVIATION_BATCH_SCHEMA` 와 같다.
 
     `frequency_basis`(질문봉쇄 Q-03): 셀마다 빈도 근거 한 줄을 **필수**로 받는다 — 해당 없음 셀은 빈 문자열.
+    `ipl_credit`(지시문 S-2): 안전장치 고려 전 등급 `frequency_base` 와 인정한 IPL `ipl_credited` 도 **필수**.
     """
     schema = json.loads(json.dumps(DEVIATION_BATCH_SCHEMA))
     cell = schema["properties"]["cells"]["items"]["properties"]
@@ -196,6 +201,18 @@ def batch_schema(
         cell["frequency_basis"] = {"type": "string"}
         schema["properties"]["cells"]["items"]["required"] = [
             *schema["properties"]["cells"]["items"]["required"], "frequency_basis"]
+    if ipl_credit:
+        cell["frequency_base"] = {"type": "integer", "minimum": 1, "maximum": criteria.f_max}
+        cell["ipl_credited"] = {
+            "type": "array",
+            "items": {
+                "type": "object", "required": ["name", "class", "applies"], "additionalProperties": False,
+                "properties": {"name": {"type": "string", "minLength": 1}, "class": {"type": "string", "enum": ipl.class_enum()},
+                               "applies": {"type": "boolean"}},
+            },
+        }
+        schema["properties"]["cells"]["items"]["required"] = [
+            *schema["properties"]["cells"]["items"]["required"], "frequency_base", "ipl_credited"]
     if boundary:  # Z-3: 셀 보류 — 미상(U) 정보 없이는 정할 수 없는 셀. 원인·S·F 는 코드가 지운다
         cell["insufficient"] = {"type": "boolean"}
         cell["missing"] = {"type": "array", "maxItems": 3, "items": {"type": "string", "minLength": 1}}
@@ -230,6 +247,8 @@ class GeneratorConfig:
     consensus_union: bool = False
     # 질문봉쇄 Q-03: 빈도 근거 필수(공식 기준에서만). false 면 판정 프롬프트·스키마·레코드 바이트 동일.
     frequency_basis: bool = False
+    # 지시문 S-2: IPL 빈도 크레딧. frequency_basis 가 켜진 경우에만 듣는다. false 면 바이트 동일.
+    ipl_credit: bool = False
 
 
 def load_generator_config() -> GeneratorConfig:
@@ -252,6 +271,7 @@ def load_generator_config() -> GeneratorConfig:
         inference_boundary=cfg.inference_boundary,
         consensus_runs=cfg.consensus_runs,
         frequency_basis=cfg.frequency_basis,
+        ipl_credit=cfg.ipl_credit,
     )
 
 
@@ -311,6 +331,9 @@ class DeviationRecord(BaseModel):
     consensus: dict[str, Any] | None = None
     #: Q-03 빈도 근거 — 어떤 기존 안전장치를 반영해 이 F 인지 한 줄. 이 기능 이전 레코드·보류 행은 None(직렬화에서 빠진다).
     frequency_basis: str | None = None
+    #: S-2 안전장치 고려 전 빈도와 인정한 IPL({name, class, applies}). `F` 는 반영 후. 이 기능 이전 레코드는 None.
+    frequency_base: int | None = Field(default=None, ge=1, le=5)
+    ipl_credited: list[dict[str, Any]] | None = None
 
     @model_serializer(mode="wrap")
     def _drop_empty_consensus(self, handler: Any) -> dict[str, Any]:
@@ -319,6 +342,9 @@ class DeviationRecord(BaseModel):
             data.pop("consensus", None)  # 합의 이전 레코드·재생 파일과 바이트 동일하게
         if self.frequency_basis is None:
             data.pop("frequency_basis", None)  # Q-03 이전 레코드와 바이트 동일하게
+        if self.ipl_credited is None:
+            data.pop("frequency_base", None)  # S-2 이전 레코드와 바이트 동일하게
+            data.pop("ipl_credited", None)
         return data
 
     @model_validator(mode="after")
@@ -350,6 +376,8 @@ class HazopGenerator:
         self.criteria = load_criteria(criteria_id)  # Y-2: S·F 등급표·위험도 산정 기준
         #: Q-03 빈도 근거 — 설정으로 켜고, 공식 기준(현재 안전조치를 고려해 빈도를 정하라는 기준)에서만. 끄면 바이트 동일.
         self.frequency_basis = self._config.frequency_basis and self.criteria.id != GOLD_CRITERIA
+        #: S-2 IPL 크레딧 — 빈도 근거를 받는 실행에서만(근거 칸이 인정·불인정 이유를 싣는다). 끄면 바이트 동일.
+        self.ipl_credit = self._config.ipl_credit and self.frequency_basis
         self._retriever = retriever  # Y-3: evidence_k > 0 일 때만 쓴다(없으면 프로세스 공용 검색기)
         self.inference_boundary = self._config.inference_boundary  # Z: 결과 메타에 남긴다
         # 한 번의 generate() 실행 결과를 관측하기 위한 상태 (R-06 수용 기준·비용 집계)
@@ -537,6 +565,9 @@ class HazopGenerator:
         basis = self.frequency_basis
         if basis:  # Q-03: 빈도에 현재 안전조치 반영 + 근거 한 줄. 노드와 무관한 고정 문구라 시스템 끝(캐시 유지)
             system = system + "\n\n" + _split_prompt(_load_prompt("frequency_basis.md"))[0]
+        credit = self.ipl_credit
+        if credit:  # S-2: 규칙·분류표는 ipl_credit.json 에서. 노드와 무관한 고정 문구라 시스템 끝(캐시 유지)
+            system = system + "\n\n" + ipl.prompt_block(_split_prompt(_load_prompt("ipl_credit.md"))[0])
         user = _fill(
             user_template,
             {
@@ -570,7 +601,8 @@ class HazopGenerator:
                 system=system,
                 messages=[Message(role="user", content=user)],
                 response_schema=batch_schema(
-                    self.criteria, with_evidence=bool(passages), boundary=boundary, frequency_basis=basis
+                    self.criteria, with_evidence=bool(passages), boundary=boundary, frequency_basis=basis,
+                    ipl_credit=credit,
                 ),
                 context={"node": node_meta.node},
             )
@@ -697,6 +729,7 @@ def _build_records(
                     criteria_id=criteria_id,
                     consensus=cell.get("_consensus"),
                     frequency_basis=_frequency_basis(node_meta, cell),
+                    **_ipl_fields(cell),
                 )
             )
     return records, judged
@@ -715,6 +748,22 @@ def _frequency_basis(node_meta: NodeMeta, cell: dict[str, Any]) -> str | None:
     if not node_meta.safeguards and not node_meta.safeguards_known:
         return FREQUENCY_BASIS_UNKNOWN
     return str(cell["frequency_basis"]).strip() or FREQUENCY_BASIS_EMPTY
+
+
+def _ipl_fields(cell: dict[str, Any]) -> dict[str, Any]:
+    """S-2 판정 셀의 IPL 칸. 이 기능을 켠 호출(스키마 필수 키)이 아니면 빈 dict — 옛 경로는 그대로.
+
+    값은 모델이 적은 그대로 둔다 — 산수·입력 대조·적격 여부는 검증기(V-IPL-1~3)가 보고 review 로 내린다.
+    """
+    if "ipl_credited" not in cell:
+        return {}
+    return {
+        "frequency_base": int(cell["frequency_base"]),
+        "ipl_credited": [
+            {"name": str(i.get("name", "")), "class": str(i.get("class", "")), "applies": bool(i.get("applies", False))}
+            for i in cell.get("ipl_credited") or []
+        ],
+    }
 
 
 def _held_record(
