@@ -187,6 +187,10 @@ def ipl_flags(record: DeviationRecord) -> list[tuple[Rule, str, str]]:
         if not (table_class.eligible and declared_ok and item.get("applies", False)):
             why = table_class.cls if not table_class.eligible else (declared if not declared_ok else "applies=false")
             out.append(("ipl_ineligible", f"ipl_credited[{i}]", f"{name} — {ipl.CLASS_LABELS.get(why, why)}"))
+        elif not ipl.applies(table_class, record.guideword, record.parameter):
+            # 10/15 T 캡처: 안전밸브(적용 More/압력)를 온도·기동정지 이탈에 인정한 행 4개가 검증기를 통과했다
+            out.append(("ipl_ineligible", f"ipl_credited[{i}]",
+                        f"{name} — 적용 이탈 밖({', '.join(table_class.applies_to)})"))
     return out
 
 

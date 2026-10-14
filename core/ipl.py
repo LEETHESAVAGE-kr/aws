@@ -58,6 +58,17 @@ def expected_frequency(frequency_base: int, credited: int) -> int:
     return max(int(rules["min_frequency"]), frequency_base - min(int(rules["max_credits"]), credited) * int(rules["credit_per_ipl"]))
 
 
+def applies(device: SafeguardClass, guideword: str, parameter: str) -> bool:
+    """분류표 `applies_to` 안의 이탈인가. 항목이 '가이드워드/파라미터' 꼴이면 가이드워드 일치 + 파라미터 이름 포함으로 본다.
+
+    `applies_to` 가 없거나 '/' 꼴이 아닌 설명문(ERC '호스 분리·이탈')뿐이면 기계로 가를 수 없어 통과시킨다.
+    """
+    pairs = [a.split("/", 1) for a in device.applies_to if "/" in a]
+    if not pairs:
+        return True
+    return any(guideword.strip().lower() == g.strip().lower() and p.strip() in parameter for g, p in pairs)
+
+
 def same_device(name: str, safeguards: list[str]) -> bool:
     """모델이 적은 장치 이름이 입력 안전장치 중 하나인가 — 공백·대소문자 무시, 한쪽이 다른 쪽을 품으면 같다."""
     key = _norm(name)
@@ -91,5 +102,5 @@ def class_enum() -> list[str]:
     return list(dict.fromkeys([*(i["class"] for i in data["safeguard_classes"]), data["unknown"]["class"]]))
 
 
-__all__ = ["CLASS_LABELS", "IPL_PATH", "SafeguardClass", "class_enum", "classify", "expected_frequency",
+__all__ = ["CLASS_LABELS", "IPL_PATH", "SafeguardClass", "applies", "class_enum", "classify", "expected_frequency",
            "prompt_block", "same_device", "table"]

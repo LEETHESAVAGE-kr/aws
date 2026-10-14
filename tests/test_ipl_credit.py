@@ -172,8 +172,9 @@ def _flags(record: Any) -> dict[str, list[str]]:
 
 
 def _record(**update: Any) -> Any:
+    """기본은 More/압력 행 — 안전밸브(적용 More/압력)·ESV 둘 다 인정할 수 있는 이탈."""
     records, _ = _run()
-    return records[0].model_copy(update=update)
+    return records[0].model_copy(update={"guideword": "More", "parameter": "압력", **update})
 
 
 def test_clean_credit_is_not_flagged() -> None:
@@ -211,8 +212,8 @@ def _credit_result(credited: list[dict[str, Any]]) -> Any:
     from apps.web.replay import Result
 
     records, _ = _run(credited=[], f=3)  # 기본 3 · 인정 0 · 반영 3
-    first = records[0].model_copy(update={"frequency_base": 3, "ipl_credited": credited,
-                                          "F": ipl.expected_frequency(3, len(credited))})
+    first = records[0].model_copy(update={"frequency_base": 3, "ipl_credited": credited, "guideword": "More",
+                                          "parameter": "압력", "F": ipl.expected_frequency(3, len(credited))})
     return Result(meta={"source": "live-run", "criteria_id": OFFICIAL_CRITERIA}, records=[first, *records[1:]])
 
 
@@ -303,3 +304,17 @@ def test_extract_ipl_rows(tmp_path: Any) -> None:
     assert len(rows) == 1 and rows[0]["빈도"] == "3→1" and "안전밸브(예방)" in rows[0]["인정 IPL"]
     md = extract_ipl_rows.to_markdown(rows)
     assert md.splitlines()[0].startswith("| # | 파일 |") and "동의" in md.splitlines()[0]
+
+
+def test_v_ipl_3_out_of_scope_relief_valve() -> None:
+    """10/15 T 캡처: 안전밸브를 온도·기동정지 이탈에 인정한 4행이 통과했다 → 분류표 applies_to 로 잡는다."""
+    relief = [_TWO[0]]
+    assert _flags(_record(ipl_credited=relief, frequency_base=3, F=2)) == {"confidence": ["inferred"]}  # More/압력
+    for gw, param in (("More", "온도"), ("As well as", "압력"), ("More", "기동정지/유지보수")):
+        got = _flags(_record(guideword=gw, parameter=param, ipl_credited=relief, frequency_base=3, F=2))
+        assert got["ipl_ineligible"] == ["IPL 비적격 장치 인정 (안전밸브 — 적용 이탈 밖(More/압력))"], (gw, param)
+    esv = [_TWO[1]]  # 적용 이탈 제한이 없는 장치는 어디든 통과
+    assert _flags(_record(guideword="More", parameter="온도", ipl_credited=esv, frequency_base=3, F=2)) == {
+        "confidence": ["inferred"]}
+    assert _flags(_record(guideword="More", parameter="토출 압력", ipl_credited=relief, frequency_base=3, F=2)) == {
+        "confidence": ["inferred"]}  # 파라미터 이름에 '압력'이 들어 있으면 같은 축
