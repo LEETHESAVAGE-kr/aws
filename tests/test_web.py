@@ -280,3 +280,23 @@ def _grid(at: Any) -> Any:
     """기존 화면 시험은 편집 격자(st.dataframe·data_editor)를 본다 — 기본 표 모양은 10/9 부터 펼쳐 보기(HTML)."""
     at.session_state["table_style"] = service.TABLE_STYLES[1]
     return at
+
+
+# ── 지시문 S-0 — 429 두 종류: 분당 한도 vs 게이트웨이 키 예산 소진(10/14 실측 본문) ──────────────────
+def test_failure_hint_separates_budget_exhaustion_from_rate_limit() -> None:
+    from core.llm.client import BedrockCallError
+    from core.llm.gateway_client import APIStatusError
+
+    def wrapped(cause: Exception) -> BedrockCallError:
+        try:
+            raise BedrockCallError("재시도 소진") from cause
+        except BedrockCallError as exc:
+            return exc
+
+    budget = wrapped(APIStatusError(429, '{"error":{"type":"budget_exceeded","message":"Current cost 36.0 / Max 36.0"}}'))
+    rate = wrapped(APIStatusError(429, '{"error":{"type":"rate_limit_error"}}'))
+    assert "예산" in service.failure_hint(budget) and "분당" not in service.failure_hint(budget)
+    assert "분당" in service.failure_hint(rate) and "예산" not in service.failure_hint(rate)
+    for exc in (budget, rate):
+        assert "횟수에 넣지 않았습니다" in service.failure_hint(exc)
+        assert "완성된 사례 보기" in service.failure_hint(exc)
