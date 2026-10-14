@@ -12,6 +12,7 @@ import html
 import json
 import logging
 import os
+import re
 import shutil
 import tempfile
 import threading
@@ -28,6 +29,7 @@ from core.agent.generate import (
     PROCEDURAL_GUIDEWORDS,
     STANDARD_GUIDEWORDS,
     load_generator_config,
+    prompt_version,
 )
 from core.criteria import (  # all_criteria 는 app.py 안내 탭이 service.all_criteria 로 쓴다
     GOLD_CRITERIA,
@@ -570,6 +572,7 @@ def _run_meta(
         "provider": "mock" if mock else provider,
         "model_id": None if mock else model_id,
         "endpoint": None if mock else endpoint_label(environ),
+        "prompt_version": prompt_version(),
         "captured_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
         "node": node_meta.node or "직접입력",
         "split": "none",
@@ -709,6 +712,14 @@ def verified(result: Result) -> tuple[list[DeviationRecord], VerifySummary]:
 #: verifier 시연 토글(지시문 O-3). 실측 플래그가 0 이라 심사위원이 🔴 를 볼 수 없어서, **표시용 사본**에만
 #: 근거 없는 규격 번호 1개를 붙인다. 재생 파일·`Result` 원본·다운로드 3개는 삽입 없는 원본 그대로다.
 DEMO_TOGGLE_LABEL: Final[str] = "검사 기능 시연 — 일부러 틀린 규격 번호 1개 넣어 보기"
+#: Q-06-2 검증기가 보는 범위 — 형식 검사이지 내용 진위 판단이 아니다.
+VERIFIER_SCOPE: Final[str] = (
+    "규칙 검증 — 근거 없는 규격 번호 · 입력·인용 원문에 없는 수치 · 원문과 다른 인용 · 응답 형식(필수 칸) "
+    "(내용의 옳고 그름은 판단하지 않음)"
+)
+#: Q-02-5 '판정 셀' 타일 — 빠짐없음(완전성)이지 맞음(정확도)이 아니다.
+CELLS_TILE: Final[str] = "판정 셀"
+CELLS_TILE_SUB: Final[str] = "빠짐없이 판정했는가 (완전성)"
 DEMO_SUFFIX: Final[str] = " (KOSHA GUIDE P-999 참조)"
 DEMO_BANNER: Final[str] = (
     ":red-background[시연] 아래 1행의 규격 번호는 시연용으로 삽입한 것입니다 — 원본 재생 데이터에는 없습니다."
@@ -869,9 +880,29 @@ def worksheet_table(result: Result) -> list[dict[str, object]]:
 
 
 #: 골드셋 없는 공정에 NH3 기준이 쓰인 결과(10/9 이전 캡처)에 붙는 불일치 배지(지시문 M-03, 실무자평가 P-3).
-CRITERIA_NOTICE = "심각도·빈도 등급 정의는 NH3 선박 벙커링 기준(선내·항만 영향)입니다 — 이 공정에는 참고용."
+CRITERIA_NOTICE = (
+    "심각도·빈도 등급 정의는 NH3 선박 벙커링 기준(선내·항만 영향)입니다 — 이 공정에는 참고용. "
+    "위험도 = 심각도 × 빈도(곱) — 새로 만드는 결과의 KOSHA <표 2> 대조표와 산식이 다릅니다."
+)
 #: 공식 기준으로 매긴 결과의 배지(Y-2). 〈이름〉·〈위치〉는 기준 파일에서.
-OFFICIAL_NOTICE = "이 결과의 심각도·빈도·위험도는 {name} 기준으로 매겼습니다({locator}). 공식 예시 기준이라 사업장 자체 기준이 있으면 그것이 우선합니다."
+OFFICIAL_NOTICE = (
+    "이 결과의 심각도·빈도·위험도는 {name} 기준으로 매겼습니다({locator}). {how} · {short} ({published}, 수집 {retrieved}) · "
+    "[원문 목록]({url}). 공식 예시 기준이라 사업장 자체 기준이 있으면 그것이 우선합니다."
+)
+#: 위험도 산정 방식 한 줄(Q-03-1) — 같은 앱 안에서 곱과 대조표가 섞여 보이지 않게 결과마다 적는다.
+RISK_HOW: Final[dict[str, str]] = {
+    "lookup": "위험도 = <표 2> 대조표(곱이 아님)",
+    "product": "위험도 = 심각도 × 빈도(곱)",
+}
+
+
+def criteria_label(criteria: Criteria) -> str:
+    """화면에 쓰는 기준 이름 — 공식 기준은 약칭, NH3 기준은 팀 사업장 기준임을 밝힌다(Q-02: 내부 워크시트 이름을 화면에 쓰지 않는다)."""
+    return NH3_CRITERIA_LABEL if criteria.id == GOLD_CRITERIA else criteria.short
+
+
+#: NH3 벙커링 기준의 화면 이름 — 공식 기준이 아니고 산식이 곱이라는 것까지 이름에 싣는다.
+NH3_CRITERIA_LABEL: Final[str] = "NH3 벙커링 사업장 기준(S×F 곱)"
 
 
 def result_criteria(result: Result) -> Criteria:
@@ -884,7 +915,12 @@ def criteria_notice(result: Result) -> str | None:
     """어떤 기준으로 매겼는지(Y-2). NH3 골드 공정이면 None, NH3 기준이 다른 공정에 쓰였으면 '참고용' 배지."""
     criteria = result_criteria(result)
     if criteria.id != GOLD_CRITERIA:
-        return OFFICIAL_NOTICE.format(name=criteria.name, locator=criteria.data.get("locator", ""))
+        d = criteria.data
+        published = d.get("doc", "").rpartition("(")[2].rstrip(")") if "(" in d.get("doc", "") else "공표일 미상"
+        return OFFICIAL_NOTICE.format(
+            name=criteria.name, locator=d.get("locator", ""), how=RISK_HOW[criteria.method], short=criteria.short,
+            published=published, retrieved=d.get("retrieved_at", "미상"), url=d.get("url", ""),
+        )
     return CRITERIA_NOTICE if result.meta.get("split") in ("none", "external") else None
 
 
@@ -916,7 +952,7 @@ def accuracy_line(result: Result, replays: Mapping[str, Result]) -> str:
         parts = result.meta.get("recall_parts") or []
         line = " · ".join(f"{label} **{a / b:.1%}** ({a}/{b})" for label, a, b in parts)
         if any(label == "외부 대조" for label, _, _ in parts):
-            line += " — 외부 공개 워크시트의 공정변수 점검표와 대조한 후한 기준이며 NH3 전문가 정답지와 같은 난이도가 아닙니다."
+            line += " — 외부 공개 워크시트의 공정변수 점검표와 대조한 후한 기준입니다."
         elif len(parts) > 1:
             line += " — 튜닝 노드(프롬프트를 맞춘 노드)와 처음 보는 홀드아웃 노드를 한 숫자로 합치지 않았습니다."
         return line or "대조 기준 없음"
@@ -924,10 +960,10 @@ def accuracy_line(result: Result, replays: Mapping[str, Result]) -> str:
         return (
             f"외부 공개 HAZOP 대비 **{recall['recall']:.1%}** ({recall['matched']}/{recall['total']}, 1회 실행) — "
             "인도 IOCL 충전소 워크시트(2014, 외부 팀 작성)의 공정변수 점검표 11행과 대조. 모델이 기본으로 내는 축과 겹쳐 "
-            "후하게 나오는 기준이며, NH3 전문가 정답지와 같은 난이도가 아닙니다."
+            "후하게 나오는 기준입니다."
         )
     if not recall:
-        return "전문가 정답지 화면이라 정확도는 해당 없음."
+        return "사람이 작성한 워크시트 화면이라 정확도는 해당 없음."
     line = f"전문가 결과물 대비 **{recall['recall']:.1%}** ({recall['matched']}/{recall['total']}, 1회 실행)"
     held = holdout_recall(replays)
     if result.meta.get("split") == "tune" and held:
@@ -940,15 +976,83 @@ def accuracy_line(result: Result, replays: Mapping[str, Result]) -> str:
     return line
 
 
-def system_note(result: Result) -> str:
-    """💡 참고사항의 시스템 정보 줄. 모델·캡처 시각·비용은 결과 메타에서 읽는다."""
-    font = "화면에는 S-Core에서 제공한 에스코어 드림 폰트가 적용되어 있습니다."
+# ── 다른 팀의 HAZOP 과 대조(PRD_본선_질문봉쇄 Q-02) ─────────────────────────────
+_REFERENCE_DIR: Final[Path] = Path(__file__).resolve().parents[2] / "data" / "reference"
+#: 10/10 외부 평가 요약(`results/exteval_20261010/summary.json` 사본) — 패널 숫자의 단일 출처. 재측정하지 않는다.
+EXTERNAL_SUMMARY_PATH: Final[Path] = _REFERENCE_DIR / "external_eval_summary.json"
+#: 평가셋 본체 — 출처 이름·공정·평가 전용 문구·오염 고지를 여기서 읽는다.
+EXTERNAL_SET_PATH: Final[Path] = _REFERENCE_DIR / "external_eval_202610.json"
+EXTERNAL_PANEL_TITLE: Final[str] = "이 앱을 다른 팀의 HAZOP 과 대조하면"
+#: 출처 id → 짧은 이름(표의 첫 칸). 값이 아니라 이름이라 여기 둔다.
+EXTERNAL_SHORT: Final[dict[str, str]] = {
+    "ornl2023": "ORNL 2023", "ioclv2016": "IOCL 2016", "assam2010": "Assam 2010",
+    "kais2019": "KAIS 2019", "ijerph2017": "IJERPH 2017",
+}
+#: 최저 출처가 낮은 이유 — docs/결과_외부평가_20261010.md '범위 밖 출처' 절과 같은 사실(README §6 같은 문장).
+EXTERNAL_LOW_REASON: Final[str] = (
+    "IJERPH 가 낮은 이유 — 항만 터미널 작업 절차(하역·적재 순서) HAZOP 이라 정전기·부식·속도·계류 같은 작업 고유 "
+    "파라미터를 쓰는데, 이 앱의 파라미터 열거는 이런 설비·절차형 항목을 적게 만든다(부식·속도는 아예 나오지 않음). "
+    "알려진 약점이며 편집 표에서 사람이 보완하는 범위입니다."
+)
+
+
+def eval_only_note(comment: str) -> str:
+    """평가셋 `_comment` 원문에서 괄호 하나 '(골드셋 아님, 평가 전용)' 만 뺀다 — 내부 워크시트 이름을 화면에 쓰지 않는다(Q-02 v2)."""
+    return re.sub(r"\([^)]*골드셋[^)]*\)", "", comment)
+
+
+def external_eval() -> dict[str, Any]:
+    """패널 값 — 요약 파일과 평가셋 파일에서만 읽는다(하드코딩 금지). 출처 순서는 평가셋 파일 순서, 낮은 출처도 그대로."""
+    summary = json.loads(EXTERNAL_SUMMARY_PATH.read_text(encoding="utf-8"))
+    dataset = json.loads(EXTERNAL_SET_PATH.read_text(encoding="utf-8"))
+    by_source = summary["by_source"]
+    rows = []
+    for src in sorted(dataset["sources"], key=lambda x: -by_source[x["id"]]["coverage"]):
+        got = by_source[src["id"]]
+        rows.append({
+            "출처": EXTERNAL_SHORT.get(src["id"], src["id"]),
+            "공정": src["process"],
+            "다시 만든 쌍": f"{got['matched']}/{got['total']}",
+            "coverage": f"{got['coverage']:.2f}",
+        })
+    kept = [v["coverage"] for k, v in by_source.items() if k != summary["min_source"]]
+    total = sum(v["total"] for v in by_source.values())
+    return {
+        "head": (
+            f"외부 공개 HAZOP 워크시트 {len(by_source)}건 · {summary['nodes']}노드 · (가이드워드, 파라미터) 쌍 {total}개 · "
+            f"{summary['measured_at']} 실측 · ${summary['cost_usd']:.1f}"
+        ),
+        "question": "다른 팀이 쓴 표의 쌍을 이 앱이 얼마나 다시 만들어내는가 (coverage) — 원인·결과 문장의 옳고 그름은 재지 않습니다.",
+        "rows": rows,
+        "total": (
+            f"출처 평균 {summary['macro_mean']:.2f} · 전체 합산 {summary['pooled']:.2f} · "
+            f"{EXTERNAL_SHORT.get(summary['min_source'], summary['min_source'])} 를 뺀 {len(kept)}출처 평균 "
+            f"{sum(kept) / len(kept):.2f}"
+        ),
+        "low_reason": EXTERNAL_LOW_REASON,
+        "fine_print": (
+            "평가 전용 — " + eval_only_note(dataset["_comment"]),
+            "오염 고지 — " + dataset["contamination_note"],
+        ),
+    }
+
+
+def reference_line(result: Result) -> str | None:
+    """외부 공개 HAZOP 대조 공정(지시문 W)의 노드 재생에만 붙는 한 줄 — 'IOCL 2014 대조 n/11'. 다른 공정은 None."""
     m = result.meta
-    if result.is_gold or not m.get("model_id"):
+    recall = m.get("recall")
+    if m.get("split") != "external" or m.get("combined") or not recall:
+        return None
+    return (f"IOCL 2014 대조 {recall['matched']}/{recall['total']} — 인도 IOCL 충전소 공개 워크시트(외부 팀 작성)의 "
+            "공정변수 점검표와 (가이드워드, 파라미터) 쌍을 맞춘 수. 쉬운 기준이라 위 패널 값과 나란히 읽지 않습니다.")
+
+
+def system_note(result: Result) -> str:
+    """푸터의 시스템 정보 줄. 결과 출처는 화면 위 출처 줄과 같은 함수(`provenance_line`)로 쓴다(Q-01-4)."""
+    font = "화면에는 S-Core에서 제공한 에스코어 드림 폰트가 적용되어 있습니다."
+    if result.is_gold or not result.meta.get("model_id"):
         return font
-    cost = m.get("cost_usd")
-    tail = f" / 1회 구동 비용 ${cost:.3f}" if cost is not None else ""
-    return f"이 결과는 {m['model_id']} 모델로 생성했으며, {font} (실호출 기준: {_kst(m.get('captured_at'))}{tail})"
+    return f"{font} 결과 출처: {provenance_line(result)}"
 
 
 def summary_line(result: Result) -> str:
@@ -1008,33 +1112,62 @@ def _before_m01(meta: Mapping[str, Any]) -> bool:
     return stamp.tzinfo is not None and stamp < M01_APPLIED_AT
 
 
-def provenance_line(result: Result) -> str:
-    """이 결과가 어디서 왔는지 한 줄(J-04 ③). 재생이어도 실호출 캡처 일시·모델·비용을 적는다."""
+#: 공급자 → 출처 줄의 경유 표기(Q-01-3). 재생·라이브가 같은 함수를 쓴다 — 재생만 다르게 적히는 일이 없게.
+VIA_LABELS: Final[dict[str, str]] = {
+    "gateway": "Amazon Bedrock 경유(대회 제공 게이트웨이)",
+    "bedrock": "Amazon Bedrock",
+    "anthropic": "Anthropic API 직접 호출",
+}
+
+
+def origin_parts(result: Result) -> list[str]:
+    """출처 줄의 꼬리 — 경유 · 모델 · 프롬프트 판본 · 평가기준 · 병렬 · 비용. 값은 결과 메타에서만 읽는다."""
     m = result.meta
-    cost = m.get("cost_usd")
-    tail = f" · 모델 {m.get('model_id') or '미상'}" + (f" · 비용 ${cost:.3f}" if cost is not None else "")
+    parts: list[str] = []
+    provider = m.get("provider")
+    if provider == "anthropic" and m.get("endpoint"):  # ANTHROPIC_BASE_URL 로 다른 곳을 거친 직결 SDK 호출
+        parts.append(f"{m['endpoint']} 경유")
+    elif provider in VIA_LABELS:
+        parts.append(VIA_LABELS[provider])
+    parts.append(m.get("model_id") or "모델 미상")
+    version = m.get("prompt_version")
+    if version:
+        parts.append(f"프롬프트 {version}" + (" (현행)" if version == prompt_version() else " (이전 판)"))
+    elif m.get("source") == "live" and _before_m01(m):
+        parts.append("**M-01 이전 프롬프트**(판정 단계에 기존 안전장치·운전조건 미전달)")
+    if result.records or m.get("criteria_id"):
+        parts.append(f"평가기준 {criteria_label(result_criteria(result))}")
     if (m.get("parallel_calls") or 1) > 1:
-        tail += f" · 병렬 {m['parallel_calls']}"
-    if m.get("endpoint"):
-        tail += f" · {m['endpoint']} 경유"
+        parts.append(f"병렬 {m['parallel_calls']}")
+    cost = m.get("cost_usd")
+    if cost is not None:
+        parts.append(f"비용 ${cost:.3f}")
+    return parts
+
+
+def provenance_line(result: Result) -> str:
+    """이 결과가 어디서 왔는지 한 줄(J-04 ③ · Q-01-3). 재생이어도 실호출 캡처 일시·경유·모델·프롬프트·기준·비용을 적는다."""
+    m = result.meta
     source = m.get("source")
     if m.get("combined"):
+        cost = m.get("cost_usd")
         cost_part = f" · 합계 비용 ${cost:.3f}" if cost is not None else ""
+        vias = sorted({VIA_LABELS.get(str(p), "") for p in m.get("providers") or []} - {""})
+        via_part = f" · {' / '.join(vias)}" if vias else ""
         return (
             f"{m['process']} — 노드 {len(m['nodes'])}개의 실호출 캡처를 노드 순서({m['node']})로 이어 본 재생"
-            f"{cost_part} · 노드마다 캡처 시각·프롬프트가 다릅니다(아래 '노드별 출처')"
+            f"{via_part}{cost_part} · 노드별 캡처 시각·프롬프트는 아래 '노드별 출처'"
         )
     if result.is_gold:
-        return f"전문가 정답지(사람이 직접 작성한 HAZOP) — AI 생성 결과 아님 ({_kst(m.get('captured_at'))} 저장)"
-    if source == "live":
-        stale = " · **M-01 이전 프롬프트**(판정 단계에 기존 안전장치·운전조건 미전달)" if _before_m01(m) else ""
-        return f"{_kst(m.get('captured_at'))} 실호출 캡처를 재생{tail}{stale}"
-    scope = (
-        " · " + QUICK_SCOPE.format(guideword=", ".join(m.get("guidewords") or [])) if source == "quick" else ""
-    )
+        return f"사람이 직접 작성한 HAZOP 워크시트 — AI 생성 결과 아님 ({_kst(m.get('captured_at'))} 저장)"
     if m.get("mock"):
+        scope = " · " + QUICK_SCOPE.format(guideword=", ".join(m.get("guidewords") or [])) if source == "quick" else ""
         return f"mock 실행 — 네트워크 없이 재생 레코드로 생성 경로를 돈 결과 ({_kst(m.get('captured_at'))}){scope}"
-    return f"{_kst(m.get('captured_at'))} 방금 실호출{tail}{scope}"
+    when = f"{_kst(m.get('captured_at'))} " + ("실호출 캡처 재생" if source == "live" else "방금 실호출")
+    tail = " · ".join([when, *origin_parts(result)])
+    if source == "quick":
+        tail += " · " + QUICK_SCOPE.format(guideword=", ".join(m.get("guidewords") or []))
+    return tail
 
 
 def process_view(result: Result) -> dict[str, Any]:
@@ -1055,6 +1188,53 @@ def process_view(result: Result) -> dict[str, Any]:
         "truncated_calls": m.get("truncated_calls"),
         "review": sum(r.confidence == "review" for r in records),
     }
+
+
+def param_range(replays: Mapping[str, Result]) -> tuple[int, int] | None:
+    """저장된 실호출 결과의 노드당 파라미터 수 (최소, 최대) — '회의와 비교' 표가 쓴다(Q-05-2). 열거 기록이 없으면 None."""
+    counts = [len(r.meta["parameters"]) for r in replays.values() if not r.is_gold and r.meta.get("parameters")]
+    return (min(counts), max(counts)) if counts else None
+
+
+def guideword_count(guidewords: list[str]) -> str:
+    """'가이드워드 10종(표준 7 + 절차형 3)' — 결과에 실제로 쓰인 가이드워드를 상수 축으로 나눠 센다(Q-05-1)."""
+    standard = sum(g in STANDARD_GUIDEWORDS for g in guidewords)
+    procedural = sum(g in PROCEDURAL_GUIDEWORDS for g in guidewords)
+    if procedural:
+        return f"가이드워드 {len(guidewords)}종(표준 {standard} + 절차형 {procedural})"
+    return f"가이드워드 {len(guidewords)}종"
+
+
+def calls_line(result: Result) -> str:
+    """'AI 가 한 일' 첫 줄 — 호출 수는 저장된 원시 호출 기록에서. 기록이 없으면 '—' 대신 없다고 적는다(Q-05-3)."""
+    m = result.meta
+    raw = m.get("raw_calls")
+    if raw is None:
+        return "API 호출 기록 없음 — 사람이 작성한 워크시트" if result.is_gold else "API 호출 기록 없음"
+    scope = f" (노드 {len(m['nodes'])}개 합계)" if m.get("combined") else ""
+    parsed = sum(c.get("stage") == "parse" for c in raw)
+    tail = f" — 문장 해석 {parsed}회 포함" if parsed else ""
+    return f"API 호출 {len(raw)}회{scope}{tail} · 재시도 포함 원시 호출 수"
+
+
+def given_lines(result: Result) -> list[str]:
+    """'사용자가 준 것' — 노드 입력. 공정 전체는 노드마다 한 줄(빈 `{}` 를 보이지 않는다, Q-05-3)."""
+    m = result.meta
+    metas = m.get("node_metas") or [m.get("node_meta") or {}]
+    lines = []
+    for meta in metas:
+        if not meta:
+            continue
+        values = [f"물질 {meta.get('substance') or '—'}", f"설비 {', '.join(meta.get('equipment') or []) or '—'}"]
+        if meta.get("P_kPag") is not None:
+            values.append(f"운전압력 {meta['P_kPag']:g} kPag")
+        if meta.get("T_degC") is not None:
+            values.append(f"온도 {meta['T_degC']:g} ℃")
+        guards = meta.get("safeguards") or []
+        values.append(f"안전장치 {len(guards)}개" if guards else ("안전장치 없음(명시)" if meta.get("safeguards_known")
+                                                               else "안전장치 정보 없음"))
+        lines.append(f"**{meta.get('node') or '노드'}** — " + " · ".join(values))
+    return lines or ["노드 입력 기록 없음"]
 
 
 # ── 보기 전환 · 공정 전체 (지시문 X-2·X-3) ────────────────────────────────────
@@ -1159,6 +1339,12 @@ def combine_replays(process: Mapping[str, Any], replays: Mapping[str, Result]) -
         "source": sources.pop() if len(sources) == 1 else "mixed",
         "split": splits.pop() if len(splits) == 1 else "mixed",
         "model_id": models.pop() if len(models) == 1 else None,
+        "providers": sorted({str(m.get("provider")) for m in metas if m.get("provider")}),
+        # Q-05-3: 'AI 가 한 일' 탭이 공정 전체에서도 호출 수·노드 입력을 보인다 — 노드별 값을 이어 붙인다
+        "raw_calls": None if any(m.get("raw_calls") is None for m in metas)
+        else [c for m in metas for c in m["raw_calls"]],
+        "node_metas": [m.get("node_meta") or {} for m in metas],
+        "parameters": list(dict.fromkeys(p for m in metas for p in m.get("parameters") or [])),
         "captured_at": max(str(m.get("captured_at", "")) for m in metas),
         "latency_s": None,
         "cost_usd": None if cost is None else round(cost, 4),
@@ -1218,7 +1404,7 @@ def evaluation_table(results: Mapping[str, Result]) -> list[dict[str, str]]:
                 "recall(m/n)": (
                     f"{recall['recall']:.3f} ({recall['matched']}/{recall['total']})"
                     if recall
-                    else ("전문가 정답지 — 해당 없음" if results[node].is_gold else "—")
+                    else ("사람 작성 — 해당 없음" if results[node].is_gold else "—")
                 ),
             }
         )
@@ -1432,6 +1618,14 @@ def apply_review(
     return kept, log
 
 
+#: Q-06-1 LOPA 명칭 — 화면 버튼·파일명·문서 첫 줄.
+LOPA_LABEL: Final[str] = "LOPA 후보 시나리오 (Word)"
+LOPA_DOCX_NAME: Final[str] = "lopa_candidates.docx"
+LOPA_FIRST_LINE: Final[str] = "S×F 기반 후보 목록 — IPL·PFD·SIL 미산정, LOPA 본 분석은 전문가가 수행"
+LOPA_MD_TITLE: Final[str] = "# LOPA 초안"
+LOPA_TITLE: Final[str] = "# LOPA 후보 시나리오"
+
+
 def export_files(
     result: Result, edits: Mapping[int, Mapping[str, Any]] | None = None
 ) -> dict[str, tuple[str, bytes]]:
@@ -1451,8 +1645,9 @@ def export_files(
         files = {key: (path.name, path.read_bytes()) for key, path in paths.items()}
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
-    # LOPA 초안은 Word 로 내려받는다(사용자 결정 9/29). 내용은 core/export/lopa.py 의 Markdown 그대로.
-    name, markdown = files["lopa"]
-    files["lopa"] = (Path(name).with_suffix(".docx").name, lopa_markdown_to_docx(markdown.decode("utf-8")))
+    # LOPA 는 Word 로 내려받는다(사용자 결정 9/29). 내용은 core/export/lopa.py 의 Markdown 에 이름·첫 줄만 바꾼다 —
+    # IPL·PFD 가 없는 S×F 목록을 'LOPA 초안'이라 부르지 않는다(Q-06-1).
+    markdown = files["lopa"][1].decode("utf-8").replace(LOPA_MD_TITLE, LOPA_TITLE, 1)
+    files["lopa"] = (LOPA_DOCX_NAME, lopa_markdown_to_docx(f"{LOPA_FIRST_LINE}\n\n{markdown}"))
     return files
 

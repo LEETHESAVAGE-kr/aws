@@ -46,6 +46,16 @@ _PARAM_EXAMPLES_PATH: Final[Path] = (
     Path(__file__).parent.parent.parent / "data" / "kb" / "hazop_param_examples.json"
 )
 
+def prompt_version(directory: Path = _PROMPT_DIR) -> str:
+    """생성 프롬프트 판본 — `prompts/*.md` 내용 해시 앞 7자. 재생 캡처와 현행 코드가 같은 프롬프트인지 화면이 비교한다."""
+    import hashlib
+
+    digest = hashlib.sha1()  # noqa: S324 — 식별용(보안 아님)
+    for path in sorted(directory.glob("*.md")):
+        digest.update(path.name.encode() + b"\0" + path.read_bytes().replace(b"\r\n", b"\n"))
+    return digest.hexdigest()[:7]
+
+
 #: 진행 알림(R-11, design §10). `(event, payload)` — event 는 "parameters" | "guideword".
 ProgressCallback = Callable[[str, dict[str, Any]], None]
 

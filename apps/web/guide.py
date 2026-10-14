@@ -8,7 +8,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Final
 
-from core.agent.generate import GUIDEWORD_DEFINITIONS, STANDARD_GUIDEWORDS
+from core.agent.generate import GUIDEWORD_DEFINITIONS, PROCEDURAL_GUIDEWORDS, STANDARD_GUIDEWORDS
+from core.criteria import GOLD_CRITERIA
 from core.policy import load_policy
 
 if TYPE_CHECKING:
@@ -61,8 +62,9 @@ HOW_TO: Final[tuple[tuple[str, tuple[str, ...]], ...]] = (
 
 #: 결과 화면 읽는 법 — (표시, 뜻).
 READING_GUIDE: Final[tuple[tuple[str, str], ...]] = (
-    ("판정 셀 84/84 (누락 0)", "파라미터 12개 × 가이드워드 7종 = 84칸을 모두 판정했다는 뜻. '해당 없음'으로 판정한 칸도 "
-     "센다 — 표에는 해당하는 칸만 행으로 나온다. 회의에서는 지쳐서 칸을 건너뛰는 일이 생기는데, 여기서는 빈칸이 있으면 숫자가 어긋난다."),
+    ("판정 셀 84/84", f"파라미터 12개 × 가이드워드 {len(STANDARD_GUIDEWORDS)}종 = 84칸을 모두 판정했다는 뜻(완전성). "
+     "'해당 없음'으로 판정한 칸도 센다 — 표에는 해당하는 칸만 행으로 나온다. 회의에서는 지쳐서 칸을 건너뛰는 일이 생기는데, "
+     "여기서는 빈칸이 있으면 숫자가 어긋난다. 빠짐없다는 뜻이지 판정이 맞다는 뜻은 아니다 — 맞음은 '다른 팀의 HAZOP 과 대조' 패널이 잰다."),
     ("🟢 문서 2건 이상 인용", "서로 다른 공식 문서(법령·고시·MSDS) 2건 이상의 원문 구절을 인용했고 규칙 검증을 통과한 행"),
     ("🔵 문서 1건 인용", "공식 문서 1건의 원문 구절을 인용했고 규칙 검증을 통과한 행"),
     ("🟡 추론", "인용 없이 모델이 추론한 행"),
@@ -81,6 +83,11 @@ PSM_WHY: Final[tuple[tuple[str, str], ...]] = (
     ("대상", "원유 정제·석유화학 등 7개 업종, 또는 지정 유해·위험물질을 규정량 이상 다루는 사업장(시행령 제43조)."),
     ("목적", "화재·폭발·독성물질 누출처럼 한 번에 여러 사람과 주변 지역까지 피해가 번지는 중대산업사고 예방."),
 )
+#: Q-06-4 법령 KB 범위 — 선박·항만 공정에는 별도 규칙이 적용된다.
+SCOPE_NOTE: Final[str] = (
+    "선박·항만 공정(암모니아 벙커링)은 IMO IGF Code·선급 규칙이 별도로 적용됩니다 — 이 앱의 법령 KB 는 "
+    "산업안전보건법·고압가스법·액화석유가스법과 MSDS 범위입니다(data/kb)."
+)
 #: 보고서가 쓰이는 흐름 — (단계, 내용, 조문).
 PSM_FLOW: Final[tuple[tuple[str, str, str], ...]] = (
     ("① 작성", "설비를 가동하기 전에 사업주가 작성 — 산업안전보건위원회 심의(없으면 근로자대표 의견)", "법 제44조"),
@@ -95,13 +102,24 @@ def psm_flow_rows() -> list[dict[str, str]]:
     return [{"단계": s, "내용": c, "근거": law} for s, c, law in PSM_FLOW]
 
 
+#: 가이드워드 수 — 화면 어디서나 이 상수에서(Q-05-1). 7 인지 10 인지는 코드가 답한다.
+GUIDEWORD_COUNT: Final[str] = f"표준 {len(STANDARD_GUIDEWORDS)}종 (절차가 있는 노드는 +{len(PROCEDURAL_GUIDEWORDS)}종)"
+GUIDEWORD_TAB: Final[str] = f"② 가이드워드 {len(STANDARD_GUIDEWORDS)}+{len(PROCEDURAL_GUIDEWORDS)}종"
+
+
+def process_table(param_range: tuple[int, int] | None) -> str:
+    """'회의와 비교' 표 — 노드당 파라미터 수는 저장된 실호출 결과의 최소~최대(Q-05-2). 없으면 범위를 적지 않는다."""
+    params = f"노드당 {param_range[0]}–{param_range[1]}개(저장된 실호출 결과)" if param_range else "노드마다 다름"
+    return PROCESS_TABLE.replace("{params}", params)
+
+
 PROCESS_TABLE: Final[str] = (
     "| 단계 | 기존 HAZOP 회의 | 이 앱 |\n|---|---|---|\n"
     "| 노드 정의 | 사람 (P&ID 도면을 보고 구간을 나눔) | 사람 — 문장 한 문단 또는 JSON |\n"
-    "| 파라미터 도출 | 팀 브레인스토밍 | AI 1회 호출, 노드당 8–12개 |\n"
+    "| 파라미터 도출 | 팀 브레인스토밍 | AI 1회 호출, {params} |\n"
     "| 가이드워드 전 셀 판정 | 셀마다 토론, 지치면 건너뛰는 칸이 생김 | AI 가 가이드워드별로 동시에 판정, 셀 누락 0 |\n"
     "| 원인·결과·안전장치·심각도·빈도·권고 | 서기가 회의 중 기록 | 초안 자동, 신뢰도 배지 + 규칙 검증기 |\n"
-    "| 워크시트·LOPA 문서화 | 회의 후 수일 | 즉시 xlsx(5시트)·LOPA docx·신뢰도 JSON |\n"
+    "| 워크시트·LOPA 문서화 | 회의 후 수일 | 즉시 xlsx·LOPA 후보 시나리오 docx·신뢰도 JSON (LOPA 본 분석은 전문가) |\n"
     "| 검토·승인 | 회의 참석자 | **사람** — 이 앱은 이 단계를 대신하지 않는다 |"
 )
 
@@ -110,6 +128,9 @@ def criteria_caption(criteria: Criteria) -> str:
     """기준 한 줄 설명 — 단계 수·산정 방식·출처(Y-2). 단계 수는 원문 그대로라 기준마다 다르다."""
     how = "곱한 값" if criteria.method == "product" else "대조표에서 찾은 값(곱이 아님)"
     src = criteria.data.get("locator") or ""
+    if criteria.id == GOLD_CRITERIA:  # 팀 사업장 기준 — 내부 워크시트 이름은 화면에 쓰지 않는다(Q-02)
+        return (f"심각도 {criteria.s_max}단계 · 빈도 {criteria.f_max}단계 — 위험도는 심각도·빈도를 {how}. "
+                "출처: 팀이 NH3 선박 벙커링 사업장 평가에 쓴 기준표(공식 기준 아님) — 10/14 이전 저장 사례 일부가 이 기준입니다.")
     return (f"심각도 {criteria.s_max}단계 · 빈도 {criteria.f_max}단계 — 위험도는 심각도·빈도를 {how}. "
             f"출처: {criteria.data.get('issuer')} {criteria.data.get('doc')} {src}".strip())
 

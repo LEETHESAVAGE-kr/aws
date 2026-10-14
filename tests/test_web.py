@@ -183,7 +183,7 @@ def test_uncaptured_nodes_are_absent_and_not_counted(tmp_path: Path) -> None:
     assert "N2" not in replays and "N4" not in replays
     table = service.evaluation_table(replays)
     assert [r["노드"].split()[0] for r in table[:-1]] == ["N1", "N3"]
-    assert table[1]["recall(m/n)"] == "전문가 정답지 — 해당 없음"  # 골드 재생은 측정이 아니다
+    assert table[1]["recall(m/n)"] == "사람 작성 — 해당 없음"  # 골드 재생은 측정이 아니다(Q-02: 화면 문구에 정답지 없음)
     assert "측정 노드 없음" in table[-1]["노드"] and table[-1]["recall(m/n)"] == "—"
     (tmp_path / "n1.json").unlink()
     with pytest.raises(FileNotFoundError):

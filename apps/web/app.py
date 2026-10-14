@@ -296,7 +296,7 @@ intro.html(
       <div class="hz-step"><b>2</b><div><strong>AI 가 HAZOP 표 만들기 · 약 1.5–2분</strong>
         <span>점검할 항목을 스스로 정하고, 벗어나는 경우마다 원인·결과·심각도·빈도·권고를 씁니다</span></div></div>
       <div class="hz-step"><b>3</b><div><strong>검토하고 내려받기</strong>
-        <span>표를 읽고 채택·기각·수정 → Excel 워크시트 · LOPA 초안 Word · 신뢰도 리포트</span></div></div>
+        <span>표를 읽고 채택·기각·수정 → Excel 워크시트 · LOPA 후보 시나리오 Word · 신뢰도 리포트</span></div></div>
     </div>"""
 )
 
@@ -479,7 +479,7 @@ with tool.container(border=True, key="tool"):
         else:
             st.caption(
                 f"이 세션 남은 횟수 {left_runs}/{service.SESSION_LIMIT} · "
-                "문장 해석 → 파라미터 열거 → 가이드워드 7종 판정(병렬) · "
+                f"문장 해석 → 파라미터 열거 → 가이드워드 {guide.GUIDEWORD_COUNT} 판정(병렬) · "
                 f"{service.LIVE_NOTE.split(' · ', 1)[1]}"
                 + (
                     " · mock 모드 — 네트워크 없이 재생 레코드로 생성 경로를 돕니다."
@@ -489,18 +489,16 @@ with tool.container(border=True, key="tool"):
             )
     else:
         st.html(
-            '<p class="hz-card-sub">9/29 에 실제로 생성한 결과를 그대로 다시 보여줍니다(재생성 아님).</p>'
+            '<p class="hz-card-sub">실제로 생성해 저장해 둔 결과를 그대로 다시 보여줍니다(재생성 아님). '
+            "언제·어디서·어떤 프롬프트로 만들었는지는 결과 위 출처 줄에 있습니다.</p>"
         )
         names = [p["name"] for p in service.CATALOG]
         choice = st.selectbox("공정", names, key="process_name", label_visibility="collapsed")
         process = next(p for p in service.CATALOG if p["name"] == choice)
-        if process.get("reference"):  # 지시문 W — 외부 공개 HAZOP 대조(골드셋 아님)
+        if process.get("reference"):  # 지시문 W — 외부 공개 HAZOP 대조
             st.markdown(f":blue-background[공개 HAZOP 대조 · 외부 팀 작성] {process['description']}")
-        elif process["gold"]:
-            st.markdown(
-                ":green-background[전문가 정답지 34건] 액체 암모니아(NH3) 이송 — "
-                "전문가가 직접 수행한 HAZOP 34건이 있는 공정입니다."
-            )
+        elif process["gold"]:  # Q-02: 내부 워크시트는 화면에서 가리키지 않는다 — `gold` 플래그는 코드만 쓴다
+            st.markdown(f":violet-background[실호출 결과 저장] {process['description']}")
         else:
             st.markdown(f":orange-background[예시 공정 · 정성 검토용] {process['description']}")
         node_ids = [n["id"] for n in process["nodes"]]
@@ -567,7 +565,7 @@ else:
     cells = service.cells_label(result)
     tiles = [
         ("이탈 시나리오", f"{len(result.records)}건"),
-        ("판정 셀 (누락 0)", cells),
+        (service.CELLS_TILE, cells),
         ("소요 시간", "—" if view["latency_s"] is None else f"{view['latency_s']:.0f}초"),
         ("비용", "—" if view["cost_usd"] is None else f"${view['cost_usd']:.2f}"),
     ]
@@ -575,6 +573,19 @@ else:
         tiles = [t for t in tiles if t[0] != "소요 시간"]
     for column, (label, value) in zip(st.columns(len(tiles)), tiles, strict=True):
         column.metric(label, value)
+        if label == service.CELLS_TILE:  # Q-02-5 — 완전성이지 정확도가 아니다. 정확도는 아래 패널
+            column.caption(service.CELLS_TILE_SUB)
+    ref_line = service.reference_line(result)
+    if ref_line:
+        st.caption(ref_line)
+    ext = service.external_eval()
+    with st.expander(service.EXTERNAL_PANEL_TITLE, expanded=False):  # Q-02 — 앱 전체 성능(이 노드 성능 아님)
+        st.markdown(f"**{ext['head']}**  \n{ext['question']}")
+        st.table(ext["rows"], hide_index=True, border="horizontal")  # 고정 표 — 편집·정렬할 것이 없다
+        st.markdown(ext["total"])
+        st.caption(ext["low_reason"])
+        for line in ext["fine_print"]:
+            st.caption(line)
 
     # 검토 표(export-formats R-10): 편집 상태를 표보다 먼저 읽어 다운로드에 반영한다. 키에 결과 식별을 넣어
     # 새 결과가 오면 이전 편집이 엉뚱한 행에 붙지 않게 한다. 골드 재생은 사람 작성이라 검토 대상이 아니다.
@@ -603,7 +614,7 @@ else:
     }
     labels = {
         "xlsx": "Excel 워크시트",
-        "lopa": "LOPA 초안 (Word)",
+        "lopa": service.LOPA_LABEL,
         "report": "신뢰도 리포트 (JSON)",
     }
     for column, key in zip(st.columns(3), ("xlsx", "lopa", "report"), strict=True):
@@ -616,9 +627,12 @@ else:
     with sheet_tab:
         # verifier 시연(O-3): 표·요약 줄만 삽입 사본으로. 다운로드는 위에서 원본 `result` 로 만들었다.
         shown = result
-        if not result.is_gold and st.checkbox(service.DEMO_TOGGLE_LABEL, key="verifier_demo"):
+        if not result.is_gold and st.checkbox(service.DEMO_TOGGLE_LABEL, key="verifier_demo",
+                                              help=service.VERIFIER_SCOPE):
             shown = service.demo_injected(result)
             st.markdown(service.DEMO_BANNER)
+        if not result.is_gold:
+            st.caption(service.VERIFIER_SCOPE)
         st.caption(service.summary_line(shown))
         # X-2 보기 전환 — 표시 순서만 바꾼다. 검토 편집은 워크시트 순서에서만(편집 키가 행 인덱스라서).
         # 위젯 키에 상태로 값을 넣어 두면 처음 그릴 때 화면 선택 표시가 그 값을 따르지 않는다(10/8 브라우저 확인,
@@ -740,28 +754,27 @@ else:
             counts = {v: sum(e[1] == v for e in review_log) for v in ("채택", "수정", "기각")}
             st.caption(" · ".join(f"{k} {n}건" for k, n in counts.items()) + " — 다운로드에 반영됨")
     with process_tab:
-        calls = "—" if view["api_calls"] is None else f"{view['api_calls']}회"
-        st.markdown(f"API 호출 {calls}")
-        node_meta = result.meta.get("node_meta", {})
+        st.markdown(service.calls_line(result))  # Q-05-3 저장된 원시 호출 기록에서 — '—' 를 보이지 않는다
+        combined = bool(result.meta.get("combined"))
         left, right = st.columns(2)
         with left, st.container(border=True):
-            kind = "문장" if result.meta.get("node_text") else "항목 선택"
-            st.markdown(
-                f"**사용자가 준 것 ({kind})** — 노드({node_meta.get('node') or '—'}), "
-                f"취급 물질({node_meta.get('substance') or '—'}), "
-                f"대상 설비({', '.join(node_meta.get('equipment') or []) or '—'})"
-            )
+            kind = "문장" if result.meta.get("node_text") else ("노드별 입력" if combined else "항목 선택")
+            st.markdown(f"**사용자가 준 것 ({kind})**\n" + "\n".join(f"- {line}" for line in service.given_lines(result)))
             if result.meta.get("node_text"):
                 st.code(result.meta["node_text"], language=None, wrap_lines=True)
                 st.caption(
                     f"→ {result.meta.get('parse_model')} 1회로 해석 — 설명에 없는 수치는 비워 둠"
                 )
-            st.json(node_meta, expanded=False)
+            if result.meta.get("node_meta"):
+                st.json(result.meta["node_meta"], expanded=False)
         with right, st.container(border=True):
+            params = view["parameters"]
+            param_text = (f"**파라미터 {len(params)}개**(노드 {len(result.meta['nodes'])}개 합집합)" if combined
+                          else f"**파라미터 {len(params)}개**")
             st.markdown(
                 "**AI 가 만든 것**\n"
-                f"1. **파라미터 {len(view['parameters'])}개**: {' · '.join(view['parameters'])}\n"
-                f"2. **가이드워드 {len(view['guidewords'])}종**({' · '.join(view['guidewords'])})을 교차 적용해 "
+                f"1. {param_text}: {' · '.join(params)}\n"
+                f"2. **{service.guideword_count(view['guidewords'])}**({' · '.join(view['guidewords'])})을 교차 적용해 "
                 f"매트릭스 셀 **{cells}** 을 빠짐없이 판정\n"
                 "3. 셀마다 원인·결과·기존 안전장치·심각도·빈도·위험도·권고 초안, 근거 없는 규격 번호·수치는 🔴 표시"
             )
@@ -812,7 +825,7 @@ for column, (title, headline, rows) in zip(st.columns(3), INTRO_CARDS, strict=Tr
     )
 st.html('<div style="height:14px"></div>')
 howto_tab, example_tab, gw_tab, risk_tab, read_tab, compare_tab, psm_tab = st.tabs(
-    ["⓪ 이렇게 쓰세요", "① 한 줄이 만들어지는 과정", "② 가이드워드 7종", "③ 위험도 (심각도·빈도)", "④ 결과 화면 읽는 법", "⑤ 회의와 비교",
+    ["⓪ 이렇게 쓰세요", "① 한 줄이 만들어지는 과정", guide.GUIDEWORD_TAB, "③ 위험도 (심각도·빈도)", "④ 결과 화면 읽는 법", "⑤ 회의와 비교",
      "⑥ 공정안전보고서와 HAZOP"]
 )
 with howto_tab:
@@ -837,14 +850,16 @@ with example_tab:
 with gw_tab:
     st.caption("가이드워드는 '어느 방향으로 벗어나는가'를 가리키는 정해진 단어입니다. 파라미터와 붙여 읽습니다(More + 압력 = 압력 과다).")
     st.table(guide.guideword_rows(), hide_index=True, border="horizontal")
-    st.caption("절차(기동·정지·운전 순서)가 있는 노드에는 Too early · Too late · Wrong action 3종이 더 붙습니다.")
+    st.caption(f"절차(기동·정지·운전 순서)가 있는 노드에는 {' · '.join(PROCEDURAL_GUIDEWORDS)} "
+               f"{len(PROCEDURAL_GUIDEWORDS)}종이 더 붙습니다.")
 with risk_tab:
     st.caption(
         "심각도와 빈도를 등급으로 매기고, 둘을 조합한 값이 위험도입니다. 위험도가 높은 줄부터 대책을 세웁니다. "
-        "기준은 결과마다 하나입니다 — 직접 입력은 KOSHA C-C-37(공식 HAZOP 기술지원규정), NH3 정답지 노드는 그 정답지의 평가기준. "
+        "기준은 결과마다 하나입니다 — 새로 만드는 결과는 KOSHA C-C-37(공식 HAZOP 기술지원규정). 10/14 이전에 저장한 일부 사례는 "
+        "NH3 벙커링 사업장 기준으로 매겼고, 결과 위 출처 줄에 어느 기준인지 적혀 있습니다. "
         "기준마다 단계 수와 계산법이 달라 섞거나 평균내지 않습니다."
     )
-    crit_by_name = {c.short: c for c in service.all_criteria()}
+    crit_by_name = {service.criteria_label(c): c for c in service.all_criteria()}
     shown = crit_by_name[st.radio("평가기준", list(crit_by_name), horizontal=True, key="guide_criteria")]
     st.caption(guide.criteria_caption(shown))
     st.table(guide.criteria_rating_rows(shown), hide_index=True, border="horizontal")
@@ -864,9 +879,9 @@ with read_tab:
         + "</div>"
     )
 with compare_tab:
-    st.markdown(guide.PROCESS_TABLE)
+    st.markdown(guide.process_table(service.param_range(replays)))
     st.caption(
-        "실측: 노드 1건 약 1.5–2분 · 약 $0.75 (2026-10-08, 가이드워드 7종 동시 판정, 3회 79–126초). "
+        "실측: 노드 1건 약 1.5–2분 · 약 $0.75 (2026-10-08, 표준 가이드워드 동시 판정, 3회 79–126초). "
         "회의 시간 단축을 잰 것은 아닙니다 — 이 앱이 만드는 것은 회의에서 검토할 초안입니다."
     )
 
@@ -877,6 +892,7 @@ with psm_tab:
         + "".join(f"<div class='hz-info-r'><span style='width:110px'>{k}</span><b style='flex:1'>{v}</b></div>" for k, v in guide.PSM_WHY)
         + "</div>"
     )
+    st.caption(guide.SCOPE_NOTE)  # Q-06-4 선박·항만 규칙은 범위 밖
     st.markdown("**보고서가 쓰이는 흐름**")
     st.table(guide.psm_flow_rows(), hide_index=True, border="horizontal")
     st.caption(
