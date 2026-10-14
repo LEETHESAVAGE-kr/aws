@@ -197,6 +197,9 @@ def capture_live(
         "evidence_k": gen_config.evidence_k,
         "inference_boundary": gen_config.inference_boundary,
         "frequency_basis": gen_config.frequency_basis,
+        # 지시문 S-5-1: 설정 플래그와 실제로 켜졌는지(공식 기준 + 빈도 근거일 때만 듣는다)를 둘 다 남긴다
+        "ipl_credit": gen_config.ipl_credit,
+        "ipl_credit_effective": generator.ipl_credit,
         "node_meta": NODE_METAS[node].model_dump(),
         "latency_s": round(latency, 1),
         "cost_usd": round(generator.total_cost_usd, 4),
@@ -226,7 +229,12 @@ def main(argv: list[str] | None = None) -> int:
                         help="S·F 평가기준(기본: 앱 실호출과 같은 공식 기준)")
     parser.add_argument("--split", choices=sorted(GOLD_PATHS), default=None,
                         help="골드 파일 선택(기본: N1=tune, 그 외 골드 노드=holdout). 골드 없는 노드는 항상 none")
+    parser.add_argument("--safeguards", default=None,
+                        help="지시문 T: 노드 입력의 기존 안전장치를 이 목록(쉼표 구분)으로 바꿔 캡처(예: N2_sg)")
     args = parser.parse_args(argv)
+    if args.safeguards is not None:  # 저장 메타·레코드의 node_meta 도 바뀐 값으로 남는다
+        names = [s.strip() for s in args.safeguards.split(",") if s.strip()]
+        NODE_METAS[args.node] = NODE_METAS[args.node].model_copy(update={"safeguards": names})
     split = (args.split or default_split(args.node)) if args.node in GOLD_NODES else default_split(args.node)
     logging.basicConfig(
         level=logging.INFO, format="%(asctime)s | %(levelname)-8s | %(name)s | %(message)s"

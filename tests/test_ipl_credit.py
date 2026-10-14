@@ -271,3 +271,35 @@ def test_app_shows_credit(monkeypatch: pytest.MonkeyPatch, credited: list[dict[s
     if not credited:
         assert "→" not in full.split("<tbody>")[1]  # 인정 0 이면 화살표 없이 값 하나
     assert any("IPL 적격 장치가 적습니다" in c.value for c in at.caption)  # 안전장치 입력 있음 + F=3 몰림
+
+
+# ── S-5 재캡처 준비 ───────────────────────────────────────────────────────────
+def test_capture_records_ipl_flag_and_safeguard_override(tmp_path: Any, monkeypatch: pytest.MonkeyPatch) -> None:
+    from apps.web import service
+    from apps.web.replay import load_replays
+    from tools import capture_replay
+
+    client = MockBedrockClient(response_factory=service._mock_factory(load_replays()["N1"]))
+    monkeypatch.setattr(capture_replay, "get_bedrock_client", lambda: client)
+    monkeypatch.setitem(capture_replay.NODE_METAS, "N2", capture_replay.NODE_METAS["N2"])  # 덮어쓰기를 시험 뒤 되돌린다
+    out = tmp_path / "n2_sg.json"
+    assert capture_replay.main(["--node", "N2", "--out", str(out), "--safeguards", ",".join(_D1_N2)]) == 0
+    saved = json.loads(out.read_text(encoding="utf-8"))
+    assert saved["ipl_credit"] is True and saved["ipl_credit_effective"] is True
+    assert saved["node_meta"]["safeguards"] == _D1_N2
+    assert all("ipl_credited" in r for r in saved["records"] if r.get("status") != "insufficient")
+
+
+def test_extract_ipl_rows(tmp_path: Any) -> None:
+    from apps.web.replay import Result
+    from tools import extract_ipl_rows
+
+    path = tmp_path / "r.json"
+    result = _credit_result(_TWO)
+    path.write_text(json.dumps({"node": "X1", "records": [r.model_dump(mode="json") for r in result.records]},
+                               ensure_ascii=False), encoding="utf-8")
+    assert isinstance(result, Result)
+    rows = extract_ipl_rows.extract([path], limit=20)
+    assert len(rows) == 1 and rows[0]["빈도"] == "3→1" and "안전밸브(예방)" in rows[0]["인정 IPL"]
+    md = extract_ipl_rows.to_markdown(rows)
+    assert md.splitlines()[0].startswith("| # | 파일 |") and "동의" in md.splitlines()[0]
