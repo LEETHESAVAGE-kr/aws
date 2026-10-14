@@ -126,7 +126,8 @@ def test_concentration_warning_above_limit_only() -> None:
     crowded = _result([2] * 8 + [1, 3])  # 80%
     spread = _result([2] * 7 + [1, 3, 3])  # 70% — 기준 이하
     assert service.f_concentration(crowded) == pytest.approx(0.8)
-    assert service.concentration_warning(crowded) == service.CONCENTRATION_WARNING
+    # 입력에 안전장치가 있는데도 몰림 → '없어서'가 아니라 IPL 적격 장치가 적다는 문구(지시문 S-4-4)
+    assert service.concentration_warning(crowded) == service.CONCENTRATION_WARNING_IPL
     assert service.concentration_warning(spread) is None
     html = service.distribution_html(crowded)
     assert html and "빈도" in html and "2·8" in html and "심각도" in html and "위험도" in html
