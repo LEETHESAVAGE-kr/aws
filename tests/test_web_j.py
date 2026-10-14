@@ -84,6 +84,7 @@ def test_capture_non_gold_node_saves_null_recall(tmp_path: Path, monkeypatch: py
     assert capture_replay.default_split("N2") == "holdout"
     client = service.MockBedrockClient(response_factory=service._mock_factory(load_replays()["N1"]))
     monkeypatch.setattr(capture_replay, "get_bedrock_client", lambda: client)
+    monkeypatch.delenv("HAZOP_REPLAY_BEFORE", raising=False)  # 방금 찍은(오늘 날짜) 캡처를 다시 읽는다
     out = tmp_path / "p1.json"
     # --split 을 줘도 골드 없는 노드는 none 으로 고정된다.
     assert capture_replay.main(["--node", "P1", "--out", str(out), "--source", "live", "--split", "holdout"]) == 0

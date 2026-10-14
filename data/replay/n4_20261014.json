@@ -1,0 +1,4556 @@
+{
+  "schema_version": 1,
+  "source": "live",
+  "captured_at": "2026-10-14T04:06:50+00:00",
+  "node": "N4",
+  "split": "holdout",
+  "provider": "gateway",
+  "model_id": "bedrock-claude-opus-4-8",
+  "gateway": "https://52.79.201.46/v1",
+  "endpoint": "대회 AI 게이트웨이",
+  "prompt_version": "80e65c4",
+  "criteria_id": "kosha_cc37_2026",
+  "evidence_k": 2,
+  "inference_boundary": true,
+  "frequency_basis": true,
+  "node_meta": {
+    "node": "N4",
+    "substance": "NH3",
+    "phase": "unknown",
+    "P_kPag": null,
+    "T_degC": null,
+    "design_P_kPag": null,
+    "capacity": null,
+    "equipment": [
+      "이송 운전 절차"
+    ],
+    "safeguards": [],
+    "safeguards_known": false
+  },
+  "latency_s": 116.0,
+  "cost_usd": 1.4522,
+  "expected_cells": 120,
+  "judged_cells": 120,
+  "review_guidewords": [],
+  "recall": {
+    "recall": 0.0,
+    "matched": 0,
+    "total": 10
+  },
+  "parameters": [
+    "유량",
+    "압력",
+    "온도",
+    "준위",
+    "조성",
+    "상 변화",
+    "이송 순서 절차",
+    "기동정지",
+    "시간",
+    "격리 및 누출",
+    "유틸리티",
+    "유지보수"
+  ],
+  "max_tokens": 16384,
+  "parallel_calls": 7,
+  "raw_calls": [
+    {
+      "tokens_out": 985,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T04:05:12+00:00"
+    },
+    {
+      "tokens_out": 1819,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T04:05:48+00:00"
+    },
+    {
+      "tokens_out": 3165,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T04:06:05+00:00"
+    },
+    {
+      "tokens_out": 3190,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T04:06:06+00:00"
+    },
+    {
+      "tokens_out": 3348,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T04:06:08+00:00"
+    },
+    {
+      "tokens_out": 4008,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T04:06:15+00:00"
+    },
+    {
+      "tokens_out": 4928,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T04:06:27+00:00"
+    },
+    {
+      "tokens_out": 5012,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T04:06:28+00:00"
+    },
+    {
+      "tokens_out": 4787,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T04:06:43+00:00"
+    },
+    {
+      "tokens_out": 3238,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T04:06:46+00:00"
+    },
+    {
+      "tokens_out": 3161,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T04:06:50+00:00"
+    }
+  ],
+  "truncated_calls": 0,
+  "records": [
+    {
+      "id": "n4-001",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "유량",
+      "deviation": "이송 절차를 개시했으나 송출측에서 수용측으로 암모니아 유량이 전혀 발생하지 않음(무유량)",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "이송 구동방식(펌프/가압) 유무",
+        "라인업 밸브 구성",
+        "기존 안전장치의 존재·작동"
+      ]
+    },
+    {
+      "id": "n4-002",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "유량",
+      "deviation": "이송 유량이 설계 의도보다 과다하게 증가하여 수용측으로 과잉 이송됨",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "유량 제어·감시 안전장치의 존재 여부",
+        "설비 용량·설계 유량",
+        "절차서상 유량 설정 단계"
+      ]
+    },
+    {
+      "id": "n4-003",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "유량",
+      "deviation": "이송 중 암모니아 이송 유량이 설계 의도보다 낮게 유지되어, 수용측으로의 액 이동이 지연·부족한 상태",
+      "causes": [
+        "이송 구동원(펌프/압축)의 토출 저하",
+        "라인업 밸브의 부분 개방 또는 순서 착오로 유로 저항 증가",
+        "스트레이너·필터 폐색"
+      ],
+      "consequences": [
+        "이송 시간 과도 연장으로 절차 완결 지연",
+        "유량 부족에 따른 수용측 고갈 또는 이송 미완결",
+        "저유량 운전 지속 시 구동설비 과열·손상"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "이송 유량 지시·저유량 경보 설정",
+        "이송 전 라인업 체크리스트로 밸브 개도 확인",
+        "스트레이너 차압 감시"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-004",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "유량",
+      "deviation": "이송 중 유체가 수용측에서 송출측으로 역류하여 설계 이송 방향과 반대로 흐름",
+      "causes": [
+        "송출측·수용측 간 압력역전으로 수용측 압력이 송출측보다 높아짐",
+        "이송 종료·펌프 정지 시 역류를 막는 조작 누락",
+        "밸브 라인업 순서 착오로 역류 경로가 열림"
+      ],
+      "consequences": [
+        "독성·가연성 암모니아가 의도치 않은 라인·용기로 역이송되어 오염 및 과충전",
+        "역류에 의한 송출측 설비 손상 및 암모니아 누출로 인한 독성 노출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "이송 라인에 역류방지밸브(체크밸브) 설치 여부 확인 및 보완",
+        "이송 종료·펌프 정지 시 격리밸브 폐쇄 순서를 절차서에 명시"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "호스와 호스 외의 관 및 호스 간의 접속부분에는 접속용구를 사용하여 누출이 없도록 확실히 접속할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-005",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "유량",
+      "deviation": "이송 유량이 설계 의도의 일부만 달성되어 부분 유량 상태로 송출된다",
+      "causes": [
+        "라인업 순서 착오로 일부 밸브만 개방",
+        "조기 조작으로 유로 일부만 형성된 상태에서 이송 개시"
+      ],
+      "consequences": [
+        "수용측으로의 이송량 부족으로 공정 불균형",
+        "부분 유로에서의 과압 또는 국부 압력 상승으로 라인·연결부 손상 및 독성·가연성 NH3 누출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "이송 전 라인업 체크리스트와 개방 밸브 상태 확인 단계 도입",
+        "유량 지시·확인 수단으로 부분 유량 조기 감지"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-006",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "유량",
+      "deviation": "설계 의도된 NH3 이송 경로에 더해, 분기 라인이나 미격리 경로를 통해 추가 유로로 암모니아가 동시에 흐른다.",
+      "causes": [
+        "라인업 순서 착오로 의도치 않은 분기 밸브가 함께 열림",
+        "절체(절환) 조작 중 기존 경로를 닫기 전 신규 경로를 개방"
+      ],
+      "consequences": [
+        "의도하지 않은 용기·라인으로 독성·가연성 암모니아가 유입되어 노출·누출 경로 형성",
+        "수용측 과충전 또는 비정상 압력 거동으로 설비 손상"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "이송 전 라인업 체크리스트 및 밸브 위치 2인 확인 절차 수립",
+        "분기 경로 격리 상태 확인 단계를 절차서에 명시"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-007",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Too early",
+      "parameter": "유량",
+      "deviation": "라인업·개방이 완료되기 전 정해진 시점보다 이르게 이송 흐름을 개시하여 수용측·라인이 준비되지 않은 상태에서 암모니아가 흐른다",
+      "causes": [
+        "밸브 라인업 완료 확인 전 조기 이송 개시(순서 착오)",
+        "선행 조작 단계 생략 후 흐름 개통"
+      ],
+      "consequences": [
+        "닫힌 밸브·미개방 경로를 향한 흐름으로 라인 과압 및 접속부 손상",
+        "독성·가연성 암모니아의 누출·확산 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "라인업 완료 확인 전 이송 개시를 금지하는 단계별 체크 절차 수립",
+        "선행 단계 완료 확인 후에만 흐름 개시가 가능한 순서 연동"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-008",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Too late",
+      "parameter": "유량",
+      "deviation": "이송 개시가 정해진 시점보다 늦어 설계 의도대로의 이송 유량 확보가 지연된다",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "절차서상 유량 확보 시점",
+        "이송 구동 설비 사양"
+      ]
+    },
+    {
+      "id": "n4-009",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Wrong action",
+      "parameter": "유량",
+      "deviation": "이송 중 밸브·펌프 조작을 정해진 것과 다르게 수행하여 설계 의도와 다른 이송 유량(과대·과소)으로 운전됨",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "절차서 내용",
+        "입력에 없는 안전장치의 존재·작동 여부"
+      ]
+    },
+    {
+      "id": "n4-010",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "압력",
+      "deviation": "이송 라인에 설계 의도상의 이송 추진 압력이 전혀 형성되지 않음",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "이송 추진 압력원 유무",
+        "설계압력 수치",
+        "압력 관련 안전장치"
+      ]
+    },
+    {
+      "id": "n4-011",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "압력",
+      "deviation": "이송 중 라인·수용측 압력이 설계압력을 초과하는 과압 상태",
+      "causes": [
+        "이송 라인 하류 밸브 폐쇄 상태에서의 가압 이송(라인업 순서 착오)",
+        "액화 NH3의 온도 상승에 따른 증기압 증가로 라인 과압",
+        "이송 구동압이 과도하게 걸린 상태로 조작"
+      ],
+      "consequences": [
+        "라인·연결부·용기 과압에 따른 파열 또는 접속부 이탈",
+        "독성·가연성 NH3의 대량 누출로 작업자 중독·화재 위험",
+        "과압으로 인한 설비 손상 및 운전 중단"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "운전자가 보기 쉬운 위치의 압력계 설치 및 운전자 지정 감시",
+        "라인 과압 시 작동하는 과압방지장치 설치",
+        "사용정격압력 표시 및 초과 압송 금지 절차 명문화",
+        "이송 전 라인업 순서 확인 체크리스트 적용"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "호스 내부에 이상압력이 가하여져 위험할 경우에는 압송에 사용하는 설비에 과압방지장치를 설치할 것"
+        },
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "호스에 사용정격압력을 표시하고 그 사용정격압력을 초과하여 압송하지 아니할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-012",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "압력",
+      "deviation": "이송 중 라인·용기 압력이 설계 의도보다 낮아져 부압·압력 손실이 발생하는 상태",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "이송 압력 수치",
+        "설계압력",
+        "입력에 없는 과압/부압 방지장치 유무"
+      ]
+    },
+    {
+      "id": "n4-013",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "압력",
+      "deviation": "수용측 압력이 송출측보다 높아져 압력구배가 반대로 작용함",
+      "causes": [
+        "수용측 용기의 가압 상태 또는 온도 상승에 의한 증기압 상승",
+        "송출측 압력 저하와 수용측 과압이 동시에 발생"
+      ],
+      "consequences": [
+        "역방향 압력으로 송출측 설비·연결부가 설계 의도와 반대로 가압되어 손상 및 암모니아 누출",
+        "독성 암모니아 누출로 인한 인체 노출 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "송출측·수용측 압력 감시 및 압력역전 경보 설정 여부 확인",
+        "과압방지장치 설치 여부 점검"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "호스 내부에 이상압력이 가하여져 위험할 경우에는 압송에 사용하는 설비에 과압방지장치를 설치할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-014",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "압력",
+      "deviation": "이송 중 설계 압력 조건의 일부만 형성되어 과압 또는 압력 손실이 국부적으로 공존한다",
+      "causes": [
+        "밸브 라인업 순서 착오로 일부 구간만 가압",
+        "조기·지연 조작으로 폐구간에 압력이 갇힘"
+      ],
+      "consequences": [
+        "폐구간 과압으로 라인·연결부 파손 및 독성·가연성 NH3 대기 누출",
+        "일부 구간 저압으로 이송 성립 실패"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "폐구간 발생을 막는 라인업 순서 명문화",
+        "과압 방지 수단 및 압력 감시 적용 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-015",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "압력",
+      "deviation": "정상 이송 압력에 더해, 설계 의도에 없던 추가 압력원(타 계통 가압·질소 압력 등)이 라인에 중첩된다.",
+      "causes": [
+        "라인업 착오로 가압 유틸리티 계통이 이송 라인과 연결됨",
+        "절체 조작 순서 오류로 폐쇄 구간에 가압원이 걸림"
+      ],
+      "consequences": [
+        "라인·용기에 설계 의도 외 과압이 중첩되어 연결부 파손·암모니아 누출",
+        "독성·가연성 가스 방출로 인한 인명 노출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "이송 라인과 가압 유틸리티 간 격리·역류방지 상태 확인 절차 반영",
+        "가압원 중첩 방지를 위한 밸브 라인업 인터록 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-016",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Too early",
+      "parameter": "압력",
+      "deviation": "경로가 완전히 개방되기 전 이른 가압으로 폐쇄 구간에 압력이 갇혀 상승한다",
+      "causes": [
+        "수용측 밸브 개방 전 조기 가압 개시",
+        "격리 밸브가 닫힌 상태에서 이른 송출 조작"
+      ],
+      "consequences": [
+        "폐쇄 구간 과압으로 라인·접속부 파손",
+        "접속부 파손 시 암모니아 분출·확산"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "과압방지장치 설치 여부 확인 및 미설치 시 설치",
+        "가압 전 경로 전체 개방 상태 확인 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "호스 내부에 이상압력이 가하여져 위험할 경우에는 압송에 사용하는 설비에 과압방지장치를 설치할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-017",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Too late",
+      "parameter": "압력",
+      "deviation": "이송 라인 가압·승압 조작이 늦게 수행되어 소요 압력 도달이 지연되거나 저압 구간이 지속된다",
+      "causes": [
+        "이송 개시 전 밸브 라인업·가압 조작의 지연",
+        "작업자 조작 타이밍 착오로 인한 승압 지연"
+      ],
+      "consequences": [
+        "송출측·수용측 간 압력 불일치로 역류 또는 이송 중단",
+        "저압 지속 시 액화 암모니아의 플래싱 유발로 베이퍼락 발생",
+        "이후 지연 보상을 위한 급격한 가압 시 과압·연결부 누출로 독성 노출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "이송 개시 전 라인 가압 완료를 확인하는 체크 단계 명문화",
+        "압력 도달 전 다음 조작을 금지하는 순서 연동 절차 마련"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-018",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Wrong action",
+      "parameter": "압력",
+      "deviation": "오조작으로 밸브 라인업이 잘못되어 이송 중 과압·부압 또는 압력 손실이 발생함",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "설계압력",
+        "입력에 없는 과압방지장치·압력계의 존재 여부",
+        "절차서 내용"
+      ]
+    },
+    {
+      "id": "n4-019",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "온도",
+      "deviation": "이송 중 NH3 온도가 상승하여 증기압이 증가함",
+      "causes": [
+        "외부 입열·주변 온도 상승으로 액화 NH3의 온도 상승",
+        "이송 지연으로 라인 내 체류 중 가열"
+      ],
+      "consequences": [
+        "증기압 상승에 따른 라인·용기 과압 및 접속부 응력 증가",
+        "플래싱 가속으로 이송 거동 불안정 및 누출 시 증기운 확산 확대"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "이송 라인 온도 감시 수단 마련",
+        "입열 방지 보냉·차광 조치 검토",
+        "온도 상승 시 이송 중단 기준 절차화"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#091-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "9. 물리화학적 특성",
+          "quote": "증기압: 1013 ㎪(26℃)"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-020",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "온도",
+      "deviation": "이송 중 암모니아 온도가 설계 의도보다 낮아져 증기압 저하·흡입 조건 변화가 생기는 상태",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "이송 온도 수치",
+        "냉각/가열 유틸리티 구성",
+        "상 조건"
+      ]
+    },
+    {
+      "id": "n4-021",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "온도",
+      "deviation": "이송 중 온도 조건이 설계 의도의 일부만 충족되어 일부 구간만 목표 온도에 도달한다",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "이송 온도 조건·설계 온도",
+        "온도 조절·감시 유틸리티 유무",
+        "상·압력 운전 조건"
+      ]
+    },
+    {
+      "id": "n4-022",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "온도",
+      "deviation": "정상 이송 온도에 더해, 설계 의도에 없던 추가 열원·냉원이 이송 유체에 중첩된다.",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "이송 온도·설계온도 수치",
+        "열원/냉원 유틸리티 구성",
+        "절차서상 온도 관리 단계"
+      ]
+    },
+    {
+      "id": "n4-023",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Too early",
+      "parameter": "온도",
+      "deviation": "예냉·예열 등 온도 조정 단계가 끝나기 전 이르게 이송을 개시하여 설계 의도 밖 온도에서 흐른다",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "온도 조정 단계 유무·절차서 내용",
+        "이송 설계 온도 수치"
+      ]
+    },
+    {
+      "id": "n4-024",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Too late",
+      "parameter": "온도",
+      "deviation": "이송 조건 온도 조정(냉각·예열 등) 조작이 늦게 수행되어 이송 중 온도 이탈 상태가 지속된다",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "이송 온도 조건",
+        "온도 조정 유틸리티 유무"
+      ]
+    },
+    {
+      "id": "n4-025",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Wrong action",
+      "parameter": "온도",
+      "deviation": "조작 착오로 이송 조건이 바뀌어 암모니아 온도가 설계 의도를 벗어남",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "운전 온도",
+        "냉각 유틸리티 구성",
+        "절차서 내용"
+      ]
+    },
+    {
+      "id": "n4-026",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "준위",
+      "deviation": "이송을 개시했으나 수용측 용기 준위가 전혀 상승하지 않음(이동 액량 없음)",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "송출·수용 용기 구성",
+        "준위 계측·경보 유무",
+        "용기 용량"
+      ]
+    },
+    {
+      "id": "n4-027",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "준위",
+      "deviation": "수용측 용기의 준위가 과다하게 상승하여 과충전 상태에 도달함",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "준위 지시·고준위 경보 안전장치 존재 여부",
+        "수용측 용기 용량·충전한도",
+        "충전 중단 절차 단계"
+      ]
+    },
+    {
+      "id": "n4-028",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "준위",
+      "deviation": "이송으로 송출측 용기 준위가 설계 의도보다 낮게 떨어져 고갈·흡입 상실에 이르는 상태",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "용기 용량",
+        "준위 지시·저준위 경보 유무",
+        "절차서상 종료 준위 기준"
+      ]
+    },
+    {
+      "id": "n4-029",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "준위",
+      "deviation": "역류로 인해 수용측 액이 송출측으로 되돌아가 수용측 준위가 하강하고 송출측이 재충전됨",
+      "causes": [
+        "이송 방향 역전(압력역전·체크밸브 부재)으로 액이 반대로 이동",
+        "이송 종료 조작 순서 착오로 역류 경로 유지"
+      ],
+      "consequences": [
+        "송출측 과충전으로 액팽창 공간 상실 및 과압 위험",
+        "암모니아 넘침·누출로 인한 독성 노출 및 설비 손상"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "송출측 고준위 경보·과충전 방지 설정 여부 확인",
+        "역류방지 설비와 준위 감시 연계 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-030",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "준위",
+      "deviation": "이송이 완결되지 못하고 송출·수용측 액량 이동이 일부만 이루어진다",
+      "causes": [
+        "조기 종료 조작으로 이송 중단",
+        "순서 착오로 수용측 라인업 미완 상태에서 이송"
+      ],
+      "consequences": [
+        "송출측 미배출 잔류 또는 수용측 과충전으로 액면 상한 초과",
+        "과충전 시 릴리프·배출 경로로 독성 NH3 방출 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "수용측 액면 상·하한 확인 단계 절차화",
+        "이송 종료 판정 기준 명확화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-031",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "준위",
+      "deviation": "의도한 수용측 용기 외에 추가 용기로도 동시에 액이 유입되어 예상치 못한 준위 상승이 겹친다.",
+      "causes": [
+        "라인업 순서 착오로 복수 수용 경로가 동시에 개방됨",
+        "절체 중 기존 수용 용기를 분리하기 전 신규 용기를 연결"
+      ],
+      "consequences": [
+        "의도치 않은 용기 과충전으로 액팽창·과압 및 암모니아 누출",
+        "안전 여유 상실로 설비 손상 및 독성 노출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "이송 전 수용 용기 선택·격리 상태 확인 단계를 절차서에 명시",
+        "과충전 방지를 위한 준위 확인 및 수용측 단일화 확인 절차"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-032",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Too early",
+      "parameter": "준위",
+      "deviation": "수용측 준비·확인이 끝나기 전 이르게 이송을 시작하여 수용측 준위 관리가 되지 않은 채 액이 유입된다",
+      "causes": [
+        "수용측 준위 확인 전 조기 이송 개시",
+        "송출측 준비 미완료 상태에서 이른 흐름 개통"
+      ],
+      "consequences": [
+        "수용측 과충전으로 넘침·과압",
+        "넘친 암모니아의 누출·확산 및 독성 노출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "수용측 준위 여유·수용 가능 상태 확인 후 이송 개시 절차 수립",
+        "과충전 방지를 위한 준위 상한 확인 단계 추가"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-033",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Too late",
+      "parameter": "준위",
+      "deviation": "이송 종료 조작이 정해진 시점보다 늦어 수용측 준위가 목표를 초과한 상태로 이송이 지속된다",
+      "causes": [
+        "이송 종료 타이밍 착오로 인한 지연 조작",
+        "목표 준위 도달 확인·대응의 지연"
+      ],
+      "consequences": [
+        "수용측 용기 과충전으로 액 팽창 여유 상실",
+        "과압·연결부 누출을 거쳐 독성·가연성 암모니아 방출 및 노출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "목표 준위 도달 시 이송 종료를 강제하는 상한 경보·연동 검토",
+        "과충전 방지를 위한 종료 시점 확인 단계 명문화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-034",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Wrong action",
+      "parameter": "준위",
+      "deviation": "수용측 용기로의 조작을 잘못하여 과충전되거나 송출측이 고갈되는 상태로 이송이 진행됨",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "용기 용량",
+        "입력에 없는 과충전 방지장치·준위계의 존재 여부",
+        "절차서 내용"
+      ]
+    },
+    {
+      "id": "n4-035",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "조성",
+      "deviation": "이송 중 수분·불순물 혼입으로 NH3 조성 중 불순물 비율이 증가함",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "수용측·라인 내 잔류 물질·불순물 종류",
+        "퍼지·건조 절차 내용",
+        "조성 분석·확인 단계"
+      ]
+    },
+    {
+      "id": "n4-036",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "조성",
+      "deviation": "이송되는 암모니아의 순도가 설계 의도보다 낮아져(불순물·수분 혼입) 품질이 저하된 상태",
+      "causes": [
+        "이송 전 퍼지 미비로 잔류 매질 혼입",
+        "라인업 착오로 타 라인 유체 역혼입",
+        "수분 침입"
+      ],
+      "consequences": [
+        "수분 혼입 시 부식 촉진으로 설비 완결성 저하",
+        "불순물 혼입으로 수용측 품질·공정 영향"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "이송 전 퍼지·배출 절차 명문화 및 확인",
+        "조성·수분 샘플링 또는 분석",
+        "라인업 격리 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-037",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "조성",
+      "deviation": "역류로 수용측 라인의 이종 물질·불순물이 송출측으로 역혼입됨",
+      "causes": [
+        "역류 발생으로 수용측 잔류물·불순물이 송출측 방향으로 유입",
+        "라인업 순서 착오로 다른 계통과 역방향 연결"
+      ],
+      "consequences": [
+        "암모니아에 수분·불순물 역혼입 시 부식성 증가 및 설비 손상",
+        "오염된 암모니아 재이송으로 수용측 품질 저하 및 후속 공정 이상"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "역류방지 설비로 이종 계통 간 역혼입 차단",
+        "이송 전 라인업 확인 단계 절차화"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "압송하는 부식성 액체에 대하여 내식성(耐蝕性), 내열성 및 내한성을 가진 것을 사용할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-038",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "조성",
+      "deviation": "이송 유체 조성이 설계 순도의 일부만 달성되어 수분·불순물 또는 역혼입분이 섞인다",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "연결 라인 공용 여부·역혼입 경로",
+        "퍼지 매체·절차",
+        "순도 관리 기준"
+      ]
+    },
+    {
+      "id": "n4-039",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "조성",
+      "deviation": "이송되는 암모니아에 더해, 설계 의도에 없던 타 물질(퍼지가스·잔류물질·역혼입 성분)이 함께 들어온다.",
+      "causes": [
+        "라인업 착오로 공용 라인의 이종 물질 잔류분이 혼입",
+        "절체 순서 오류로 타 계통 유체가 역혼입"
+      ],
+      "consequences": [
+        "암모니아와 혼입 성분 간 반응·부식으로 설비 완결성 저하",
+        "오염된 제품 이송 및 비정상 거동으로 인한 누출 위험"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "공용 라인 사용 시 사전 퍼지·배출 및 라인 상태 확인 절차 수립",
+        "역혼입 방지 격리·역류방지 상태 확인 단계 반영"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-040",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Too early",
+      "parameter": "조성",
+      "deviation": "퍼지·치환이 끝나기 전 이르게 이송을 개시하여 잔류 공기·불순물이 섞인 상태에서 암모니아가 흐른다",
+      "causes": [
+        "퍼지 완료 확인 전 조기 이송 개시(순서 착오)",
+        "라인 치환 단계 생략 후 흐름 개통"
+      ],
+      "consequences": [
+        "잔류 공기와 암모니아 혼합으로 가연성 분위기 형성",
+        "수분·불순물 혼입에 의한 반응·부식 및 품질 저하"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "퍼지·치환 완료 확인 후에만 이송 개시가 가능하도록 절차 연동",
+        "이송 개시 전 잔류 가스 조성 확인 단계 추가"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-041",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Wrong action",
+      "parameter": "조성",
+      "deviation": "라인업 오조작으로 이질 물질이 혼입되거나 역혼입되어 암모니아 조성이 의도와 달라짐",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "연결 라인 구성",
+        "역류 방지장치 존재 여부",
+        "절차서 내용"
+      ]
+    },
+    {
+      "id": "n4-042",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "상 변화",
+      "deviation": "이송 중 액상 NH3의 기화(플래싱) 비율이 증가하여 기상 분율이 과다해짐",
+      "causes": [
+        "라인 압력 저하 또는 온도 상승으로 액화 NH3가 끓는점을 넘어 기화 증가",
+        "이송 구간 압력 손실로 플래싱 가속"
+      ],
+      "consequences": [
+        "베이퍼락으로 이송 중단·유량 불안정",
+        "기상 분율 증가에 따른 라인 압력 변동 및 누출 시 증기운 확산"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "이송 구간 압력 유지로 플래싱 억제",
+        "라인 온도·압력 조건 관리 절차화"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#091-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "9. 물리화학적 특성",
+          "quote": "초기 끓는점과 끓는점 범위: -33.35 ℃(@760 mmHg)"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-043",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "상 변화",
+      "deviation": "이송 중 액 암모니아의 일부가 기화하여 액 비율이 낮아지고 베이퍼락·플래싱이 생기는 상태",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "이송 압력·온도 조건",
+        "상(액/기) 조건",
+        "증기압 대비 운전 여유"
+      ]
+    },
+    {
+      "id": "n4-044",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "상 변화",
+      "deviation": "이송 유체가 설계 상의 일부만 유지되어 일부가 다른 상으로 플래싱·베이퍼락을 일으킨다",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "이송 상·압력·온도 조건",
+        "증기압 대비 운전 여유",
+        "라인 구성·고점 유무"
+      ]
+    },
+    {
+      "id": "n4-045",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "상 변화",
+      "deviation": "이송 중 액상에 더해 기상(플래싱 증기)이 함께 발생하여 2상 유동이 겹친다.",
+      "causes": [
+        "절체·기동 조작 순서 과도상태에서 압력 저하로 액 암모니아가 부분 기화",
+        "미배출 구간의 잔류 증기와 액이 함께 유입"
+      ],
+      "consequences": [
+        "베이퍼락·유동 불안정으로 이송 중단 및 설비 과도 응력",
+        "급격한 상변화에 따른 압력 변동으로 누출 경로 형성"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "이송 전 라인 벤트·안정화 단계 및 압력 유지 절차 반영",
+        "플래싱 억제를 위한 조작 순서(가압 우선) 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-046",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Too early",
+      "parameter": "상 변화",
+      "deviation": "라인 안정화 전 이르게 이송을 개시하여 압력·온도가 정렬되지 않은 상태에서 플래싱·베이퍼락이 발생한다",
+      "causes": [
+        "경로 안정화 전 조기 이송 개시",
+        "예냉·가압 전 이른 흐름 개통으로 급격한 상변화 유발"
+      ],
+      "consequences": [
+        "플래싱·베이퍼락으로 이송 중단·압력 변동",
+        "급격한 기화에 따른 압력 거동으로 설비 손상 및 누출"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "이송 개시 전 경로 압력·온도 안정화 확인 절차 수립",
+        "베이퍼락 방지를 위한 가압·예냉 선행 단계 지정"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-047",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Too late",
+      "parameter": "상 변화",
+      "deviation": "상 유지에 필요한 조작(가압·냉각 유지 등)이 늦게 수행되어 이송 중 액이 기화한 상태가 지속된다",
+      "causes": [
+        "압력 유지·가압 조작의 지연으로 압력 저하 지속",
+        "이송 조건 복원 대응의 지연"
+      ],
+      "consequences": [
+        "플래싱·베이퍼락으로 이송 유량 상실 및 맥동",
+        "상 불안정이 압력 거동 교란·연결부 누출로 전개되어 독성 노출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "상 유지 조건(압력) 확보를 이송 전 선행 단계로 고정",
+        "압력 저하 감지 시 즉시 조작하는 대응 절차 마련"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-048",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Wrong action",
+      "parameter": "상 변화",
+      "deviation": "조작 착오로 이송 압력·온도 조건이 틀어져 암모니아가 플래싱·베이퍼락을 일으키며 상이 바뀜",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "운전 압력·온도",
+        "상(phase)",
+        "절차서 내용"
+      ]
+    },
+    {
+      "id": "n4-049",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "이송 순서 절차",
+      "deviation": "라인업·밸브 조작 등 이송 순서 절차가 전혀 수행되지 않아 의도한 이송 자체가 성립하지 않음",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "절차서 내용",
+        "작업자 수",
+        "확인 단계"
+      ]
+    },
+    {
+      "id": "n4-050",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "이송 순서 절차",
+      "deviation": "라인업·밸브 조작 단계가 중복 또는 과다하게 수행되어 의도치 않은 경로가 동시에 열림",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "절차서 내용",
+        "작업자 수",
+        "확인 단계"
+      ]
+    },
+    {
+      "id": "n4-051",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "이송 순서 절차",
+      "deviation": "라인업·밸브 조작 단계 중 일부가 누락되어 절차 완결성이 설계 의도보다 떨어진 상태",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "절차서 내용",
+        "확인 단계 구성",
+        "작업자 수"
+      ]
+    },
+    {
+      "id": "n4-052",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "이송 순서 절차",
+      "deviation": "라인업·밸브 조작 순서가 뒤바뀌어 역방향 경로가 형성됨",
+      "causes": [
+        "밸브 개폐 순서 착오로 역류 가능 경로를 먼저 열고 송출을 나중에 조작",
+        "이송 종료 시 격리·배출 순서를 역순으로 수행"
+      ],
+      "consequences": [
+        "역류·역혼입으로 암모니아가 의도치 않은 방향으로 흘러 누출·과충전 유발",
+        "독성 노출 및 설비 손상"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "라인업·조작 순서를 명확히 규정한 절차서 및 검증 단계 마련",
+        "순서 오조작 방지를 위한 밸브 상태 확인 체크리스트 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-053",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "이송 순서 절차",
+      "deviation": "라인업·밸브 조작이 설계 의도와 다른 순서/대상으로 수행되어 엉뚱한 경로로 NH3가 이송되는 상태",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "절차서 내용",
+        "작업자 수",
+        "확인 단계"
+      ]
+    },
+    {
+      "id": "n4-054",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "이송 순서 절차",
+      "deviation": "라인업·밸브 조작 순서가 일부만 수행되어 절차가 부분적으로 완결된다",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "절차서 내용",
+        "확인 단계",
+        "작업자 수"
+      ]
+    },
+    {
+      "id": "n4-055",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "이송 순서 절차",
+      "deviation": "정규 절차 단계에 더해, 의도에 없던 추가 조작(여분 밸브 개방 등)이 함께 수행된다.",
+      "causes": [
+        "순서 착오로 불필요한 밸브·분기 조작이 추가됨",
+        "조기 조작으로 아직 격리되어야 할 경로가 함께 열림"
+      ],
+      "consequences": [
+        "다중 경로 동시 개방으로 역류·교차오염·과충전 유발",
+        "의도치 않은 경로를 통한 암모니아 누출·노출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "단계별 완료 확인(체크 오프) 기반 순차 절차서 작성",
+        "핵심 밸브 조작에 대한 독립 확인 단계 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-056",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Too early",
+      "parameter": "이송 순서 절차",
+      "deviation": "선행 조작 단계가 끝나기 전에 후속 조작을 이르게 수행하여 라인업 순서가 뒤바뀐다",
+      "causes": [
+        "선행 밸브 조작 완료 확인 전 다음 단계 조기 수행",
+        "순서 착오로 인한 조기 조작"
+      ],
+      "consequences": [
+        "미개방·오개방 경로로의 흐름 또는 폐쇄 구간 가압",
+        "암모니아 누출·과압 등 복합 위험으로 설비 손상 및 독성 노출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "단계별 완료 확인 후 다음 단계 진행을 강제하는 순서 체크 절차 수립",
+        "핵심 조작에 상호 확인(2인 확인) 단계 도입 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-057",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Too late",
+      "parameter": "이송 순서 절차",
+      "deviation": "라인업·밸브 조작 등 절차 단계가 규정 시점보다 늦게 수행되어 후속 단계와의 순서 정합이 무너진다",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "절차서 내용",
+        "작업 확인 단계"
+      ]
+    },
+    {
+      "id": "n4-058",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Wrong action",
+      "parameter": "이송 순서 절차",
+      "deviation": "라인업·밸브 조작을 정해진 순서와 다르게 수행하여 격리되지 않은 경로로 암모니아가 흐르거나 닫힌 경로로 가압됨",
+      "causes": [
+        "밸브 개폐 순서 착오(순서 바꿈)",
+        "조작 단계 누락 또는 조기·지연 조작",
+        "수동 라인업 오조작"
+      ],
+      "consequences": [
+        "닫힌 밸브 쪽으로의 가압에 따른 라인·연결부 과압",
+        "격리되지 않은 경로로의 암모니아 이송으로 오충전·역류",
+        "연결부 누출 시 독성·가연성 암모니아의 외부 방출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "밸브 라인업 체크리스트와 단계별 확인 절차 도입",
+        "조작 순서에 대한 2인 상호확인 절차 수립",
+        "주요 밸브에 인터록 또는 잠금(LOTO) 적용 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "호스와 호스 외의 관 및 호스 간의 접속부분에는 접속용구를 사용하여 누출이 없도록 확실히 접속할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-059",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "기동정지",
+      "deviation": "이송 기동 조작을 했으나 이송이 전혀 개시되지 않음(기동 실패)",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "기동 구동방식",
+        "기동 인터록·확인 단계",
+        "기존 안전장치"
+      ]
+    },
+    {
+      "id": "n4-060",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "기동정지",
+      "deviation": "이송 기동·종료 시 과도한 유체 가속·감속으로 압력 서지가 발생함",
+      "causes": [
+        "급격한 밸브 개폐로 라인 내 서지 발생",
+        "이송 전환 과정의 과도상태에서 압력 급상승"
+      ],
+      "consequences": [
+        "서지압에 의한 라인·연결부 손상 및 누출",
+        "독성 NH3 누출로 작업자 중독 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "밸브 단계적 개폐 절차 적용",
+        "기동·정지 과도상태 압력 감시 수단 마련"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-061",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "기동정지",
+      "deviation": "이송 기동·종료 과정에서 조작이 조기·지연되어 과도상태가 설계 의도보다 완만/불충분하게 이뤄지는 상태",
+      "causes": [
+        "밸브 개폐 타이밍의 조기·지연 조작",
+        "기동/정지 순서 착오"
+      ],
+      "consequences": [
+        "종료 지연 시 과충전 또는 역류 유발 가능",
+        "과도상태에서 독성·가연성 암모니아 비정상 거동으로 누출·설비 손상 경로"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "기동·정지 단계별 확인 체크리스트",
+        "밸브 조작 순서 인터록 검토",
+        "과도상태 모니터링"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-062",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "기동정지",
+      "deviation": "이송 정지·펌프 트립 순간 유체가 역방향으로 되밀려 역류·서지가 발생함",
+      "causes": [
+        "펌프/압축 구동 정지 시 수용측 배압에 의한 역류",
+        "정지 과정의 과도상태에서 역류방지 조작 지연"
+      ],
+      "consequences": [
+        "역류 서지로 송출측 설비·연결부 손상 및 암모니아 누출",
+        "독성 노출 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "정지 시퀀스에 역류방지 밸브 작동·격리 조치 반영",
+        "펌프 정지 시 체크밸브 건전성 점검"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-063",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "기동정지",
+      "deviation": "이송 기동·종료·전환 과정이 일부만 완료되어 과도상태가 중간에 멈춘다",
+      "causes": [
+        "전환 순서 중 일부 단계 누락",
+        "조기·지연 조작으로 과도상태 미완결"
+      ],
+      "consequences": [
+        "닫힌 경로로의 서지·역류로 라인·연결부 손상 및 NH3 누출",
+        "미완결 전환으로 다중 경로 동시 개방에 의한 오이송"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "기동·정지·전환 단계별 완료 확인 절차 도입",
+        "서지·역류 방지 수단 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-064",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "기동정지",
+      "deviation": "기동·정지·전환 과도상태에서 정상 흐름에 더해 서지·역류 등 추가 과도 거동이 겹친다.",
+      "causes": [
+        "정지 전 신규 경로를 먼저 개방하는 전환 순서 오류",
+        "조기 기동으로 라인 안정화 전 유체가 추가 경로로 흐름"
+      ],
+      "consequences": [
+        "서지·역류로 인한 압력 충격 및 연결부 손상·누출",
+        "독성·가연성 암모니아 방출로 인명 노출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "기동·정지·절체 시 밸브 조작 순서(닫고-열기) 명문화",
+        "서지 저감을 위한 단계적 개폐 절차 반영"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-065",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Too early",
+      "parameter": "기동정지",
+      "deviation": "경로 준비가 완료되기 전 이르게 기동하여 과도상태에서 서지·역류가 발생한다",
+      "causes": [
+        "라인업·개방 완료 전 조기 기동",
+        "선행 조건 미충족 상태에서 이른 구동 개시"
+      ],
+      "consequences": [
+        "기동 과도상태의 서지·역류로 라인·접속부 파손",
+        "파손부로부터 암모니아 누출·확산"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "기동 선행 조건(경로 개방·수용측 준비) 확인 후 기동 허용 절차 수립",
+        "역류 방지 수단 적용 여부 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-066",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Too late",
+      "parameter": "기동정지",
+      "deviation": "이송 종료·정지 조작이 정해진 시점보다 늦게 수행되어 과도상태가 연장된다",
+      "causes": [
+        "종료 신호·확인 지연으로 인한 정지 조작 지연",
+        "전환 과정 조작 타이밍 착오"
+      ],
+      "consequences": [
+        "종료 지연 중 과충전·역류·서지 발생",
+        "압력 과도상승과 연결부 손상으로 암모니아 누출 및 독성 노출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "정상 종료·비상 정지 시점과 조작 순서를 명확히 규정",
+        "종료 조건 도달 시 자동 차단 연동 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-067",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Wrong action",
+      "parameter": "기동정지",
+      "deviation": "이송 기동·종료·전환 시 조작 순서를 잘못하여 과도상태에서 과압·역류·서지가 발생함",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "구동설비 구성(펌프/압축)",
+        "입력에 없는 역류방지·서지방지장치 존재 여부",
+        "절차서 내용"
+      ]
+    },
+    {
+      "id": "n4-068",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "시간",
+      "deviation": "이송 지속시간이 의도보다 길어져 과도 이송 상태가 지속됨",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "이송 종료 기준·타이머·준위 연동 안전장치",
+        "용기 용량·충전한도",
+        "절차상 이송시간 기준"
+      ]
+    },
+    {
+      "id": "n4-069",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "시간",
+      "deviation": "이송 지속시간이 설계 의도보다 짧아 조기 종료로 이송량이 부족한 상태",
+      "causes": [
+        "타이밍 오판으로 조기 종료 조작",
+        "종료 판단 기준 혼선"
+      ],
+      "consequences": [
+        "수용측 이송량 부족으로 절차 미완결",
+        "재이송 반복에 따른 운전 부담 증가"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "이송 완료 판정 기준(준위/적산유량) 명문화",
+        "적산유량 지시 반영"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-070",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "시간",
+      "deviation": "이송 지속시간이 설계 의도의 일부만 채워져 조기 종료 또는 미완 이송이 발생한다",
+      "causes": [
+        "조기 종료 조작",
+        "타이밍 오류로 이송 지연·단축"
+      ],
+      "consequences": [
+        "수용측 액량 부족 또는 송출측 과잉 잔류로 공정 불균형",
+        "미완 이송 재개 시 과도상태 반복으로 설비 피로 및 누출 가능"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "이송 소요시간·완료 지표 기준 설정",
+        "종료 판정의 다중 확인 절차화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-071",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "시간",
+      "deviation": "계획된 이송 시간에 더해, 종료 신호 이후에도 이송이 추가로 지속된다.",
+      "causes": [
+        "종료 조작 지연으로 설정 완료 시점 이후 이송 계속",
+        "순서 착오로 정지 단계가 누락되어 추가 이송 발생"
+      ],
+      "consequences": [
+        "수용측 과충전으로 액팽창·과압 및 암모니아 누출",
+        "독성 노출 및 설비 손상"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "이송 종료 시점 확인(준위/시간) 및 정지 확인 단계 명시",
+        "완료 후 격리 확인을 포함한 종료 체크리스트 작성"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-072",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Too early",
+      "parameter": "시간",
+      "deviation": "정해진 개시 시점보다 이르게 이송을 시작하거나 전환 타이밍을 앞당겨 수용측·송출측 상태 정렬 전에 흐름이 발생한다",
+      "causes": [
+        "이송 개시 타이밍을 앞당긴 조기 조작",
+        "전환 시점 오판으로 이른 절체"
+      ],
+      "consequences": [
+        "준비 미완료 경로로의 유입으로 과충전·과압",
+        "암모니아 누출·확산 및 독성 노출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "개시·전환 시점 전 완료 확인 단계로 조기 조작 차단",
+        "타이밍 기준을 절차서에 명시"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-073",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Too late",
+      "parameter": "시간",
+      "deviation": "이송 종료 시점이 지나서도 이송이 계속되어 지속시간이 과도하게 길어진다",
+      "causes": [
+        "이송 지속시간 관리·종료 타이밍 착오",
+        "종료 조작의 지연"
+      ],
+      "consequences": [
+        "수용측 과충전 또는 송출측 고갈",
+        "과충전 시 과압·누출, 고갈 시 공회전·캐비테이션으로 설비 손상 및 독성 노출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "이송 소요시간 기준과 종료 확인 단계를 절차에 명시",
+        "준위 상·하한 연동으로 시간 초과 이송을 차단하는 방안 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-074",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Wrong action",
+      "parameter": "시간",
+      "deviation": "이송 지속시간·타이밍을 잘못 조작하여 과도 이송 또는 조기 종료가 발생함",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "용기 용량",
+        "준위 감시 수단 존재 여부",
+        "절차서 내용"
+      ]
+    },
+    {
+      "id": "n4-075",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "격리 및 누출",
+      "deviation": "이송 전 라인·연결부의 격리가 전혀 이루어지지 않은 상태에서 작업이 진행됨(격리 완전 실패)",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "격리 밸브·블라인드 구성",
+        "격리 확인 절차",
+        "잔류 배출 수단"
+      ]
+    },
+    {
+      "id": "n4-076",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "격리 및 누출",
+      "deviation": "연결부·접속부의 누출 통로가 확대되어 NH3 누출량이 증가함",
+      "causes": [
+        "접속용구 부식·손상으로 접속부 밀봉 열화",
+        "과압 상태에서 접속부 이탈로 누출 통로 확대"
+      ],
+      "consequences": [
+        "독성·자극성 NH3 누출로 작업자 중독·호흡기 손상",
+        "가연성 가스 누출로 점화 시 화재·폭발 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "호스·접속용구에 내식성·내열성·내한성 재질 사용",
+        "접속부 누출 없도록 접속용구로 확실히 접속",
+        "매일 사용 전 점검으로 손상·부식 결함 교환"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "호스와 호스 외의 관 및 호스 간의 접속부분에는 접속용구를 사용하여 누출이 없도록 확실히 접속할 것"
+        },
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "호스 및 그 접속용구는 매일 사용하기 전에 점검하고 손상ㆍ부식 등의 결함에 의하여 압송하는 부식성 액체가 날아 흩어지거나 새어나갈 위험이 있으면 교환할 것"
+        },
+        {
+          "source_id": "MSDS-7664-41-7#091-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "9. 물리화학적 특성",
+          "quote": "인화 또는 폭발 범위의 상한/하한: 15 / 33.6 %"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-077",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "격리 및 누출",
+      "deviation": "이송 라인·연결부의 격리가 설계 의도보다 불완전하여 미세 누출로 암모니아가 외부로 새어나오는 상태",
+      "causes": [
+        "연결부·접속용구 체결 불량 또는 밀봉 열화",
+        "격리 밸브 미완전 폐쇄",
+        "호스·접속부 손상·부식"
+      ],
+      "consequences": [
+        "독성 암모니아 누출로 작업자 흡입 노출",
+        "가연성 증기 확산 및 점화 위험",
+        "부식성에 의한 설비·배관 손상"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "연결부에 접속용구를 사용해 누출 없이 확실히 접속",
+        "호스·접속용구 사용 전 매일 점검 및 결함 시 교환",
+        "내식·내열·내한성 재질 사용 및 누출 감지"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "접속용구를 사용하여 누출이 없도록 확실히 접속할 것"
+        },
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "매일 사용하기 전에 점검하고 손상ㆍ부식 등의 결함"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-078",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "격리 및 누출",
+      "deviation": "역류로 격리 경계를 넘어 암모니아가 반대 방향 라인·연결부로 흘러 누출 경로가 형성됨",
+      "causes": [
+        "역류로 격리밸브 상류측에 예상치 못한 가압 발생",
+        "접속부가 역방향 압력에 견디지 못하고 누출"
+      ],
+      "consequences": [
+        "격리 경계 역가압에 의한 연결부 누출로 독성·가연성 암모니아 방출",
+        "주변 작업자 독성 노출 및 가연 분위기 형성"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "접속부 내압·내식 적합성 및 매일 사용 전 점검 체계 확인",
+        "역류 발생 시 자동 격리·누출 감지 설비 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "매일 사용하기 전에 점검하고 손상ㆍ부식 등의 결함에 의하여 압송하는 부식성 액체가 날아 흩어지거나 새어나갈 위험이 있으면 교환할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-079",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "격리 및 누출",
+      "deviation": "격리가 일부만 이루어져 연결부·라인 일부가 격리되지 않은 상태로 남는다",
+      "causes": [
+        "격리 밸브 일부만 폐쇄",
+        "순서 착오로 미격리 연결부 잔존"
+      ],
+      "consequences": [
+        "미격리 연결부에서 독성·가연성 NH3 누출로 작업자 흡입 노출 및 화재·폭발 위험",
+        "오개방 경로로의 의도치 않은 유입"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "격리 완결 확인(이중 차단·점검) 절차화",
+        "연결부 누출 감지 수단 적용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-080",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "격리 및 누출",
+      "deviation": "이송 경로 외에 추가로 개방·미격리된 연결부가 존재하여 암모니아 누출 경로가 함께 생긴다.",
+      "causes": [
+        "라인업 착오로 격리되어야 할 연결부·드레인이 함께 개방됨",
+        "절체 중 미사용 경로의 격리 누락"
+      ],
+      "consequences": [
+        "독성·가연성 암모니아가 미격리 지점에서 외부로 누출",
+        "작업자 흡입 노출 및 가연 혼합기 형성"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "이송 전 전 경로 격리 상태 확인(블라인드·밸브) 절차 수립",
+        "누출 감지 및 비상대응을 포함한 격리 확인 단계 반영"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-081",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Too early",
+      "parameter": "격리 및 누출",
+      "deviation": "격리·접속 확인이 끝나기 전 이르게 이송을 개시하여 미완결 접속부로 암모니아가 누출된다",
+      "causes": [
+        "접속부 체결·누설 확인 전 조기 이송 개시",
+        "격리 상태 확인 생략 후 흐름 개통"
+      ],
+      "consequences": [
+        "불완전 접속부로부터 암모니아 분출·누출",
+        "독성·가연성 가스 확산에 의한 중독·화재 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "이송 개시 전 접속부 체결·누설 점검 완료 확인 절차 수립",
+        "호스·접속용구 사용 전 점검 및 손상·부식 교환 기준 적용"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "호스와 호스 외의 관 및 호스 간의 접속부분에는 접속용구를 사용하여 누출이 없도록 확실히 접속할 것"
+        },
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "호스 및 그 접속용구는 매일 사용하기 전에 점검하고"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-082",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Too late",
+      "parameter": "격리 및 누출",
+      "deviation": "이송 종료 후 연결부 격리·차단 조작이 늦게 수행되어 가압 상태의 라인·연결부가 격리되지 않은 채 유지된다",
+      "causes": [
+        "종료 후 격리 밸브 조작·차단 타이밍 지연",
+        "분리 전 잔압 배출·격리 확인의 지연"
+      ],
+      "consequences": [
+        "격리되지 않은 연결부에서 암모니아 누출 지속",
+        "독성·가연성 가스 방출로 작업자 노출 및 점화 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "이송 종료 후 격리·차단 순서와 시점을 절차에 명문화",
+        "연결부 분리 전 격리·잔압 배출 확인 단계 추가"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "호스와 호스 외의 관 및 호스 간의 접속부분에는 접속용구를 사용하여 누출이 없도록 확실히 접속할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-083",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Wrong action",
+      "parameter": "격리 및 누출",
+      "deviation": "격리 조작을 잘못 수행하여(밸브 미차단·오개방) 연결부·라인이 격리되지 않은 상태에서 암모니아가 외부로 누출됨",
+      "causes": [
+        "격리 밸브 조작 착오 또는 격리 단계 누락",
+        "접속부 체결 불량 상태에서의 조작",
+        "압송 설비 조작 중 접속부 결함 미점검"
+      ],
+      "consequences": [
+        "독성 암모니아 누출로 인한 작업자 중독·질식",
+        "가연성 암모니아 누출 후 점화 시 화재·폭발",
+        "접속부 손상 확대로 인한 설비 손상 및 운전정지"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "격리 밸브 조작 전후 누출 점검 단계 절차화",
+        "접속부·호스 사용 전 점검 및 결함 시 교환 절차 수립",
+        "독성가스 검지경보 및 비상대응 체계 확인"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "호스 및 그 접속용구는 매일 사용하기 전에 점검하고 손상ㆍ부식 등의 결함에 의하여 압송하는 부식성 액체가 날아 흩어지거나 새어나갈 위험이 있으면 교환할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-084",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "유틸리티",
+      "deviation": "이송 구동에 필요한 유틸리티(동력·질소·냉각 등)가 전혀 공급되지 않아 이송 절차를 수행할 수 없음",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "이송에 쓰는 유틸리티 종류",
+        "유틸리티 공급 백업",
+        "관련 안전장치"
+      ]
+    },
+    {
+      "id": "n4-085",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "유틸리티",
+      "deviation": "이송 구동용 유틸리티 공급압(동력·질소 등)이 과다하게 증가함",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "이송 구동 유틸리티 종류·공급 설비",
+        "유틸리티 공급압 제어·안전장치",
+        "유틸리티 공급 사양"
+      ]
+    },
+    {
+      "id": "n4-086",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "유틸리티",
+      "deviation": "이송 구동에 필요한 유틸리티(동력·질소·냉각 등) 공급이 설계 의도보다 부족하여 이송 성능이 저하되는 상태",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "이송 구동 방식(펌프/압축/퍼지)",
+        "질소·냉각 등 유틸리티 구성",
+        "유틸리티 상실 대응 안전장치"
+      ]
+    },
+    {
+      "id": "n4-087",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "유틸리티",
+      "deviation": "이송 구동 유틸리티(동력·질소 등) 상실로 구동이 멈추면서 역방향 유동이 발생함",
+      "causes": [
+        "동력 공급 상실로 펌프/압축 정지 후 배압에 의한 역류",
+        "퍼지용 질소 공급 상실로 역방향 유입 차단 실패"
+      ],
+      "consequences": [
+        "유틸리티 상실에 수반된 역류로 암모니아가 반대 방향으로 흘러 누출·오염",
+        "독성 노출 및 설비 손상"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "유틸리티 상실 시 자동 격리·역류방지 로직 확인",
+        "동력 차단 시 안전정지 시퀀스 마련"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "운전자가 쉽게 조작할 수 있는 위치에 동력을 차단할 수 있는 조치를 할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-088",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "유틸리티",
+      "deviation": "이송 구동·퍼지에 필요한 유틸리티가 일부만 공급되어 부분 공급 상태로 운전된다",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "이송 구동 방식(펌프/압축/퍼지)",
+        "질소·냉각 등 유틸리티 구성",
+        "유틸리티 백업·감시 유무"
+      ]
+    },
+    {
+      "id": "n4-089",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "유틸리티",
+      "deviation": "이송에 필요한 유틸리티 외에, 설계 의도에 없던 추가 유틸리티(질소·동력 등)가 이송 계통에 함께 공급된다.",
+      "causes": [
+        "라인업 착오로 질소·퍼지 등 유틸리티가 이송 중 함께 유입",
+        "절체 순서 오류로 유틸리티 격리가 해제됨"
+      ],
+      "consequences": [
+        "질소 등 비응축 가스 혼입으로 조성·압력 거동 교란",
+        "유틸리티 압력 중첩에 따른 과압·누출 위험"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "유틸리티 연결·격리 상태를 이송 단계별로 확인하는 절차 반영",
+        "퍼지·질소 라인의 역류방지·격리 확인 단계 명시"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-090",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Too early",
+      "parameter": "유틸리티",
+      "deviation": "질소·냉각·동력 등 유틸리티가 안정적으로 확보되기 전 이르게 이송을 개시하여 유틸리티 미준비 상태에서 작업이 진행된다",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "이송에 필요한 유틸리티 종류(질소·냉각·동력)",
+        "유틸리티 공급 확인 절차 내용"
+      ]
+    },
+    {
+      "id": "n4-091",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Too late",
+      "parameter": "유틸리티",
+      "deviation": "이송 구동에 필요한 유틸리티 공급·복구 조치가 늦게 수행되어 이송 수행이 지연된다",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "이송 구동 방식(펌프·질소 등) 사양",
+        "유틸리티 공급 계통 구성"
+      ]
+    },
+    {
+      "id": "n4-092",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Wrong action",
+      "parameter": "유틸리티",
+      "deviation": "유틸리티(동력·질소·냉각) 관련 조작을 잘못 수행하여 이송 구동·퍼지 조건이 의도와 달라짐",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "유틸리티 구성(펌프/압축/퍼지)",
+        "유틸리티 상실 시 안전조치 존재 여부",
+        "절차서 내용"
+      ]
+    },
+    {
+      "id": "n4-093",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "유지보수",
+      "deviation": "이송 전후 요구되는 퍼지·배출·점검 등 유지보수 연계 작업이 전혀 수행되지 않음",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "퍼지·배출 절차",
+        "점검 체크리스트",
+        "잔류 NH3 처리 수단"
+      ]
+    },
+    {
+      "id": "n4-094",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "유지보수",
+      "deviation": "이송 전후 퍼지·배출 작업량이 부족하여 라인 내 잔류 NH3가 과다하게 남음",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "퍼지·배출 절차 내용",
+        "작업자 수·확인 단계",
+        "잔류 확인 수단"
+      ]
+    },
+    {
+      "id": "n4-095",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "유지보수",
+      "deviation": "이송 전후 퍼지·배출 등 유지보수 연계 작업이 설계 의도보다 미흡하여 잔류 암모니아가 남는 상태",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "퍼지·배출 절차서 내용",
+        "확인 단계",
+        "작업자 수"
+      ]
+    },
+    {
+      "id": "n4-096",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "유지보수",
+      "deviation": "유지보수 전 배출·퍼지 시 유체가 역방향으로 유입되어 잔류 암모니아가 되돌아옴",
+      "causes": [
+        "퍼지·배출 라인업 역순 조작으로 공정측에서 정비 구간으로 역유입",
+        "격리 미완료 상태에서 역방향 흐름 발생"
+      ],
+      "consequences": [
+        "정비 중 잔류·역유입 암모니아 노출로 작업자 독성 피해",
+        "오염물 역유입으로 재가동 시 품질·부식 문제"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "유지보수 전 확실한 격리·배출·퍼지 순서를 작업허가에 반영",
+        "역유입 방지를 위한 이중차단·블리드 적용 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-097",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "유지보수",
+      "deviation": "이송 전후 퍼지·배출·점검 작업이 일부만 수행되어 잔류 NH3가 남는다",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "퍼지·배출 절차",
+        "점검 항목·확인 단계",
+        "작업 전 격리·배출 수단"
+      ]
+    },
+    {
+      "id": "n4-098",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "유지보수",
+      "deviation": "이송 작업에 더해, 미완료된 유지보수 연계 작업(퍼지·배출 미완)의 영향이 함께 겹친다.",
+      "causes": [
+        "이송 전 퍼지·배출 단계가 누락되어 잔류 암모니아가 함께 존재",
+        "유지보수 복구 확인 없이 이송을 개시"
+      ],
+      "consequences": [
+        "잔류 암모니아 노출 및 라인 개방 시 독성 방출",
+        "오염·잔류물로 인한 이송 품질 저하 및 설비 완결성 저하"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "이송 전후 퍼지·배출 완료 및 복구 상태 확인 절차 수립",
+        "유지보수-운전 간 인수인계 체크리스트 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-099",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Too early",
+      "parameter": "유지보수",
+      "deviation": "이송 전 퍼지·배출 등 유지보수 연계 작업이 끝나기 전 이르게 후속 작업·이송을 수행한다",
+      "causes": [
+        "퍼지·배출 완료 확인 전 조기 작업 진행",
+        "유지보수 복원 절차 미완료 상태에서 이른 재개"
+      ],
+      "consequences": [
+        "잔류 암모니아 노출로 작업자 중독",
+        "미완료 복원 상태에서의 이송으로 누출·오염"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "퍼지·배출·점검 완료 확인 후에만 이송·복원 진행하도록 절차 수립",
+        "유지보수 연계 작업의 완료 체크리스트 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-100",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Too late",
+      "parameter": "유지보수",
+      "deviation": "이송 전후 퍼지·배출·점검 등 유지보수 연계 작업이 정해진 시점보다 늦게 수행된다",
+      "causes": [
+        "이송 전 퍼지·점검의 지연 수행",
+        "이송 후 배출·잔류 제거 작업의 지연"
+      ],
+      "consequences": [
+        "잔류 암모니아가 라인·연결부에 남은 채 작업 진행",
+        "분리·점검 작업 시 잔류 독성 가스 노출 및 오염"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "이송 전후 퍼지·배출을 선행·후행 필수 단계로 절차에 고정",
+        "작업 착수 전 잔류 제거 완료 확인 단계 추가"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n4-101",
+      "node": "N4",
+      "node_meta": {
+        "node": "N4",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 운전 절차"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Wrong action",
+      "parameter": "유지보수",
+      "deviation": "이송 전후 퍼지·배출·점검 조작을 잘못 수행하여 잔류 암모니아가 남은 상태에서 작업·개방이 이루어짐",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "퍼지·배출 절차 내용",
+        "작업 위험성평가·안전작업허가 적용 여부",
+        "작업자 수"
+      ]
+    }
+  ]
+}
