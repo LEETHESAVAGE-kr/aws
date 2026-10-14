@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any
 
 import pytest
 
-from apps.web import service
+from apps.web import guide, service
 from apps.web.catalog import CATALOG_PATH, load_catalog
 from apps.web.replay import REPLAY_DIR, load_replays
 from core.agent import NodeMeta
@@ -439,9 +439,10 @@ def test_lopa_download_is_docx_with_markdown_content_preserved(monkeypatch: pyte
     convert = docx_export.lopa_markdown_to_docx
     monkeypatch.setattr(service, "lopa_markdown_to_docx", lambda md: (seen.append(md), convert(md))[1])
     name, data = service.export_files(load_replays()["P1"])["lopa"]
-    assert name == "lopa_draft.docx" and data[:2] == b"PK" and len(seen) == 1
+    assert name == service.LOPA_DOCX_NAME == "lopa_candidates.docx" and data[:2] == b"PK" and len(seen) == 1
     doc = Document(io.BytesIO(data))
     paragraphs = [p.text for p in doc.paragraphs]
+    assert paragraphs[0] == service.LOPA_FIRST_LINE  # Q-06-1 첫 줄 — LOPA 본 분석이 아님을 밝힌다
     cells = [c.text for t in doc.tables for row in t.rows for c in row.cells]
     assert lopa.DISCLAIMER in paragraphs
     assert sum(bool(re.match(r"시나리오 \d+:", p)) for p in paragraphs) == 5
@@ -1075,7 +1076,7 @@ def test_app_renders_intro_tabs(monkeypatch: pytest.MonkeyPatch) -> None:
     at = _grid(AppTest.from_file(str(_APP), default_timeout=30)).run()
     assert not at.exception
     labels = [t.label for t in at.tabs]
-    assert {"① 한 줄이 만들어지는 과정", "② 가이드워드 7종", "③ 위험도 (심각도·빈도)", "④ 결과 화면 읽는 법", "⑤ 회의와 비교", "⑥ 공정안전보고서와 HAZOP"} <= set(labels)
+    assert {"① 한 줄이 만들어지는 과정", guide.GUIDEWORD_TAB, "③ 위험도 (심각도·빈도)", "④ 결과 화면 읽는 법", "⑤ 회의와 비교", "⑥ 공정안전보고서와 HAZOP"} <= set(labels)
     assert len(at.table) >= 3 and len(at.dataframe) == 0  # 안내 표는 st.table — 결과 표 시험과 섞이지 않는다
 
 

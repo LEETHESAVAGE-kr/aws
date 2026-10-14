@@ -1,0 +1,42 @@
+{
+ "_comment": "results/exteval_20261010/summary.json(gitignore) 원문 + 출처 필드 2개(measured_at·source_run). 화면 '다른 팀의 HAZOP 과 대조' 패널이 여기서 읽는다 — 값 하드코딩 금지. 재측정 안 함(PRD_본선_질문봉쇄 §5).",
+ "measured_at": "2026-10-10",
+ "source_run": "results/exteval_20261010/summary.json",
+ "by_source": {
+  "ornl2023": {
+   "matched": 29,
+   "total": 39,
+   "coverage": 0.7435897435897436
+  },
+  "ijerph2017": {
+   "matched": 19,
+   "total": 61,
+   "coverage": 0.3114754098360656
+  },
+  "ioclv2016": {
+   "matched": 30,
+   "total": 38,
+   "coverage": 0.7894736842105263
+  },
+  "assam2010": {
+   "matched": 15,
+   "total": 17,
+   "coverage": 0.8823529411764706
+  },
+  "kais2019": {
+   "matched": 47,
+   "total": 57,
+   "coverage": 0.8245614035087719
+  }
+ },
+ "macro_mean": 0.7102906364643156,
+ "min_source": "ijerph2017",
+ "pooled": 0.660377358490566,
+ "nodes": 44,
+ "cost_usd": 44.5953,
+ "model_config": {
+  "consensus_runs": 1,
+  "evidence_k": 2,
+  "inference_boundary": true
+ }
+}
