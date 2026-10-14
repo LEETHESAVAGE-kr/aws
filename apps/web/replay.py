@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Final
@@ -15,6 +16,9 @@ from core.agent import DeviationRecord, VerifySummary
 from core.agent.generate import process_order
 
 REPLAY_DIR: Final[Path] = Path(__file__).resolve().parents[2] / "data" / "replay"
+#: 재생 날짜 상한(질문봉쇄 Q-01 되돌리기). 값(예: "2026-10-14")이 있으면 그 날짜(UTC) **이전** 캡처만 고른다 —
+#: Streamlit Secrets 한 줄로 9/29 재생으로 돌아간다. 시험은 이 값으로 옛 재생에 묶여 있다(tests/conftest.py).
+REPLAY_BEFORE_ENV: Final[str] = "HAZOP_REPLAY_BEFORE"
 _SOURCE_PRIORITY: Final[dict[str, int]] = {"live": 0, "gold": 1}
 
 
@@ -49,10 +53,16 @@ def _to_result(payload: dict[str, Any]) -> Result:
 
 
 def load_replays(directory: Path = REPLAY_DIR) -> dict[str, Result]:
-    """노드별 재생 1건씩. `live` > `gold` 순, 같은 source 안에서는 `captured_at` 최신."""
+    """노드별 재생 1건씩. `live` > `gold` 순, 같은 source 안에서는 `captured_at` 최신.
+
+    `HAZOP_REPLAY_BEFORE` 가 있으면 그 날짜 이전 캡처만 후보로 둔다(되돌리기).
+    """
+    before = os.environ.get(REPLAY_BEFORE_ENV, "").strip()
     by_node: dict[str, list[dict[str, Any]]] = {}
     for path in sorted(directory.glob("*.json")):
         payload = json.loads(path.read_text(encoding="utf-8"))
+        if before and str(payload.get("captured_at", "")) >= before:
+            continue
         if payload.get("source") in _SOURCE_PRIORITY:
             by_node.setdefault(str(payload.get("node", "N1")), []).append(payload)
     chosen: dict[str, Result] = {}

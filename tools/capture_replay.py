@@ -8,8 +8,12 @@ Streamlit 데모의 기본 모드는 실호출이 아니라 재생이다(노드 
     PYTHONIOENCODING=utf-8 python tools/capture_replay.py \\
         --node N1 --out data/replay/n1_20260928.json --source live > results_capture.log 2>&1
 
-- `--source live`: `HazopGenerator(get_bedrock_client(), load_generator_config())` 로 1회 생성.
-  **비용이 든다.** 키는 `ANTHROPIC_API_KEY` 환경변수만 본다(AC-12-3 — `.env` 를 읽지 않는다).
+- `--source live`: `HazopGenerator(get_bedrock_client(), load_generator_config(), criteria_id=--criteria)` 로 1회 생성.
+  **비용이 든다.** 키·공급자는 환경변수만 본다(AC-12-3 — `.env` 를 읽지 않는다). 대회 게이트웨이(Bedrock)로 찍으려면
+  `HAZOP_PROVIDER=gateway` + `KIRO_API_KEY`. 기본 평가기준은 앱 실호출과 같은 공식 기준(KOSHA C-C-37, 질문봉쇄 Q-01) —
+  10/14 이전 캡처는 골드셋 NH3 기준이었다(`--criteria nh3_sts_bunkering` 로 재현).
+- 저장 메타: `provider`(실제 공급자)·`model_id`(게이트웨이면 별칭)·`gateway`·`endpoint`·`prompt_version`·`criteria_id`·
+  `raw_calls`(호출마다 시각 `at`)·`node_meta` — 화면 출처 줄·'AI 가 한 일' 탭이 이 필드만 읽는다(하드코딩 금지).
 - `--source gold`: 골드셋의 해당 노드 레코드를 그대로 넣는다(PRD §9 Plan B). 생성 결과 아님.
 - `--split {tune,holdout}`: 골드 파일 선택. 기본은 N1 이면 tune, 나머지는 holdout(`data/gold/split_node.json`).
   골드셋이 없는 공정(`data/presets.json` 의 `gold: false`)의 노드는 항상 `split: "none"`, recall `null`.
@@ -37,10 +41,12 @@ if __package__ in (None, ""):  # `python tools/capture_replay.py` 로 직접 실
 
 from apps.web.catalog import load_catalog, nodes_by_id  # noqa: E402
 from core.agent import DeviationRecord, HazopGenerator, NodeMeta  # noqa: E402
-from core.agent.generate import load_generator_config  # noqa: E402
+from core.agent.generate import load_generator_config, prompt_version  # noqa: E402
+from core.criteria import OFFICIAL_CRITERIA, all_criteria  # noqa: E402
 from core.llm import (  # noqa: E402
     AbstractBedrockClient,
     ConfigValidationError,
+    effective_provider,
     get_bedrock_client,
     load_model_config,
 )
@@ -127,7 +133,7 @@ def capture_gold(node: str, split: str) -> dict[str, Any]:
 
 
 def capture_live(
-    node: str, split: str, client: AbstractBedrockClient | None = None
+    node: str, split: str, client: AbstractBedrockClient | None = None, criteria_id: str = OFFICIAL_CRITERIA
 ) -> dict[str, Any]:
     """실호출 1회. 원시 호출마다 출력 토큰·stop_reason 을 기록해 절단 여부를 남긴다.
 
@@ -142,14 +148,15 @@ def capture_live(
 
     def _observed(*args: Any, **kwargs: Any) -> Any:
         response = do_converse(*args, **kwargs)
-        raw_calls.append({"tokens_out": response.usage.output, "stop_reason": response.stop_reason})
+        raw_calls.append({"tokens_out": response.usage.output, "stop_reason": response.stop_reason,
+                          "at": datetime.now(UTC).isoformat(timespec="seconds")})
         contents.append(response.content)
         return response
 
     client._do_converse = _observed  # type: ignore[method-assign]  # noqa: SLF001
 
     gen_config = load_generator_config()
-    generator = HazopGenerator(client, gen_config)
+    generator = HazopGenerator(client, gen_config, criteria_id=criteria_id)
     started = time.perf_counter()
     records = generator.generate(NODE_METAS[node])
     latency = time.perf_counter() - started
@@ -177,10 +184,19 @@ def capture_live(
         len(records), latency, generator.total_cost_usd, generator.judged_cells,
         generator.expected_cells, generator.review_guidewords, len(raw_calls), truncated, max_tokens,
     )
+    provider = effective_provider(config)
+    gateway = provider == "gateway"
     return {
         "source": "live",
-        "provider": config.provider,
-        "model_id": config.generation.model_id,
+        "provider": provider,
+        "model_id": config.gateway.get("generation_model_id") if gateway else config.generation.model_id,
+        "gateway": config.gateway.get("base_url") if gateway else None,
+        "endpoint": "대회 AI 게이트웨이" if gateway else None,
+        "prompt_version": prompt_version(),
+        "criteria_id": generator.criteria.id,
+        "evidence_k": gen_config.evidence_k,
+        "inference_boundary": gen_config.inference_boundary,
+        "frequency_basis": gen_config.frequency_basis,
         "node_meta": NODE_METAS[node].model_dump(),
         "latency_s": round(latency, 1),
         "cost_usd": round(generator.total_cost_usd, 4),
@@ -206,6 +222,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--node", default="N1", choices=sorted(NODE_METAS))
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--source", default="live", choices=["live", "gold"])
+    parser.add_argument("--criteria", default=OFFICIAL_CRITERIA, choices=[c.id for c in all_criteria()],
+                        help="S·F 평가기준(기본: 앱 실호출과 같은 공식 기준)")
     parser.add_argument("--split", choices=sorted(GOLD_PATHS), default=None,
                         help="골드 파일 선택(기본: N1=tune, 그 외 골드 노드=holdout). 골드 없는 노드는 항상 none")
     args = parser.parse_args(argv)
@@ -215,8 +233,8 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     try:
-        capture = capture_live if args.source == "live" else capture_gold
-        body = capture(args.node, split)
+        body = (capture_live(args.node, split, criteria_id=args.criteria) if args.source == "live"
+                else capture_gold(args.node, split))
     except ConfigValidationError as exc:
         logger.error("config/models.yaml 미완성: %s", exc)
         return 1

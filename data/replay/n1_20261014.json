@@ -1,0 +1,3124 @@
+{
+  "schema_version": 1,
+  "source": "live",
+  "captured_at": "2026-10-14T03:58:48+00:00",
+  "node": "N1",
+  "split": "tune",
+  "provider": "gateway",
+  "model_id": "bedrock-claude-opus-4-8",
+  "gateway": "https://52.79.201.46/v1",
+  "endpoint": "대회 AI 게이트웨이",
+  "prompt_version": "80e65c4",
+  "criteria_id": "kosha_cc37_2026",
+  "evidence_k": 2,
+  "inference_boundary": true,
+  "frequency_basis": true,
+  "node_meta": {
+    "node": "N1",
+    "substance": "NH3",
+    "phase": "unknown",
+    "P_kPag": null,
+    "T_degC": null,
+    "design_P_kPag": null,
+    "capacity": null,
+    "equipment": [
+      "벙커링선 매니폴드"
+    ],
+    "safeguards": [],
+    "safeguards_known": false
+  },
+  "latency_s": 99.4,
+  "cost_usd": 1.1572,
+  "expected_cells": 70,
+  "judged_cells": 70,
+  "review_guidewords": [],
+  "recall": {
+    "recall": 0.875,
+    "matched": 7,
+    "total": 8
+  },
+  "parameters": [
+    "유량",
+    "압력",
+    "온도",
+    "조성",
+    "상 거동",
+    "커플링 연결 완결성",
+    "누출 격납",
+    "기동정지 절차",
+    "유틸리티",
+    "유지보수"
+  ],
+  "max_tokens": 16384,
+  "parallel_calls": 7,
+  "raw_calls": [
+    {
+      "tokens_out": 997,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T03:57:27+00:00"
+    },
+    {
+      "tokens_out": 1870,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T03:58:08+00:00"
+    },
+    {
+      "tokens_out": 3953,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T03:58:34+00:00"
+    },
+    {
+      "tokens_out": 4172,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T03:58:36+00:00"
+    },
+    {
+      "tokens_out": 3973,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T03:58:38+00:00"
+    },
+    {
+      "tokens_out": 4827,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T03:58:45+00:00"
+    },
+    {
+      "tokens_out": 4919,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T03:58:47+00:00"
+    },
+    {
+      "tokens_out": 5031,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T03:58:48+00:00"
+    }
+  ],
+  "truncated_calls": 0,
+  "records": [
+    {
+      "id": "n1-001",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "유량",
+      "deviation": "벙커링 이송 중 매니폴드를 통과하는 암모니아 흐름이 전혀 생기지 않아 이송이 중단된 상태",
+      "causes": [
+        "이송펌프 정지 또는 공급측 밸브 전폐로 흐름 소멸",
+        "매니폴드 밸브 오조작으로 유로가 완전히 막힘",
+        "커플링 내부 막힘·결빙으로 유로 차단"
+      ],
+      "consequences": [
+        "이송 중단으로 공급측 배관·펌프에 데드헤드 과압 형성",
+        "암모니아 액이 갇혀 외부 입열 시 열팽창으로 매니폴드 과압·누출 가능",
+        "벙커링 작업 지연"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "무유량·데드헤드 감지를 위한 유량·압력 지시 및 경보 설치 검토",
+        "밀폐구간 열팽창 완화용 압력방출 수단 설치 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-002",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "유량",
+      "deviation": "매니폴드를 통한 암모니아 이송 유량이 설계 의도보다 과도하게 증가한 상태",
+      "causes": [
+        "펌프 토출 과다 또는 송출측 가압 과대",
+        "유량 제어 밸브 과개도 또는 수용설비 측 수위·압력 수용능력 초과"
+      ],
+      "consequences": [
+        "과대 유량으로 인한 수격·압력 급상승",
+        "접속부·개스킷 과응력 및 암모니아 누출로 독성·부식성 노출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "이송 유량 상한 관리 및 과유량 경보·차단 로직 검토",
+        "벙커링 선-육상 간 유량·압력 통신 연동(이송속도 합의) 절차화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-003",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "유량",
+      "deviation": "매니폴드를 지나는 암모니아 이송량이 설계 의도보다 적어 벙커링 이송이 지연되거나 부분적으로만 진행되는 상태",
+      "causes": [
+        "펌프 토출 저하 또는 밸브 부분 개방으로 인한 유로 제한",
+        "커플링·호스 내 부분 폐색 또는 이물 축적",
+        "저온 액 플래싱으로 인한 기포 발생으로 유효 유량 감소"
+      ],
+      "consequences": [
+        "이송 시간 과다로 접속 유지 시간 증가에 따른 누출 노출 기회 확대",
+        "저유량 구간에서 액-기 2상 거동 심화로 흐름 불안정",
+        "독성 암모니아 이송 공정의 운전성 저하"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "매니폴드 유량 지시·저유량 경보 설정 검토",
+        "저유량 시 운전원이 조기 인지·대응할 수 있는 감시 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-004",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "유량",
+      "deviation": "매니폴드에서 암모니아가 설계 이송방향과 반대로 흐른다(수용설비→벙커링선 또는 그 반대의 역류).",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "체크밸브 유무",
+        "기존 안전장치"
+      ]
+    },
+    {
+      "id": "n1-005",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "유량",
+      "deviation": "매니폴드를 통한 암모니아 이송량이 설계 의도의 일부만 흘러 일부 분기·라인에만 유량이 분배되거나 부분 유량만 전달되는 상태",
+      "causes": [
+        "매니폴드 분기 밸브의 부분 개방 또는 일부 라인 폐색",
+        "커플링 체결부의 부분 유로 막힘(개스킷 돌출·이물질)",
+        "일부 라인 결빙·슬러지에 의한 유로 축소"
+      ],
+      "consequences": [
+        "의도 유량 미달로 이송 지연 및 과도상태 지속으로 접속부 응력 반복",
+        "일부 라인에 유체가 갇혀 국부 승압 또는 정체로 부식·응력 집중"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "매니폴드 각 분기별 유량·개도 확인 절차 수립",
+        "이송 전 라인 소통성(line clearance) 점검 체크리스트 적용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-006",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "유량",
+      "deviation": "설계 이송 유량에 더해 설계 의도에 없던 추가 유체 성분이 함께 흐르거나, 역류 성분이 정방향 흐름에 덧붙어 매니폴드를 통과한다",
+      "causes": [],
+      "consequences": [
+        "의도치 않은 방향·성분의 암모니아 흐름으로 설비 내 압력·조성 교란",
+        "역류 중첩에 따른 수격 발생으로 접속부 밀봉 손상 및 암모니아 누출"
+      ],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [
+        "매니폴드 양측 라인업 체크리스트와 역류 방지장치 설치 여부 확인 및 보완",
+        "이송 중 양방향 압력·유량 감시 및 역류 감지 경보 도입 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "체크밸브 유무",
+        "운전 라인업 절차"
+      ]
+    },
+    {
+      "id": "n1-007",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "압력",
+      "deviation": "매니폴드 내부 압력이 전혀 형성되지 않아(완전 상실) 설계 운전압이 달성되지 않는 상태",
+      "causes": [
+        "매니폴드 접속부·커플링 파손 또는 호스 파단으로 압력 전량 상실",
+        "상류 밸브 전폐 및 하류 개방으로 압력 유지 불가"
+      ],
+      "consequences": [
+        "암모니아의 급격한 외부 방출로 독성·부식성 증기 확산",
+        "액화 암모니아 방출 시 급격한 기화·냉각으로 주변 설비 저온 손상",
+        "방출 암모니아의 점화 시 화재 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "압력 급강하 감지 경보 및 자동 긴급차단 연동 검토",
+        "접속부 완결성 확인 절차 및 누출 감지 설비 설치 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#101-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "10. 안정성 및 반응성",
+          "quote": "증기는 매우 자극적이고 부식성이 있음"
+        },
+        {
+          "source_id": "MSDS-7664-41-7#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "일부 물질은 흡입, 섭취, 피부흡수 시 유독하거나 치명적일 수 있음"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-008",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "압력",
+      "deviation": "매니폴드 운전압이 상승하여 설계압을 초과하는 상태(과압)",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "설계압력",
+        "과압방지장치 유무",
+        "브레이크어웨이·ERC 유무"
+      ]
+    },
+    {
+      "id": "n1-009",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "압력",
+      "deviation": "매니폴드 운전압이 설계 의도보다 낮아 이송 추진력 부족 또는 액의 플래싱이 유발되는 상태",
+      "causes": [
+        "이송 펌프 압력 저하 또는 상류 공급압 감소",
+        "액화 암모니아의 압력 저하에 따른 비등점 접근으로 플래싱",
+        "접속부 미세 누출로 인한 계통 압력 손실"
+      ],
+      "consequences": [
+        "저압에서 액 암모니아 비등·기화로 2상류 발생 및 흐름 불안정",
+        "미세 누출 지속 시 독성·부식성 암모니아의 대기 방출",
+        "펌프 캐비테이션 등 설비 손상 경로"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "매니폴드 운전압 하한 감시 및 저압 경보 검토",
+        "운전자가 보기 쉬운 위치의 압력 지시로 압력 감시 체계 확보"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "운전자가 쉽게 조작할 수 있는 위치에 동력을 차단할 수 있는 조치를 할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-010",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "압력",
+      "deviation": "역류에 수반되어 하류측이 상류보다 높아지는 역방향 압력 구배가 매니폴드 접속부에 형성된다.",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "설계압력",
+        "운전압력",
+        "체크밸브 유무"
+      ]
+    },
+    {
+      "id": "n1-011",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "압력",
+      "deviation": "매니폴드 일부 구간만 설계 운전압에 도달하고 다른 구간은 저압으로 남아 압력이 불균일하게 분포하는 상태",
+      "causes": [
+        "일부 밸브 부분 개방으로 압력 전달이 일부 구간에 한정",
+        "커플링 부분 미체결로 압력이 일부에만 유지"
+      ],
+      "consequences": [
+        "국부적 과압 또는 밀봉면 압력 불균형으로 누설 경로 형성",
+        "독성·부식성 암모니아가 밀봉 결함부로 방출될 가능성"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "매니폴드 구간별 압력 모니터링 및 균압 확인 절차 도입",
+        "이송 개시 전 가압 단계별 누설·압력 확인 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-012",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "압력",
+      "deviation": "정상 운전압에 더해 수격·열팽창 등으로 인한 추가 과도 압력이 매니폴드 접속부에 중첩된다",
+      "causes": [],
+      "consequences": [
+        "접속부·개스킷 설계압 초과로 밀봉 파손 및 독성 암모니아 누출",
+        "순간 과압 중첩으로 호스·커플링 완결성 상실"
+      ],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [
+        "폐색 구간 열팽창 방호(과압 방출) 적용 여부 확인 및 보완",
+        "밸브 조작 속도 제어 및 수격 완화 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "설계압력",
+        "안전밸브 등 과압방호 유무"
+      ]
+    },
+    {
+      "id": "n1-013",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "온도",
+      "deviation": "매니폴드 유체 온도가 설계로 의도한 운전온도에 전혀 도달하지 못한 상태",
+      "causes": [
+        "액화 암모니아 통과 시 급격한 냉각으로 매니폴드 금속온도가 의도 범위를 크게 벗어남",
+        "쿨다운·예냉 절차 미이행으로 온도 조건 미달"
+      ],
+      "consequences": [
+        "저온 취화로 매니폴드·커플링 재질 균열 및 파손",
+        "밀봉재 수축으로 접속부 밀봉 상실 및 누출",
+        "누출 시 독성 암모니아 확산"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "저온 적합 재질 사용 및 재질 등급 확인",
+        "예냉(쿨다운) 절차 수립 및 금속온도 모니터링 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#091-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "9. 물리화학적 특성",
+          "quote": "초기 끓는점과 끓는점 범위: -33.35 ℃(@760 mmHg)"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-014",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "온도",
+      "deviation": "매니폴드 유체·금속 온도가 설계 의도보다 상승한 상태(과열)",
+      "causes": [
+        "외부 화염·열원 노출 또는 직사일광에 의한 입열",
+        "격리된 액화 암모니아 구간의 외부 가열에 의한 열팽창"
+      ],
+      "consequences": [
+        "액 봉입 구간 열팽창으로 압력 급상승 및 접속부 파열",
+        "암모니아 증기 방출로 독성 노출 및 가열 시 폭발 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 1,
+      "risk_score": 2,
+      "recommendations": [
+        "액 봉입(blocked-in) 구간 열팽창 방지장치 설치 검토",
+        "매니폴드 구역 화염·열원 관리 및 차열 조치 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "고압가스:가열하면 폭발할 수 있음"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-015",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "온도",
+      "deviation": "매니폴드 유체 온도가 설계 의도보다 낮아져 저온 상태가 되는 상태(액화 암모니아 비등점 영역 접근 포함)",
+      "causes": [
+        "액화 암모니아의 비등점 수준 저온 유체 이송",
+        "압력 저하에 따른 자기냉각(auto-refrigeration)으로 국부 저온화",
+        "저온 플래싱으로 금속 접촉부의 급냉"
+      ],
+      "consequences": [
+        "저온 취화에 취약한 재질에서 균열·파손 가능성",
+        "개스킷·밀봉재의 저온 경화로 밀봉 성능 저하 및 누출",
+        "저온 암모니아의 저온 화상 및 독성 노출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "저온 서비스 적합 재질 사용 여부 확인",
+        "매니폴드 온도 감시 및 저온 운전 한계 설정 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-016",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "온도",
+      "deviation": "저온 액화 암모니아 이송 시 매니폴드 일부 구간만 설계 온도까지 냉각(쿨다운)되고 일부는 상온으로 남아 온도가 불균일한 상태",
+      "causes": [
+        "쿨다운 절차 중 일부 구간만 냉각되어 온도 구배 발생",
+        "일부 라인에 저온 액이 부분적으로만 도달"
+      ],
+      "consequences": [
+        "급격한 국부 온도차로 열응력 발생 및 밀봉·접속부 변형",
+        "저온 노출부와 상온부 경계에서 취화·균열 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "단계적 쿨다운 절차와 구간별 온도 확인 수립",
+        "온도 구배 허용범위 관리 기준 마련"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-017",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "온도",
+      "deviation": "정상 이송 온도에 더해 플래싱·단열팽창에 따른 저온 성분이 매니폴드 재질에 추가로 작용한다",
+      "causes": [],
+      "consequences": [
+        "국부 저온 노출로 매니폴드 재질 취화 가능성 및 균열 진전",
+        "밀봉재 수축에 따른 접속부 누출"
+      ],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [
+        "저온 노출 가능 구간의 재질 등급 적합성 확인",
+        "급속 감압 금지 및 완만한 압력 변화 운전 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "재질 등급",
+        "운전온도"
+      ]
+    },
+    {
+      "id": "n1-018",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "조성",
+      "deviation": "매니폴드를 통과하는 유체가 의도한 암모니아 조성과 전혀 다른(수분·불순물 과다) 상태",
+      "causes": [
+        "접속·퍼지 불량으로 공기·수분이 유로에 잔류·혼입",
+        "커플링 체결 전 세정·배수 미흡으로 이물질 유입"
+      ],
+      "consequences": [
+        "수분 혼입에 따른 부식성 증대로 매니폴드·커플링 부식·열화",
+        "부식 진행 시 접속부 완결성 저하 및 누출로 독성 암모니아 방출"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "접속 후 질소 퍼지 및 수분·산소 농도 확인 절차 수립 검토",
+        "조성·순도 샘플링 또는 분석 체계 마련 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#101-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "10. 안정성 및 반응성",
+          "quote": "일부는 물과 격렬히 반응함"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-019",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "조성",
+      "deviation": "이송 암모니아 중 수분·불순물 함량이 설계 의도보다 증가한 상태",
+      "causes": [
+        "퍼지 불완전으로 공기·수분 잔류",
+        "선-육상 간 품질관리 미흡으로 수분 혼입 증가"
+      ],
+      "consequences": [
+        "수분 증가로 매니폴드·접속부 부식 촉진 및 완결성 저하",
+        "부식에 의한 미세 누출로 독성·부식성 암모니아 노출"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "이송 전 수분·순도 확인 및 퍼지 완료 확인 절차화",
+        "내식 재질 사용 및 접속부 부식 점검 주기 설정"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "증기는 매우 자극적이고 부식성이 있음"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-020",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "조성",
+      "deviation": "이송 암모니아 내 암모니아 농도가 설계 의도보다 낮아 수분·불활성가스 등 타 성분 비율이 높아진 상태",
+      "causes": [
+        "퍼지 불활성가스 잔류로 암모니아 순도 저하",
+        "접속·전환 과정에서 수분·공기 혼입",
+        "선측·육상측 유체 조성 차이에 따른 희석"
+      ],
+      "consequences": [
+        "수분 혼입 시 부식성 증가로 매니폴드·접속부 부식 가속",
+        "불활성가스 혼입으로 2상·불안정 흐름 및 이송 효율 저하",
+        "부식 진행에 따른 장기 완결성 저하 및 누출 경로 형성"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "이송 전 조성·수분 함량 확인 절차 검토",
+        "내식성 재질 적용 및 접속부 수분 혼입 방지 조치 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "압송하는 부식성 액체에 대하여 내식성(耐蝕性), 내열성 및 내한성을 가진 것을 사용할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-021",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "조성",
+      "deviation": "역류로 수용설비측 유체·불순물이 벙커링선 또는 매니폴드로 역유입되어 조성이 교차 오염된다.",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "체크밸브 유무",
+        "수용설비 유체 성상"
+      ]
+    },
+    {
+      "id": "n1-022",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "조성",
+      "deviation": "매니폴드를 통해 이송되는 유체가 순수 암모니아가 아닌 수분·불활성가스·타 화물 잔류물 등 설계 의도와 다른 조성으로 흐름",
+      "causes": [
+        "선측·육상측 저장계통에서 수분이나 공기 혼입",
+        "직전 화물·세정 잔류물이 라인·커플링에 남아 혼입",
+        "퍼지 불활성가스가 과도하게 혼입된 상태로 이송 개시"
+      ],
+      "consequences": [
+        "수분 혼입 시 암모니아 수용액 형성으로 매니폴드·커플링 금속의 부식·응력부식균열 진행",
+        "부식 진전으로 접속부 완결성 저하 및 독성·부식성 암모니아 누출 경로 형성",
+        "이송 유체 품질 저하 및 수용설비 오염"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "이송 전 라인·커플링 조성 확인 및 수분 관리 절차 수립",
+        "접촉부 재질의 암모니아·수분 적합성 확인"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#091-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "9. 물리화학적 특성",
+          "quote": "용해도: 54 g/100㎖(20℃)"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-023",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "조성",
+      "deviation": "이송 유체가 순수 암모니아가 아니라 수분·불활성가스·불순물이 일부 혼입된 조성으로 매니폴드를 통과하는 상태",
+      "causes": [
+        "퍼지 불활성가스가 유체에 부분 잔류",
+        "접속부 개방 중 수분·공기 혼입"
+      ],
+      "consequences": [
+        "수분 혼입 시 암모니아 수용액 형성으로 접속부·개스킷 부식 가속",
+        "불활성가스 혼입으로 이송 거동 변화 및 국부 2상 발생"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "접속 후 퍼지·건조 완료 확인 절차 수립",
+        "이송 유체 수분·순도 관리 기준 마련"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-024",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "조성",
+      "deviation": "순수 암모니아에 더해 수분·불활성가스·불순물이 함께 혼입되어 매니폴드를 통과한다",
+      "causes": [],
+      "consequences": [
+        "수분 혼입에 따른 접속부·금속 부식 가속으로 완결성 저하",
+        "불활성가스 혼입에 따른 이송 거동 교란 및 압력 변동"
+      ],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [
+        "이송 전 퍼지 완료 확인 및 수분·산소 농도 측정 절차 수립",
+        "유체 품질 사양 관리 및 접속부 재질 내부식성 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "퍼지 절차",
+        "유체 품질 사양"
+      ]
+    },
+    {
+      "id": "n1-025",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "상 거동",
+      "deviation": "의도한 단일 상(액상 이송)이 전혀 유지되지 못하고 플래싱으로 기상이 지배하는 상태",
+      "causes": [
+        "압력 저하 또는 입열로 액화 암모니아가 매니폴드 내에서 급격히 기화(플래싱)",
+        "예냉 미흡으로 접속 직후 2상류 발생"
+      ],
+      "consequences": [
+        "플래싱으로 급격한 체적 팽창 및 압력 변동으로 수격·진동 발생",
+        "기화 냉각으로 국부 저온부 형성 및 재질 취화",
+        "불안정한 거동으로 접속부 누출 가능"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "예냉 절차 및 압력 유지 관리로 플래싱 억제 검토",
+        "2상류 발생 구간 압력·온도 모니터링 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#091-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "9. 물리화학적 특성",
+          "quote": "초기 끓는점과 끓는점 범위: -33.35 ℃(@760 mmHg)"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-026",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "상 거동",
+      "deviation": "액화 암모니아의 기화량이 증가하여 2상류·증기 비율이 과도해진 상태",
+      "causes": [
+        "입열·압력강하로 인한 플래싱 증가",
+        "퍼지 불충분 또는 급속 이송 개시에 따른 2상 전이"
+      ],
+      "consequences": [
+        "2상류로 인한 유동 불안정·수격 및 압력 변동",
+        "증기 발생 증가로 접속부 누출 시 공기보다 무거운 증기운 확산"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "이송 전 라인 쿨다운·안정화 절차 수립",
+        "2상 발생 억제 위한 압력·온도 운전범위 관리"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "액화가스 증기는 공기보다 무겁기 때문에 지면을 따라 확산하니 주의하시오"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-027",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "상 거동",
+      "deviation": "매니폴드 내 액상 비율이 설계 의도보다 감소하여 기화·플래싱으로 기상 비율이 증가한 상태",
+      "causes": [
+        "압력 저하 또는 저유량 구간에서 액화 암모니아의 플래싱",
+        "접속부 유입 열에 의한 액의 부분 기화",
+        "저온 액의 자기냉각 불균형으로 2상 전이"
+      ],
+      "consequences": [
+        "2상류로 인한 흐름 맥동·수격 유발 및 접속부 응력 증가",
+        "기화 암모니아의 급팽창으로 밀봉부 누출 시 독성 가스 확산",
+        "이송 계량 오차 및 운전 불안정"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "이송 중 액-기 2상 발생 억제를 위한 압력·온도 관리 절차 검토",
+        "기상 방출 경로 및 누출 감지 체계 확보 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-028",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "상 거동",
+      "deviation": "액상 설계 의도와 달리 매니폴드 내에서 플래싱·기화로 2상 또는 기상 거동이 발생",
+      "causes": [
+        "이송 중 압력 저하로 액화 암모니아의 플래싱 발생",
+        "접속부·호스에서의 과도한 열 유입으로 국부 기화",
+        "불충분한 쿨다운 상태에서 액 이송 개시"
+      ],
+      "consequences": [
+        "급격한 기화로 국부 저온 및 압력 변동이 생겨 밀봉·접속부 응력 증가",
+        "2상류에 의한 수격·진동으로 커플링·개스킷 완결성 저하 및 독성 암모니아 누출",
+        "기화 시 증기운 형성으로 독성 노출 범위 확대"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "이송 전 쿨다운 및 압력 유지 절차 수립",
+        "2상류·기화 감지를 위한 접속부 온도·압력 모니터링 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#091-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "9. 물리화학적 특성",
+          "quote": "초기 끓는점과 끓는점 범위: -33.35 ℃(@760 mmHg)"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-029",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "상 거동",
+      "deviation": "매니폴드 내 암모니아가 전량 액상이 아니라 일부 기화되어 액-기 2상류로 통과하는 상태",
+      "causes": [
+        "불충분한 쿨다운으로 저온 액이 상온 배관에서 부분 플래싱",
+        "국부 압력강하 구간에서 액의 부분 기화"
+      ],
+      "consequences": [
+        "2상류에 의한 유동 불안정·수격으로 접속부 충격 하중",
+        "기포 거동에 따른 유량 변동 및 밀봉부 피로"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "충분한 쿨다운 및 가압 확보로 액상 유지 절차 수립",
+        "2상 발생 모니터링 지점 지정"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-030",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "상 거동",
+      "deviation": "설계 의도된 단일상 흐름에 더해 기상 성분이 함께 흘러 2상류가 매니폴드를 통과한다",
+      "causes": [],
+      "consequences": [
+        "2상류에 따른 유동 불안정·맥동으로 접속부 피로 및 누출",
+        "기화 성분 중첩으로 압력 교란 및 이송 효율 저하"
+      ],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [
+        "이송 전 라인 쿨다운 및 가압 유지로 단상 흐름 확보 절차 수립",
+        "접속부 상태 감시 및 2상류 발생 조건 운전 제한"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "운전압력",
+        "상(phase)",
+        "쿨다운 절차"
+      ]
+    },
+    {
+      "id": "n1-031",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "커플링 연결 완결성",
+      "deviation": "커플링이 전혀 체결되지 않았거나 미완결 상태에서 이송이 개시되어 접속 완결성이 성립하지 않은 상태",
+      "causes": [
+        "오접속·미체결 상태로 이송 밸브 개방",
+        "체결 확인 절차 누락 또는 커플링 손상·마모"
+      ],
+      "consequences": [
+        "접속부에서 암모니아 대량 누출로 독성 증기 확산 및 작업자 노출",
+        "누출 암모니아의 점화 시 화재",
+        "선-육상 설비 손상"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "체결 완료 확인 인터록 및 체결상태 점검 절차 수립 검토",
+        "오접속 방지 커플링 설계 적용 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "일부 물질은 흡입, 섭취, 피부흡수 시 유독하거나 치명적일 수 있음"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-032",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "커플링 연결 완결성",
+      "deviation": "체결 토크·접속 하중이 과도하여 커플링·개스킷이 손상되는 상태",
+      "causes": [
+        "과도한 체결력으로 개스킷 압착 손상",
+        "선체 거동·하중 전달로 접속부 과응력"
+      ],
+      "consequences": [
+        "접속부 밀봉 손상으로 암모니아 누출",
+        "독성·부식성 암모니아 노출로 인명 상해 및 설비 손상"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "접속부 접속용구 규격·체결 절차 표준화 및 사용 전 점검 시행",
+        "선체 운동 흡수용 가요성 연결 및 하중 완화 조치 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "접속용구를 사용하여 누출이 없도록 확실히 접속할 것"
+        },
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "매일 사용하기 전에 점검하고"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-033",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "커플링 연결 완결성",
+      "deviation": "커플링·호스 체결이 설계 의도보다 불완전하여 접속 강도·밀봉이 부족한 상태",
+      "causes": [
+        "체결 토크 부족 또는 개스킷 손상으로 밀봉 불완전",
+        "오접속·부분 체결 상태에서 이송 개시",
+        "진동·선체 거동으로 접속부 하중 집중 및 체결 이완"
+      ],
+      "consequences": [
+        "접속부에서 독성·부식성 암모니아 누출",
+        "체결 불완전 접속부의 조기 분리로 다량 방출",
+        "작업자 노출 및 주변 격리 필요 상황 발생"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "접속부 접속용구로 누출 없이 확실히 체결하는 절차 수립",
+        "매 사용 전 호스·접속용구 점검 및 결함 시 교환 절차 적용"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "접속용구를 사용하여 누출이 없도록 확실히 접속할 것"
+        },
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "매일 사용하기 전에 점검하고 손상ㆍ부식 등의 결함"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-034",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "커플링 연결 완결성",
+      "deviation": "역류 또는 역압이 커플링·호스 접속부에 설계와 반대방향 하중을 가해 체결 완결성을 위협한다(조기분리·역방향 유출).",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "브레이크어웨이·ERC 유무",
+        "체크밸브 유무"
+      ]
+    },
+    {
+      "id": "n1-035",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "커플링 연결 완결성",
+      "deviation": "설계된 정상 체결 상태와 다른 상태(오접속·규격 불일치 커플링 체결)로 이송 경로가 구성됨",
+      "causes": [
+        "선-육상/선-선 커플링 규격·종류 불일치로 오접속",
+        "체결 작업 오류로 설계와 다른 접속 구성",
+        "개스킷 종류·재질 혼용"
+      ],
+      "consequences": [
+        "불완전·부적합 접속으로 가압 이송 중 접속부 분리 또는 누출",
+        "독성·부식성 암모니아의 대량 누출 및 작업자 노출",
+        "접속부 손상에 따른 설비 운전정지"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "커플링 규격 호환성 확인 및 오접속 방지(키/크기 차별화) 설계 적용",
+        "접속 완료 후 체결 상태 점검 및 누설시험 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-036",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "커플링 연결 완결성",
+      "deviation": "커플링·호스 접속부가 완전히 체결되지 않고 일부만 체결되어 밀봉 의도의 일부만 달성된 상태",
+      "causes": [
+        "체결 토크·래치 일부만 걸림",
+        "개스킷·플랜지면 정렬 불량으로 부분 밀착"
+      ],
+      "consequences": [
+        "부분 체결부에서 암모니아 누설로 독성·부식성 노출",
+        "운전 중 하중으로 접속부 완전 분리 및 대량 방출 진전"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "체결 완료 확인(토크·래치 상태) 절차 및 2인 확인 도입",
+        "이송 개시 전 접속부 저압 누설시험 수행"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-037",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "커플링 연결 완결성",
+      "deviation": "정상 체결 상태에 더해 의도치 않은 추가 하중·장력이 커플링에 함께 작용한다",
+      "causes": [],
+      "consequences": [
+        "추가 하중 중첩으로 커플링 조기 분리·누출 가능성",
+        "체결부 변형에 따른 밀봉 상실로 독성 암모니아 방출"
+      ],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [
+        "선체 운동 한계 설정 및 브레이크어웨이·긴급분리장치 설치 여부 확인",
+        "호스 지지·장력 관리 및 체결 하중 모니터링 도입"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "브레이크어웨이·ERC 유무",
+        "선체 운동 허용 한계"
+      ]
+    },
+    {
+      "id": "n1-038",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "누출 격납",
+      "deviation": "매니폴드 접속부에서 누출된 암모니아를 전혀 격납하지 못하는 상태",
+      "causes": [
+        "접속부·개스킷 밀봉 상실로 누출 발생",
+        "조기분리(브레이크어웨이 미작동 또는 미설치 가능성)로 유로 개방 중 분리"
+      ],
+      "consequences": [
+        "독성·부식성 암모니아 증기의 광범위 확산 및 인명 피해",
+        "액 방출 시 급격한 기화로 증기운 형성",
+        "점화 시 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "드립트레이·방류구 등 1차 격납 수단과 긴급차단·브레이크어웨이 커플링 설치 검토",
+        "가스 감지기 및 비상대응 체계 마련 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "액화가스 증기는 공기보다 무겁기 때문에 지면을 따라 확산하니 주의하시오"
+        },
+        {
+          "source_id": "MSDS-7664-41-7#101-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "10. 안정성 및 반응성",
+          "quote": "증기는 매우 자극적이고 부식성이 있음"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-039",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "누출 격납",
+      "deviation": "접속부 누출량이 격납·회수 능력을 초과하여 대량 방출되는 상태",
+      "causes": [
+        "접속부·개스킷 파손으로 인한 다량 누출",
+        "격납·회수 수단 용량 초과"
+      ],
+      "consequences": [
+        "독성 암모니아 대량 방출로 인명 피해 및 환경 오염",
+        "주변 설비 부식 및 운전 중단"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "긴급차단 및 비상분리(ERC) 수단 설치·작동 검토",
+        "누출 감지·격납(드립트레이·물분무 커튼) 및 비상대응 절차 마련"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#061-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "6. 누출사고시 대처방법",
+          "quote": "물분무를 이용하여 증기를 줄이거나 증기구름을 흩뜨려서"
+        },
+        {
+          "source_id": "MSDS-7664-41-7#061-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "6. 누출사고시 대처방법",
+          "quote": "수로, 하수구, 지하실, 밀폐공간으로의 유입을 방지하시오"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-040",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "누출 격납",
+      "deviation": "접속부·밀봉부에서 소량 누출이 발생하여 1차 격납이 설계 의도보다 저하된 상태",
+      "causes": [
+        "개스킷·밀봉재 열화 및 미세 균열",
+        "부식·저온 경화에 따른 밀봉 성능 저하",
+        "접속부 체결 이완으로 미세 누출 경로 형성"
+      ],
+      "consequences": [
+        "독성 암모니아의 지속 미량 방출로 작업자 흡입 노출",
+        "자극적 냄새·호흡기 자극 등 건강 영향",
+        "확산 전 격리 및 물분무 대응 필요 상황"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "접속부 가스 감지 및 누출 조기 경보 체계 검토",
+        "누출 시 격리·물분무 대응 및 비상차단 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#061-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "6. 누출사고시 대처방법",
+          "quote": "가스가 완전히 확산되어 희석될 때까지 오염지역을 격리하시오"
+        },
+        {
+          "source_id": "MSDS-7664-41-7#061-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "6. 누출사고시 대처방법",
+          "quote": "물분무를 이용하여 증기를 줄이거나 증기구름을 흩뜨려서"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-041",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "누출 격납",
+      "deviation": "역류 과정에서 매니폴드 접속부로 독성·부식성 암모니아가 역방향으로 누출되어 격납이 실패한다.",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "접속부 안전장치 유무",
+        "체크밸브 유무"
+      ]
+    },
+    {
+      "id": "n1-042",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "누출 격납",
+      "deviation": "격납 경계 외부로 암모니아가 벗어나, 설계 의도와 다른 위치(대기·주변)에 물질이 존재하게 됨",
+      "causes": [
+        "접속부 개스킷 열화·부식성 조성에 의한 밀봉 손상",
+        "매니폴드 접속부 미세 누설이 격납되지 않음",
+        "드레인·배출경로를 통한 비의도적 방출"
+      ],
+      "consequences": [
+        "독성 암모니아 증기운 형성으로 작업자·주변 인명 노출 및 중독",
+        "부식성에 의한 주변 설비 손상 및 운전정지",
+        "자극적 냄새·독성으로 인한 대피·작업 중단"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "접속부 주변 가스 감지 및 격납(드립트레이·회수) 설비 검토",
+        "비상 차단 및 누출 대응 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#091-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "9. 물리화학적 특성",
+          "quote": "냄새: 자극적인 냄새"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-043",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "누출 격납",
+      "deviation": "접속부에서 미세 누출이 발생하여 격납 기능이 일부만 유지되고 소량 암모니아가 외부로 새어나오는 상태",
+      "causes": [
+        "개스킷·실 열화 또는 부분 손상",
+        "접속면 부분 밀봉 결함"
+      ],
+      "consequences": [
+        "독성 암모니아 소량 방출로 작업자 노출 및 환경 영향",
+        "누출 지속·확대 시 접속부 완전 상실로 진전"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "매니폴드 주변 가스감지 및 비상차단 연계 검토",
+        "누출 감지 시 비상조치·대피 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-044",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "누출 격납",
+      "deviation": "격납된 흐름에 더해 접속부에서 미소 누출이 함께 발생하여 암모니아가 대기로 방출된다",
+      "causes": [],
+      "consequences": [
+        "독성 암모니아 대기 방출로 작업자·주변 노출 위험",
+        "누출 지속 시 접속부 부식·확대로 대량 방출 전개"
+      ],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [
+        "가스 감지·누출 조기 감지 설비 및 긴급차단 수단 설치 여부 확인",
+        "접속부 밀봉재 주기 점검 및 누출 시 비상차단 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "가스감지·긴급차단 유무",
+        "누출 대응 절차"
+      ]
+    },
+    {
+      "id": "n1-045",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "기동정지 절차",
+      "deviation": "접속-퍼지-이송개시-종료-해제 과도 절차가 전혀 이행되지 않고 이송이 진행되는 상태",
+      "causes": [
+        "퍼지·배수 생략 등 절차 미이행",
+        "종료·해제 전 배관 감압·배액 미수행 상태에서 커플링 분리"
+      ],
+      "consequences": [
+        "잔류 암모니아가 가압 상태로 분리되어 대량 누출 및 독성 확산",
+        "공기·암모니아 혼입으로 접속부 거동 불안정",
+        "작업자 노출 및 화재 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "접속·퍼지·종료·해제 단계별 체크리스트 및 허가 절차 수립 검토",
+        "해제 전 감압·배액 확인 인터록 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "누출 시 모든 점화원을 제거하시오."
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-046",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "기동정지 절차",
+      "deviation": "이송 개시 시 승압·승온 속도가 과도하여 과도상태 부하가 커진 상태",
+      "causes": [
+        "급속 이송 개시로 인한 압력·유량 급상승",
+        "퍼지·안정화 단계 생략 또는 단축"
+      ],
+      "consequences": [
+        "수격·과압으로 접속부 손상 및 암모니아 누출",
+        "독성·부식성 노출 및 설비 완결성 저하"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "단계적 승압·승온 및 소유량 개시 절차 표준화",
+        "접속-퍼지-이송개시-종료-해제 체크리스트 운용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-047",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "기동정지 절차",
+      "deviation": "퍼지·이송개시 등 과도 운전 단계가 설계 의도보다 미흡하게 수행되어 잔류·불완전 조건이 남는 상태",
+      "causes": [
+        "이송 개시 전 퍼지 불충분으로 공기·수분 잔류",
+        "종료·해제 전 라인 감압·회수 미완료",
+        "절차 단계 누락 또는 과도 상태 조기 전환"
+      ],
+      "consequences": [
+        "해제 시 잔류 암모니아 방출로 작업자 노출",
+        "불완전 퍼지로 조성 이탈·부식 조건 형성",
+        "과도 단계 압력·상 거동 불안정으로 접속부 응력 증가"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "접속-퍼지-이송-종료-해제 단계별 체크리스트 절차 수립",
+        "해제 전 라인 감압·회수 확인 단계 명문화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-048",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "기동정지 절차",
+      "deviation": "접속-퍼지-이송-종료-해제 과도 단계에서 설계 의도와 다른 매질(미퍼지 공기·잔류 암모니아)이 라인에 존재한 상태로 다음 단계 진행",
+      "causes": [
+        "이송 개시 전 공기 퍼지 불완전으로 공기·수분 잔류",
+        "종료·해제 전 라인 내 암모니아 미회수·미퍼지",
+        "과도 단계 순서 오류"
+      ],
+      "consequences": [
+        "미퍼지 공기·수분 혼입으로 부식 및 조성 이탈 유발",
+        "해제 시 잔류 암모니아가 커플링 분리 지점에서 방출되어 작업자 노출",
+        "비정상 조성·상태 이송에 따른 매니폴드 완결성 저하"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "단계별 퍼지 완료 확인 및 인터록을 포함한 기동정지 절차 수립",
+        "해제 전 라인 회수·퍼지 확인 절차 명문화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-049",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "기동정지 절차",
+      "deviation": "접속-퍼지-이송개시-종료-해제 과도 절차 중 일부 단계만 수행되고 다음 단계로 진행되어 절차 의도의 일부만 달성된 상태",
+      "causes": [
+        "퍼지 미완료 상태로 이송 개시",
+        "종료 전 라인 블로다운·배액 일부 생략 후 해제"
+      ],
+      "consequences": [
+        "잔류 액·압력이 있는 상태에서 커플링 해제 시 암모니아 방출",
+        "불활성화 미완으로 공기 혼입 및 접속부 부식·거동 이상"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "단계별 완료 확인(퍼지·배액·감압) 체크리스트 의무화",
+        "단계 미완 시 다음 단계 진행 차단 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-050",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "기동정지 절차",
+      "deviation": "정상 이송 운전에 더해 접속·퍼지·해제 과도상태가 겹쳐 진행되어 추가 교란이 발생한다",
+      "causes": [],
+      "consequences": [
+        "잔압 상태 해제 시 암모니아 분출·누출",
+        "과도상태 중첩에 따른 압력·흐름 교란으로 접속부 손상"
+      ],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [
+        "단계별 완료 확인(인터록) 후 다음 단계 진행하도록 절차·확인점 수립",
+        "해제 전 감압·퍼지 완료 검증 절차 명문화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "기동정지 운전 절차",
+        "단계별 인터록 유무"
+      ]
+    },
+    {
+      "id": "n1-051",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "유틸리티",
+      "deviation": "퍼지용 불활성가스·질소 또는 제어공기 등 유틸리티 공급이 전혀 이루어지지 않는 상태",
+      "causes": [
+        "질소·제어공기 공급원 상실 또는 공급라인 차단"
+      ],
+      "consequences": [
+        "퍼지 불가로 공기·수분 잔류 및 혼입에 따른 부식·거동 변화",
+        "제어공기 상실 시 작동밸브 오작동으로 이송 제어 불능 및 누출 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "제어공기 상실 시 안전측(페일세이프) 밸브 동작 확인 검토",
+        "유틸리티 공급 압력 저하 경보 및 백업 확보 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-052",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "유틸리티",
+      "deviation": "퍼지용 불활성가스 공급 압력이 과도하여 라인에 과압이 가해지는 상태",
+      "causes": [
+        "질소 공급 압력 조절 실패로 과압 공급",
+        "퍼지 밸브 과개도 또는 감압 설비 고장"
+      ],
+      "consequences": [
+        "불활성가스 과압으로 매니폴드·접속부 과응력 및 손상",
+        "접속부 누출로 암모니아 방출"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "퍼지가스 공급압 제한 및 감압·릴리프 설비 검토",
+        "유틸리티 공급 압력 감시 및 과압 경보 설정"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-053",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "유틸리티",
+      "deviation": "퍼지용 불활성가스·제어공기 등 유틸리티 공급량이 설계 의도보다 부족한 상태",
+      "causes": [
+        "질소·불활성가스 공급압 저하 또는 공급 부족",
+        "제어공기 공급 저하로 밸브 구동력 부족",
+        "유틸리티 헤더 공유로 인한 공급 분산"
+      ],
+      "consequences": [
+        "퍼지 불충분으로 잔류 암모니아·수분 혼입 조건 형성",
+        "제어공기 부족 시 밸브 정상 동작 불가로 이송 제어 상실",
+        "과도 단계 안전 조치 수행 지연"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "퍼지용 불활성가스·제어공기 공급압 감시 및 저압 경보 검토",
+        "유틸리티 상실 시 안전 측 동작(페일세이프) 설계 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-054",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "유틸리티",
+      "deviation": "퍼지용 불활성가스·질소가 설계 의도와 다른 유체(공기·오염 가스)로 공급되거나 품질이 벗어남",
+      "causes": [
+        "질소/불활성가스 공급원 오류·교차연결로 공기 등 혼입",
+        "유틸리티 라인 오염으로 수분·불순물 유입",
+        "제어공기 품질 저하"
+      ],
+      "consequences": [
+        "퍼지 매질에 공기·수분 혼입 시 암모니아와 접촉하여 부식성 환경 조성",
+        "불완전 불활성화로 조성 이탈 및 설비 부식 진전",
+        "공급 품질 이탈이 과도운전 안전성 저하로 이어짐"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "퍼지용 불활성가스 품질·공급원 확인 및 교차연결 방지",
+        "유틸리티 건조·순도 관리 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-055",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "유틸리티",
+      "deviation": "퍼지용 불활성가스·제어공기 등 유틸리티가 일부만 공급되어 지원 기능의 일부만 달성된 상태",
+      "causes": [
+        "질소·불활성가스 공급압 저하로 부분 퍼지",
+        "제어공기 일부 상실로 밸브 일부만 작동"
+      ],
+      "consequences": [
+        "불완전 퍼지로 공기·수분 잔류 및 조성 이상 유발",
+        "제어 밸브 부분 작동으로 이송·차단 기능 저하"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "유틸리티 공급압·유량 모니터링 및 저하 경보 검토",
+        "퍼지 완료 판정 기준(불활성가스 농도) 마련"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-056",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "유틸리티",
+      "deviation": "공급 의도된 유틸리티에 더해 질소·제어공기가 공정 측으로 역류·혼입되어 함께 들어온다",
+      "causes": [],
+      "consequences": [
+        "질소 과잉 혼입에 따른 이송 거동 교란 및 조성 변동",
+        "공기(수분·산소) 혼입에 따른 부식 환경 조성"
+      ],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [
+        "퍼지·유틸리티 라인 역류 방지 및 격리 밸브 적용 여부 확인",
+        "유틸리티 공급 압력·유량 감시 및 혼입 방지 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "퍼지·유틸리티 라인 구성",
+        "역류방지 유무"
+      ]
+    },
+    {
+      "id": "n1-057",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "유지보수",
+      "deviation": "커플링·개스킷·밸브 정비 시 격리·배액·퍼지가 전혀 수행되지 않은 상태에서 작업하는 상태",
+      "causes": [
+        "격리·잠금 절차 미이행으로 암모니아 잔류 상태에서 개방",
+        "세정·퍼지 생략 후 분해 작업"
+      ],
+      "consequences": [
+        "잔류 암모니아 방출로 정비 작업자 급성 노출 및 중독",
+        "개방부에서 증기 확산 및 점화 시 화재"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "정비 전 격리·배액·퍼지 및 안전작업허가 절차 수립 검토",
+        "잔류 가스 농도 측정 후 개방 절차 마련 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#051-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "5. 폭발·화재시 대처방법",
+          "quote": "구조자는 적절한 보호구를 착용하시오."
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-058",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "유지보수",
+      "deviation": "유지보수 후 잔압·잔류 암모니아가 과도하게 남은 상태에서 작업·재가동되는 상황",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "격리·방출(퍼지) 절차",
+        "격리밸브·배출수단 유무",
+        "작업허가·LOTO 절차"
+      ]
+    },
+    {
+      "id": "n1-059",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "유지보수",
+      "deviation": "커플링·개스킷·밸브 점검·세정 시 격리·회수가 설계 의도보다 미흡하여 잔류 암모니아가 남은 상태",
+      "causes": [
+        "작업 전 라인 격리·감압·퍼지 불충분",
+        "개스킷·실 교체 시 잔류 액 회수 미완료",
+        "격리 밸브 누설로 작업 구간 잔압 존재"
+      ],
+      "consequences": [
+        "유지보수 작업자 암모니아 노출 및 저온 화상",
+        "잔류 압력 방출로 분출 위험",
+        "복구 후 밀봉 불량 시 재접속부 누출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "유지보수 전 격리·감압·퍼지·회수 확인 절차 및 작업허가 적용",
+        "작업 전 호스·접속용구 점검 및 결함품 교환 기준 적용"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "매일 사용하기 전에 점검하고 손상ㆍ부식 등의 결함"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-060",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "유지보수",
+      "deviation": "점검·격리·세정 작업 중 격리 불완전으로 잔류 암모니아가 작업지점으로 역류·역유입된다.",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "격리·블리드 절차",
+        "체크밸브 유무"
+      ]
+    },
+    {
+      "id": "n1-061",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "유지보수",
+      "deviation": "유지보수 중 설계와 다른 부품(비적합 개스킷·밸브·세정 잔류물)이 매니폴드에 적용·잔류함",
+      "causes": [
+        "교체 시 암모니아 비적합 재질 개스킷·부품 오사용",
+        "세정·점검 후 세정액·수분 잔류",
+        "격리 불완전 상태에서 작업 수행"
+      ],
+      "consequences": [
+        "비적합 부품으로 재가압 시 밀봉 손상 및 독성 암모니아 누출",
+        "세정 잔류 수분과 암모니아 접촉으로 부식 진행",
+        "격리 불완전으로 작업 중 암모니아 노출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "암모니아 적합 부품 지정 및 교체 품목 관리",
+        "유지보수 전 격리·배출·퍼지 및 작업 후 건조·확인 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-062",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "유지보수",
+      "deviation": "커플링·개스킷·밸브 점검·세정 시 격리·배액·불활성화가 일부만 수행된 상태에서 작업이 진행되는 상태",
+      "causes": [
+        "격리 밸브 일부만 차단하고 작업 착수",
+        "배액·퍼지 일부 생략으로 잔류 암모니아 존재"
+      ],
+      "consequences": [
+        "잔류 암모니아 분출로 정비 작업자 독성·부식성 노출",
+        "불완전 격리로 상류 압력 전달 및 접속부 재누설"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "안전작업허가 및 격리·배액·불활성화 완료 확인 절차 적용",
+        "정비 전후 접속부 누설시험 및 재체결 확인 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n1-063",
+      "node": "N1",
+      "node_meta": {
+        "node": "N1",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "벙커링선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "유지보수",
+      "deviation": "격리된 유지보수 상태에 더해 잔류 암모니아·잔압이 함께 존재한 채로 개방 작업이 이루어진다",
+      "causes": [],
+      "consequences": [
+        "개방 시 잔류 암모니아 방출로 작업자 독성 노출",
+        "잔압 중첩에 따른 부품 분출로 인적 상해"
+      ],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [
+        "안전작업허가·격리(LOTO) 및 퍼지·잔압 확인 절차 적용 여부 확인",
+        "개방 전 잔류 암모니아 농도·압력 확인 단계 명문화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "유지보수 격리·퍼지 절차",
+        "안전작업허가 체계"
+      ]
+    }
+  ]
+}

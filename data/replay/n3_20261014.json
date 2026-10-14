@@ -1,0 +1,3131 @@
+{
+  "schema_version": 1,
+  "source": "live",
+  "captured_at": "2026-10-14T04:02:27+00:00",
+  "node": "N3",
+  "split": "holdout",
+  "provider": "gateway",
+  "model_id": "bedrock-claude-opus-4-8",
+  "gateway": "https://52.79.201.46/v1",
+  "endpoint": "대회 AI 게이트웨이",
+  "prompt_version": "80e65c4",
+  "criteria_id": "kosha_cc37_2026",
+  "evidence_k": 2,
+  "inference_boundary": true,
+  "frequency_basis": true,
+  "node_meta": {
+    "node": "N3",
+    "substance": "NH3",
+    "phase": "unknown",
+    "P_kPag": null,
+    "T_degC": null,
+    "design_P_kPag": null,
+    "capacity": null,
+    "equipment": [
+      "수급선 매니폴드"
+    ],
+    "safeguards": [],
+    "safeguards_known": false
+  },
+  "latency_s": 97.8,
+  "cost_usd": 1.1705,
+  "expected_cells": 70,
+  "judged_cells": 70,
+  "review_guidewords": [],
+  "recall": {
+    "recall": 0.2857142857142857,
+    "matched": 2,
+    "total": 7
+  },
+  "parameters": [
+    "유량",
+    "압력",
+    "온도",
+    "준위",
+    "조성",
+    "상(phase) 변화",
+    "호스·연결부 건전성",
+    "기동정지",
+    "유틸리티",
+    "유지보수"
+  ],
+  "max_tokens": 16384,
+  "parallel_calls": 7,
+  "raw_calls": [
+    {
+      "tokens_out": 874,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T04:01:06+00:00"
+    },
+    {
+      "tokens_out": 3492,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T04:02:07+00:00"
+    },
+    {
+      "tokens_out": 3837,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T04:02:10+00:00"
+    },
+    {
+      "tokens_out": 4295,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T04:02:11+00:00"
+    },
+    {
+      "tokens_out": 3877,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T04:02:12+00:00"
+    },
+    {
+      "tokens_out": 4701,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T04:02:20+00:00"
+    },
+    {
+      "tokens_out": 4998,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T04:02:24+00:00"
+    },
+    {
+      "tokens_out": 5054,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T04:02:27+00:00"
+    }
+  ],
+  "truncated_calls": 0,
+  "records": [
+    {
+      "id": "n3-001",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "유량",
+      "deviation": "수급 작업 중 매니폴드를 통한 NH3 흐름이 전혀 형성되지 않아 분배가 중단됨",
+      "causes": [
+        "공급원 밸브 또는 매니폴드 분기 밸브가 닫힌 채로 운전",
+        "로딩암·호스 미연결 또는 커플링 체결 불량으로 유로 차단",
+        "라인 내 액봉·동결로 유로 폐색"
+      ],
+      "consequences": [
+        "수급 공정 지연 및 중단",
+        "펌프 운전 시 데드헤드로 승온·과압, 밀봉부 손상 및 NH3 누출 경로 형성",
+        "부식성·독성 NH3 누출 시 작업자 흡입 피해"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "밸브 정렬 확인 체크리스트 적용",
+        "흐름 유무를 운전원이 확인할 수 있는 유량 지시 수단 검토",
+        "데드헤드 방지를 위한 최소유량 보호 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#101-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "10. 안정성 및 반응성",
+          "quote": "증기는 매우 자극적이고 부식성이 있음"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-002",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "유량",
+      "deviation": "수급 중 설계 의도보다 과대한 NH3 유량이 매니폴드를 통과함",
+      "causes": [
+        "공급원(탱크로리·저장탱크) 압력이 높아 매니폴드 유입 유량 증가",
+        "하류 밸브 과도 개방 또는 수급 유량 조절 미흡",
+        "수격(급격한 밸브 조작)으로 인한 순간 과대 유량"
+      ],
+      "consequences": [
+        "과대 유량에 의한 수격·압력 상승으로 호스·연결부·배관 손상",
+        "손상부에서 독성·인화성 NH3 누출로 중독·화재·폭발 위험",
+        "급속 이송으로 하류 수용 설비 과충전 유발"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "유량 제한 오리피스 또는 과류방지밸브(엑세스플로우밸브) 설치 검토",
+        "수급 유량 상한 운전절차 수립 및 유량 지시·경보 설치 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#3",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제227조(호스 등을 사용한 인화성 액체 등의 주입)",
+          "quote": "호스 또는 배관 등의 결합부를 확실히 연결하고 누출이 없는지를 확인"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-003",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "유량",
+      "deviation": "수급 중 매니폴드를 통한 NH3 분배 유량이 설계 의도보다 낮아 일부 수급 라인으로 충분히 공급되지 않는 상태",
+      "causes": [
+        "공급원 압력 저하 또는 공급탱크 액위 저하",
+        "매니폴드 밸브 부분 폐쇄·오조작",
+        "라인·필터·커플링 내 이물질에 의한 부분 막힘",
+        "저온에 의한 유로 폐색(수분 동결 등)"
+      ],
+      "consequences": [
+        "수급 작업 지연 및 배치 미완료",
+        "일부 라인 저유량 체류로 액 NH3 국부 정체",
+        "유량 불균형에 따른 수급탱크 과충전/미충전 유발 가능"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "매니폴드 각 분기에 유량 지시·확인 수단 설치 검토",
+        "커플링·필터 차압 점검 절차 수립",
+        "수급 전후 유량/압력 밸런스 확인 절차 마련"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-004",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "유량",
+      "deviation": "수급선 매니폴드에서 NH3가 설계된 공급방향과 반대로 흘러 공급원·연결 설비 쪽으로 되돌아감",
+      "causes": [],
+      "consequences": [
+        "역류한 NH3가 수급차량·공급원 쪽으로 이동하여 과압·오염",
+        "부식성·독성 NH3가 의도치 않은 설비로 유입되어 설비 손상 및 누출 경로 형성",
+        "역류 중 커플링·호스 응력 변화로 누출 시 흡입독성·동상 노출"
+      ],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [
+        "수급선 각 분기에 역류방지(체크밸브) 유무 확인 및 미설치 시 설치 검토",
+        "수급 전·후 압력 균형 확인 절차 마련"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "체크밸브 유무",
+        "공급원·하류 압력 관계"
+      ]
+    },
+    {
+      "id": "n3-005",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "유량",
+      "deviation": "매니폴드로 설계된 다수의 분배 경로 중 일부에만 NH3가 흐르고 나머지 경로는 유량이 결여되어, 각 수급선에 의도한 분배 비율이 달성되지 않는 상태",
+      "causes": [
+        "일부 분배 밸브의 부분 개방 또는 오정렬로 특정 경로만 통류",
+        "일부 경로의 부분 폐색(이물·수화물)으로 분배 불균형",
+        "매니폴드 헤더 내 압력손실로 특정 지선만 우선 유동"
+      ],
+      "consequences": [
+        "흐르지 않는 경로에 NH3 액 또는 가스가 정체·액봉되어 국부 과압·열팽창 손상 경로로 진전",
+        "분배 불균형으로 수급 측 수위·압력 관리 실패 및 과충전 위험"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "각 분배 지선 유량·개도 확인 체크리스트 및 정렬 확인 절차 수립",
+        "지선별 유량 지시 또는 차압 모니터링 설치 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-006",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "유량",
+      "deviation": "정상 NH3 분배 흐름에 더해 의도치 않은 추가 경로로의 분기 유출(한 출구로만 보내야 할 때 다른 출구로도 동시에 흐름)이 발생함",
+      "causes": [
+        "매니폴드 출구 밸브 오정렬로 다중 경로 동시 개방",
+        "미사용 지선 밸브 미차단으로 추가 흐름 분기"
+      ],
+      "consequences": [
+        "의도치 않은 수용부로 NH3가 유입되어 과충전·과압",
+        "독성 NH3가 미격리 구간으로 확산되어 노출 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "출구별 밸브 정렬 확인 체크리스트 및 라인업 검증 절차 도입",
+        "미사용 지선 맹판·이중차단 적용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-007",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "압력",
+      "deviation": "매니폴드에 공급원 압력이 전혀 걸리지 않아 설계 이송압이 형성되지 않음",
+      "causes": [
+        "공급원 측 밸브 폐쇄 또는 공급원 압력 상실",
+        "상류 격리로 매니폴드 무가압"
+      ],
+      "consequences": [
+        "수급 흐름 미형성으로 작업 중단",
+        "무가압 상태에서 외부 공기 유입 시 NH3와 혼합·오염 가능"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "수급 전 공급원 압력 확인 절차 수립",
+        "매니폴드 압력 지시 수단 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-008",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "압력",
+      "deviation": "매니폴드가 설계 의도보다 높은 압력을 받아 과압 상태가 됨",
+      "causes": [
+        "공급원 압력이 매니폴드 수용 한계를 초과",
+        "폐색(막힌 밸브) 상태에서 액 NH3 열팽창으로 압력 상승",
+        "외기 가열·화재로 액화 NH3 증기압 상승"
+      ],
+      "consequences": [
+        "과압에 의한 배관·호스·연결부 파열",
+        "독성·인화성 NH3 대량 누출로 중독 및 화재·폭발 위험",
+        "주변 작업자 흡입 노출 및 설비 손상"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "폐색 구간 열팽창 과압 방지를 위한 안전밸브 설치 여부 확인 및 설치 검토",
+        "매니폴드 압력 지시·고압 경보 설치 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#38",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제261조(안전밸브 등의 설치)",
+          "quote": "과압에 따른 폭발을 방지하기 위하여 폭발 방지 성능과 규격을 갖춘 안전밸브 또는 파열판"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-009",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "압력",
+      "deviation": "매니폴드 수급 지점의 압력이 설계 의도보다 낮아져 액 NH3 이송 추진력이 부족한 상태",
+      "causes": [
+        "공급원(탱크로리/공급탱크) 압력 저하",
+        "자기냉각에 의한 NH3 증기압 저하",
+        "상류 밸브 오조작·부분폐쇄로 인한 공급압 손실",
+        "질소 패딩/승압 수단 부족"
+      ],
+      "consequences": [
+        "액 NH3 플래싱으로 기액 혼류 발생 및 유량 저하",
+        "수급 지연 및 라인 내 액봉·불안정 흐름",
+        "저압으로 인한 공기·수분 역유입 가능성(진공 접근 시)"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "매니폴드 압력 지시 및 저압 경보 설치 검토",
+        "수급 중 공급압 하한 관리 기준 수립",
+        "진공 발생 방지를 위한 운전범위 설정"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-010",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "압력",
+      "deviation": "매니폴드 일부 구간만 공급원 압력을 받고 다른 구간은 격리되어, 설계 의도된 전 구간 균압이 일부만 달성되는 상태",
+      "causes": [
+        "일부 격리밸브가 닫힌 상태에서 수급이 진행되어 구간 간 압력 불일치",
+        "부분 통류로 특정 구간에 공급원 압력이 그대로 전달"
+      ],
+      "consequences": [
+        "격리된 액 NH3 구간의 열팽창으로 국부 과압이 발생하고 연결부·배관 완결성 손상 및 독성·부식성 NH3 누출 경로로 진전",
+        "증기는 매우 자극적이고 부식성이 있어 누출 시 인체 노출 및 설비 부식"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "액봉 가능 구간에 열팽창 완화장치 설치 여부 검토",
+        "수급 전 전 구간 밸브 정렬·균압 확인 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#101-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "10. 안정성 및 반응성",
+          "quote": "증기는 매우 자극적이고 부식성이 있음"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-011",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "압력",
+      "deviation": "공급원 압력에 더해 열팽창·화재 가열에 의한 추가 압력이 중첩되어 매니폴드 내압이 상승함",
+      "causes": [
+        "양단 차단된 액 NH3 구간의 대기온도 열팽창",
+        "외부 화재·외기 가열에 의한 추가 압력 상승"
+      ],
+      "consequences": [
+        "매니폴드·연결부 완결성 상실로 액 NH3 분출",
+        "독성 NH3 대량 방출로 인명·설비 피해"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "양단 차단 구간에 열팽창 방지용 안전밸브 설치 여부 확인 및 보완",
+        "화재 방호·수막 설비 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#38",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제261조(안전밸브 등의 설치)",
+          "quote": "대기온도에서 액체의 열팽창에 의하여 파열될 우려가 있는"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-012",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "온도",
+      "deviation": "외기 가열 또는 화재 노출로 매니폴드·배관 온도가 설계 의도보다 상승함",
+      "causes": [
+        "직사광선·외기 가열에 의한 액화 NH3 온도 상승",
+        "인접 화재 노출로 설비 외벽 가열"
+      ],
+      "consequences": [
+        "온도 상승에 따른 액화 NH3 증기압 증가로 과압·파열",
+        "독성·인화성 NH3 누출 및 화재 확대"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "직사광선·복사열 차폐 및 소방수 냉각 설비 적용성 검토",
+        "온도·압력 모니터링 및 고온 경보 설치 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#091-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "9. 물리화학적 특성",
+          "quote": "증기압: 1013 ㎪(26℃)"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-013",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "온도",
+      "deviation": "감압·플래싱에 따른 자기냉각으로 매니폴드·배관 온도가 설계 의도보다 크게 낮아진 상태",
+      "causes": [
+        "액 NH3 감압 시 자기냉각(끓는점 -33.35℃까지 하강 가능)",
+        "급격한 유량 변화·교축에 의한 국부 냉각",
+        "수분 유입 시 동결로 유로 폐색"
+      ],
+      "consequences": [
+        "저온취화 가능 재질에서 균열·파단 위험",
+        "밸브·커플링 씰 경화로 누출 유발",
+        "저온 액 NH3 누출 시 동상 및 독성 노출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "저온 노출 구간 재질 적합성 확인(재질 등급 확인 필요)",
+        "감압 속도 제한 및 저온 모니터링 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#091-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "9. 물리화학적 특성",
+          "quote": "초기 끓는점과 끓는점 범위: -33.35 ℃"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-014",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "온도",
+      "deviation": "감압이 일부 구간에서만 일어나 그 구간만 자기냉각 저온에 이르러, 전 구간 온도가 균일하다는 의도가 부분적으로만 달성되는 상태",
+      "causes": [
+        "일부 경로에서만 액 NH3가 감압·플래싱하며 국부 자기냉각",
+        "부분 통류로 특정 구간에만 저온 유체가 머묾"
+      ],
+      "consequences": [
+        "국부 저온으로 재질 취화 및 연결부 수축에 의한 밀봉 저하로 NH3 누출 경로로 진전"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "저온 노출 가능 구간 재질 적합성 확인",
+        "감압 구간 온도 모니터링 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-015",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "온도",
+      "deviation": "정상 이송온도에 더해 외부 화재·외기 가열에 의한 추가 입열이 겹쳐 매니폴드 온도가 상승함",
+      "causes": [
+        "인접 화재 복사열 유입",
+        "주간 외기·직사에 의한 추가 가열"
+      ],
+      "consequences": [
+        "액 NH3 증발·내압 상승으로 연결부 누출",
+        "독성 NH3 방출 확산"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "매니폴드 구역 화재 방호 및 차양·단열 검토",
+        "고온 감지 및 비상격리 수단 보완"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-016",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "준위",
+      "deviation": "매니폴드·배관 내 액 NH3가 전혀 존재하지 않음(완전 가스상/비어 있음)",
+      "causes": [
+        "배출·퍼지 후 액 미도입 상태에서의 운전",
+        "공급원이 기상만 공급"
+      ],
+      "consequences": [
+        "의도한 액 NH3 분배 미달성으로 수급 목적 미달",
+        "건전성 측면 영향은 작으나 흐름 건전성 저하"
+      ],
+      "safeguards_before": [],
+      "S": 1,
+      "F": 2,
+      "risk_score": 1,
+      "recommendations": [
+        "수급 전 라인 충전 상태 확인 절차 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-017",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "준위",
+      "deviation": "매니폴드·배관 내 액 NH3 체류량이 과도하게 증가함(액봉)",
+      "causes": [
+        "양측 밸브 폐쇄로 액 NH3가 갇힘(액봉)",
+        "드레인·벤트 미작동으로 잔류 액 누적"
+      ],
+      "consequences": [
+        "갇힌 액 NH3의 열팽창으로 국부 과압·배관 파열",
+        "파열부에서 독성 NH3 누출로 중독 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "밸브 간 폐색 구간 열팽창 방지용 안전밸브 설치 검토",
+        "수급 전후 드레인·벤트 절차 명확화"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#38",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제261조(안전밸브 등의 설치)",
+          "quote": "대기온도에서 액체의 열팽창에 의하여 파열될 우려가 있는 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-018",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "준위",
+      "deviation": "매니폴드·배관 내 액 NH3 준위(체류량)가 의도보다 낮아 라인이 비거나 가스상만 흐르는 상태",
+      "causes": [
+        "공급 중단·저유량으로 액 공급 부족",
+        "자기냉각 플래싱으로 액이 기화하여 액상 체류 감소",
+        "배출·드레인 조작 과다"
+      ],
+      "consequences": [
+        "기상만 수급되어 충전 효율 저하 및 수급 지연",
+        "액-기 경계 변동으로 흐름 불안정"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "수급 라인 액상 확인 수단(사이트글라스 등) 검토",
+        "액상 공급 상태 유지 운전 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-019",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "준위",
+      "deviation": "매니폴드·배관 내에 설계 의도와 다른 상태인 액 NH3가 체류(액봉)하거나 기상 라인에 액적이 반입되어 흐름 건전성이 달라진 상태",
+      "causes": [
+        "접속해제·격리 후 저점부에 액 NH3가 배출되지 않고 잔류",
+        "감압·온도강하로 기상 라인 내 NH3 재응축",
+        "양단 밸브 폐쇄 구간에 갇힌 액이 외기 승온으로 팽창(액봉)"
+      ],
+      "consequences": [
+        "갇힌 액의 열팽창으로 배관·커플링 과압 및 파손, 액상 NH3 누출",
+        "액적 반입에 의한 수격·연결부 충격 손상",
+        "누출 시 독성 NH3 노출(흡입 자극·중독)"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "저점부 배수·배출 밸브 및 접속해제 전 완전 배출 절차 수립",
+        "밸브 폐쇄 구간의 열팽창 방지(열팽창 릴리프) 적용 여부 검토",
+        "액봉 가능 구간 식별 및 라인리스트 반영"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#091-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "9. 물리화학적 특성",
+          "quote": "초기 끓는점과 끓는점 범위: -33.35 ℃"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-020",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "준위",
+      "deviation": "일부 분배 경로에만 액 NH3가 체류·액봉되고 다른 경로는 가스만 통과하여, 의도된 배출·균일 흐름이 부분적으로만 달성되는 상태",
+      "causes": [
+        "낮은 지점·막힌 지선에 액이 고임",
+        "부분 통류로 비통류 구간에 액 잔류"
+      ],
+      "consequences": [
+        "고립된 액 NH3 구간의 열팽창에 의한 액봉 과압으로 연결부 손상 및 독성 NH3 누출",
+        "액적 반입으로 하류 수급 측 거동 교란"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "저점 드레인 및 액봉 완화장치 설치 여부 검토",
+        "수급 종료 후 잔액 배출 확인 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-021",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "준위",
+      "deviation": "기상 흐름에 더해 상류에서 반입된 액 NH3 액적·슬러그가 함께 유입되어 매니폴드 내 액이 체류함",
+      "causes": [
+        "상류 기액분리 미흡으로 액적 반입",
+        "저점부 응축·액 고임으로 액봉 형성"
+      ],
+      "consequences": [
+        "액슬러그에 의한 수격으로 연결부 손상·누출",
+        "액봉 구간 열팽창 과압 유발"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "저점 드레인 및 액 포집·배출 수단 마련",
+        "액적 반입 방지 상류 분리 성능 점검"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-022",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "조성",
+      "deviation": "매니폴드로 받은 물질이 NH3가 전혀 아닌 다른 물질임(완전 오물질 수급)",
+      "causes": [
+        "수급선 오정렬·커플링 오접속으로 타 물질 공급원과 연결",
+        "서로 다른 가스 배관의 불량 체결"
+      ],
+      "consequences": [
+        "타 물질과 NH3 설비 비적합으로 격렬 반응·부식 가능",
+        "독성·부식성 혼합물 형성 및 누출 시 인명 피해"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "서로 이어지지 않는 전용 접속기구 사용",
+        "배관·호스 색상 구분 및 꼬리표 부착으로 오체결 방지",
+        "수급 전 물질·접속 확인 이중 점검"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#9",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제233조(가스용접 등의 작업)",
+          "quote": "서로 이어지지 않는 구조의 접속기구 사용, 서로 다른 색상의 배관ㆍ호스의 사용 및 꼬리표 부착 등을 통하여 서로 다른 가스배관과의 불량체결을 방지할 것"
+        },
+        {
+          "source_id": "MSDS-7664-41-7#101-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "10. 안정성 및 반응성",
+          "quote": "일부는 물과 격렬히 반응함"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-023",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "조성",
+      "deviation": "수분·불순물 함량이 설계 의도보다 증가하여 NH3 조성이 변함",
+      "causes": [
+        "퍼지·건조 불량으로 매니폴드 내 수분 잔류",
+        "교차혼입(오정렬)으로 이종 물질 유입"
+      ],
+      "consequences": [
+        "수분과 NH3 반응으로 부식성 환경 형성, 금속 부식 가속",
+        "부식에 의한 연결부 열화로 누출 위험 증가"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "수급 전 건조 질소 퍼지 및 수분 확인 절차 수립",
+        "라인 오정렬 방지를 위한 전용 커플링·식별 관리"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-024",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "조성",
+      "deviation": "수급 NH3 중 유효 NH3 농도가 의도보다 낮아 불순물·수분·불활성가스 비율이 높아진 상태",
+      "causes": [
+        "퍼지용 질소 잔류 과다로 희석",
+        "라인 내 공기·수분 유입",
+        "오정렬·교차혼입에 의한 타 물질 혼입"
+      ],
+      "consequences": [
+        "수분 혼입 시 부식성 수용액 형성으로 설비 부식",
+        "제품 규격 미달 및 수급 재작업",
+        "불활성가스 혼입으로 수급 유량·압력 거동 교란"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "수급 전 라인 퍼지 및 잔류 질소 배출 확인 절차",
+        "조성·수분 분석 또는 샘플링 지점 검토",
+        "라인 정렬 확인(오정렬 방지) 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-025",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "조성",
+      "deviation": "역류로 하류·타 라인의 물질이 매니폴드로 거슬러 들어와 NH3 조성이 교차혼입됨",
+      "causes": [],
+      "consequences": [
+        "교차혼입된 물질과 NH3의 반응·오염으로 공급품질 저하",
+        "반응성 혼입 시 발열·국부 과압으로 설비 손상 및 누출",
+        "오염된 NH3가 공급원으로 역이송되어 광범위 품질·안전 영향"
+      ],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [
+        "역류방지장치 및 라인별 격리밸브 건전성 확인",
+        "이종 물질 라인 간 오접속 방지 식별·표시 적용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "체크밸브 유무",
+        "인접 라인 물질 종류"
+      ]
+    },
+    {
+      "id": "n3-026",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "조성",
+      "deviation": "수급 매니폴드에서 설계 의도와 다른 물질 또는 조성(교차혼입·불순물·수분)이 NH3 계통으로 유입된 상태",
+      "causes": [
+        "수급선 오정렬로 다른 공급원·다른 물질 라인에 교차 연결",
+        "커플링 불량체결로 비적합 물질 유입",
+        "퍼지 불충분으로 공기·수분 잔류 혼입"
+      ],
+      "consequences": [
+        "NH3와 비적합 물질의 혼입으로 예기치 못한 반응·발열",
+        "수분 혼입에 의한 부식성 환경 형성 및 설비 완결성 저하",
+        "오염된 NH3 누출 시 독성 노출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "서로 이어지지 않는 전용 접속기구 사용과 배관·호스 색상 구분·꼬리표 부착으로 불량체결 방지",
+        "수급 전 공급원 라벨·조성 확인 절차 및 라인업 체크리스트 운영",
+        "접속 전 질소 퍼지로 수분·공기 제거 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#9",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제233조(가스용접 등의 작업)",
+          "quote": "서로 이어지지 않는 구조의 접속기구 사용, 서로 다른 색상의 배관ㆍ호스의 사용 및 꼬리표 부착 등을 통하여 서로 다른 가스배관과의 불량체결을 방지할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-027",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "조성",
+      "deviation": "수급된 NH3에 수분·불순물 또는 타 물질이 일부 혼입되어, 순수 NH3라는 설계 조성이 부분적으로만 달성되는 상태",
+      "causes": [
+        "수급선 오정렬·교차연결로 타 물질 일부 혼입",
+        "퍼지 불완전으로 공기·수분 잔류 유입"
+      ],
+      "consequences": [
+        "수분 유입 시 NH3와 반응·부식 촉진으로 배관·연결부 열화 및 누출",
+        "일부는 물과 격렬히 반응하여 발열·압력 상승 가능"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "수급 전 라인 식별·정렬 확인 및 교차연결 방지 조치",
+        "수급 전 수분·불순물 분석 또는 퍼지 완료 확인 절차"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#101-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "10. 안정성 및 반응성",
+          "quote": "일부는 물과 격렬히 반응함"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-028",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "조성",
+      "deviation": "NH3에 더해 수분·공기 등 불순물 또는 타 물질이 함께 혼입되어 조성이 달라짐",
+      "causes": [
+        "수급선 오정렬·교차연결로 타 물질 혼입",
+        "퍼지 미흡으로 공기·수분 잔류"
+      ],
+      "consequences": [
+        "수분 혼입에 의한 부식 가속으로 연결부 열화·누출",
+        "불순물 혼입으로 수급 품질·공정 이상"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "수급 전 커플링 식별·전용 접속구 적용으로 교차연결 방지",
+        "연결·접속 전후 불활성가스 퍼지 절차 명문화"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#9",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제233조(가스용접 등의 작업)",
+          "quote": "서로 다른 가스배관과의 불량체결을 방지할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-029",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "상(phase) 변화",
+      "deviation": "액 NH3 반입량 증가로 기상 라인에 액적·액 체류가 늘어남",
+      "causes": [
+        "온도·압력 변동으로 기상 중 재응축",
+        "수급 초기 액 NH3 과다 반입"
+      ],
+      "consequences": [
+        "액적 반입으로 하류 수격·순간 과압 유발",
+        "수격에 의한 연결부 손상 및 NH3 누출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "기상 라인 녹아웃·배수 조치 적용성 검토",
+        "수급 시 상태(기/액) 확인 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-030",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "상(phase) 변화",
+      "deviation": "액상으로 의도된 NH3가 감압·입열로 부분 기화하여 액상 비율이 감소하고 기상이 증가한 상태",
+      "causes": [
+        "매니폴드 교축·감압에 의한 플래싱",
+        "외기·일사 입열로 액 NH3 비등",
+        "공급압 저하로 액상 유지 불가"
+      ],
+      "consequences": [
+        "기액 2상 흐름으로 수급 유량 저하 및 불안정",
+        "증기 발생에 따른 라인 압력 변동·수격 유발",
+        "액상 공급 전제 설비의 성능 저하"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "액상 유지 운전범위(압력·온도) 설정 검토",
+        "2상 흐름 저감을 위한 공급압 하한 관리"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#091-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "9. 물리화학적 특성",
+          "quote": "증기압: 1013 ㎪(26℃)"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-031",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "상(phase) 변화",
+      "deviation": "감압·온도변동으로 설계 의도와 다른 상(액→기 플래싱 또는 기→액 응축)이 매니폴드 내에 발생한 상태",
+      "causes": [
+        "액 NH3 이송 중 매니폴드 감압으로 플래싱(기화)",
+        "자기냉각에 따른 온도강하로 라인 내 재응축",
+        "커플링 접속해제 시 잔류 액의 급격한 기화"
+      ],
+      "consequences": [
+        "플래싱 기화 시 자기냉각으로 금속 취성·연결부 밀봉 열화",
+        "급격한 기화로 2상 흐름·수격 발생 및 연결부 손상",
+        "기화된 NH3의 다량 방출로 독성 가스운 형성 및 흡입 노출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "접속해제 전 감압·배출 순서를 정의한 수급 절차 수립",
+        "저온 취성 방지를 위한 재질 적합성 확인",
+        "2상·플래싱 가능 구간의 지지·앵커 점검"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#091-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "9. 물리화학적 특성",
+          "quote": "초기 끓는점과 끓는점 범위: -33.35 ℃"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-032",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "상(phase) 변화",
+      "deviation": "매니폴드 일부 구간에서만 NH3가 기액 혼상으로 존재하여, 의도한 단일 상 흐름이 부분적으로만 달성되는 상태",
+      "causes": [
+        "일부 구간 국부 감압·온도 변동으로 액의 부분 기화",
+        "비통류 구간 액 잔류로 혼상 형성"
+      ],
+      "consequences": [
+        "혼상 유동에 따른 유량 맥동·수격으로 연결부·배관 피로 손상 및 NH3 누출 경로로 진전"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "감압·혼상 발생 가능 지점 식별 및 운전 조건 관리",
+        "맥동·수격 완화 설계 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-033",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "상(phase) 변화",
+      "deviation": "단일상 흐름에 더해 감압·온도변동으로 2상(기액 혼재) 상태가 추가로 나타남",
+      "causes": [
+        "매니폴드 감압에 따른 액 NH3 플래싱",
+        "국부 자기냉각·가열로 기액 공존"
+      ],
+      "consequences": [
+        "2상 유동으로 수격·진동 유발, 연결부 피로·누출",
+        "기화 팽창으로 국부 과압"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "감압 거동 평가 및 2상 유동 완화 설계 검토",
+        "압력·온도 관측점 추가 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-034",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "호스·연결부 건전성",
+      "deviation": "로딩암·호스·커플링 연결부가 건전성을 전혀 유지하지 못하고 완전 탈락·파단으로 NH3가 대량 방출됨",
+      "causes": [
+        "호스·취관 손상·마모",
+        "접속부 조임기구 미사용으로 체결 불량",
+        "수급 중 차량 이동 등으로 로딩암·호스에 과도한 인장"
+      ],
+      "consequences": [
+        "액/가스 NH3 대량 누출로 독성 가스 확산",
+        "작업자 흡입·피부 접촉으로 치명적 피해",
+        "저온 액 분출 시 동상·설비 취화"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "누출 우려 없는 호스·취관 사용 및 조임기구 체결",
+        "브레이크어웨이·ERC 등 긴급분리 장치 유무 확인 후 미설치 시 설치 검토",
+        "수급 중 호스 장력 관리 및 정기 점검"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#9",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제233조(가스용접 등의 작업)",
+          "quote": "가스등의 호스와 취관(吹管)은 손상ㆍ마모 등에 의하여 가스등이 누출할 우려가 없는 것을 사용할 것"
+        },
+        {
+          "source_id": "LAW-OSH-STD-RULE#9",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제233조(가스용접 등의 작업)",
+          "quote": "호스밴드, 호스클립 등 조임기구를 사용하여 가스등이 누출되지 않도록 할 것"
+        },
+        {
+          "source_id": "MSDS-7664-41-7#101-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "10. 안정성 및 반응성",
+          "quote": "일부 물질은 흡입, 섭취, 피부흡수 시 유독하거나 치명적일 수 있음"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-035",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "호스·연결부 건전성",
+      "deviation": "수급 중 로딩암·호스·커플링에 과도한 응력·과충전이 작용해 누출·탈락 가능성이 증가함",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "브레이크어웨이·ERC 유무",
+        "호스·커플링 재질 등급"
+      ]
+    },
+    {
+      "id": "n3-036",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "호스·연결부 건전성",
+      "deviation": "로딩암·호스·커플링의 결합력·밀봉력이 의도보다 저하되어 접속부에서 미세 누출이 발생하는 상태",
+      "causes": [
+        "커플링 체결 불량·결합부 느슨함",
+        "씰·개스킷 노후·저온경화에 의한 밀봉력 저하",
+        "진동·반복 하중으로 체결력 저하"
+      ],
+      "consequences": [
+        "접속부 NH3 누출로 독성 노출(노출기준 TWA 25 ppm)",
+        "자극성 가스 확산으로 작업자 호흡기·눈 손상",
+        "누출 지속 시 인화성 가스 축적 및 점화 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "결합부 확실 연결 및 누출 확인 절차 준수",
+        "주기적 호스·커플링 교체·점검 기준 수립",
+        "접속부 가스 감지 및 비상 격리 수단 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#3",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제227조(호스 등을 사용한 인화성 액체 등의 주입)",
+          "quote": "호스 또는 배관 등의 결합부를 확실히 연결하고 누출이 없는지를 확인한 후에 작업을 하여야 한다"
+        },
+        {
+          "source_id": "NOTICE-EXPOSURE#13",
+          "doc_title": "화학물질 및 물리적 인자의 노출기준",
+          "issuer": "고용노동부",
+          "locator": "별표 1 화학물질의 노출기준 — 일련번호 389 암모니아",
+          "quote": "암모니아 │Ammonia │NH3 │25"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-037",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "호스·연결부 건전성",
+      "deviation": "역류가 발생한 상태에서 로딩암·호스·커플링에 역방향 압력·응력이 걸려 연결부 건전성이 위협받음",
+      "causes": [],
+      "consequences": [
+        "접속부 이완·탈락으로 NH3 누출, 흡입독성·동상·부식 노출",
+        "호스 파단 시 다량 NH3 분출로 인명·설비 피해"
+      ],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [
+        "역류방지장치 및 브레이크어웨이·ERC 유무 확인",
+        "수급 호스·커플링 사용 전 점검 및 역방향 하중 고려한 체결 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "체크밸브 유무",
+        "브레이크어웨이·ERC 유무",
+        "호스 재질 등급"
+      ]
+    },
+    {
+      "id": "n3-038",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "호스·연결부 건전성",
+      "deviation": "로딩암·호스·커플링 연결부에서 설계 의도와 다른 상태(마모·손상·불량체결)로 NH3가 누출되는 상태",
+      "causes": [
+        "호스·취관 마모·손상",
+        "커플링 상호 접촉부 조임 불량",
+        "접속 중 로딩암·호스에 과도한 장력·굽힘"
+      ],
+      "consequences": [
+        "연결부 누출로 액상·기상 NH3 방출, 작업자 흡입·접촉 노출",
+        "연결부 탈락·파단 시 대량 누출 및 독성 가스운 형성",
+        "저온 액 분출에 의한 동상·금속 취성"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "누출 우려 없는 호스·취관 사용 및 호스밴드·호스클립 등 조임기구로 접촉부 체결 확인",
+        "접속해제 전 호스 내 NH3 방출 방지 조치(퍼지·배출) 수행",
+        "브레이크어웨이 커플링·ERC 설치 여부 검토 및 정기 호스 점검 주기 설정"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#9",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제233조(가스용접 등의 작업)",
+          "quote": "가스등의 취관 및 호스의 상호 접촉부분은 호스밴드, 호스클립 등 조임기구를 사용하여 가스등이 누출되지 않도록 할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-039",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "호스·연결부 건전성",
+      "deviation": "로딩암·호스·커플링 중 일부 연결부만 정상 체결되고 나머지는 불완전 체결되어, 전 연결부 밀봉이라는 의도가 부분적으로만 달성되는 상태",
+      "causes": [
+        "일부 커플링 체결 불량·오정렬",
+        "일부 호스·개스킷 열화로 부분 밀봉 상실"
+      ],
+      "consequences": [
+        "불완전 연결부에서 액·가스 NH3 누출로 독성·부식성 가스 방출 및 인체 노출",
+        "접속 상태에서 이탈·탈락 시 다량 누출로 확대"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "체결 후 누설·압력 유지 시험 절차 수립",
+        "호스·커플링 정기 점검 및 교체 주기 관리"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#101-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "10. 안정성 및 반응성",
+          "quote": "증기는 매우 자극적이고 부식성이 있음"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-040",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "호스·연결부 건전성",
+      "deviation": "정상 접속 상태에 더해 커플링 체결 불량·호스 간섭 등 추가 결함이 동반되어 미세누설이 발생함",
+      "causes": [
+        "커플링 오체결·실링 손상",
+        "호스 마모·꼬임 등 추가 손상"
+      ],
+      "consequences": [
+        "연결부에서 독성 NH3 누출로 작업자 노출",
+        "누출 확대 시 광범위 독성 확산"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "접속 후 가압 리크테스트 및 체결 확인 절차 도입",
+        "호스·커플링 정기 점검 및 교체주기 설정"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#9",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제233조(가스용접 등의 작업)",
+          "quote": "호스밴드, 호스클립 등 조임기구를 사용하여"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-041",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "기동정지",
+      "deviation": "수급 기동정지 절차(연결·퍼지·접속해제)가 전혀 수행되지 않거나 누락된 채 작업이 진행됨",
+      "causes": [
+        "작업 중단·마치고 떠날 때 공급구 밸브·콕 미차단",
+        "접속해제 전 퍼지 미실시"
+      ],
+      "consequences": [
+        "잔류 NH3가 접속해제 시 방출되어 작업자 노출",
+        "오조작으로 가압 상태에서 분리 시 급격 누출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "작업 종료 시 공급구 밸브·콕 차단 절차 명문화",
+        "접속해제 전 퍼지·감압 확인 단계 포함",
+        "공급구 밸브에 사용자 이름표 부착 등 오조작 방지 표시"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#9",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제233조(가스용접 등의 작업)",
+          "quote": "작업을 중단하거나 마치고 작업장소를 떠날 경우에는 가스등의 공급구의 밸브나 콕을 잠글 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-042",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "기동정지",
+      "deviation": "수급 접속·해제 절차 중 과도한 조작·급속 승압으로 이탈이 발생함",
+      "causes": [
+        "접속 후 급속 밸브 개방으로 순간 과압·수격",
+        "퍼지·배출 미완료 상태에서 라인 가압"
+      ],
+      "consequences": [
+        "급속 승압에 의한 연결부 손상·NH3 누출",
+        "접속해제 시 잔류 가압 NH3 분출로 작업자 중독"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "단계적 승압·감압 운전절차 수립 및 체크리스트 적용",
+        "접속해제 전 격리·배출·퍼지 확인 절차 명문화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-043",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "기동정지",
+      "deviation": "수급 접속·퍼지가 불충분한 상태에서 작업을 진행하여 라인 준비도가 의도보다 미흡한 상태",
+      "causes": [
+        "접속 후 퍼지·치환 단계 생략·단축",
+        "결합부 미확인 상태에서 수급 개시",
+        "접속해제 전 잔압·잔류 NH3 미배출"
+      ],
+      "consequences": [
+        "불충분한 퍼지로 공기·NH3 혼합 가능성",
+        "접속해제 시 잔류 액·가스 분출로 독성 노출",
+        "수급 재작업 및 공정 지연"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "접속·퍼지·수급·접속해제 단계별 체크리스트 운용",
+        "접속해제 전 감압·배출 확인 절차 명문화"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#3",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제227조(호스 등을 사용한 인화성 액체 등의 주입)",
+          "quote": "결합부를 확실히 연결하고 누출이 없는지를 확인한 후에 작업"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-044",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "기동정지",
+      "deviation": "수급 접속해제·중단 절차 중 격리 전 하류 보유압으로 NH3가 역류하여 분출됨",
+      "causes": [],
+      "consequences": [
+        "작업자 근처에서 NH3 역방향 분출로 흡입독성·동상 노출",
+        "오접속·역류로 공급원 측 설비 오염·손상"
+      ],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [
+        "접속해제 전 격리·퍼지·압력확인을 명시한 수급 절차 수립",
+        "역류방지장치 작동 확인을 절차에 포함"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "수급 접속해제 절차",
+        "체크밸브 유무"
+      ]
+    },
+    {
+      "id": "n3-045",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "기동정지",
+      "deviation": "수급의 연결·퍼지·접속해제 배치 절차 중 설계 의도와 다른 순서·상태로 작업이 진행되어 NH3가 방출·잔류하는 상태",
+      "causes": [
+        "접속·해제 전 퍼지·배출 생략 또는 순서 오류",
+        "오조작으로 가압 상태에서 커플링 분리",
+        "작업자 간 공급 조작 혼선"
+      ],
+      "consequences": [
+        "가압 분리 시 잔류 NH3 분출로 작업자 흡입·접촉 노출",
+        "미방출 호스 분리로 액상 NH3 비산 및 동상",
+        "절차 혼선에 따른 오개방·누출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "공급구 밸브·콕에 사용자 이름표 부착 등 오조작 방지 표시 적용",
+        "작업 종료·이석 시 공급구 밸브·콕을 잠그는 절차 준수",
+        "연결-퍼지-수급-배출-해제 단계별 체크리스트 및 작업허가 운영"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#9",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제233조(가스용접 등의 작업)",
+          "quote": "가스등의 공급에 대한 오조작을 방지하기 위한 표시를 할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-046",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "기동정지",
+      "deviation": "연결·퍼지·접속해제 배치 절차의 일부 단계만 완료되고 나머지 단계가 생략되어, 의도된 전 절차가 부분적으로만 수행되는 상태",
+      "causes": [
+        "퍼지 단계 일부 생략 또는 불완전",
+        "격리·감압 미완료 상태에서 다음 단계 진행"
+      ],
+      "consequences": [
+        "잔류 NH3가 남은 상태에서 접속해제 시 독성·부식성 가스 분출 및 작업자 노출",
+        "불완전 퍼지로 공기·수분 혼입에 따른 반응·부식"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "단계별 완료 확인 체크리스트가 포함된 수급 절차서 수립",
+        "접속해제 전 잔압·잔액 확인 인터록 또는 점검 절차 도입 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-047",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "기동정지",
+      "deviation": "정상 수급 절차에 더해 접속해제·퍼지 단계가 겹치거나 추가 작업이 병행되어 절차가 중첩됨",
+      "causes": [
+        "퍼지 미완료 상태에서 접속해제 병행",
+        "복수 작업 동시 진행으로 절차 혼선"
+      ],
+      "consequences": [
+        "잔류 NH3가 분리 중 방출되어 작업자 노출",
+        "오접속·오개방으로 누출 사고"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "연결·퍼지·접속해제 단계별 작업허가 및 순서 잠금 절차 수립",
+        "접속해제 전 퍼지 완료 확인 체크포인트 설정"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-048",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "유틸리티",
+      "deviation": "퍼지용 불활성가스(질소)·계장공기·전원 등 유틸리티가 전혀 공급되지 않아 안전한 수급·격리가 불가능함",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "퍼지용 질소 등 유틸리티 공급 구성",
+        "계장공기·전원 사용 밸브 유무",
+        "유틸리티 상실 시 격리 로직"
+      ]
+    },
+    {
+      "id": "n3-049",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "유틸리티",
+      "deviation": "퍼지용 질소 공급압이 설계 의도보다 과도하게 증가함",
+      "causes": [
+        "질소 공급 압력조절기 고장으로 과압 공급",
+        "계장공기·질소 라인 압력 상승"
+      ],
+      "consequences": [
+        "과도한 퍼지 압력으로 매니폴드·연결부 과압·손상",
+        "손상부에서 NH3 누출로 중독 위험"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "질소 공급 라인 압력조절 및 과압 방지 조치 확인",
+        "퍼지 압력 상한 관리 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-050",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "유틸리티",
+      "deviation": "퍼지용 질소·계장공기 등 유틸리티 공급량이 의도보다 부족하여 수급·격리 지원 기능이 저하된 상태",
+      "causes": [
+        "질소 공급압·유량 저하로 퍼지 불충분",
+        "계장공기 압력 저하로 공압 밸브 작동 부족",
+        "유틸리티 헤더 압력 변동"
+      ],
+      "consequences": [
+        "퍼지 미흡으로 라인 내 NH3 잔류·치환 실패",
+        "공압 격리밸브 작동 저하로 비상 격리 지연",
+        "안전한 수급·접속해제 지원 기능 상실"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "퍼지 질소 공급압·유량 하한 관리 및 경보 검토",
+        "계장공기 상실 시 밸브 페일세이프 위치 확인(설정값 확인 필요)"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-051",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "유틸리티",
+      "deviation": "퍼지용 질소 등 유틸리티 공급이 역전되어 NH3가 유틸리티 라인으로 역류함",
+      "causes": [],
+      "consequences": [
+        "NH3가 유틸리티 헤더로 역류하여 타 사용처 오염·독성 확산",
+        "부식성 NH3 유입으로 유틸리티 배관 손상"
+      ],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [
+        "퍼지·유틸리티 연결부에 역류방지장치 유무 확인",
+        "유틸리티 압력 상실 시 자동 격리 수단 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "질소·퍼지 라인 역류방지 유무",
+        "유틸리티 공급압 조건"
+      ]
+    },
+    {
+      "id": "n3-052",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "유틸리티",
+      "deviation": "퍼지용 질소·불활성가스 또는 계장공기·전원 등 유틸리티가 설계 의도와 다른 상태(상실·부족)로 공급되어 안전한 수급·격리가 저해된 상태",
+      "causes": [
+        "질소 공급 상실로 접속·해제 전후 퍼지 불가",
+        "계장공기 상실로 작동 밸브 격리 실패",
+        "전원 상실로 감시·격리 기능 저하"
+      ],
+      "consequences": [
+        "퍼지 불가로 접속해제 시 잔류 NH3 방출·흡입 노출",
+        "격리 실패로 수급 중 누출 지속",
+        "공기·수분 혼입에 의한 조성 열화 및 부식"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "질소 퍼지 공급 신뢰성·압력 확인 및 상실 시 작업 중단 기준 수립",
+        "유틸리티 상실 시 안전측 격리(페일세이프) 설계 여부 검토",
+        "유틸리티 상실 경보·백업 공급 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-053",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "유틸리티",
+      "deviation": "퍼지용 질소·계장공기·전원 등 유틸리티 중 일부만 공급되어, 안전한 수급·격리에 필요한 유틸리티가 부분적으로만 확보되는 상태",
+      "causes": [
+        "질소 공급압 부족으로 퍼지 일부만 수행",
+        "계장공기·전원 부분 상실로 일부 밸브만 정상 동작"
+      ],
+      "consequences": [
+        "불완전 퍼지로 잔류 NH3 또는 공기 혼입 상태에서 작업 진행하여 노출·반응 위험",
+        "일부 격리밸브 동작 실패로 안전 격리 미달성"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "유틸리티 공급 상태(질소 압력 등) 확인 후 작업 개시 절차 수립",
+        "유틸리티 상실 시 안전측 거동(밸브 페일 포지션) 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-054",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "유틸리티",
+      "deviation": "정상 공급에 더해 퍼지용 질소에 다른 유틸리티나 오염원이 함께 공급되어 교차 유입이 발생함",
+      "causes": [
+        "질소 공급 라인에 타 유틸리티 오접속",
+        "퍼지 매체 오염·교차연결"
+      ],
+      "consequences": [
+        "퍼지 불량으로 잔류 NH3·공기 혼재, 접속해제 시 노출",
+        "오염 유틸리티 유입으로 조성 이상"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "퍼지용 질소 전용 접속·체크밸브 적용 여부 확인",
+        "유틸리티 접속구 식별·오접속 방지 조치"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-055",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "유지보수",
+      "deviation": "점검·격리·배출 작업 시 격리·배출이 전혀 이루어지지 않은 채 매니폴드가 개방됨",
+      "causes": [
+        "격리·배출·퍼지 절차 생략",
+        "오개방으로 가압·잔류 NH3 라인을 개방"
+      ],
+      "consequences": [
+        "잔류 NH3 분출로 작업자 흡입·피부 노출",
+        "부식성·독성 가스 확산으로 인명 피해"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "격리·배출·퍼지 완료 확인 후 개방하는 안전작업허가 절차 적용",
+        "개방 전 잔류 압력·농도 확인 단계 수립"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#101-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "10. 안정성 및 반응성",
+          "quote": "증기는 매우 자극적이고 부식성이 있음"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-056",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "유지보수",
+      "deviation": "유지보수 중 격리·배출이 불완전해 잔류 가압 NH3가 과도하게 남아 분출됨",
+      "causes": [
+        "점검 전 감압·배출 미완료로 라인에 가압 NH3 잔류",
+        "오개방으로 가압 상태 라인 분리"
+      ],
+      "consequences": [
+        "잔류 가압 NH3 분출로 작업자 중독·화상",
+        "주변 NH3 농도 상승으로 흡입 노출 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "작업허가·LOTO 및 잔압 확인 절차 수립",
+        "배출·퍼지 완료 확인 후 개방하는 절차 명문화"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [
+        "NOTICE-EXPOSURE#13: 암모니아"
+      ],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-057",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "유지보수",
+      "deviation": "점검·격리를 위한 배출·치환이 의도보다 불충분한 상태에서 매니폴드를 개방하는 작업 상태",
+      "causes": [
+        "격리·배출·퍼지 미완료 상태에서 개방",
+        "잔류 액 NH3 미배출로 개방 시 분출",
+        "격리 밸브 오개방·태그아웃 미비"
+      ],
+      "consequences": [
+        "잔류 NH3 분출로 작업자 독성·동상 노출",
+        "자극성 가스 확산에 의한 호흡기 손상",
+        "국부 가스 축적 시 점화 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "개방 전 격리·배출·치환 확인 및 LOTO 절차 적용",
+        "잔류 가스 측정 후 작업 허가 절차 수립",
+        "개인보호구 착용 및 환기 확보"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "NOTICE-EXPOSURE#13",
+          "doc_title": "화학물질 및 물리적 인자의 노출기준",
+          "issuer": "고용노동부",
+          "locator": "별표 1 화학물질의 노출기준 — 일련번호 389 암모니아",
+          "quote": "암모니아 │Ammonia │NH3 │25"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-058",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "유지보수",
+      "deviation": "점검·격리 작업 중 격리 불완전으로 잔류·역방향 NH3가 개방부로 거슬러 흘러나옴",
+      "causes": [],
+      "consequences": [
+        "유지보수 작업자가 역류한 NH3에 노출되어 흡입독성·동상·부식 피해",
+        "개방계통으로 NH3 방출 시 주변 대기 확산"
+      ],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [
+        "이중 격리·배출(2-valve isolation) 및 퍼지 확인 절차 적용",
+        "작업 전 잔압·역류 가능성 확인 및 보호구 착용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "격리·배출 절차",
+        "격리밸브 구성"
+      ]
+    },
+    {
+      "id": "n3-059",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "유지보수",
+      "deviation": "매니폴드 점검·격리·배출 작업 중 설계 의도와 다른 상태(잔류 NH3 존재·오개방)로 작업자가 NH3에 노출되는 상태",
+      "causes": [
+        "격리·배출 불완전으로 라인에 잔류 NH3 존재",
+        "격리 밸브 오개방 또는 식별 오류",
+        "분해 전 퍼지·세정 미실시"
+      ],
+      "consequences": [
+        "개방 작업 중 잔류 NH3 분출로 작업자 흡입·눈·피부 노출",
+        "오개방으로 가동 중 라인에서 역유입 누출",
+        "저온 잔류 액 접촉에 의한 동상"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "격리·배출·퍼지 완료 확인 후 개방하는 작업허가·LOTO 절차 수립",
+        "잔류 농도 측정 및 보호구 착용 기준 적용",
+        "격리점 식별·태그 부착으로 오개방 방지"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "NOTICE-EXPOSURE#13",
+          "doc_title": "화학물질 및 물리적 인자의 노출기준",
+          "issuer": "고용노동부",
+          "locator": "별표 1 화학물질의 노출기준 — 일련번호 389 암모니아",
+          "quote": "암모니아 │Ammonia │NH3 │25"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-060",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "유지보수",
+      "deviation": "점검·격리·배출 작업에서 일부 구간만 격리·배출되고 나머지 구간은 잔류 NH3가 남은 채로 개방되어, 의도된 전 구간 안전 격리가 부분적으로만 달성되는 상태",
+      "causes": [
+        "일부 격리밸브만 차단하고 나머지 미차단",
+        "배출·퍼지 일부 생략으로 잔류 NH3 존재"
+      ],
+      "consequences": [
+        "개방 시 잔류 액·가스 NH3 분출로 작업자 독성·부식성 노출 및 동상·화학적 손상",
+        "오개방으로 활성 구간과 통하여 다량 누출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "작업 전 격리·배출·퍼지 확인 및 안전작업허가 절차 적용",
+        "잔류 가스 측정 후 개방하는 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#101-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "10. 안정성 및 반응성",
+          "quote": "증기는 매우 자극적이고 부식성이 있음"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n3-061",
+      "node": "N3",
+      "node_meta": {
+        "node": "N3",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "수급선 매니폴드"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "유지보수",
+      "deviation": "격리·배출 작업에 더해 인접 활성 구간이 함께 개방되는 등 추가 개방이 동반됨",
+      "causes": [
+        "격리 범위 오설정으로 활성 구간 동시 개방",
+        "배출·점검 중 미차단 지선 잔류 NH3 존재"
+      ],
+      "consequences": [
+        "잔류·활성 NH3가 개방부로 방출되어 작업자 독성 노출",
+        "오개방 확대 시 누출 사고"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "격리 범위 확인 및 LOTO·안전작업허가 절차 적용",
+        "작업 전 잔류 NH3 배출·퍼지 및 농도 확인 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    }
+  ]
+}

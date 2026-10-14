@@ -100,6 +100,8 @@ SECRET_KEYS: Final[tuple[str, ...]] = (
     "ANTHROPIC_BASE_URL", "ANTHROPIC_AUTH_TOKEN", "HAZOP_ENDPOINT_LABEL",
     # PRD 추론경계·Kiro K-1~K-4: 대회 AI 모델 게이트웨이(OpenAI 호환) 선택과 그 키
     "HAZOP_PROVIDER", "KIRO_API_KEY", "HAZOP_GATEWAY_KEY",
+    # 질문봉쇄 Q-01 되돌리기 — 이 날짜 이전 재생만 보인다(예: 2026-10-14 → 9/29 재생)
+    "HAZOP_REPLAY_BEFORE",
 )
 GATEWAY_LABEL: Final[str] = "대회 AI 게이트웨이"
 #: `ANTHROPIC_BASE_URL` 이 있을 때 출처 줄에 붙는 경유 표시. Bedrock 경유는 운영사 확인 뒤에만

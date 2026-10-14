@@ -70,8 +70,15 @@ def _screens(monkeypatch: pytest.MonkeyPatch) -> list[tuple[str, str]]:
 
 @pytest.fixture(scope="module")
 def screens() -> list[tuple[str, str]]:
+    """화면에 실제로 나가는 재생(날짜 상한 없음)으로 그린다 — conftest 의 고정을 이 모듈만 푼다."""
     with pytest.MonkeyPatch.context() as mp:
+        mp.delenv("HAZOP_REPLAY_BEFORE", raising=False)
         return _screens(mp)
+
+
+@pytest.fixture(autouse=True)
+def _current(current_replays: None) -> None:
+    """이 모듈의 시험 몸통(load_replays 호출)도 현재 재생을 본다."""
 
 
 def test_no_internal_worksheet_wording_on_any_screen(screens: list[tuple[str, str]]) -> None:

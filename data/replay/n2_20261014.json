@@ -1,0 +1,3486 @@
+{
+  "schema_version": 1,
+  "source": "live",
+  "captured_at": "2026-10-14T04:00:46+00:00",
+  "node": "N2",
+  "split": "holdout",
+  "provider": "gateway",
+  "model_id": "bedrock-claude-opus-4-8",
+  "gateway": "https://52.79.201.46/v1",
+  "endpoint": "대회 AI 게이트웨이",
+  "prompt_version": "80e65c4",
+  "criteria_id": "kosha_cc37_2026",
+  "evidence_k": 2,
+  "inference_boundary": true,
+  "frequency_basis": true,
+  "node_meta": {
+    "node": "N2",
+    "substance": "NH3",
+    "phase": "unknown",
+    "P_kPag": null,
+    "T_degC": null,
+    "design_P_kPag": null,
+    "capacity": null,
+    "equipment": [
+      "이송 호스"
+    ],
+    "safeguards": [],
+    "safeguards_known": false
+  },
+  "latency_s": 96.8,
+  "cost_usd": 1.199,
+  "expected_cells": 77,
+  "judged_cells": 77,
+  "review_guidewords": [],
+  "recall": {
+    "recall": 0.2222222222222222,
+    "matched": 2,
+    "total": 9
+  },
+  "parameters": [
+    "유량",
+    "압력",
+    "온도",
+    "조성",
+    "상(phase) 변화",
+    "호스 물리적 완결성",
+    "커플링·연결부 누설",
+    "정전기·접지",
+    "이송 작업 절차",
+    "유틸리티",
+    "유지보수·점검"
+  ],
+  "max_tokens": 16384,
+  "parallel_calls": 7,
+  "raw_calls": [
+    {
+      "tokens_out": 1003,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T03:59:27+00:00"
+    },
+    {
+      "tokens_out": 2175,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T04:00:07+00:00"
+    },
+    {
+      "tokens_out": 4312,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T04:00:33+00:00"
+    },
+    {
+      "tokens_out": 4434,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T04:00:34+00:00"
+    },
+    {
+      "tokens_out": 4988,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T04:00:40+00:00"
+    },
+    {
+      "tokens_out": 5042,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T04:00:41+00:00"
+    },
+    {
+      "tokens_out": 4896,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T04:00:41+00:00"
+    },
+    {
+      "tokens_out": 2752,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T04:00:42+00:00"
+    },
+    {
+      "tokens_out": 5328,
+      "stop_reason": "tool_use",
+      "at": "2026-10-14T04:00:46+00:00"
+    }
+  ],
+  "truncated_calls": 0,
+  "records": [
+    {
+      "id": "n2-001",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "유량",
+      "deviation": "이송 호스 내 NH3가 전혀 흐르지 않아 받는 측·내보내는 측 간 이송이 성립하지 않는 무유량 상태",
+      "causes": [
+        "커플링 폐색 또는 밸브 미개방으로 유로 완전 차단",
+        "구동 압력원 상실로 이송 추진력 소실",
+        "호스 꺾임·찌그러짐에 의한 유로 막힘"
+      ],
+      "consequences": [
+        "이송 목표 미달성에 따른 작업 중단",
+        "차단 상태에서 구동이 계속되면 호스 내 압력 상승으로 완결성 위협",
+        "밀폐 구간 승압 시 호스·커플링 파손 및 NH3 누출로 인한 독성·화재 노출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "운전자가 보기 쉬운 위치의 압력계 감시로 무유량 중 승압 조기 인지",
+        "이상압력 시 동력 차단 조작 위치 확보 및 과압방지장치 설치 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "호스 내부에 이상압력이 가하여져 위험할 경우에는 압송에 사용하는 설비에 과압방지장치를 설치할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-002",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "유량",
+      "deviation": "이송 호스를 통한 NH3 유량이 설계 의도보다 과다하게 흐른다.",
+      "causes": [
+        "이송 구동 압력원의 압력 과다",
+        "밸브 과도 개방·조작 오류"
+      ],
+      "consequences": [
+        "호스 내 유속 상승으로 수격·압력 상승",
+        "유동에 의한 정전기 축적 증가로 점화원 형성 가능",
+        "호스 완결성 저하 시 NH3 누출로 독성·화재 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "이송 구동 압력원에 유량·압력 제한 설정",
+        "유량 모니터링 및 과유량 경보 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-003",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "유량",
+      "deviation": "NH3 이송 중 설계 의도보다 유량이 적게 흐른다",
+      "causes": [
+        "호스 부분 꺾임·막힘으로 유로 축소",
+        "구동 압력원 부족으로 이송 추진력 저하",
+        "커플링 부분 폐색"
+      ],
+      "consequences": [
+        "이송 시간 지연 및 운전성 저하",
+        "유량 저하로 호스 내 체류·국부 가열 가능",
+        "저유량 상태 지속 시 수요측 공정 차질"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "이송 유량 지시·확인 수단 마련",
+        "호스 폐색·꺾임 점검 절차 반영"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-004",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "유량",
+      "deviation": "이송 호스 내 NH3가 설계 이송 방향과 반대로 받는 측 또는 상류로 역류한다.",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "체크밸브 유무",
+        "브레이크어웨이·ERC 유무",
+        "이송 구동 압력원 정지 시 하류 압력 조건"
+      ]
+    },
+    {
+      "id": "n2-005",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "유량",
+      "deviation": "이송 중 설계 유량의 일부만 전달되어 호스 내 흐름이 설계 의도보다 부분적으로만 달성됨",
+      "causes": [
+        "커플링 부분 체결·오접속으로 유로가 부분 폐색",
+        "호스 내부 꺾임·부분 막힘으로 유효 단면 감소",
+        "액상 일부가 기화하여 유효 유량 저하"
+      ],
+      "consequences": [
+        "이송 시간 지연으로 작업 장시간화",
+        "부분 흐름 구간에서 압력 축적 또는 체류로 호스 완결성 저하",
+        "불완전 이송으로 재작업·재연결 중 NH3 누출 가능"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "이송 전·중 유량/압력 감시 및 흐름 이상 시 중단 절차 수립",
+        "커플링 체결 상태 확인 체크리스트 적용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-006",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "압력",
+      "deviation": "호스 내부 압력이 설계 의도대로 형성되지 못해 이송에 필요한 압력이 전혀 서지 않거나 반대로 이상 과압이 발생하는 상태",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "호스 사용정격압력",
+        "과압방지장치 유무",
+        "압력계 설치 여부"
+      ]
+    },
+    {
+      "id": "n2-007",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "압력",
+      "deviation": "호스 내부 압력이 사용정격압력을 초과하여 과압 상태가 된다.",
+      "causes": [
+        "이송 구동 압력원 과압",
+        "주위온도 상승에 따른 액화 NH3 증기압 증가",
+        "하류 폐색 상태에서 압송 지속"
+      ],
+      "consequences": [
+        "호스 본체 또는 커플링 파열로 NH3 다량 누출",
+        "NH3 독성 노출 및 인화성 가스 방출로 화재·폭발 위험",
+        "주변 설비 손상 및 운전정지"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "호스에 사용정격압력 표시 및 초과 압송 금지",
+        "이상압력 발생 가능 시 과압방지장치 설치 검토",
+        "운전자가 보기 쉬운 위치에 압력계 설치 및 감시"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "호스에 사용정격압력을 표시하고 그 사용정격압력을 초과하여 압송하지 아니할 것"
+        },
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "호스 내부에 이상압력이 가하여져 위험할 경우에는 압송에 사용하는 설비에 과압방지장치를 설치할 것"
+        },
+        {
+          "source_id": "MSDS-7664-41-7#091-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "9. 물리화학적 특성",
+          "quote": "증기압: 1013 ㎪(26℃)"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-008",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "압력",
+      "deviation": "호스 내부 이송 압력이 설계 의도보다 낮게 유지된다",
+      "causes": [
+        "구동 압력원 저하",
+        "상류측 누설로 압력 손실",
+        "커플링 미세 누설"
+      ],
+      "consequences": [
+        "이송 성능 저하로 액이송 불안정",
+        "압력 저하에 따른 플래싱 유발 가능",
+        "저압 조건에서 외부 공기 유입 경로 형성 우려"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "운전자가 보기 쉬운 위치에 압력계 설치 및 감시",
+        "저압 조건에서의 이송 중단 기준 마련"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [
+        "LAW-OSH-STD-RULE#74: 운전자가 보기 쉬운 위치에 압력계를 설치하고"
+      ],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-009",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "압력",
+      "deviation": "구동 압력원 정지나 하류 압력 상승으로 호스 내 압력 구배가 역전되어 NH3가 역방향으로 밀린다.",
+      "causes": [
+        "이송 구동 압력원의 정지 또는 압력 저하",
+        "하류 측 압력이 공급 측보다 높아지는 운전 조건",
+        "밸브 조작 오류로 인한 압력 역전"
+      ],
+      "consequences": [
+        "NH3가 받는 측 설비로 역류하여 과압 또는 오염 발생",
+        "역류에 따른 수격으로 호스·연결부 손상 및 NH3 누출",
+        "누출된 NH3의 독성·부식성 노출 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "역류 방지용 체크밸브 설치 검토",
+        "압송 설비 운전자가 보기 쉬운 위치에 압력계 설치 및 감시",
+        "압력 역전 조기 감지 및 동력 차단 조치 마련"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [
+        "LAW-OSH-STD-RULE#74: 운전자가 보기 쉬운 위치에 압력계를 설치하고 운전자가 쉽게 조작할 수 있"
+      ],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-010",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "압력",
+      "deviation": "호스 내 일부 구간만 설계 압력에 도달하고 다른 구간은 저압으로 남아 압력 분포가 부분적으로만 달성됨",
+      "causes": [
+        "부분 폐색·꺾임으로 하류 저압·상류 과압 발생",
+        "액상 일부 플래싱으로 국부 압력 변동",
+        "구동 압력원 공급 부족으로 전 구간 가압 미달"
+      ],
+      "consequences": [
+        "국부 과압 구간에서 호스·커플링 완결성 저하 및 NH3 누출",
+        "저압 구간 베이퍼락으로 이송 중단"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "이송 전 과압방지 조치 및 호스 사용정격압력 초과 금지 확인",
+        "이상압력 시 자동/수동 차단 수단 마련"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "호스 내부에 이상압력이 가하여져 위험할 경우에는 압송에 사용하는 설비에 과압방지장치를 설치할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-011",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "온도",
+      "deviation": "주위온도·이송조건으로 호스 내 NH3 온도가 설계 범위를 전혀 벗어나 재질 적합 온도조건이 성립하지 않는 상태",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "호스 재질 등급(내열·내한)",
+        "이송 온도 조건",
+        "주위온도 범위"
+      ]
+    },
+    {
+      "id": "n2-012",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "온도",
+      "deviation": "이송 중 호스 및 내용물 온도가 설계 의도보다 상승한다.",
+      "causes": [
+        "주위온도 상승·직사광선 노출",
+        "유동 마찰에 의한 발열"
+      ],
+      "consequences": [
+        "액화 NH3 증기압 상승으로 호스 내부 과압",
+        "호스 재질 열화 가속 및 완결성 저하",
+        "누출 시 NH3 독성·인화성 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "호스 재질이 내열성 조건을 만족하는지 확인",
+        "직사광선·고온 환경 노출 최소화"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "내식성(耐蝕性), 내열성 및 내한성을 가진 것을 사용할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-013",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "온도",
+      "deviation": "이송 중 NH3·호스 온도가 설계 의도보다 낮아진다",
+      "causes": [],
+      "consequences": [
+        "호스 재질 저온 취성으로 균열·파손 가능",
+        "저온 취화로 인한 NH3 누출 경로 형성"
+      ],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [
+        "내한성 재질 호스 사용 확인",
+        "저온 노출 조건에서의 사용 제한 기준 마련"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "호스 재질 등급",
+        "이송 온도 조건"
+      ]
+    },
+    {
+      "id": "n2-014",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "온도",
+      "deviation": "호스 일부 구간만 설계 온도 조건을 유지하고 국부적으로 저온/고온 구간이 공존하는 상태 초안",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "호스 재질 등급",
+        "운전 온도·압력 수치"
+      ]
+    },
+    {
+      "id": "n2-015",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "조성",
+      "deviation": "이송 물질이 규격 NH3가 전혀 아니거나 다른 물질이 들어와 설계 의도 물질이 전달되지 않는 상태",
+      "causes": [
+        "서로 다른 물질 라인에 호스를 오접속",
+        "이전 이송물·수분·불순물의 잔류 혼입"
+      ],
+      "consequences": [
+        "오접속 물질과 NH3의 반응·부식으로 호스 완결성 저하",
+        "부식·반응 진전 시 호스 파손 및 NH3 누출로 독성·화재 노출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "서로 다른 가스배관과의 불량체결 방지를 위한 전용 접속기구·식별 표시·꼬리표 적용",
+        "이송 전 호스 퍼지 및 잔류물 확인 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#9",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제233조(가스용접 등의 작업)",
+          "quote": "서로 다른 가스배관과의 불량체결을 방지할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-016",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "조성",
+      "deviation": "이송 물질에 수분·불순물·불응축가스가 설계 의도보다 많이 혼입된다.",
+      "causes": [
+        "퍼지 불량으로 공기·수분 잔류",
+        "오접속으로 타 물질 혼입"
+      ],
+      "consequences": [
+        "NH3와 수분 결합에 의한 부식성 증가로 호스·커플링 부식",
+        "완결성 저하로 NH3 누출 경로 형성",
+        "불응축가스 축적에 의한 이송 성능 저하"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "이송 전 호스 내부 퍼지 절차 수립",
+        "커플링 오접속 방지(전용 접속기구·색상 구분 등) 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#091-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "9. 물리화학적 특성",
+          "quote": "용해도: 54 g/100㎖(20℃)"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-017",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "조성",
+      "deviation": "이송 NH3 중 규격 성분 함량이 낮아지고 수분·불순물이 상대적으로 증가한다",
+      "causes": [
+        "이전 이송 물질 잔류",
+        "퍼지 불충분으로 수분·공기 혼입"
+      ],
+      "consequences": [
+        "수분 혼입 시 호스·커플링 금속부 부식 촉진",
+        "부식 진전으로 완결성 저하 및 누출 경로 형성"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "이송 전 퍼지·건조 상태 확인 절차 마련",
+        "부식성 평가에 맞는 내식 재질 사용 확인"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "압송하는 부식성 액체에 대하여 내식성(耐蝕性)"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-018",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "조성",
+      "deviation": "규격 NH3가 아닌 다른 물질, 또는 수분·불순물·불응축가스가 혼입된 유체가 호스로 이송된다",
+      "causes": [
+        "공급원 오접속으로 규격 외 물질이 호스에 공급됨",
+        "공급 측 탱크·용기 내 수분·불순물 혼입",
+        "이전 이송 잔류물질이 호스 내에 남아 혼합"
+      ],
+      "consequences": [
+        "수분 혼입 시 호스 내면·커플링 금속부 부식 가속으로 완결성 저하 및 NH3 누출",
+        "비상용성 물질 혼입 시 반응·발열에 의한 내압 상승과 호스 파손",
+        "NH3 누출 시 독성 노출·화재 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "이송 전 공급원·물질 식별 및 조성 확인 절차 수립",
+        "오접속 방지를 위한 전용 접속기구·식별 라벨 적용",
+        "이송 전 호스 내 잔류물 퍼지 절차 마련"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "호스와 그 접속용구는 압송하는 부식성 액체에 대하여 내식성(耐蝕性), 내열성 및 내한성을 가진 것을 사용할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-019",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "조성",
+      "deviation": "이송 물질이 규격 NH3 외에 수분·불순물·불응축가스를 부분적으로 포함한 혼합 조성으로 전달됨",
+      "causes": [
+        "이송 전 호스 퍼지 미비로 수분·공기 잔류",
+        "공급 측 불순물 혼입"
+      ],
+      "consequences": [
+        "수분과 NH3 공존으로 커플링·호스 금속부 부식 촉진 및 완결성 저하",
+        "불응축가스로 이송 효율 저하 및 압력 거동 교란"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "이송 전 불활성 가스 퍼지 및 수분 혼입 방지 절차 수립",
+        "공급원 조성 확인"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-020",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "조성",
+      "deviation": "규격 NH3에 더해 수분·불순물·불응축가스 등 설계 의도에 없던 추가 성분이 이송 유체에 혼입된다.",
+      "causes": [
+        "이전 이송물의 잔류 또는 호스 내부 세정·퍼지 미흡으로 인한 교차 혼입",
+        "커플링 체결·분리 과정에서 대기 중 수분·공기 유입",
+        "불활성 가스·공급원의 품질 관리 미흡으로 수분·산소 유입"
+      ],
+      "consequences": [
+        "NH3에 수분이 혼입되면 부식성이 증가해 호스 및 접속부 내식성 저하·국부 부식 진행",
+        "부식·열화로 호스 완결성이 손상되어 NH3 누출로 이어지고 독성·냉해 노출 위험 발생"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "이송 전 호스 내부 수분·불순물 확인 및 불활성 가스 퍼지 절차 수립",
+        "압송 유체에 대한 내식성·내열성·내한성을 가진 호스 및 접속용구 사용 규정화",
+        "불활성 가스·퍼지 가스의 품질(수분·산소 함량) 관리 및 공급원 점검"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "호스와 그 접속용구는 압송하는 부식성 액체에 대하여 내식성(耐蝕性), 내열성 및 내한성을 가진 것을 사용할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-021",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "상(phase) 변화",
+      "deviation": "액상 이송 의도가 전혀 성립하지 않고 호스 내에서 전량 기화(베이퍼락)되어 액 이송이 중단되는 상태",
+      "causes": [
+        "주위온도 상승에 따른 NH3 증기압 증가로 호스 내 액이 플래싱",
+        "저압 구간에서 액의 비등으로 기상 점유"
+      ],
+      "consequences": [
+        "기상 점유로 이송 성능 상실 및 작업 중단",
+        "증기압 상승으로 밀폐 구간 압력 상승 시 호스·커플링 파손 및 NH3 누출"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "압력계 감시로 증기압 상승 조기 인지",
+        "이상압력 시 과압방지장치 설치 및 동력 차단 조치 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#091-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "9. 물리화학적 특성",
+          "quote": "증기압: 1013 ㎪(26℃)"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-022",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "상(phase) 변화",
+      "deviation": "호스 내에서 액상 NH3가 과도하게 기화하여 기상 비율이 증가한다(플래싱·베이퍼락).",
+      "causes": [
+        "온도 상승 또는 압력 저하에 따른 플래싱",
+        "이송 구동 압력 부족으로 액 유지 실패"
+      ],
+      "consequences": [
+        "베이퍼락으로 이송 중단 및 압력 변동",
+        "급격한 기화로 국부 과압 및 호스 응력 증가",
+        "이송 불안정에 따른 누출 위험"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "이송 압력을 증기압 이상으로 유지하는 운전 조건 확보",
+        "온도·압력 모니터링 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#091-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "9. 물리화학적 특성",
+          "quote": "초기 끓는점과 끓는점 범위: -33.35 ℃(@760 mmHg)"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-023",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "상(phase) 변화",
+      "deviation": "호스 내에서 액상 NH3가 부분 기화하여 기상 비율이 증가한다(플래싱·베이퍼락)",
+      "causes": [
+        "압력 저하 또는 온도 상승에 의한 증기압 초과",
+        "저유량 구간 체류"
+      ],
+      "consequences": [
+        "베이퍼락으로 이송 중단·맥동",
+        "기액 혼류로 압력 변동 및 수격 유발 가능",
+        "이송 불안정으로 과압·완결성 저하 연쇄"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "충분한 이송 압력 유지로 플래싱 억제",
+        "기상 발생 감지·배출 수단 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-024",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "상(phase) 변화",
+      "deviation": "설계상 액상으로 이송되어야 할 NH3가 호스 내에서 기화하거나 액기 혼상으로 전달된다",
+      "causes": [
+        "주위온도 상승에 따른 NH3 증기압 증가로 호스 내 플래싱",
+        "이송 압력 저하로 액상 NH3가 기화(베이퍼락)",
+        "이송 전 호스 내 잔류 기상과 액상의 공존"
+      ],
+      "consequences": [
+        "베이퍼락으로 이송 중단 및 커플링부 압력 변동",
+        "플래싱에 의한 급격한 압력·유동 변화로 호스·연결부 손상",
+        "손상부에서 NH3 누출 시 독성 노출 위험"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "이송 전후 호스 내 상 상태 확인 및 적정 이송압 유지 절차 수립",
+        "직사광선·주위온도 상승 억제 조치 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-025",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "상(phase) 변화",
+      "deviation": "호스 내에서 액상 NH3의 일부만 액상으로 유지되고 나머지가 기화하여 기·액 혼상으로 이송됨",
+      "causes": [
+        "주위온도 상승·압력 저하로 액상 일부 플래싱",
+        "저압 구간 발생으로 부분 기화"
+      ],
+      "consequences": [
+        "베이퍼락으로 이송 중단 및 유량 저하",
+        "상 거동에 따른 압력 변동으로 호스·커플링 완결성 저하"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "이송 중 압력·온도 유지로 플래싱 억제 조건 관리",
+        "혼상 발생 시 이송 중단 기준 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-026",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "상(phase) 변화",
+      "deviation": "액상 NH3 이송 중 설계 의도에 없던 기상(증기)이 추가로 공존해 호스 내 기액 2상 상태가 된다.",
+      "causes": [
+        "주위온도 상승·압력 저하로 액상 NH3가 부분 플래싱하여 증기 발생",
+        "커플링·연결부에서의 압력 강하 지점에서 국부 기화"
+      ],
+      "consequences": [
+        "베이퍼락으로 이송 성능 저하 및 유량 불안정",
+        "기화에 따른 국부 과압·맥동으로 호스·접속부에 반복 응력 발생, 장기적으로 완결성 저하 및 누출 가능"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "이송 온도·압력 조건을 액상 유지 범위로 관리하는 운전 지침 마련",
+        "운전자가 볼 수 있는 위치에 압력계를 설치하여 이송 중 압력 변화 감시"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [
+        "LAW-OSH-STD-RULE#74: 운전자가 보기 쉬운 위치에 압력계를 설치하고"
+      ],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-027",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "호스 물리적 완결성",
+      "deviation": "호스 본체가 파열·찢어짐으로 이송 기능을 전혀 유지하지 못하고 내용물이 통로 밖으로 빠지는 상태",
+      "causes": [
+        "노후화·마모·꺾임 누적에 따른 호스 본체 파열",
+        "사용정격압력 초과 압송",
+        "부식성 액체에 부적합한 재질 사용"
+      ],
+      "consequences": [
+        "NH3 대량 누출로 독성 노출 및 자극적 증기 확산",
+        "점화원 존재 시 인화성 가스 폭발·화재"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "매일 사용 전 점검 및 손상·부식 결함 시 교환",
+        "호스에 사용정격압력 표시 및 초과 압송 금지",
+        "부식성 액체에 대한 내식·내열·내한 재질 사용 확인"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "호스 및 그 접속용구는 매일 사용하기 전에 점검하고 손상ㆍ부식 등의 결함에 의하여 압송하는 부식성 액체가 날아 흩어지거나 새어나갈 위험이 있으면 교환할 것"
+        },
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "호스에 사용정격압력을 표시하고 그 사용정격압력을 초과하여 압송하지 아니할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-028",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "호스 물리적 완결성",
+      "deviation": "호스 본체가 마모·꺾임·노후화로 손상되어 NH3 누출 경로가 커진다.",
+      "causes": [
+        "반복 사용에 따른 마모·피로",
+        "꺾임·과도한 굽힘",
+        "부식에 의한 재질 열화"
+      ],
+      "consequences": [
+        "호스 파열로 NH3 다량 누출",
+        "NH3 독성 노출 및 인화성 가스 방출로 화재·폭발 위험",
+        "운전정지 및 설비 손상"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "매일 사용 전 호스 손상·부식 점검 및 결함 시 교환",
+        "교체 주기 및 사용 전 압력시험 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "매일 사용하기 전에 점검하고 손상ㆍ부식 등의 결함에 의하여 압송하는 부식성 액체가 날아 흩어지거나 새어나갈 위험이 있으면 교환할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-029",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "호스 물리적 완결성",
+      "deviation": "호스 본체 벽두께·강도가 노후·마모로 저하되어 완결성이 감소한다",
+      "causes": [
+        "반복 사용에 의한 마모·피로",
+        "노후화 및 교체주기 초과",
+        "꺾임 반복으로 보강층 손상"
+      ],
+      "consequences": [
+        "호스 파열·균열로 NH3 누출",
+        "독성·부식성 가스 대량 방출로 인체 노출 및 설비 손상"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "사용 전 매일 점검 및 손상·부식 시 즉시 교환",
+        "교체주기 및 압력시험 주기 설정"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "매일 사용하기 전에 점검하고 손상ㆍ부식 등의 결함"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-030",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "호스 물리적 완결성",
+      "deviation": "역류·역압에 의한 수격 하중으로 호스 본체가 손상되어 완결성을 잃는다.",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "호스 재질 등급",
+        "사용정격압력",
+        "역류 방지장치 유무"
+      ]
+    },
+    {
+      "id": "n2-031",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "호스 물리적 완결성",
+      "deviation": "호스 본체가 파열·마모·꺾임·노후화로 설계된 밀폐 통로 기능을 상실한다",
+      "causes": [
+        "반복 사용·굴곡에 의한 호스 본체 마모·피로",
+        "노후화·열화로 인한 재질 취성화",
+        "과도한 꺾임·압착에 의한 국부 손상"
+      ],
+      "consequences": [
+        "호스 파열·균열로 NH3 다량 누출",
+        "독성 가스 노출에 의한 인명 피해 및 광범위 확산",
+        "주변 설비·작업자 긴급 대피 상황"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "사용 전 호스 손상·부식 점검 및 결함 시 교환 절차 수립",
+        "호스 교체 주기 및 정기 압력시험 기준 설정",
+        "꺾임·압착 방지를 위한 거치·보호 조치"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "호스 및 그 접속용구는 매일 사용하기 전에 점검하고 손상ㆍ부식 등의 결함에 의하여 압송하는 부식성 액체가 날아 흩어지거나 새어나갈 위험이 있으면 교환할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-032",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "호스 물리적 완결성",
+      "deviation": "호스 본체 일부 층·구간만 건전성을 유지하고 마모·꺾임·노후화로 부분적 손상이 진행된 상태",
+      "causes": [
+        "반복 사용에 따른 노후화·마모",
+        "굴곡·꺾임 반복으로 부분 손상",
+        "사용 전 점검·교체 주기 미준수"
+      ],
+      "consequences": [
+        "부분 손상 진전으로 호스 파열 및 NH3 다량 누출",
+        "누출 NH3의 독성·자극으로 작업자 노출"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "사용 전 호스 손상·부식 점검 및 결함 시 교체",
+        "호스 교체 주기 및 압력시험 기준 수립"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "호스 및 그 접속용구는 매일 사용하기 전에 점검하고 손상ㆍ부식 등의 결함"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-033",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "호스 물리적 완결성",
+      "deviation": "정상 이송에 더해 호스 외벽에 응축·착상 또는 외부 침적물이 추가로 형성되거나 외부 손상 요인이 가해진다.",
+      "causes": [
+        "저온 NH3 이송으로 호스 외표면에 수분 응축·착상이 추가로 발생",
+        "작업 구역에서 호스가 밟힘·끼임 등 외부 물리적 하중을 추가로 받음"
+      ],
+      "consequences": [
+        "착상·외부 손상으로 호스 외벽 열화·마모가 가속되어 피복 손상",
+        "손상 진전 시 호스 파손으로 NH3 누출, 독성·냉해 노출 및 설비 손상"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "사용 전 호스의 손상·마모·부식 점검 절차 수립 및 결함 시 교환",
+        "호스가 밟힘·끼임 등 외부 하중을 받지 않도록 거치·보호 조치"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "호스 및 그 접속용구는 매일 사용하기 전에 점검하고 손상ㆍ부식 등의 결함에 의하여 압송하는 부식성 액체가 날아 흩어지거나 새어나갈 위험이 있으면 교환할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-034",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "커플링·연결부 누설",
+      "deviation": "커플링 체결이 전혀 유지되지 않아 연결부가 분리되거나 접속면으로 NH3가 새어 이송 경로가 끊기는 상태",
+      "causes": [
+        "체결 불량 또는 조임기구 미사용",
+        "이송 중 호스 당김·진동으로 커플링 분리",
+        "접속부 가스켓·실 손상"
+      ],
+      "consequences": [
+        "연결부에서 NH3 누출로 독성 노출 및 증기 확산",
+        "분리 시 자유 방출로 다량 누출 및 화재·폭발 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "접속부에 접속용구를 사용하여 누출 없도록 확실히 접속",
+        "조임기구(호스밴드·호스클립 등) 사용으로 누출 방지",
+        "분리 방지를 위한 브레이크어웨이·ERC 적용 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "호스와 호스 외의 관 및 호스 간의 접속부분에는 접속용구를 사용하여 누출이 없도록 확실히 접속할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-035",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "커플링·연결부 누설",
+      "deviation": "커플링 체결 불량·오접속으로 연결부에서 NH3 누출이 증가한다.",
+      "causes": [
+        "체결 토크 부족·실링 손상",
+        "오접속·불량 체결",
+        "이송 중 진동에 의한 느슨해짐"
+      ],
+      "consequences": [
+        "연결부 NH3 누출로 독성 노출",
+        "인화성 가스 방출 시 화재·폭발 위험",
+        "이송 작업자 접촉 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "접속용구를 사용하여 누출 없이 확실히 접속",
+        "전용 접속기구·오접속 방지 수단 적용",
+        "이송 전 연결부 기밀 확인"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "접속부분에는 접속용구를 사용하여 누출이 없도록 확실히 접속할 것"
+        },
+        {
+          "source_id": "LAW-OSH-STD-RULE#9",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제233조(가스용접 등의 작업)",
+          "quote": "불량체결을 방지하여야 하며"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-036",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "커플링·연결부 누설",
+      "deviation": "커플링 체결력 부족으로 연결부 밀봉이 불완전해 미세 누출이 발생한다",
+      "causes": [
+        "체결 토크 부족·오접속",
+        "가스켓 열화",
+        "접속용구 미사용"
+      ],
+      "consequences": [
+        "연결부에서 NH3 누출로 작업자 독성 노출",
+        "지속 누출 시 부식·점화 위험 증대"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "접속용구 사용으로 누출 없는 확실한 접속",
+        "체결 후 누출 확인 절차 의무화"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "접속용구를 사용하여 누출이 없도록 확실히 접속할 것"
+        },
+        {
+          "source_id": "LAW-OSH-STD-RULE#3",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제227조(호스 등을 사용한 인화성 액체 등의 주입)",
+          "quote": "결합부를 확실히 연결하고 누출이 없는지를 확인한 후에 작업"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-037",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "커플링·연결부 누설",
+      "deviation": "역류·역압 서지가 연결부에 작용하여 커플링이 느슨해지거나 분리되며 NH3가 누출된다.",
+      "causes": [
+        "흐름 역전에 따른 서지 하중이 연결부에 작용",
+        "역압에 대한 체결 방향성이 고려되지 않은 커플링 체결",
+        "역류 시 연결부 봉합 성능 저하"
+      ],
+      "consequences": [
+        "연결부에서 NH3 누출로 독성·부식성 노출",
+        "누출 가스 확산에 따른 작업자 중독·동상 위험",
+        "연결부 손상에 따른 이송 중단"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "접속용구를 사용하여 누출이 없도록 확실히 접속",
+        "역압 조건을 고려한 커플링 선정 및 체결 확인",
+        "사용 전 연결부 점검 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "호스와 호스 외의 관 및 호스 간의 접속부분에는 접속용구를 사용하여 누출이 없도록 확실히 접속할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-038",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "커플링·연결부 누설",
+      "deviation": "양단 커플링의 체결 불량·오접속·조기 분리로 연결부에서 NH3가 누출된다",
+      "causes": [
+        "커플링 체결 불량 또는 미완결 체결",
+        "서로 다른 접속구와의 오접속",
+        "이송 중 호스 장력·진동에 의한 연결부 분리"
+      ],
+      "consequences": [
+        "연결부에서 NH3 누출로 작업자 독성 노출",
+        "급격한 분리 시 호스 요동(whip)에 의한 2차 피해",
+        "누출 가스 확산으로 주변 지역 대피"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "접속용구를 사용한 확실한 체결 및 체결 후 누출 확인 절차 수립",
+        "오접속 방지를 위한 전용·비호환 접속기구 적용",
+        "조기 분리 방지 장치(브레이크어웨이/ERC) 설치 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "호스와 호스 외의 관 및 호스 간의 접속부분에는 접속용구를 사용하여 누출이 없도록 확실히 접속할 것"
+        },
+        {
+          "source_id": "LAW-OSH-STD-RULE#3",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제227조(호스 등을 사용한 인화성 액체 등의 주입)",
+          "quote": "호스 또는 배관 등의 결합부를 확실히 연결하고 누출이 없는지를 확인한 후에 작업을 하여야 한다"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-039",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "커플링·연결부 누설",
+      "deviation": "양단 커플링이 완전 체결되지 않고 부분 체결 상태로 접속되어 연결부가 설계 밀봉을 일부만 달성함",
+      "causes": [
+        "체결 불량·오접속",
+        "실·가스켓 손상으로 부분 밀봉",
+        "분리 작업 중 불완전 재체결"
+      ],
+      "consequences": [
+        "연결부에서 NH3 누출 및 작업자 독성 노출",
+        "누출 지속 시 가연성 농도 형성·점화 위험"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "접속부에 접속용구 사용 및 누출 없는 확실 체결 확인",
+        "체결 후 누설시험 절차 적용"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "접속부분에는 접속용구를 사용하여 누출이 없도록 확실히 접속할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-040",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "커플링·연결부 누설",
+      "deviation": "정상 이송에 더해 커플링이 의도하지 않은 다른 설비·라인에 오접속되어 추가 경로가 형성된다.",
+      "causes": [
+        "서로 다른 유체 라인 간 커플링 호환으로 인한 오접속",
+        "식별 표시·꼬리표 부재로 운전자가 잘못된 공급구에 체결"
+      ],
+      "consequences": [
+        "오접속으로 NH3가 설계 외 경로로 유입되거나 이종 물질과 접촉해 반응 위험",
+        "체결 불량 지점에서 NH3 누출로 독성·냉해 노출 및 주변 설비 영향"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "전용 접속기구 사용 및 서로 이어지지 않는 구조·색상 구분·꼬리표 부착으로 오접속 방지",
+        "접속부에 접속용구를 사용해 누출 없이 확실히 접속하도록 절차화",
+        "공급구 밸브·콕에 사용자 이름표 부착 등 오조작 방지 표시"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#9",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제233조(가스용접 등의 작업)",
+          "quote": "서로 이어지지 않는 구조의 접속기구 사용, 서로 다른 색상의 배관ㆍ호스의 사용 및 꼬리표 부착 등을 통하여 서로 다른 가스배관과의 불량체결을 방지할 것"
+        },
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "호스와 호스 외의 관 및 호스 간의 접속부분에는 접속용구를 사용하여 누출이 없도록 확실히 접속할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-041",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "정전기·접지",
+      "deviation": "이송 유동으로 축적된 정전기가 전혀 해소되지 못해 호스·커플링에 전위가 남아 점화원이 되는 상태",
+      "causes": [
+        "접지·본딩 미실시 또는 접지 불량",
+        "유동에 의한 정전기 축적"
+      ],
+      "consequences": [
+        "누출된 인화성 NH3 증기에 대한 점화원으로 작용",
+        "폭발범위 내 점화 시 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "이송 작업 전 호스·설비 접지·본딩 실시 및 접지 연속성 확인"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#091-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "9. 물리화학적 특성",
+          "quote": "인화성(고체, 기체): 인화성"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-042",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "정전기·접지",
+      "deviation": "이송 유동으로 정전기가 과도하게 축적되고 접지 불량으로 방전되지 못한다.",
+      "causes": [
+        "유동에 의한 정전기 발생",
+        "접지 연결 불량·누락"
+      ],
+      "consequences": [
+        "정전기 방전이 점화원이 되어 누출된 NH3 인화·화재 위험",
+        "작업자 전격 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "이송 전 접지 연결 및 연속성 확인 절차 수립",
+        "유속 제한으로 정전기 발생 억제 검토"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "MSDS-7664-41-7#091-1",
+          "doc_title": "물질안전보건자료(MSDS) 암모니아",
+          "issuer": "안전보건공단",
+          "locator": "9. 물리화학적 특성",
+          "quote": "인화 또는 폭발 범위의 상한/하한: 15 / 33.6 %"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-043",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "정전기·접지",
+      "deviation": "접지 성능이 저하되어 정전기 방전 억제 기능이 약해진다",
+      "causes": [
+        "접지선 단선·접촉 불량",
+        "접지저항 증가"
+      ],
+      "consequences": [
+        "유동 대전 전하 축적으로 방전 발생",
+        "누출된 가연성 NH3 분위기에서 점화 가능성"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "이송 전 접지 연결·접지저항 확인 절차 마련",
+        "본딩·접지 상태 정기 점검"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-044",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "정전기·접지",
+      "deviation": "이송 중 유동에 의한 정전기가 축적되어 설계 의도와 다른 점화원이 형성된다",
+      "causes": [
+        "NH3 유동에 의한 정전기 발생",
+        "호스·설비 접지 불량 또는 미접지",
+        "비전도성 호스 사용으로 전하 축적"
+      ],
+      "consequences": [
+        "정전기 방전으로 점화원 형성",
+        "누출된 NH3 또는 가연성 혼합물 존재 시 화재·폭발로 이어질 수 있음"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 1,
+      "risk_score": 2,
+      "recommendations": [
+        "이송 설비·호스의 접지·본딩 및 접지 저항 확인 절차 수립",
+        "정전기 방지 조치 적용"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-045",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "정전기·접지",
+      "deviation": "이송 중 접지가 일부만 유효하여 호스·설비 간 전위 평형이 부분적으로만 달성되어 정전기가 축적됨",
+      "causes": [
+        "접지 연결 불량·접촉 저항 증가",
+        "유동 대전으로 전하 축적"
+      ],
+      "consequences": [
+        "축적된 정전기 방전이 점화원이 되어 누출 NH3 점화 가능",
+        "점화 시 화재·폭발로 작업자 피해"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 1,
+      "risk_score": 2,
+      "recommendations": [
+        "이송 전 접지·본딩 상태 확인 및 접지 연속성 점검 절차 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-046",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "정전기·접지",
+      "deviation": "정상 이송에 더해 유동 대전에 의한 정전기가 호스·접속부에 추가로 축적된다.",
+      "causes": [
+        "접지·본딩 미흡 상태에서 NH3 유동에 의한 전하 축적",
+        "비도전성 호스 사용 또는 접지 경로 단선"
+      ],
+      "consequences": [
+        "축적된 정전기가 방전되어 점화원으로 작용할 가능성",
+        "누출된 NH3와 결합 시 연소·화재로 발전해 작업자 부상·설비 손상"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 1,
+      "risk_score": 2,
+      "recommendations": [
+        "호스·커플링·양단 설비의 접지·본딩 확보 및 이송 전 접지 연결 확인 절차 수립",
+        "도전성 호스 사용 및 접지 저항 주기적 점검"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-047",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "이송 작업 절차",
+      "deviation": "연결·퍼지·이송·분리 절차가 전혀 지켜지지 않아 정상 이송 작업이 성립하지 않는 상태",
+      "causes": [
+        "연결·퍼지 생략 또는 작업 순서 위반",
+        "운전자 미지정 및 압력계 감시 부재"
+      ],
+      "consequences": [
+        "미연결·오조작 상태 이송으로 NH3 누출 및 독성 노출",
+        "분리 전 잔압·잔류물 미처리로 작업자 피폭"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "운전자를 지정하고 설비 운전 및 압력계 감시 수행",
+        "오조작 방지를 위한 공급구 밸브 표시 및 이송 절차서 수립",
+        "이송 전 호스 가스 방출 방지 조치 수행"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "운전자를 지정하고 압송에 사용하는 설비의 운전 및 압력계의 감시를 하도록 할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-048",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "이송 작업 절차",
+      "deviation": "연결·퍼지·이송·분리 수동 작업 순서 위반·과도 조작으로 이상이 발생한다.",
+      "causes": [
+        "작업 순서 위반·숙련도 부족",
+        "퍼지 생략·분리 전 잔압 미제거"
+      ],
+      "consequences": [
+        "잔압 상태 분리 시 NH3 분출로 작업자 독성 노출",
+        "오조작으로 과압·누출 유발",
+        "화재·화상 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "연결·퍼지·이송·분리 표준 작업절차 수립 및 교육",
+        "운전자 지정 및 압력계 감시 체계 운영",
+        "작업 중단·종료 시 공급 밸브 차단 절차 명문화"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "운전자를 지정하고 압송에 사용하는 설비의 운전 및 압력계의 감시를 하도록 할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-049",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "이송 작업 절차",
+      "deviation": "퍼지·확인 등 작업 단계가 생략되거나 축소되어 수행된다",
+      "causes": [
+        "작업 단축·순서 위반",
+        "운전자 미지정 또는 감시 소홀"
+      ],
+      "consequences": [
+        "결합부 미확인 상태 이송으로 누출",
+        "잔류·혼입 미제거로 부식·반응 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "운전자 지정 및 압력계 감시 의무화",
+        "결합부 확인 후 작업 개시 절차 명문화"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "운전자를 지정하고 압송에 사용하는 설비의 운전 및 압력계의 감시"
+        },
+        {
+          "source_id": "LAW-OSH-STD-RULE#3",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제227조(호스 등을 사용한 인화성 액체 등의 주입)",
+          "quote": "결합부를 확실히 연결하고 누출이 없는지를 확인한 후에 작업"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-050",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "이송 작업 절차",
+      "deviation": "연결·퍼지·이송 순서 오류로 흐름 방향이 역전되는 조건(밸브 조작 순서 위반 등)이 조성된다.",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "이송 작업 절차서 내용",
+        "밸브 조작 순서 규정",
+        "역류 방지장치 유무"
+      ]
+    },
+    {
+      "id": "n2-051",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "이송 작업 절차",
+      "deviation": "호스 연결·퍼지·이송·분리 순서의 오류 또는 생략으로 설계와 다른 상태에서 작업이 진행된다",
+      "causes": [
+        "이송 전 퍼지 생략으로 호스 내 잔류 공존",
+        "작업 순서 위반·오조작",
+        "운전자 미지정·감시 부재"
+      ],
+      "consequences": [
+        "미퍼지·오조작에 의한 NH3 누출 및 독성 노출",
+        "가압 상태에서 분리 시 다량 방출",
+        "작업자 피해 및 주변 확산"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "연결·퍼지·이송·분리 단계별 표준 작업 절차 수립 및 교육",
+        "운전자 지정 및 압력계 감시 체계 운영",
+        "작업 전 가스 방출 방지 조치 적용"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "운전자를 지정하고 압송에 사용하는 설비의 운전 및 압력계의 감시를 하도록 할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-052",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "이송 작업 절차",
+      "deviation": "연결·퍼지·이송·분리의 작업 단계 중 일부만 수행되어 절차가 부분적으로만 완료됨",
+      "causes": [
+        "퍼지 단계 생략",
+        "분리 전 잔류압 배출·절연 미완료",
+        "순서 위반"
+      ],
+      "consequences": [
+        "잔류 NH3·잔압 상태에서 분리로 다량 누출 및 작업자 노출",
+        "퍼지 미완으로 수분·공기 잔류에 의한 부식·조성 이탈"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "연결→퍼지→이송→분리 표준 작업절차 및 단계별 확인 체크리스트 수립",
+        "운전자 지정 및 교육"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "운전자를 지정하고 압송에 사용하는 설비의 운전 및 압력계의 감시를 하도록 할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-053",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "이송 작업 절차",
+      "deviation": "정규 이송 절차에 더해 잔압 방출·퍼지 등 선행 조치 없이 추가 조작이 이루어진다.",
+      "causes": [
+        "분리 전 호스 내 잔류 NH3 방출·회수 단계 누락",
+        "이송 완료 후 공급구 밸브·콕 미잠금 상태에서 분리 조작",
+        "작업 순서 위반 및 운전자 미지정"
+      ],
+      "consequences": [
+        "잔압 상태 분리로 호스 내 NH3가 작업자에게 분출되어 독성·냉해 노출",
+        "공급구 미차단으로 NH3 지속 누출 및 확산"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "분리 전 호스 내 NH3 방출·퍼지 절차 명문화 및 교육",
+        "작업 종료·이탈 시 공급구 밸브·콕 잠금 절차 준수",
+        "운전자를 지정하고 설비 운전 및 압력계 감시를 수행하도록 규정"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#9",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제233조(가스용접 등의 작업)",
+          "quote": "작업을 중단하거나 마치고 작업장소를 떠날 경우에는 가스등의 공급구의 밸브나 콕을 잠글 것"
+        },
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "운전자를 지정하고 압송에 사용하는 설비의 운전 및 압력계의 감시를 하도록 할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-054",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "유틸리티",
+      "deviation": "퍼지용 불활성 가스·구동 압력원 등 보조 유틸리티가 전혀 공급되지 않아 이송의 안전 전제조건이 성립하지 않는 상태",
+      "causes": [],
+      "consequences": [],
+      "safeguards_before": [],
+      "S": null,
+      "F": null,
+      "risk_score": null,
+      "recommendations": [],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "insufficient",
+      "missing": [
+        "퍼지·불활성 가스 공급원 유무",
+        "이송 구동 압력원 사양",
+        "유틸리티 공급 신뢰도"
+      ]
+    },
+    {
+      "id": "n2-055",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "유틸리티",
+      "deviation": "퍼지·불활성 가스 또는 이송 구동 압력원이 설계보다 과도하게 공급된다.",
+      "causes": [
+        "구동 압력원 압력 과다",
+        "불활성 가스 압력 조절 실패"
+      ],
+      "consequences": [
+        "호스 과압으로 파열 및 NH3 누출",
+        "이송 조건 불안정으로 상 거동 변화"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "구동 압력원·퍼지 가스 압력 조절 및 제한 설정",
+        "압력계 설치 및 감시"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "운전자가 쉽게 조작할 수 있는 위치에 동력을 차단할 수 있는 조치를 할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-056",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "유틸리티",
+      "deviation": "퍼지·구동용 유틸리티 공급 압력·유량이 설계 의도보다 부족하다",
+      "causes": [
+        "불활성 가스 공급 저하",
+        "구동 압력원 압력 부족"
+      ],
+      "consequences": [
+        "퍼지 불충분으로 공기·수분 잔류 및 부식·반응 위험",
+        "구동력 부족으로 이송 불안정·중단"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "유틸리티 공급 압력 확인 및 하한 경보 검토",
+        "유틸리티 상실 시 이송 중단 기준 마련"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-057",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Reverse",
+      "parameter": "유틸리티",
+      "deviation": "이송 구동 압력원의 상실로 공급 측 압력이 떨어져 하류에서 호스로 흐름이 역전된다.",
+      "causes": [
+        "이송 구동 압력원(펌프·가압)의 정지 또는 공급 상실",
+        "불활성 퍼지 가스 상실로 압력 균형 붕괴"
+      ],
+      "consequences": [
+        "하류 NH3가 호스·공급 측으로 역류하여 오염 및 과압",
+        "역류 서지로 호스·연결부 손상 및 NH3 누출",
+        "누출 시 독성·부식성 노출 위험"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "구동 압력원 상실 시 역류 방지 체크밸브 설치 검토",
+        "압력계 감시로 압력원 상실 조기 감지",
+        "압력원 상실 시 자동 동력 차단 연계 검토"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-058",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "유틸리티",
+      "deviation": "퍼지용 불활성 가스나 이송 구동 압력원이 설계와 다른 상태(상실·오공급)로 공급된다",
+      "causes": [
+        "불활성 퍼지 가스 공급 상실",
+        "이송 구동 압력원 상실 또는 변동",
+        "유틸리티 라인 오접속으로 다른 매체 공급"
+      ],
+      "consequences": [
+        "퍼지 불충분으로 호스 내 잔류물질에 의한 이상 반응·누출",
+        "구동 압력 변동으로 이송 불안정 및 연결부 응력",
+        "NH3 누출 시 독성 노출"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "퍼지·구동 유틸리티 상태 확인 및 상실 시 이송 중단 절차 수립",
+        "유틸리티 라인 오접속 방지 식별·관리"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-059",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "유틸리티",
+      "deviation": "퍼지·불활성 가스·구동 압력원 등 보조 유틸리티가 일부만 공급되어 이송 안전 조건이 부분적으로만 유지됨",
+      "causes": [
+        "불활성 가스 공급 부족·압력 저하",
+        "구동 압력원 부분 상실"
+      ],
+      "consequences": [
+        "퍼지 불충분으로 조성 이탈·부식 조건 형성",
+        "구동압 부족으로 이송 저하 및 흐름 불안정"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "이송 전 유틸리티 압력·가용성 확인 및 부족 시 이송 중단 기준 수립"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-060",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "유틸리티",
+      "deviation": "정상 이송에 더해 불활성 퍼지 가스에 수분·산소 등 품질 외 성분이 함께 공급된다.",
+      "causes": [
+        "퍼지·불활성 가스 공급원의 품질 저하로 수분·산소 혼입",
+        "유틸리티 라인 오염 또는 응축수 축적"
+      ],
+      "consequences": [
+        "퍼지 가스 내 수분이 NH3와 접촉해 부식성 증가, 호스·접속부 부식 진행",
+        "불활성 효과 저하로 점화 위험 조건 형성 및 완결성 저하로 누출 가능"
+      ],
+      "safeguards_before": [],
+      "S": 2,
+      "F": 2,
+      "risk_score": 2,
+      "recommendations": [
+        "퍼지·불활성 가스의 수분·산소 함량 관리 및 공급 전 품질 확인",
+        "유틸리티 라인 응축수 드레인 및 주기 점검"
+      ],
+      "scenario": "",
+      "evidence": [],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-061",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "No",
+      "parameter": "유지보수·점검",
+      "deviation": "사용 전 점검·교체·압력시험이 전혀 수행되지 않아 소모성 호스의 건전성 관리가 성립하지 않는 상태",
+      "causes": [
+        "매일 사용 전 점검 미실시",
+        "손상·부식 호스의 미교체 지속 사용",
+        "교체 주기·압력시험 기준 미비"
+      ],
+      "consequences": [
+        "열화된 호스의 돌발 파손으로 NH3 누출",
+        "누출된 독성·인화성 가스에 의한 피폭 및 화재·폭발"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "매일 사용 전 점검 및 손상·부식 결함 시 교환 절차 시행",
+        "호스 교체 주기·압력시험 기준 수립 및 기록 관리"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "호스 및 그 접속용구는 매일 사용하기 전에 점검하고 손상ㆍ부식 등의 결함에 의하여 압송하는 부식성 액체가 날아 흩어지거나 새어나갈 위험이 있으면 교환할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-062",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "More",
+      "parameter": "유지보수·점검",
+      "deviation": "교체 주기 초과·사용 전 점검·압력시험 미비로 호스의 열화가 누적된다.",
+      "causes": [
+        "점검 주기 미준수",
+        "압력시험 생략",
+        "노후 호스 계속 사용"
+      ],
+      "consequences": [
+        "열화 누적으로 호스 파열 및 NH3 누출",
+        "독성·화재 위험 및 운전정지"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "호스 교체 주기 및 사용 전 점검·압력시험 기준 수립",
+        "매일 사용 전 손상·부식 점검 및 결함 시 교환"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "매일 사용하기 전에 점검하고 손상ㆍ부식 등의 결함에 의하여"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-063",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Less",
+      "parameter": "유지보수·점검",
+      "deviation": "사용 전 점검·압력시험·교체 등 유지보수 활동이 설계 의도보다 미흡하게 수행된다",
+      "causes": [
+        "교체주기 관리 미비",
+        "사용 전 점검 누락",
+        "압력시험 미실시"
+      ],
+      "consequences": [
+        "결함 호스 지속 사용으로 파열·누출",
+        "NH3 누출로 인체 노출 및 설비 손상"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "매일 사용 전 점검 및 결함 시 교환 절차 수립",
+        "주기적 압력시험·교체주기 관리체계 구축"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "매일 사용하기 전에 점검하고 손상ㆍ부식 등의 결함"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-064",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Other than",
+      "parameter": "유지보수·점검",
+      "deviation": "소모성 호스에 대한 사용 전 점검·교체 주기·압력시험이 미비하여 설계와 다른 열화 상태로 사용된다",
+      "causes": [
+        "사용 전 점검 누락",
+        "교체 주기 미설정·초과 사용",
+        "정기 압력시험 미실시로 잠재 결함 미발견"
+      ],
+      "consequences": [
+        "숨은 손상·부식 호스 사용으로 사용 중 파열",
+        "NH3 다량 누출에 의한 독성 노출 및 확산",
+        "작업자 피해"
+      ],
+      "safeguards_before": [],
+      "S": 4,
+      "F": 2,
+      "risk_score": 5,
+      "recommendations": [
+        "사용 전 점검 체크리스트 및 결함 시 교환 절차 수립",
+        "호스 교체 주기 및 정기 압력시험 기준 설정",
+        "점검·시험 이력 관리"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "호스 및 그 접속용구는 매일 사용하기 전에 점검하고 손상ㆍ부식 등의 결함에 의하여 압송하는 부식성 액체가 날아 흩어지거나 새어나갈 위험이 있으면 교환할 것"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-065",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "Part of",
+      "parameter": "유지보수·점검",
+      "deviation": "사용 전 점검·압력시험·교체 항목 중 일부만 수행되어 유지보수가 부분적으로만 이행됨",
+      "causes": [
+        "교체 주기 일부 미준수",
+        "사용 전 점검 항목 누락",
+        "압력시험 미실시"
+      ],
+      "consequences": [
+        "미점검 결함이 잔존하여 호스 파열·누출로 발전",
+        "노후 호스 지속 사용으로 완결성 상실"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "사용 전 점검·압력시험·교체 주기를 포함한 유지계획 및 지침서 수립·기록"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "매일 사용하기 전에 점검하고 손상ㆍ부식 등의 결함에 의하여"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    },
+    {
+      "id": "n2-066",
+      "node": "N2",
+      "node_meta": {
+        "node": "N2",
+        "substance": "NH3",
+        "phase": "unknown",
+        "P_kPag": null,
+        "T_degC": null,
+        "design_P_kPag": null,
+        "capacity": null,
+        "equipment": [
+          "이송 호스"
+        ],
+        "safeguards": [],
+        "safeguards_known": false
+      },
+      "guideword": "As well as",
+      "parameter": "유지보수·점검",
+      "deviation": "정규 점검에 더해 사용정격압력 표시·교체 이력 등 추가 관리 항목이 누락된 채 호스가 사용된다.",
+      "causes": [
+        "호스에 사용정격압력 미표시 또는 교체 주기 관리 미비",
+        "사용 전 점검·압력시험 미실시로 결함 호스 투입"
+      ],
+      "consequences": [
+        "정격 초과 압송 또는 열화 호스 사용으로 파손·누출 발생",
+        "NH3 누출로 독성·냉해 노출 및 설비 운전정지"
+      ],
+      "safeguards_before": [],
+      "S": 3,
+      "F": 2,
+      "risk_score": 4,
+      "recommendations": [
+        "호스에 사용정격압력을 표시하고 그 압력을 초과하지 않도록 관리",
+        "사용 전 점검 및 교체 주기·압력시험 기준 수립, 결함 시 교환"
+      ],
+      "scenario": "",
+      "evidence": [
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "호스에 사용정격압력을 표시하고 그 사용정격압력을 초과하여 압송하지 아니할 것"
+        },
+        {
+          "source_id": "LAW-OSH-STD-RULE#74",
+          "doc_title": "산업안전보건기준에 관한 규칙",
+          "issuer": "고용노동부",
+          "locator": "제297조(부식성 액체의 압송설비)",
+          "quote": "호스 및 그 접속용구는 매일 사용하기 전에 점검하고"
+        }
+      ],
+      "confidence": "inferred",
+      "criteria_id": "kosha_cc37_2026",
+      "citation_flags": [],
+      "status": "applicable",
+      "missing": [],
+      "frequency_basis": "안전장치 정보 없음 — 보수적 상한"
+    }
+  ]
+}
