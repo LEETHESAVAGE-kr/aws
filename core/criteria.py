@@ -120,10 +120,10 @@ def load_criteria(criteria_id: str | None = None) -> Criteria:
 
 
 def all_criteria() -> list[Criteria]:
-    """라이브러리의 기준 전부 — 공식 기준 먼저, 골드셋 기준 마지막."""
+    """라이브러리의 기준 전부 — 공식 기준 먼저, 골드셋 기준 마지막. 등급표가 없는 파일(ipl_credit.json)은 기준이 아니다."""
     ids = sorted(p.stem for p in CRITERIA_DIR.glob("*.json"))
     ids.sort(key=lambda i: (i == GOLD_CRITERIA, i != OFFICIAL_CRITERIA))
-    return [load_criteria(i) for i in ids]
+    return [c for c in map(load_criteria, ids) if "severity" in c.data]
 
 
 __all__ = ["CRITERIA_DIR", "GOLD_CRITERIA", "OFFICIAL_CRITERIA", "Criteria", "all_criteria", "load_criteria"]
