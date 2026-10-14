@@ -1019,7 +1019,9 @@ def test_review_columns_put_decision_columns_first_and_hide_uniform() -> None:
     result = _full_result()
     table = [{service.REVIEW_COLUMN: "미검토", **row} for row in service.readable_rows(service.worksheet_table(result))]
     order = service.review_column_order(table)
-    assert order[:8] == [service.REVIEW_COLUMN, "No", "가이드워드", "이탈", "위험도", "S(1-5)", "F(1-5)", "신뢰도"]
+    # S-4-1: IPL 크레딧 결과(models.yaml ipl_credit: true 의 mock 생성)는 '기본→반영' 읽기 열이 반영 후 F 바로 앞
+    assert order[:9] == [service.REVIEW_COLUMN, "No", "가이드워드", "이탈", "위험도", "S(1-5)",
+                         service.FREQ_SHIFT_COLUMN, "F(1-5)", "신뢰도"]
     assert "노드" not in order and "시나리오 연계" not in order and service.FLAG_COLUMN not in order
     assert {"이탈", "원인", "결과", "권고", "S(1-5)", "F(1-5)", "위험도"} <= set(order)
     demo = service.readable_rows(service.worksheet_table(service.demo_injected(load_replays()["P1"])))
