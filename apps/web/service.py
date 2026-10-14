@@ -116,6 +116,8 @@ EVIDENCE_COLUMN: Final[str] = "관련 법령·MSDS"
 EVIDENCE_NONE: Final[str] = "인용 없음 (AI 추론)"
 #: §8 C 합의 생성 — 같은 입력으로 판정을 3번 돌려 몇 번 같은 판단이 나왔나. 신뢰도 단계와 별개(C-6). 합의 결과에만 생긴다.
 REPEAT_COLUMN: Final[str] = "반복 일치"
+#: 질문봉쇄 Q-03 — 어떤 기존 안전장치를 반영해 이 빈도인지(판정 프롬프트 `frequency_basis`).
+BASIS_COLUMN: Final[str] = "빈도 근거"
 #: 공정 카탈로그(J-01, `data/presets.json`). 노드 id → 노드(+ `process`).
 CATALOG: Final[list[dict[str, Any]]] = load_catalog()
 NODES: Final[dict[str, dict[str, Any]]] = nodes_by_id(CATALOG)
@@ -337,6 +339,12 @@ def _mock_factory(replay: Result) -> Callable[..., ConverseResponse]:
                     "confidence": "inferred",
                 }
             )
+        required = (kwargs.get("response_schema") or {}).get("properties", {}).get("cells", {}).get("items", {}).get(
+            "required", [])
+        if "frequency_basis" in required:  # Q-03 — 재생 레코드에 근거가 없으면 mock 이라고 적는다
+            for cell in cells:
+                record = by_key.get((guideword, cell["parameter"]))
+                cell["frequency_basis"] = "" if record is None else (record.frequency_basis or "mock: 재생 기록에 빈도 근거 없음")
         body = {"guideword": guideword, "cells": cells}
         return ConverseResponse(content=json.dumps(body, ensure_ascii=False))
 
@@ -914,6 +922,8 @@ def worksheet_table(result: Result) -> list[dict[str, object]]:
         )
         if any(r.consensus for r in records):  # 단일 실행 결과의 표는 지금과 같은 열
             entry[REPEAT_COLUMN] = consensus_summary(record.consensus, record.status == INSUFFICIENT)
+        if any(r.frequency_basis for r in records):  # Q-03 — 맨 뒤 열(기본으로 눈에 덜 띄게), 편집 불가
+            entry[BASIS_COLUMN] = record.frequency_basis or ""
         table.append(entry)
     return table
 
@@ -961,6 +971,73 @@ def criteria_notice(result: Result) -> str | None:
             published=published, retrieved=d.get("retrieved_at", "미상"), url=d.get("url", ""),
         )
     return CRITERIA_NOTICE if result.meta.get("split") in ("none", "external") else None
+
+
+#: Q-03-4 — 빈도가 한 값에 이 비율보다 많이 몰리면 자동 문구를 붙인다.
+CONCENTRATION_LIMIT: Final[float] = 0.70
+CONCENTRATION_WARNING: Final[str] = (
+    "⚠ 빈도가 한 값에 몰려 있습니다 — 안전장치 정보가 없을 때 보수적 상한으로 두는 설계입니다. "
+    "편집 표에서 사업장 기준으로 조정하세요."
+)
+
+
+def grade_counts(result: Result) -> dict[str, dict[int, int]]:
+    """심각도·빈도·위험도 등급별 행 수(보류 행 제외). 등급 축은 결과의 평가기준 단계 수 전부(0 인 등급도 보인다)."""
+    criteria = result_criteria(result)
+    rated = [r for r in result.records if r.S is not None and r.F is not None]
+    axes = {"심각도": range(1, criteria.s_max + 1), "빈도": range(1, criteria.f_max + 1),
+            "위험도": sorted({criteria.risk(si, fi) for si in range(1, criteria.s_max + 1)
+                            for fi in range(1, criteria.f_max + 1)})}
+    values = {"심각도": [r.S for r in rated], "빈도": [r.F for r in rated], "위험도": [r.risk_score for r in rated]}
+    return {name: {g: values[name].count(g) for g in axis} for name, axis in axes.items()}
+
+
+def f_concentration(result: Result) -> float | None:
+    """가장 많은 빈도 값의 비율(0~1). 등급을 매긴 행이 없으면 None."""
+    counts = grade_counts(result)["빈도"]
+    total = sum(counts.values())
+    return max(counts.values()) / total if total else None
+
+
+def distribution_html(result: Result) -> str | None:
+    """요약 줄 아래 분포 막대 3줄(Q-03-4) — 기존 카드 양식(hz-info). 등급을 매긴 행이 없으면 None."""
+    counts = grade_counts(result)
+    total = sum(counts["빈도"].values())
+    if not total:
+        return None
+    rows = []
+    for name, by_grade in counts.items():
+        cells = "".join(
+            f"<span style='flex:{max(n, 0.0001)};background:var(--accent);opacity:{0.35 + 0.65 * n / total:.2f};"
+            f"color:var(--text);font-size:12px;padding:2px 6px;white-space:nowrap;overflow:hidden' "
+            f"title='{name} {g}: {n}행'>{g}·{n}</span>"
+            for g, n in by_grade.items() if n
+        )
+        empty = [str(g) for g, n in by_grade.items() if not n]
+        tail = (f"<small style='color:var(--muted);margin-left:8px'>0행: {', '.join(empty)}</small>"
+                if empty and len(empty) <= 5 else "")
+        rows.append(
+            f"<div class='hz-info-r'><span style='width:52px'>{name}</span>"
+            f"<b style='flex:1;display:flex;gap:2px'>{cells}</b>{tail}</div>"
+        )
+    head = f"<p class='hz-info-t'>등급 분포 — 등급을 매긴 {total}행 (등급·행 수)</p>"
+    return f"<div class='hz-info' style='height:auto;padding:12px 16px'>{head}{''.join(rows)}</div>"
+
+
+def concentration_warning(result: Result) -> str | None:
+    """빈도 단일값 비율이 기준을 넘으면 자동 문구(Q-03-4). 사람이 쓴 워크시트에는 붙이지 않는다."""
+    share = f_concentration(result)
+    if result.is_gold or share is None or share <= CONCENTRATION_LIMIT:
+        return None
+    return CONCENTRATION_WARNING
+
+
+def evidence_line(result: Result) -> str | None:
+    """'법령·MSDS 인용 n/m행'(Q-08) — 보류 행을 뺀 판정 행 중 원문 인용이 붙은 행. 사람이 쓴 워크시트는 None."""
+    if result.is_gold:
+        return None
+    rated = [r for r in verified(result)[0] if r.status != INSUFFICIENT]
+    return f"법령·MSDS 인용 {sum(bool(r.evidence) for r in rated)}/{len(rated)}행"
 
 
 def f_distribution(result: Result) -> str:
@@ -1098,6 +1175,9 @@ def summary_line(result: Result) -> str:
     """요약 줄. 불리한 숫자도 그대로(NFR-03) — 값이 없으면 없다고 적는다."""
     m = result.meta
     parts = [f"레코드 {len(result.records)}건", f_distribution(result)]
+    cited = evidence_line(result)
+    if cited:
+        parts.insert(1, cited)
     if m.get("source") == "quick":
         parts.insert(0, QUICK_SCOPE.format(guideword=", ".join(m.get("guidewords") or [])))
     if m.get("combined"):
@@ -1516,7 +1596,7 @@ TABLE_STYLES: Final[tuple[str, ...]] = ("펼쳐 보기 — 글 전체", "편집 
 FULL_WIDTHS: Final[dict[str, int]] = {
     "No": 36, "검토": 56, "가이드워드": 120, "이탈": 240, "위험도": 52, "S(1-5)": 56, "F(1-5)": 48,
     "신뢰도": 170, "반복 일치": 220, "관련 법령·MSDS": 200, "원인": 260, "결과": 260, "기존 안전장치(Before)": 180, "권고": 260,
-    "노드": 160, "시나리오 연계": 120, "검증 플래그": 180,
+    "노드": 160, "시나리오 연계": 120, "검증 플래그": 180, "빈도 근거": 220,
 }
 _LIST_COLUMNS: Final[tuple[str, ...]] = ("원인", "결과", "기존 안전장치(Before)", "권고")
 _HIDE_IF_UNIFORM: Final[tuple[str, ...]] = ("노드", "시나리오 연계", FLAG_COLUMN, EVIDENCE_COLUMN)

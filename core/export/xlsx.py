@@ -108,9 +108,16 @@ def sheet_headers(criteria: Criteria) -> list[str]:
     return headers
 
 
+#: 질문봉쇄 Q-03 — 빈도 근거가 있는 결과에만 12열 뒤(M열)에 붙는다. 12열 표준·위험도 수식 위치는 그대로.
+BASIS_HEADER: Final[str] = "빈도 근거"
+
+
 def _write_worksheet(ws: Worksheet, rows: Sequence[WorksheetRow], criteria: Criteria) -> int:
-    """12열 워크시트를 쓰고 마지막 데이터 행 번호를 돌려준다."""
-    _write_header(ws, sheet_headers(criteria))
+    """12열 워크시트를 쓰고 마지막 데이터 행 번호를 돌려준다. 빈도 근거가 있으면 13번째 열로 덧붙인다."""
+    basis = any(row.frequency_basis for row in rows)
+    _write_header(ws, [*sheet_headers(criteria), *([BASIS_HEADER] if basis else [])])
+    if basis:
+        ws.column_dimensions["M"].width = 40
     for letter, width in COLUMN_WIDTHS.items():
         ws.column_dimensions[letter].width = width
     ws.freeze_panes = FREEZE_PANES
@@ -120,6 +127,8 @@ def _write_worksheet(ws: Worksheet, rows: Sequence[WorksheetRow], criteria: Crit
         values = row.cells()
         # J 열 — 값 대신 수식(곱 =H*I, 대조표 =INDEX(...)). 보류 행(S·F 빈칸)은 비운다(Z-3)
         values[9] = None if row.held else criteria.excel_formula(r)
+        if basis:
+            values.append(row.frequency_basis or "")
         for col, value in enumerate(values, start=1):
             cell = ws.cell(row=r, column=col, value=value)
             cell.alignment = _BODY_ALIGN

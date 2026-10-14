@@ -187,6 +187,8 @@ def _applicable_cell(
         meta[f"{grade}_values"] = values
         # 공통 답은 가운데 값(짝수 개면 위쪽), 합치기는 최댓값 — 둘 다 위험을 낮춰 잡지 않는다
         base[grade] = values[-1] if union else values[len(values) // 2]
+    if "frequency_basis" in base:  # Q-03 근거는 채택한 F 를 낸 실행의 것 — 다른 실행의 근거가 F 와 엇갈리지 않게
+        base["frequency_basis"] = next(c.get("frequency_basis", "") for c in used if int(c["F"]) == base["F"])
     base["safeguards_before"] = list(dict.fromkeys(s for c in used for s in c.get("safeguards_before") or []))
     evidence: list[Any] = []
     for c in used:

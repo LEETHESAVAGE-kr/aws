@@ -635,6 +635,12 @@ else:
         if not result.is_gold:
             st.caption(service.VERIFIER_SCOPE)
         st.caption(service.summary_line(shown))
+        bars = service.distribution_html(shown)  # Q-03-4 심각도·빈도·위험도 분포
+        if bars:
+            st.html(bars)
+        crowded = service.concentration_warning(shown)
+        if crowded:
+            st.caption(crowded)
         # X-2 보기 전환 — 표시 순서만 바꾼다. 검토 편집은 워크시트 순서에서만(편집 키가 행 인덱스라서).
         # 위젯 키에 상태로 값을 넣어 두면 처음 그릴 때 화면 선택 표시가 그 값을 따르지 않는다(10/8 브라우저 확인,
         # segmented_control·radio 둘 다). 값은 위젯 밖 `view_pref` 에 두고, 칩이 바꾸면 새 키 + index 로 다시 만든다.

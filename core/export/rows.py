@@ -59,6 +59,8 @@ class WorksheetRow:
     missing: tuple[str, ...] = ()  # Z-3 — 비어 있지 않으면 정보 부족 보류 행
     #: §8 C 합의 생성 내역(`DeviationRecord.consensus`). 단일 실행이면 None.
     consensus: Mapping[str, Any] | None = field(default=None, hash=False, compare=False)
+    #: 질문봉쇄 Q-03 빈도 근거(`DeviationRecord.frequency_basis`). 이 기능 이전 결과·골드셋은 None.
+    frequency_basis: str | None = None
 
     @property
     def held(self) -> bool:
@@ -239,6 +241,7 @@ def normalize_rows(records: Iterable[object]) -> list[WorksheetRow]:
                 criteria_id=m.get("criteria_id"),
                 missing=_str_list(m.get("missing")) if m.get("status") == "insufficient" else (),
                 consensus=m.get("consensus") or None,
+                frequency_basis=m.get("frequency_basis") or None,
             )
         )
     return rows
