@@ -189,6 +189,36 @@ def is_auth_error(exc: BaseException) -> bool:
     return type(exc).__name__ == "AuthenticationError" or getattr(exc, "status_code", None) == 401
 
 
+def failure_hint(exc: BaseException) -> str:
+    """재시도 소진(`BedrockCallError`)이 감춘 원인 상태코드를 사람 말로. 키 문자는 드러내지 않는다.
+
+    429 는 둘이다 — 분당 한도(잠시 뒤 풀림)와 게이트웨이 키 누적 예산 소진(`budget_exceeded`, 10/14 실측 —
+    기다려도 안 풀린다). 본문으로 가른다.
+    """
+    cause = exc.__cause__ or exc
+    code = getattr(cause, "status_code", None)
+    if code == 429 and "budget" in str(cause).lower():
+        return (
+            "원인: 429 — 대회 API 키의 사용 예산이 모두 소진되었습니다(기다려도 풀리지 않음). "
+            '"완성된 사례 보기"에서 실제로 생성해 저장한 결과를 보세요. 이번 실패는 횟수에 넣지 않았습니다.'
+        )
+    if code == 429:
+        return (
+            "원인: 429 — API 키의 분당 사용량 한도에 걸렸습니다(여러 명이 연달아 누른 경우). "
+            '1분쯤 뒤 다시 누르거나, 기다리는 동안 "완성된 사례 보기"를 보세요. 이번 실패는 횟수에 넣지 않았습니다.'
+        )
+    if code == 529 or (isinstance(code, int) and code >= 500):
+        return (
+            f"원인: {code} — Anthropic 서버가 일시적으로 과부하입니다. 잠시 뒤 다시 누르세요. "
+            "이번 실패는 횟수에 넣지 않았습니다."
+        )
+    return (
+        f"원인: {type(cause).__name__}"
+        + (f" (HTTP {code})" if code else "")
+        + " — 이번 실패는 횟수에 넣지 않았습니다."
+    )
+
+
 def key_hint(environ: Mapping[str, str] = os.environ) -> str:
     """`ANTHROPIC_API_KEY` 형식 진단 — **키 문자는 한 글자도 드러내지 않는다**(접두사 일치 여부·길이·이상 문자 수만)."""
     name = _key_name(environ)
