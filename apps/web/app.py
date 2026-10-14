@@ -385,6 +385,7 @@ with tool.container(border=True, key="tool"):
             labels = dict(service.INPUT_CHECK_FIELDS)
             with st.container(border=True, key="input_check"):
                 st.markdown("**입력 확인 — 생성 전에 빠진 정보를 채우세요**")
+                st.markdown(service.parsed_values_line(meta, pending["info"]))  # Q-04-4 해석된 값이 먼저
                 st.caption(
                     f"해석 결과: 물질 {meta.substance} · 상태 {meta.phase} · "
                     f"설비 {', '.join(meta.equipment) or '—'}"

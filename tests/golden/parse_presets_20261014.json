@@ -1,0 +1,24 @@
+{
+ "_comment": "Q-04 프리셋 3문장 해석 실응답(2026-10-14, 대회 게이트웨이 bedrock-haiku, node_parse.md 수정 후) + 수정 전 프롬프트로 같은 날 재현한 잘못된 응답(직결 claude-haiku-4-5 — 90 MPa 가 설계압력 칸으로 감, 배포 증상과 같은 모양). tests/test_parse_presets.py 가 오프라인으로 재생한다.",
+ "recorded": [
+  {
+   "label": "수소충전소",
+   "text": "수소충전소에서 튜브트레일러의 압축 수소를 압축기로 약 90 MPa 까지 올려 저장용기에 모았다가 디스펜서로 차량에 충전한다. 안전장치는 안전밸브, 긴급차단밸브, 수소누출감지기.",
+   "reply": "{\"node\": \"X1\", \"substance\": \"수소\", \"phase\": \"gas\", \"pressure\": {\"value\": 90, \"unit\": \"MPa\"}, \"T_degC\": null, \"equipment\": [\"튜브트레일러\", \"압축기\", \"저장용기\", \"디스펜서\"], \"safeguards\": [\"안전밸브\", \"긴급차단밸브\", \"수소누출감지기\"], \"safeguards_known\": false, \"design_pressure\": null, \"capacity\": null}"
+  },
+  {
+   "label": "메탄올 저장탱크",
+   "text": "메탄올을 이송 펌프로 상압 저장탱크(약 30 ℃)에 보낸다. 탱크에는 질소 블랭킷과 브리더밸브가 있고, 탱크 주변에는 가스감지기와 긴급차단밸브가 있다.",
+   "reply": "{\"node\": \"X1\", \"substance\": \"메탄올\", \"phase\": \"liquid\", \"pressure\": {\"value\": 0, \"unit\": \"kPa\"}, \"T_degC\": 30, \"equipment\": [\"이송 펌프\", \"저장탱크\"], \"safeguards\": [\"질소 블랭킷\", \"브리더밸브\", \"가스감지기\", \"긴급차단밸브\"], \"safeguards_known\": false, \"design_pressure\": null, \"capacity\": null}"
+  },
+  {
+   "label": "실란 가스 캐비닛",
+   "text": "반도체 라인의 가스 캐비닛에서 실란(SiH4) 실린더를 자동 절체하며 약 0.5 MPa 로 감압해 공정 장비에 공급한다. 안전장치는 캐비닛 배기, 가스감지기, 과류차단밸브, 긴급차단밸브.",
+   "reply": "{\"node\": \"X1\", \"substance\": \"실란\", \"phase\": \"gas\", \"pressure\": {\"value\": 0.5, \"unit\": \"MPa\"}, \"T_degC\": null, \"equipment\": [\"가스 캐비닛\", \"실린더\", \"자동 절체장치\", \"감압기\", \"공정 장비\"], \"safeguards\": [\"캐비닛 배기\", \"가스감지기\", \"과류차단밸브\", \"긴급차단밸브\"], \"safeguards_known\": false, \"design_pressure\": null, \"capacity\": null}"
+  }
+ ],
+ "bad_20261014": {
+  "text": "수소충전소에서 튜브트레일러의 압축 수소를 압축기로 약 90 MPa 까지 올려 저장용기에 모았다가 디스펜서로 차량에 충전한다. 안전장치는 안전밸브, 긴급차단밸브, 수소누출감지기.",
+  "reply": "{\"node\": \"X1\", \"substance\": \"수소\", \"phase\": \"gas\", \"pressure\": null, \"T_degC\": null, \"design_pressure\": {\"value\": 90, \"unit\": \"MPa\"}, \"capacity\": null, \"equipment\": [\"튜브트레일러\", \"압축기\", \"저장용기\", \"디스펜서\"], \"safeguards\": [\"안전밸브\", \"긴급차단밸브\", \"수소누출감지기\"], \"safeguards_known\": false}"
+ }
+}
