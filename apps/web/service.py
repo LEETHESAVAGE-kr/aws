@@ -22,6 +22,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final
 
+from core import ipl
 from core.agent import HazopGenerator, NodeMeta, VerifySummary, verify
 from core.agent.generate import (
     GUIDEWORD_DEFINITIONS,
@@ -120,6 +121,8 @@ EVIDENCE_NONE: Final[str] = "인용 없음 (AI 추론)"
 REPEAT_COLUMN: Final[str] = "반복 일치"
 #: 질문봉쇄 Q-03 — 어떤 기존 안전장치를 반영해 이 빈도인지(판정 프롬프트 `frequency_basis`).
 BASIS_COLUMN: Final[str] = "빈도 근거"
+#: 지시문 S-4 — IPL 크레딧 결과의 빈도 표시 `기본→반영`(인정 IPL 이 없으면 값 하나). 읽기 전용, 편집은 F 열(반영 후)만.
+FREQ_SHIFT_COLUMN: Final[str] = "빈도 (기본→반영)"
 #: 공정 카탈로그(J-01, `data/presets.json`). 노드 id → 노드(+ `process`).
 CATALOG: Final[list[dict[str, Any]]] = load_catalog()
 NODES: Final[dict[str, dict[str, Any]]] = nodes_by_id(CATALOG)
@@ -960,10 +963,47 @@ def worksheet_table(result: Result) -> list[dict[str, object]]:
         )
         if any(r.consensus for r in records):  # 단일 실행 결과의 표는 지금과 같은 열
             entry[REPEAT_COLUMN] = consensus_summary(record.consensus, record.status == INSUFFICIENT)
+        if any(r.ipl_credited is not None for r in records):  # S-4-1 크레딧 결과에만
+            entry[FREQ_SHIFT_COLUMN] = freq_shift(record)
         if any(r.frequency_basis for r in records):  # Q-03 — 맨 뒤 열(기본으로 눈에 덜 띄게), 편집 불가
-            entry[BASIS_COLUMN] = record.frequency_basis or ""
+            entry[BASIS_COLUMN] = ipl_prefix(record) + (record.frequency_basis or "")
         table.append(entry)
     return table
+
+
+def freq_shift(record: DeviationRecord) -> str:
+    """S-4-1 `기본→반영` — 인정한 IPL 이 있으면 `3→1`, 없으면 반영 후 값만. 보류 행은 빈칸."""
+    if record.F is None:
+        return ""
+    if record.ipl_credited and record.frequency_base is not None:
+        return f"{record.frequency_base}→{record.F}"
+    return str(record.F)
+
+
+def ipl_prefix(record: DeviationRecord) -> str:
+    """S-4-2 빈도 근거 앞 접두어 — 인정한 IPL `✓ 이름(예방)`, 인정하지 않은 입력 안전장치 `– 이름(감지만)`.
+
+    크레딧 칸이 없는 결과(이 기능 이전·보류 행)는 빈 문자열 — 근거 문장만 그대로.
+    """
+    if record.ipl_credited is None:
+        return ""
+    parts = [f"✓ {i['name']}({ipl.CLASS_LABELS.get(str(i.get('class')), i.get('class'))})" for i in record.ipl_credited]
+    for name in record.node_meta.safeguards:
+        if not any(ipl.same_device(str(i["name"]), [name]) for i in record.ipl_credited):
+            parts.append(f"– {name}({ipl.CLASS_LABELS[ipl.classify(name).cls]})")
+    return " · ".join(parts) + " — " if parts else ""
+
+
+def ipl_line(result: Result) -> str | None:
+    """S-4-3 요약 줄 `IPL 인정 n행 / 검토 m행` — n 은 IPL 을 1개 이상 인정한 행, m 은 V-IPL 플래그가 붙은 행.
+
+    크레딧 칸이 있는 결과에만(이전 재생·골드는 None).
+    """
+    records, summary = verified(result)
+    if result.is_gold or not any(r.ipl_credited is not None for r in records):
+        return None
+    flagged = {f.record_id for f in summary.flags if f.rule.startswith("ipl_")}
+    return f"IPL 인정 {sum(bool(r.ipl_credited) for r in records)}행 / 검토 {len(flagged)}행"
 
 
 #: 골드셋 없는 공정에 NH3 기준이 쓰인 결과(10/9 이전 캡처)에 붙는 불일치 배지(지시문 M-03, 실무자평가 P-3).
@@ -1019,6 +1059,12 @@ CONCENTRATION_WARNING: Final[str] = (
 )
 
 
+CONCENTRATION_WARNING_IPL: Final[str] = (
+    "⚠ 빈도가 한 값에 몰려 있습니다 — 입력된 안전장치 중 IPL 적격 장치가 적습니다 — "
+    "감지기는 차단 연동이 있어야 인정됩니다."
+)
+
+
 def grade_counts(result: Result) -> dict[str, dict[int, int]]:
     """심각도·빈도·위험도 등급별 행 수(보류 행 제외). 등급 축은 결과의 평가기준 단계 수 전부(0 인 등급도 보인다)."""
     criteria = result_criteria(result)
@@ -1063,10 +1109,15 @@ def distribution_html(result: Result) -> str | None:
 
 
 def concentration_warning(result: Result) -> str | None:
-    """빈도 단일값 비율이 기준을 넘으면 자동 문구(Q-03-4). 사람이 쓴 워크시트에는 붙이지 않는다."""
+    """빈도 단일값 비율이 기준을 넘으면 자동 문구(Q-03-4). 사람이 쓴 워크시트에는 붙이지 않는다.
+
+    S-4-4: 입력에 안전장치가 있는데도 몰렸으면 '없어서'가 아니다 — IPL 적격 장치가 적다는 문구로 바꾼다.
+    """
     share = f_concentration(result)
     if result.is_gold or share is None or share <= CONCENTRATION_LIMIT:
         return None
+    if any(r.node_meta.safeguards for r in result.records):
+        return CONCENTRATION_WARNING_IPL
     return CONCENTRATION_WARNING
 
 
@@ -1216,6 +1267,9 @@ def summary_line(result: Result) -> str:
     cited = evidence_line(result)
     if cited:
         parts.insert(1, cited)
+    credit = ipl_line(result)
+    if credit:  # S-4-3 빈도 분포 바로 뒤
+        parts.insert(parts.index(f_distribution(result)) + 1, credit)
     if m.get("source") == "quick":
         parts.insert(0, QUICK_SCOPE.format(guideword=", ".join(m.get("guidewords") or [])))
     if m.get("combined"):
@@ -1617,7 +1671,7 @@ REVIEW_PINNED: Final[tuple[str, ...]] = (REVIEW_COLUMN, "No", "가이드워드")
 #: 고정 열 다음에 오는 판단 열 — 우선순위(위험도·S·F·신뢰도)가 가로 스크롤 없이 보이게 이탈 바로 뒤에 둔다.
 #: 화면 순서일 뿐이다. 다운로드 xlsx 는 표준 12열 순서(R-02) 그대로.
 REVIEW_FRONT: Final[tuple[str, ...]] = (
-    "이탈", "위험도", "S(1-5)", "F(1-5)", CONFIDENCE_COLUMN, REPEAT_COLUMN, EVIDENCE_COLUMN,
+    "이탈", "위험도", "S(1-5)", FREQ_SHIFT_COLUMN, "F(1-5)", CONFIDENCE_COLUMN, REPEAT_COLUMN, EVIDENCE_COLUMN,
 )
 #: 글 열 너비(px) — 'large' 는 열 4개가 화면을 다 먹어 숫자 열이 밀려난다(10/8 1440px 캡처).
 REVIEW_WIDTHS: Final[dict[str, int]] = {
@@ -1634,7 +1688,7 @@ TABLE_STYLES: Final[tuple[str, ...]] = ("펼쳐 보기 — 글 전체", "편집 
 FULL_WIDTHS: Final[dict[str, int]] = {
     "No": 36, "검토": 56, "가이드워드": 120, "이탈": 240, "위험도": 52, "S(1-5)": 56, "F(1-5)": 48,
     "신뢰도": 170, "반복 일치": 220, "관련 법령·MSDS": 200, "원인": 260, "결과": 260, "기존 안전장치(Before)": 180, "권고": 260,
-    "노드": 160, "시나리오 연계": 120, "검증 플래그": 180, "빈도 근거": 220,
+    "노드": 160, "시나리오 연계": 120, "검증 플래그": 180, "빈도 근거": 220, FREQ_SHIFT_COLUMN: 72,
 }
 _LIST_COLUMNS: Final[tuple[str, ...]] = ("원인", "결과", "기존 안전장치(Before)", "권고")
 _HIDE_IF_UNIFORM: Final[tuple[str, ...]] = ("노드", "시나리오 연계", FLAG_COLUMN, EVIDENCE_COLUMN)
@@ -1669,12 +1723,26 @@ def merge_edits(
 
 
 def with_edits(table: list[dict[str, object]], edits: Mapping[int, Mapping[str, Any]]) -> list[dict[str, object]]:
-    """화면 표 사본에 검토 편집(검토 판정·수정 값)을 넣는다 — 다른 보기의 읽기 전용 표와 편집 표 재생성용."""
+    """화면 표 사본에 검토 편집(검토 판정·수정 값)을 넣는다 — 다른 보기의 읽기 전용 표와 편집 표 재생성용.
+
+    S-4-1: 반영 후 빈도(F)를 고치면 `기본→반영` 표시의 뒤쪽도 따라 바꾼다(기본값은 AI 판정 그대로).
+    """
     out = [dict(row) for row in table]
     for i, edit in edits.items():
         if 0 <= int(i) < len(out):
-            out[int(i)].update({k: v for k, v in edit.items() if k in out[int(i)]})
+            row = out[int(i)]
+            row.update({k: v for k, v in edit.items() if k in row})
+            if FREQ_SHIFT_COLUMN in row and "F(1-5)" in edit and not _blank(edit["F(1-5)"]):
+                base, arrow, _ = str(row[FREQ_SHIFT_COLUMN]).partition("→")
+                row[FREQ_SHIFT_COLUMN] = f"{base}→{int(edit['F(1-5)'])}" if arrow else str(int(edit["F(1-5)"]))
     return out
+
+
+def read_only_order(order: list[str]) -> list[str]:
+    """S-4-1 읽기 보기(펼쳐 보기·묶음 보기)의 열 — 크레딧 결과면 F 숫자 열 대신 `기본→반영` 한 열만."""
+    if FREQ_SHIFT_COLUMN not in order:
+        return order
+    return [c for c in order if c != "F(1-5)"]
 
 
 def full_table_html(rows: list[dict[str, object]], columns: list[str], criteria: Criteria) -> str:
