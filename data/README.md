@@ -11,6 +11,7 @@
 | `data/reference/iocl_lpg_2014.json` | 지시문 W 외부 공개 HAZOP 대조 기준(**골드셋 아님**) — IOCL LPG Bottling Plant Risk Assessment 2014 부록 A 워크시트 N1~N4 의 (가이드워드, 파라미터) 쌍 44개만. 원인·결과 문장 없음. 인도 환경허가 공개 제출물(저작권 표시 미확인) — 이름(사실)만 옮김 | tracked |
 | `data/reference/external_eval_202610.json` | **외부 공개 HAZOP 평가셋(평가 전용, 골드셋 아님)** — 다른 팀이 쓴 공개 워크시트 5건(ORNL 2023 NH3 연료 설비 · IJERPH 2017 연료 터미널(CC BY) · IOCL Vijayawada 2016 석유 터미널 · Assam Gas 2010 천연가스 · KAIS 2019 아크릴 수지 회분식)의 노드 입력 사실과 (가이드워드, 파라미터) 쌍 212개(44노드). 원인·결과 문장 없음. 검색 풀·few-shot·열거 예시·합성 시드·미세조정 금지. 출처별 URL·이용 조건·추출 규칙·제외 항목은 파일 안에, 빌더는 `tools/_eval_build/` | tracked |
 | `data/reference/external_eval_summary.json` | 위 평가셋 10/10 실측 요약 — `results/exteval_20261010/summary.json`(gitignore) 원문 + `measured_at`·`source_run`. 화면 '다른 팀의 HAZOP 과 대조' 패널·README §6 표가 읽는다. 재측정하지 않는다 | tracked |
+| `data/replay_notation.json` | 재생 결과 표기 대응표(교열 10/15) — `docs/교열_20261015/결과표_교열_*.md` 에서 표기 규칙(R1 종결 통일·R2 기호·R3 '~에 의한' 풀기)만 쓴 593줄. `data/replay/` 는 고치지 않고 `apps/web/replay.py` 가 불러올 때 (행 id, 칸, 원문 그대로)가 맞는 문장에만 적용, 출처 안내에 적용 수를 적는다. 빌더 `tools/build_replay_notation.py` | tracked |
 | `data/presets.json` | 데모 공정 카탈로그(FR-10 J-01) — 공정별 노드 입력(`node_meta`). NH3 4노드는 `data/gold` 의 node_meta 와 같은 값, LPG·염소 예시 공정 2개는 저장소 소유자가 작성한 가상의 입력(실데이터 아님, 골드셋 없음) | tracked |
 
 ## 원본 출처 — `data/raw/D1_HAZOP_워크시트.xlsx`
