@@ -268,10 +268,10 @@ def test_app_shows_credit(monkeypatch: pytest.MonkeyPatch, credited: list[dict[s
     assert not at.exception
     assert any(line in c.value for c in at.caption)
     full = next(h.proto.body for h in at.get("html") if "hz-full" in h.proto.body)
-    assert "빈도 (기본→반영)" in full and shown in full
+    assert "빈도 (안전장치 반영 전→후)" in full and shown in full
     if not credited:
         assert "→" not in full.split("<tbody>")[1]  # 인정 0 이면 화살표 없이 값 하나
-    assert any("IPL 적격 장치가 적습니다" in c.value for c in at.caption)  # 안전장치 입력 있음 + F=3 몰림
+    assert any("IPL로 인정되는 장치가 적기 때문입니다" in c.value for c in at.caption)  # 안전장치 입력 있음 + F=3 몰림
 
 
 # ── S-5 재캡처 준비 ───────────────────────────────────────────────────────────

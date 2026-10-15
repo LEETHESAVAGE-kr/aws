@@ -4,7 +4,7 @@
       "id": "nh3_sts",
       "name": "암모니아 선박 간(STS) 벙커링",
       "gold": true,
-      "description": "액체 암모니아 선박 간 이송(공급선 → 이송 호스 → 수급선). 4노드 실호출 결과를 저장해 둔 공정.",
+      "description": "액체 암모니아 선박 간 이송(공급선 → 이송 호스 → 수급선). 노드 4개를 실제로 생성한 결과를 저장해 두었습니다.",
       "nodes": [
         {"id": "N1", "label": "① 공급선(벙커링선) 매니폴드",
          "node_meta": {"node": "N1", "substance": "NH3", "phase": "unknown", "P_kPag": null, "T_degC": null,

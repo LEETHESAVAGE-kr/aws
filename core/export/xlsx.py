@@ -41,11 +41,11 @@ COLUMN_WIDTHS: Final[dict[str, float]] = {
 }
 HEADER_FILL: Final[str] = "1F4E79"
 FREEZE_PANES: Final[str] = "A2"
-LEGEND_TEXT: Final[str] = "범례: S·F=입력 점수, 위험도=수식(S×F). hazop-copilot FR-07 생성물."
+LEGEND_TEXT: Final[str] = "범례: S(심각도)·F(빈도)는 입력 점수, 위험도는 수식(S×F)으로 계산. HAZOP Copilot이 만든 파일입니다."
 
 EVIDENCE_HEADERS: Final[tuple[str, ...]] = ("No", "source_id", "doc_title", "locator", "quote")
 EVIDENCE_EMPTY_NOTE: Final[str] = (
-    "인용 없음 — 이 결과는 법령·MSDS 발췌를 인용하지 않았다(인용을 끈 실행·전문가 정답지·인용 0건). 행 내용은 AI 추론이다."
+    "인용 없음 — 이 결과는 법령·MSDS 발췌를 인용하지 않았습니다(인용을 끈 생성, 전문가 작성 워크시트, 또는 인용 0건)."
 )
 CONFIDENCE_HEADERS: Final[tuple[str, ...]] = ("No", "confidence", "사유")
 #: Z-3 정보 부족 보류 행이 있을 때만 붙는 시트 — 무엇이 없어서 판단하지 않았는지.
@@ -53,7 +53,7 @@ HELD_SHEET: Final[str] = "확인 필요"
 #: §8 C 합의 생성 — 같은 입력으로 판정을 N번 돌린 결과의 문장별 일치. 합의 결과일 때만 붙는다.
 REPEAT_SHEET: Final[str] = "반복 일치"
 REPEAT_HEADERS: Final[tuple[str, ...]] = ("No", "가이드워드", "판정", "구분", "문장·값", "일치", "반영")
-HELD_HEADERS: Final[tuple[str, ...]] = ("No", "가이드워드", "이탈 초안", "필요한 정보")
+HELD_HEADERS: Final[tuple[str, ...]] = ("No", "가이드워드", "이탈", "필요한 정보")
 HELD_LEGEND: Final[str] = "S·F·위험도 빈칸 = 정보 부족으로 판정 보류(입력·공식 문서에 없는 사업장 정보가 필요 — '확인 필요' 시트)."
 #: R-10 검토 기록 — 검토가 있을 때만 6번째 시트로 붙는다(AC-10-1). "원 No" 는 검토 전 화면 번호.
 REVIEW_SHEET: Final[str] = "검토 기록"
@@ -61,12 +61,12 @@ REVIEW_HEADERS: Final[tuple[str, ...]] = ("원 No", "검토", "가이드워드",
 CONFIDENCE_UNASSIGNED: Final[str] = "미부여"
 # R-05 표. 이 spec 은 판정하지 않고 표시만 한다(판정은 FR-06).
 CONFIDENCE_REASONS: Final[dict[str | None, tuple[str, str]]] = {
-    "grounded": ("문서 2건 이상 인용", "서로 다른 공식 문서 2건 이상 인용 · 인용 원문 대조 통과 · 검증 플래그 0 (Y-4)"),
-    "single_source": ("문서 1건 인용", "공식 문서 1건 인용 · 인용 원문 대조 통과 · 검증 플래그 0 (Y-4)"),
-    "inferred": ("AI 추론", "공식 문서 인용 없음 — 모델 추론 · 검증 플래그 0"),
-    "review": ("검토 필요", "검증 플래그(근거 없는 규격·수치, 원문과 다른 인용) 또는 스키마 2회 실패 — 사람 검토 필요"),
-    "insufficient": ("정보 부족", "입력·공식 문서에 없는 사업장 정보(미상)가 있어야 판단할 수 있어 S·F 를 매기지 않고 보류 (Z-3)"),
-    None: (CONFIDENCE_UNASSIGNED, "입력에 confidence 필드 없음(골드셋 등 사람 작성 레코드)"),
+    "grounded": ("문서 2건 이상 인용", "서로 다른 공식 문서 2건 이상 인용 · 인용 원문 대조 통과 · 자동 검사 경고 0"),
+    "single_source": ("문서 1건 인용", "공식 문서 1건 인용 · 인용 원문 대조 통과 · 자동 검사 경고 0"),
+    "inferred": ("AI 추론", "공식 문서 인용 없음 — AI 추론 · 자동 검사 경고 0"),
+    "review": ("검토 필요", "자동 검사 경고(근거 없는 규격·수치, 원문과 다른 인용) 또는 AI 응답 형식 오류 2회 — 사람 검토 필요"),
+    "insufficient": ("정보 부족", "입력·공식 문서에 없는 사업장 정보가 있어야 판단할 수 있어 S·F를 매기지 않고 보류"),
+    None: (CONFIDENCE_UNASSIGNED, "신뢰도 정보 없음(전문가가 작성한 행)"),
 }
 
 _RATING_SCALE_PATH: Final[Path] = (
@@ -155,7 +155,7 @@ def _write_rating(ws: Worksheet, scale: dict[str, Any], criteria: Criteria | Non
     ws.column_dimensions["C"].width = 60
     ws.append(["구분", "등급", "정의"])
     for item in scale["severity"]:
-        ws.append(["S 강도", int(item["grade"]), _definition(item)])
+        ws.append(["S 심각도", int(item["grade"]), _definition(item)])
     for item in scale["frequency"]:
         ws.append(["F 빈도", int(item["grade"]), _definition(item)])
     ws.append([None, None, None])
@@ -189,7 +189,7 @@ def screening_formula(s: int, f: int, last_row: int) -> str:
 def _write_screening(ws: Worksheet, last_row: int, s_max: int = 5, f_max: int = 5) -> None:
     last = max(last_row, 2)  # 데이터 0건이어도 수식 범위가 깨지지 않게
     ws.column_dimensions["A"].width = 12
-    ws.append([f"{s_max}×{f_max} 매트릭스 (이탈 건수 분포, COUNTIFS로 워크시트와 자동 연동)"])
+    ws.append([f"심각도 {s_max}단계 × 빈도 {f_max}단계 표 (이탈 건수 분포, 워크시트와 자동 연동)"])
     ws.append(["S＼F", *[f"F{f}" for f in range(1, f_max + 1)]])
     for s in range(s_max, 0, -1):
         ws.append([f"S{s}", *[screening_formula(s, f, last) for f in range(1, f_max + 1)]])
@@ -216,7 +216,7 @@ def confidence_label(confidence: str | None) -> tuple[str, str]:
     """(표기, 사유). 표에 없는 값은 그대로 표기하고 사유는 '알 수 없는 등급'."""
     if confidence in CONFIDENCE_REASONS:
         return CONFIDENCE_REASONS[confidence]
-    return (str(confidence), "알 수 없는 등급 — FR-06 표에 없음")
+    return (str(confidence), "알 수 없는 등급")
 
 
 def _write_confidence(ws: Worksheet, rows: Sequence[WorksheetRow]) -> None:

@@ -12,7 +12,6 @@ import html
 import json
 import logging
 import os
-import re
 import shutil
 import tempfile
 import threading
@@ -68,20 +67,20 @@ if TYPE_CHECKING:
 
 #: 기본 실행(지시문 X-1) 안내 — 노드 전체, 병렬 7. X-G7 실측 3회 79~126초 · $0.73~0.78 (results/xg7_20261008_2350).
 LIVE_NOTE: Final[str] = "가이드워드 전체 · 약 1.5~2분 · 약 $0.75"
-LIVE_BUTTON: Final[str] = "HAZOP 초안 생성 (가이드워드 전체 · 약 1.5–2분)"
-QUICK_NOTE: Final[str] = "약 1분 · API 호출 3회(입력 해석 1 + 파라미터 열거 1 + 가이드워드 1, JSON 입력이면 2회)"
+LIVE_BUTTON: Final[str] = "HAZOP 초안 생성 (가이드워드 전체 · 약 1.5~2분)"
+QUICK_NOTE: Final[str] = "약 1분 · API 호출 3회(입력 해석 1 + 파라미터 도출 1 + 가이드워드 1, JSON 입력이면 2회)"
 #: 보조 실행 "가이드워드 하나만 빠르게"(지시문 X-1b) 문구 — 실무 기능이다. 이 묶음에 '부스'·'관람객' 을 쓰지 않는다(시험).
 #: §8 C 생성 방식(10/9 사용자: "지금처럼 한 AI 의 답을 고르는 버튼도 남기기"). 10/10 공통 답(교집합) → 합치기(합집합):
 #: 교집합은 한 번만 나온 타당한 원인을 버린다. 값 = 가이드워드 판정 반복 횟수. 기본은 첫 항목(지금 방식).
 GENERATION_MODES: Final[dict[str, int]] = {
-    "한 번 생성 — 단일 모델": 1,
-    "3번 생성해 합치기 — 한 번에 빠진 원인까지 모음 (시간·비용 약 3배)": 3,
+    "한 번 생성(기본)": 1,
+    "3번 생성해 합치기 — 한 번 생성할 때 빠지는 원인까지 모음 (시간·비용 약 3배)": 3,
 }
 GENERATION_MODE_LABEL: Final[str] = "생성 방식"
 QUICK_EXPANDER: Final[str] = "가이드워드 하나만 빠르게 보기 — 특정 이탈 방향만 먼저 확인할 때 (약 1분)"
 QUICK_QUESTION: Final[str] = "어떤 가이드워드만 볼까요?"
 QUICK_BUTTON: Final[str] = "이 가이드워드만 생성 (약 1분 · 약 $0.15)"
-QUICK_SCOPE: Final[str] = "가이드워드 1종({guideword})만 생성 — 전체 매트릭스 아님"
+QUICK_SCOPE: Final[str] = "가이드워드 1종({guideword})만 생성 — 전체 표가 아님"
 #: 결과 보기(지시문 X-2). 보기는 표시 순서만 바꾼다 — 레코드·다운로드는 그대로.
 VIEWS: Final[tuple[str, ...]] = ("워크시트 순서", "가이드워드별", "파라미터별")
 #: 재생에서 공정 전체를 노드 순서로 이어 보는 선택(지시문 X-3).
@@ -104,7 +103,7 @@ SECRET_KEYS: Final[tuple[str, ...]] = (
     # 질문봉쇄 Q-01 되돌리기 — 이 날짜 이전 재생만 보인다(예: 2026-10-14 → 9/29 재생)
     "HAZOP_REPLAY_BEFORE",
 )
-GATEWAY_LABEL: Final[str] = "대회 AI 게이트웨이"
+GATEWAY_LABEL: Final[str] = "대회 제공 API"
 #: `ANTHROPIC_BASE_URL` 이 있을 때 출처 줄에 붙는 경유 표시. Bedrock 경유는 운영사 확인 뒤에만
 #: Secrets `HAZOP_ENDPOINT_LABEL` 로 바꾼다(PRD 본선 F-01-5) — 코드 기본값은 확인 전 문구.
 DEFAULT_ENDPOINT_LABEL: Final[str] = "대회 제공 API"
@@ -113,7 +112,7 @@ LIVE_SCOPES: Final[tuple[str, ...]] = ("quick", "full")
 #: 신뢰도 4단계(Y-4) — 판정은 core/agent/verify.py `confidence_tier`(코드 규칙, 모델 자기평가 아님).
 BADGES: Final[dict[str | None, str]] = {"grounded": "🟢", "single_source": "🔵", "inferred": "🟡", "review": "🔴"}
 CONFIDENCE_COLUMN: Final[str] = "신뢰도"
-FLAG_COLUMN: Final[str] = "검증 플래그"
+FLAG_COLUMN: Final[str] = "자동 검사"
 #: 10/9 사용자: '근거' 빈칸이 "근거 없음"으로 읽힌다 → 무엇을 붙이는 칸인지 이름으로. 빈칸은 EVIDENCE_NONE.
 EVIDENCE_COLUMN: Final[str] = "관련 법령·MSDS"
 EVIDENCE_NONE: Final[str] = "인용 없음 (AI 추론)"
@@ -122,7 +121,7 @@ REPEAT_COLUMN: Final[str] = "반복 일치"
 #: 질문봉쇄 Q-03 — 어떤 기존 안전장치를 반영해 이 빈도인지(판정 프롬프트 `frequency_basis`).
 BASIS_COLUMN: Final[str] = "빈도 근거"
 #: 지시문 S-4 — IPL 크레딧 결과의 빈도 표시 `기본→반영`(인정 IPL 이 없으면 값 하나). 읽기 전용, 편집은 F 열(반영 후)만.
-FREQ_SHIFT_COLUMN: Final[str] = "빈도 (기본→반영)"
+FREQ_SHIFT_COLUMN: Final[str] = "빈도 (안전장치 반영 전→후)"
 #: 공정 카탈로그(J-01, `data/presets.json`). 노드 id → 노드(+ `process`).
 CATALOG: Final[list[dict[str, Any]]] = load_catalog()
 NODES: Final[dict[str, dict[str, Any]]] = nodes_by_id(CATALOG)
@@ -202,23 +201,23 @@ def failure_hint(exc: BaseException) -> str:
     code = getattr(cause, "status_code", None)
     if code == 429 and "budget" in str(cause).lower():
         return (
-            "원인: 429 — 대회 API 키의 사용 예산이 모두 소진되었습니다(기다려도 풀리지 않음). "
-            '"완성된 사례 보기"에서 실제로 생성해 저장한 결과를 보세요. 이번 실패는 횟수에 넣지 않았습니다.'
+            "원인: 대회에서 받은 API 사용 예산을 모두 썼습니다(오류 429, 기다려도 풀리지 않음). "
+            "'완성된 사례 보기'에서 실제로 생성해 저장한 결과를 보세요. 이번 실패는 남은 횟수에서 빼지 않았습니다."
         )
     if code == 429:
         return (
-            "원인: 429 — API 키의 분당 사용량 한도에 걸렸습니다(여러 명이 연달아 누른 경우). "
-            '1분쯤 뒤 다시 누르거나, 기다리는 동안 "완성된 사례 보기"를 보세요. 이번 실패는 횟수에 넣지 않았습니다.'
+            "원인: 짧은 시간에 요청이 몰려 분당 사용 한도를 넘었습니다(오류 429). "
+            "1분쯤 뒤 다시 누르거나, 기다리는 동안 '완성된 사례 보기'를 보세요. 이번 실패는 남은 횟수에서 빼지 않았습니다."
         )
     if code == 529 or (isinstance(code, int) and code >= 500):
         return (
-            f"원인: {code} — Anthropic 서버가 일시적으로 과부하입니다. 잠시 뒤 다시 누르세요. "
-            "이번 실패는 횟수에 넣지 않았습니다."
+            f"원인: AI 서버에 요청이 일시적으로 몰렸습니다(오류 {code}). 잠시 뒤 다시 누르세요. "
+            "이번 실패는 남은 횟수에서 빼지 않았습니다."
         )
     return (
         f"원인: {type(cause).__name__}"
         + (f" (HTTP {code})" if code else "")
-        + " — 이번 실패는 횟수에 넣지 않았습니다."
+        + " — 이번 실패는 남은 횟수에서 빼지 않았습니다."
     )
 
 
@@ -287,11 +286,11 @@ def live_block_reason(environ: Mapping[str, str] = os.environ) -> str | None:
     **모두** 있어야 한다. mock 모드(`HAZOP_USE_MOCK=true`)는 네트워크를 쓰지 않으므로 키 없이 허용한다(오프라인 시험용).
     """
     if not _is_true(environ.get("HAZOP_ALLOW_LIVE", "false")):
-        return "실호출 비활성 — 공개 데모는 재생 모드만 제공합니다(HAZOP_ALLOW_LIVE 미설정)."
+        return "지금은 새로 생성할 수 없습니다. '완성된 사례 보기'에서 저장된 결과를 보세요."
     if not is_mock(environ) and (problem := provider_problem(environ)):
         return problem
     if _provider(environ) != "gateway" and not environ.get(_key_name(environ), "").strip() and not is_mock(environ):
-        return "실호출 비활성 — ANTHROPIC_API_KEY 가 없습니다."
+        return "지금은 새로 생성할 수 없습니다(AI 연결 설정 없음). '완성된 사례 보기'에서 저장된 결과를 보세요."
     return None
 
 
@@ -299,10 +298,10 @@ def live_block_reason(environ: Mapping[str, str] = os.environ) -> str | None:
 def quota_block_reason(session_runs: int, today: date | None = None) -> str | None:
     """세션·일 상한(`SESSION_LIMIT`·`DAILY_LIMIT`). 초과면 사유 문자열."""
     if session_runs >= SESSION_LIMIT:
-        return f"이 세션의 실호출 {SESSION_LIMIT}회를 이미 썼습니다."
+        return f"이 창에서 생성할 수 있는 {SESSION_LIMIT}회를 모두 썼습니다."
     used = _daily_runs.get(today or date.today(), 0)
     if used >= DAILY_LIMIT:
-        return f"오늘 실호출 상한 {DAILY_LIMIT}회에 도달했습니다({used}/{DAILY_LIMIT})."
+        return f"오늘 생성할 수 있는 {DAILY_LIMIT}회를 모두 썼습니다({used}/{DAILY_LIMIT})."
     return None
 
 
@@ -519,7 +518,7 @@ def parse_node_text(
     )
     if response.content is None:
         raise ValueError(
-            "공정 설명을 노드 입력으로 바꾸지 못했습니다(응답 스키마 2회 위반). 물질·설비를 넣어 다시 적어 주세요."
+            "공정 설명을 해석하지 못했습니다(AI 응답 형식이 두 번 연속 맞지 않음). 물질과 설비를 넣어 다시 적어 주세요."
         )
     reply, fixes = _guard_pressure(json.loads(response.content), stripped)
     written = {name: reply.get(name) for name in _PRESSURE_FIELDS.values() if reply.get(name)}
@@ -578,8 +577,8 @@ def fill_node_meta(meta: NodeMeta, values: Mapping[str, Any]) -> tuple[NodeMeta,
 
 #: 단계별 대기 문구(R-11 T-12). 소요 시간은 실측 2회 — J-03(열거 22·판정 41초), 10/8(해석 5·열거 14·판정 53초).
 STAGE_PENDING: Final[tuple[str, str]] = (
-    "⏳ 1/3 문장을 노드 입력으로 해석 중 (약 3초)",
-    "⏳ 2/3 점검 파라미터 열거 중 (약 20초)",
+    "⏳ 1/3 공정 설명 해석 중 (약 3초)",
+    "⏳ 2/3 점검할 파라미터 도출 중 (약 20초)",
 )
 
 
@@ -723,7 +722,7 @@ def run_live(
 
     records = generator.generate(node_meta, relay)
     if not generator.parameters:
-        raise RuntimeError("파라미터 열거 실패(응답 스키마 2회 위반) — 가이드워드 판정을 건너뛰었습니다.")
+        raise RuntimeError("파라미터를 도출하지 못해(AI 응답 형식이 두 번 연속 맞지 않음) 가이드워드 판정을 하지 않았습니다.")
     meta = _run_meta("mock" if mock else "live-run", environ, node_meta, parsed, generator, raw_calls, started)
     meta["guidewords"] = [g for g in STANDARD_GUIDEWORDS + PROCEDURAL_GUIDEWORDS if g in judged]
     meta["criteria_id"] = generator.criteria.id
@@ -773,7 +772,7 @@ def run_quick(
     generator = HazopGenerator(client, load_generator_config(), criteria_id=OFFICIAL_CRITERIA)
     records = generator.generate_quick(node_meta, guideword, on_progress)  # R-11 AC-11-5 공개 API
     if not generator.parameters:
-        raise RuntimeError("파라미터 열거 실패(응답 스키마 2회 위반) — 가이드워드 판정을 건너뛰었습니다.")
+        raise RuntimeError("파라미터를 도출하지 못해(AI 응답 형식이 두 번 연속 맞지 않음) 가이드워드 판정을 하지 않았습니다.")
     meta = _run_meta("quick", environ, node_meta, parsed, generator, raw_calls, started)
     meta["guidewords"] = [guideword]
     meta["criteria_id"] = generator.criteria.id
@@ -802,15 +801,15 @@ def verified(result: Result) -> tuple[list[DeviationRecord], VerifySummary]:
 DEMO_TOGGLE_LABEL: Final[str] = "검사 기능 시연 — 일부러 틀린 규격 번호 1개 넣어 보기"
 #: Q-06-2 검증기가 보는 범위 — 형식 검사이지 내용 진위 판단이 아니다.
 VERIFIER_SCOPE: Final[str] = (
-    "규칙 검증 — 근거 없는 규격 번호 · 입력·인용 원문에 없는 수치 · 원문과 다른 인용 · 응답 형식(필수 칸) "
+    "자동 검사 — 근거 없는 규격 번호, 입력이나 인용 원문에 없는 수치, 원문과 다른 인용, 빠진 필수 칸을 찾습니다 "
     "(내용의 옳고 그름은 판단하지 않음)"
 )
 #: Q-02-5 '판정 셀' 타일 — 빠짐없음(완전성)이지 맞음(정확도)이 아니다.
-CELLS_TILE: Final[str] = "판정 셀"
-CELLS_TILE_SUB: Final[str] = "빠짐없이 판정했는가 (완전성)"
+CELLS_TILE: Final[str] = "판정한 칸"
+CELLS_TILE_SUB: Final[str] = "빠짐없이 판정했는가"
 DEMO_SUFFIX: Final[str] = " (KOSHA GUIDE P-999 참조)"
 DEMO_BANNER: Final[str] = (
-    ":red-background[시연] 아래 1행의 규격 번호는 시연용으로 삽입한 것입니다 — 원본 재생 데이터에는 없습니다."
+    ":red-background[시연] 아래 표의 한 행에 넣은 규격 번호는 시연용이며, 저장된 원래 결과에는 없습니다."
 )
 
 
@@ -888,7 +887,7 @@ def held_label(record: DeviationRecord) -> str:
 def held_rows(result: Result) -> list[dict[str, object]]:
     """정보 부족으로 보류한 셀(Z-3) — 워크시트 No·가이드워드·이탈 초안·필요한 정보. Excel '확인 필요' 시트와 같은 내용."""
     return [
-        {"No": no, "가이드워드": f"{r.guideword} ({r.parameter})", "이탈 초안": r.deviation, "필요한 정보": " · ".join(r.missing)}
+        {"No": no, "가이드워드": f"{r.guideword} ({r.parameter})", "이탈": r.deviation, "필요한 정보": " · ".join(r.missing)}
         for no, r in enumerate(verified(result)[0], start=1)
         if r.status == INSUFFICIENT
     ]
@@ -938,7 +937,7 @@ def cell_breakdown(result: Result) -> str | None:
         return None
     held = sum(r.status == INSUFFICIENT for r in result.records)
     shown = len(result.records)
-    return (f"판정 {m['judged_cells']}셀 = 해당 {shown - held} · 해당 없음 {m['judged_cells'] - shown} · "
+    return (f"판정 {m['judged_cells']}칸 = 해당 {shown - held} · 해당 없음 {m['judged_cells'] - shown} · "
             f"정보 부족 {held}(보류)")
 
 
@@ -1008,13 +1007,13 @@ def ipl_line(result: Result) -> str | None:
 
 #: 골드셋 없는 공정에 NH3 기준이 쓰인 결과(10/9 이전 캡처)에 붙는 불일치 배지(지시문 M-03, 실무자평가 P-3).
 CRITERIA_NOTICE = (
-    "심각도·빈도 등급 정의는 NH3 선박 벙커링 기준(선내·항만 영향)입니다 — 이 공정에는 참고용. "
-    "위험도 = 심각도 × 빈도(곱) — 새로 만드는 결과의 KOSHA <표 2> 대조표와 산식이 다릅니다."
+    "이 결과의 심각도·빈도 등급은 NH3 선박 벙커링 기준(선내·항만 피해 기준)으로 매긴 것이어서, 이 공정에는 참고로만 보세요. "
+    "위험도는 심각도×빈도(곱)로 계산했으며, 새로 만드는 결과에 쓰는 KOSHA <표 2> 대조표와 계산법이 다릅니다."
 )
 #: 공식 기준으로 매긴 결과의 배지(Y-2). 〈이름〉·〈위치〉는 기준 파일에서.
 OFFICIAL_NOTICE = (
-    "이 결과의 심각도·빈도·위험도는 {name} 기준으로 매겼습니다({locator}). {how} · {short} ({published}, 수집 {retrieved}) · "
-    "[원문 목록]({url}). 공식 예시 기준이라 사업장 자체 기준이 있으면 그것이 우선합니다."
+    "이 결과의 심각도·빈도·위험도는 {name} 기준으로 매겼습니다({locator}). {how} · {short} ({published}, 확인 {retrieved}) · "
+    "[원문 목록]({url}). 공식 문서의 예시 기준이므로, 사업장 자체 기준이 있으면 그 기준을 따르세요."
 )
 #: 위험도 산정 방식 한 줄(Q-03-1) — 같은 앱 안에서 곱과 대조표가 섞여 보이지 않게 결과마다 적는다.
 RISK_HOW: Final[dict[str, str]] = {
@@ -1029,7 +1028,7 @@ def criteria_label(criteria: Criteria) -> str:
 
 
 #: NH3 벙커링 기준의 화면 이름 — 공식 기준이 아니고 산식이 곱이라는 것까지 이름에 싣는다.
-NH3_CRITERIA_LABEL: Final[str] = "NH3 벙커링 사업장 기준(S×F 곱)"
+NH3_CRITERIA_LABEL: Final[str] = "NH3 벙커링 사업장 기준(심각도×빈도)"
 
 
 def result_criteria(result: Result) -> Criteria:
@@ -1054,14 +1053,14 @@ def criteria_notice(result: Result) -> str | None:
 #: Q-03-4 — 빈도가 한 값에 이 비율보다 많이 몰리면 자동 문구를 붙인다.
 CONCENTRATION_LIMIT: Final[float] = 0.70
 CONCENTRATION_WARNING: Final[str] = (
-    "⚠ 빈도가 한 값에 몰려 있습니다 — 안전장치 정보가 없을 때 보수적 상한으로 두는 설계입니다. "
-    "편집 표에서 사업장 기준으로 조정하세요."
+    "⚠ 빈도가 한 값에 몰려 있습니다. 안전장치 정보가 없으면 빈도를 보수적으로 높게 매기도록 만들었기 때문입니다. "
+    "편집 표에서 사업장 기준에 맞게 고치세요."
 )
 
 
 CONCENTRATION_WARNING_IPL: Final[str] = (
-    "⚠ 빈도가 한 값에 몰려 있습니다 — 입력된 안전장치 중 IPL 적격 장치가 적습니다 — "
-    "감지기는 차단 연동이 있어야 인정됩니다."
+    "⚠ 빈도가 한 값에 몰려 있습니다. 입력한 안전장치 가운데 IPL로 인정되는 장치가 적기 때문입니다 "
+    "(감지기는 차단과 연동돼야 인정)."
 )
 
 
@@ -1135,7 +1134,7 @@ def f_distribution(result: Result) -> str:
     if not counts:
         return "빈도 분포 해당 없음"
     value, count = max(counts.items(), key=lambda kv: (kv[1], -kv[0]))
-    return f"빈도={value} 비율 {count / sum(counts.values()):.0%}"
+    return f"빈도 {value}인 행 {count / sum(counts.values()):.0%}"
 
 
 def holdout_recall(replays: Mapping[str, Result]) -> tuple[int, int] | None:
@@ -1187,7 +1186,7 @@ _REFERENCE_DIR: Final[Path] = Path(__file__).resolve().parents[2] / "data" / "re
 EXTERNAL_SUMMARY_PATH: Final[Path] = _REFERENCE_DIR / "external_eval_summary.json"
 #: 평가셋 본체 — 출처 이름·공정·평가 전용 문구·오염 고지를 여기서 읽는다.
 EXTERNAL_SET_PATH: Final[Path] = _REFERENCE_DIR / "external_eval_202610.json"
-EXTERNAL_PANEL_TITLE: Final[str] = "이 앱을 다른 팀의 HAZOP 과 대조하면"
+EXTERNAL_PANEL_TITLE: Final[str] = "이 앱을 다른 팀의 HAZOP과 대조하면"
 #: 출처 id → 짧은 이름(표의 첫 칸). 값이 아니라 이름이라 여기 둔다.
 EXTERNAL_SHORT: Final[dict[str, str]] = {
     "ornl2023": "ORNL 2023", "ioclv2016": "IOCL 2016", "assam2010": "Assam 2010",
@@ -1195,15 +1194,10 @@ EXTERNAL_SHORT: Final[dict[str, str]] = {
 }
 #: 최저 출처가 낮은 이유 — docs/결과_외부평가_20261010.md '범위 밖 출처' 절과 같은 사실(README §6 같은 문장).
 EXTERNAL_LOW_REASON: Final[str] = (
-    "IJERPH 가 낮은 이유 — 항만 터미널 작업 절차(하역·적재 순서) HAZOP 이라 정전기·부식·속도·계류 같은 작업 고유 "
-    "파라미터를 쓰는데, 이 앱의 파라미터 열거는 이런 설비·절차형 항목을 적게 만든다(부식·속도는 아예 나오지 않음). "
-    "알려진 약점이며 편집 표에서 사람이 보완하는 범위입니다."
+    "IJERPH가 낮은 이유 — 항만 터미널 작업 절차(하역·적재 순서)를 다룬 HAZOP이라 정전기·부식·속도·계류 같은 작업 고유의 "
+    "파라미터를 씁니다. 이 앱은 이런 설비·절차형 파라미터를 적게 도출합니다(부식·속도는 아예 나오지 않음). "
+    "알려진 약점이며, 편집 표에서 사람이 보완해야 하는 부분입니다."
 )
-
-
-def eval_only_note(comment: str) -> str:
-    """평가셋 `_comment` 원문에서 괄호 하나 '(골드셋 아님, 평가 전용)' 만 뺀다 — 내부 워크시트 이름을 화면에 쓰지 않는다(Q-02 v2)."""
-    return re.sub(r"\([^)]*골드셋[^)]*\)", "", comment)
 
 
 def external_eval() -> dict[str, Any]:
@@ -1217,7 +1211,7 @@ def external_eval() -> dict[str, Any]:
         rows.append({
             "출처": EXTERNAL_SHORT.get(src["id"], src["id"]),
             "공정": src["process"],
-            "다시 만든 쌍": f"{got['matched']}/{got['total']}",
+            "다시 찾아낸 쌍": f"{got['matched']}/{got['total']}",
             "coverage": f"{got['coverage']:.2f}",
         })
     kept = [v["coverage"] for k, v in by_source.items() if k != summary["min_source"]]
@@ -1225,19 +1219,19 @@ def external_eval() -> dict[str, Any]:
     return {
         "head": (
             f"외부 공개 HAZOP 워크시트 {len(by_source)}건 · {summary['nodes']}노드 · (가이드워드, 파라미터) 쌍 {total}개 · "
-            f"{summary['measured_at']} 실측 · ${summary['cost_usd']:.1f}"
+            f"{summary['measured_at']} 측정 · 비용 ${summary['cost_usd']:.1f}"
         ),
-        "question": "다른 팀이 쓴 표의 쌍을 이 앱이 얼마나 다시 만들어내는가 (coverage) — 원인·결과 문장의 옳고 그름은 재지 않습니다.",
+        "question": "다른 팀이 쓴 표의 (가이드워드, 파라미터) 쌍을 이 앱이 얼마나 다시 찾아내는지 잰 값입니다. 원인·결과 문장이 맞는지는 재지 않습니다.",
         "rows": rows,
         "total": (
-            f"출처 평균 {summary['macro_mean']:.2f} · 전체 합산 {summary['pooled']:.2f} · "
-            f"{EXTERNAL_SHORT.get(summary['min_source'], summary['min_source'])} 를 뺀 {len(kept)}출처 평균 "
+            f"출처별 평균 {summary['macro_mean']:.2f} · 전체 합산 {summary['pooled']:.2f} · "
+            f"{EXTERNAL_SHORT.get(summary['min_source'], summary['min_source'])} 제외 출처 {len(kept)}곳 평균 "
             f"{sum(kept) / len(kept):.2f}"
         ),
         "low_reason": EXTERNAL_LOW_REASON,
         "fine_print": (
-            "평가 전용 — " + eval_only_note(dataset["_comment"]),
-            "오염 고지 — " + dataset["contamination_note"],
+            "평가에만 쓰는 자료 — " + dataset["display_eval_only"],
+            "평가 자료 사용 이력 — " + dataset["display_contamination"],
         ),
     }
 
@@ -1254,7 +1248,7 @@ def reference_line(result: Result) -> str | None:
 
 def system_note(result: Result) -> str:
     """푸터의 시스템 정보 줄. 결과 출처는 화면 위 출처 줄과 같은 함수(`provenance_line`)로 쓴다(Q-01-4)."""
-    font = "화면에는 S-Core에서 제공한 에스코어 드림 폰트가 적용되어 있습니다."
+    font = "화면 글꼴: 에스코어 드림(S-Core 제공)."
     if result.is_gold or not result.meta.get("model_id"):
         return font
     return f"{font} 결과 출처: {provenance_line(result)}"
@@ -1263,7 +1257,7 @@ def system_note(result: Result) -> str:
 def summary_line(result: Result) -> str:
     """요약 줄. 불리한 숫자도 그대로(NFR-03) — 값이 없으면 없다고 적는다."""
     m = result.meta
-    parts = [f"레코드 {len(result.records)}건", f_distribution(result)]
+    parts = [f"행 {len(result.records)}개", f_distribution(result)]
     cited = evidence_line(result)
     if cited:
         parts.insert(1, cited)
@@ -1273,24 +1267,24 @@ def summary_line(result: Result) -> str:
     if m.get("source") == "quick":
         parts.insert(0, QUICK_SCOPE.format(guideword=", ".join(m.get("guidewords") or [])))
     if m.get("combined"):
-        parts.insert(0, f"{m['process']} 공정 전체 {len(m['nodes'])}노드 ({m['node']})")
+        parts.insert(0, f"{m['process']} 공정 전체(노드 {len(m['nodes'])}개)")
     if m.get("expected_cells") is not None:
-        parts.append(f"판정 셀 {m.get('judged_cells')}/{m['expected_cells']}")
+        parts.append(f"판정한 칸 {m.get('judged_cells')}/{m['expected_cells']}")
     breakdown = cell_breakdown(result)
     if breakdown:
         parts.append(breakdown)
     review = m.get("review_guidewords") or []
-    parts.append(f"review 가이드워드 {', '.join(review) if review else '없음'}")
+    parts.append(f"판정에 실패한 가이드워드 {', '.join(review) if review else '없음'}")
     if result.is_gold:
         parts.append("검증 해당 없음(전문가 작성 결과)")
     else:
         by_rule = verified(result)[1].by_rule
         n_review = sum(r.confidence == "review" for r in verified(result)[0])
         parts.append(
-            f"review {n_review}건 (규격 {by_rule['unverified_standard']}·수치 {by_rule['unsupported_number']})"
+            f"검토 필요 {n_review}건 (근거 없는 규격 {by_rule['unverified_standard']}·수치 {by_rule['unsupported_number']})"
         )
     latency = m.get("latency_s")
-    parts.append(f"지연 {latency:.0f}초" if latency is not None else "지연 해당 없음")
+    parts.append(f"소요 {latency:.0f}초" if latency is not None else "소요 시간 해당 없음")
     cost = m.get("cost_usd")
     parts.append(f"비용 ${cost:.3f}" if cost is not None else "비용 해당 없음")
     # 정확도(recall)는 화면에 싣지 않는다(10/9 사용자 결정) — 재생 메타·README §6 에만 남는다.
@@ -1343,13 +1337,13 @@ def origin_parts(result: Result) -> list[str]:
     parts.append(m.get("model_id") or "모델 미상")
     version = m.get("prompt_version")
     if version:
-        parts.append(f"프롬프트 {version}" + (" (현행)" if version == prompt_version() else " (이전 판)"))
+        parts.append("프롬프트 현행 판" if version == prompt_version() else "프롬프트 이전 판")
     elif m.get("source") == "live" and _before_m01(m):
-        parts.append("**M-01 이전 프롬프트**(판정 단계에 기존 안전장치·운전조건 미전달)")
+        parts.append("**초기 프롬프트**(판정 단계에 기존 안전장치·운전조건을 넘기지 않던 판)")
     if result.records or m.get("criteria_id"):
         parts.append(f"평가기준 {criteria_label(result_criteria(result))}")
     if (m.get("parallel_calls") or 1) > 1:
-        parts.append(f"병렬 {m['parallel_calls']}")
+        parts.append(f"동시 호출 {m['parallel_calls']}개")
     cost = m.get("cost_usd")
     if cost is not None:
         parts.append(f"비용 ${cost:.3f}")
@@ -1366,15 +1360,15 @@ def provenance_line(result: Result) -> str:
         vias = sorted({VIA_LABELS.get(str(p), "") for p in m.get("providers") or []} - {""})
         via_part = f" · {' / '.join(vias)}" if vias else ""
         return (
-            f"{m['process']} — 노드 {len(m['nodes'])}개의 실호출 캡처를 노드 순서({m['node']})로 이어 본 재생"
-            f"{via_part}{cost_part} · 노드별 캡처 시각·프롬프트는 아래 '노드별 출처'"
+            f"{m['process']} — 노드 {len(m['nodes'])}개를 하나씩 실제로 생성해 저장한 결과를 노드 순서대로 이어 붙여 보여 줌"
+            f"{via_part}{cost_part} · 노드별 저장 시각과 프롬프트는 아래 '노드별 출처'에 있음"
         )
     if result.is_gold:
         return f"사람이 직접 작성한 HAZOP 워크시트 — AI 생성 결과 아님 ({_kst(m.get('captured_at'))} 저장)"
     if m.get("mock"):
         scope = " · " + QUICK_SCOPE.format(guideword=", ".join(m.get("guidewords") or [])) if source == "quick" else ""
         return f"mock 실행 — 네트워크 없이 재생 레코드로 생성 경로를 돈 결과 ({_kst(m.get('captured_at'))}){scope}"
-    when = f"{_kst(m.get('captured_at'))} " + ("실호출 캡처 재생" if source == "live" else "방금 실호출")
+    when = f"{_kst(m.get('captured_at'))} " + ("저장된 생성 결과" if source == "live" else "방금 생성")
     tail = " · ".join([when, *origin_parts(result)])
     if source == "quick":
         tail += " · " + QUICK_SCOPE.format(guideword=", ".join(m.get("guidewords") or []))
@@ -1425,7 +1419,7 @@ def calls_line(result: Result) -> str:
     scope = f" (노드 {len(m['nodes'])}개 합계)" if m.get("combined") else ""
     parsed = sum(c.get("stage") == "parse" for c in raw)
     tail = f" — 문장 해석 {parsed}회 포함" if parsed else ""
-    return f"API 호출 {len(raw)}회{scope}{tail} · 재시도 포함 원시 호출 수"
+    return f"API 호출 {len(raw)}회{scope}{tail}(재시도 포함)"
 
 
 def given_lines(result: Result) -> list[str]:
@@ -1442,7 +1436,7 @@ def given_lines(result: Result) -> list[str]:
         if meta.get("T_degC") is not None:
             values.append(f"온도 {meta['T_degC']:g} ℃")
         guards = meta.get("safeguards") or []
-        values.append(f"안전장치 {len(guards)}개" if guards else ("안전장치 없음(명시)" if meta.get("safeguards_known")
+        values.append(f"안전장치 {len(guards)}개" if guards else ("안전장치 없음(입력에 명시)" if meta.get("safeguards_known")
                                                                else "안전장치 정보 없음"))
         lines.append(f"**{meta.get('node') or '노드'}** — " + " · ".join(values))
     return lines or ["노드 입력 기록 없음"]
@@ -1466,7 +1460,7 @@ def failed_guidewords_line(result: Result) -> str | None:
         return None
     ok = len(m.get("guidewords") or []) - len(failed)
     tail = f" — 나머지 {ok}종은 정상" if ok > 0 else ""
-    return f"가이드워드 {', '.join(failed)} 판정 실패(review){tail}. 실패한 가이드워드의 셀은 결과에 없습니다."
+    return f"가이드워드 {', '.join(failed)} 판정 실패{tail}. 판정에 실패한 가이드워드의 칸은 결과에 없습니다."
 
 
 def partial_rows(records: list[DeviationRecord]) -> list[dict[str, object]]:
@@ -1508,12 +1502,12 @@ def view_groups(result: Result, view: str) -> list[tuple[str, str, list[int]]]:
     groups: list[tuple[str, str, list[int]]] = []
     for name, indices in rows.items():
         if key == "guideword" and name in review:
-            head = f"{name} — 판정 실패(review)"
+            head = f"{name} — 판정 실패"
         else:
             head = f"{name} — {len(indices)}건"
             if key == "guideword" and parameters and not result.meta.get("combined"):
                 skipped = len(parameters) - len({records[i].parameter for i in indices})
-                head += f" (해당 없음 {skipped}셀)" if skipped > 0 else ""
+                head += f" (해당 없음 {skipped}칸)" if skipped > 0 else ""
         groups.append((name, head, indices))
     return [g for g in groups if g[2] or "실패" in g[1]] if key == "parameter" else groups
 
@@ -1688,7 +1682,7 @@ TABLE_STYLES: Final[tuple[str, ...]] = ("펼쳐 보기 — 글 전체", "편집 
 FULL_WIDTHS: Final[dict[str, int]] = {
     "No": 36, "검토": 56, "가이드워드": 120, "이탈": 240, "위험도": 52, "S(1-5)": 56, "F(1-5)": 48,
     "신뢰도": 170, "반복 일치": 220, "관련 법령·MSDS": 200, "원인": 260, "결과": 260, "기존 안전장치(Before)": 180, "권고": 260,
-    "노드": 160, "시나리오 연계": 120, "검증 플래그": 180, "빈도 근거": 220, FREQ_SHIFT_COLUMN: 72,
+    "노드": 160, "시나리오 연계": 120, FLAG_COLUMN: 180, "빈도 근거": 220, FREQ_SHIFT_COLUMN: 72,
 }
 _LIST_COLUMNS: Final[tuple[str, ...]] = ("원인", "결과", "기존 안전장치(Before)", "권고")
 _HIDE_IF_UNIFORM: Final[tuple[str, ...]] = ("노드", "시나리오 연계", FLAG_COLUMN, EVIDENCE_COLUMN)
@@ -1820,13 +1814,13 @@ def apply_review(
             if field in ("S", "F"):
                 if _blank(value):  # 보류 행(Z-3)만 빈칸을 허용 — 판정한 행의 등급은 지울 수 없다
                     if record.get("status") != INSUFFICIENT:
-                        raise ValueError(f"{_KOREAN[field]} 는 비울 수 없습니다(정보 부족 보류 행만 빈칸)")
+                        raise ValueError(f"{_KOREAN[field]}는 비울 수 없습니다(빈칸은 정보 부족으로 보류한 행에만 허용)")
                     record[field] = None
                     changed.append(column)
                     continue
                 grade = int(value)
                 if grade != value or not 1 <= grade <= limits[field]:
-                    raise ValueError(f"{_KOREAN[field]} 는 1~{limits[field]} 정수여야 합니다({criteria.short}): {value!r}")
+                    raise ValueError(f"{_KOREAN[field]}는 1~{limits[field]} 사이의 정수여야 합니다({criteria.short}): {value!r}")
                 record[field] = grade
             else:
                 record[field] = _split_list(value)
@@ -1846,7 +1840,7 @@ def apply_review(
 #: Q-06-1 LOPA 명칭 — 화면 버튼·파일명·문서 첫 줄.
 LOPA_LABEL: Final[str] = "LOPA 후보 시나리오 (Word)"
 LOPA_DOCX_NAME: Final[str] = "lopa_candidates.docx"
-LOPA_FIRST_LINE: Final[str] = "S×F 기반 후보 목록 — IPL·PFD·SIL 미산정, LOPA 본 분석은 전문가가 수행"
+LOPA_FIRST_LINE: Final[str] = "심각도×빈도로 고른 후보 목록 — IPL·PFD·SIL은 계산하지 않았으며, LOPA 본 분석은 전문가가 합니다"
 LOPA_MD_TITLE: Final[str] = "# LOPA 초안"
 LOPA_TITLE: Final[str] = "# LOPA 후보 시나리오"
 
