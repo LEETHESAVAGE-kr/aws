@@ -12,6 +12,7 @@ import html
 import json
 import logging
 import os
+import re
 import shutil
 import tempfile
 import threading
@@ -1087,55 +1088,74 @@ def f_concentration(result: Result) -> float | None:
     return max(counts.values()) / total if total else None
 
 
+#: 위험도 판정 구간 색 — 높은 판정부터(빨강·주황·초록). 구간이 2개면 빨강·초록.
+_BAND_COLORS: Final[dict[int, tuple[str, ...]]] = {
+    2: ("#e5484d", "#30a46c"), 3: ("#e5484d", "#f5a524", "#30a46c"),
+}
+
+
+def risk_band_counts(result: Result) -> list[tuple[str, str, int]]:
+    """(판정, 위험도 범위, 행 수) — 높은 판정부터. 등급을 매긴 행만(보류 행 제외)."""
+    criteria = result_criteria(result)
+    bands = sorted(criteria.data["risk_bands"], key=lambda b: -int(str(b["range"]).split("~")[0]))
+    scores = [r.risk_score for r in result.records if r.S is not None and r.F is not None]
+    return [(str(b["judgement"]), str(b["range"]),
+             sum(1 for s in scores if s is not None and criteria.band(s) == b["judgement"])) for b in bands]
+
+
 def distribution_html(result: Result) -> str | None:
-    """요약 줄 아래 분포 막대 3줄(Q-03-4) — 기존 카드 양식(hz-info). 등급을 매긴 행이 없으면 None."""
+    """요약 줄 아래 '위험도 판정' 카드(Q-03-4, 10/15 개편) — 몇 행이 어느 판정인지 한 막대로 먼저 말하고,
+    그 아래에 심각도·빈도 분포를 등급 이름과 함께 적는다. 등급을 매긴 행이 없으면 None."""
     counts = grade_counts(result)
     total = sum(counts["빈도"].values())
     if not total:
         return None
-    labels = grade_labels(result_criteria(result))
-    rows = []
-    for name, by_grade in counts.items():
-        cells = "".join(
-            f"<span style='flex:{max(n, 0.0001)};background:var(--accent);opacity:{0.35 + 0.65 * n / total:.2f};"
-            f"color:var(--text);font-size:12px;padding:2px 6px;white-space:nowrap;overflow:hidden' "
-            f"title='{name} {g}{labels[name].get(g, '')}: {n}행'>{g}·{n}</span>"
-            for g, n in by_grade.items() if n
-        )
-        empty = [str(g) for g, n in by_grade.items() if not n]
-        tail = (f"<small style='color:var(--muted);margin-left:8px'>해당 행 없는 등급: {', '.join(empty)}</small>"
-                if empty and len(empty) <= 5 else "")
-        rows.append(
-            f"<div class='hz-info-r'><span style='width:52px'>{name}</span>"
-            f"<b style='flex:1;display:flex;gap:2px'>{cells}</b>{tail}</div>"
-        )
-    head = f"<p class='hz-info-t'>등급 분포 — 등급을 매긴 {total}행이 어느 등급에 몰렸는지</p>"
-    how = (
-        "<p style='color:var(--muted);font-size:13px;margin:4px 0 8px'>막대 한 줄이 심각도·빈도·위험도 하나입니다. "
-        "칸 안의 <b>3·23</b>은 '등급 3인 행이 23개'라는 뜻이고, 칸 너비는 행 수에 비례합니다(진할수록 많음). "
-        "정보 부족으로 보류한 행은 등급이 없어 셈에서 뺐습니다.</p>"
-    )
     criteria = result_criteria(result)
-    lines = [f"{name}: " + " · ".join(f"{g}{lab}" for g, lab in labels[name].items())
-             for name in ("심각도", "빈도") if any(labels[name].values())]
-    bands = sorted(criteria.data["risk_bands"], key=lambda b: int(str(b["range"]).split("~")[0]))
-    lines.append("위험도: " + " · ".join(f"{b['range']}({b['judgement']})" for b in bands))
-    legend = "".join(f"<small style='display:block;color:var(--muted)'>{line}</small>" for line in lines)
-    return (f"<div class='hz-info' style='height:auto;padding:12px 16px'>{head}{how}{''.join(rows)}"
-            f"<div style='margin-top:8px'>{legend}</div></div>")
+    bands = risk_band_counts(result)
+    colors = _BAND_COLORS.get(len(bands), ("var(--accent)",) * len(bands))
+    held = sum(1 for r in result.records if r.S is None or r.F is None)
+    top_name, top_range, top_n = bands[0]
+    if top_n:
+        head = (f"등급을 매긴 {total}행 중 <b>{top_n}행({top_n / total:.0%})이 '{top_name}'</b>"
+                f"(위험도 {top_range})입니다 — 이 행부터 대책을 검토하세요.")
+    else:
+        busiest = max(bands, key=lambda b: b[2])
+        head = (f"'{top_name}'(위험도 {top_range}) 행은 없습니다. "
+                f"가장 많은 판정은 '{busiest[0]}' {busiest[2]}행입니다.")
+    bar = "".join(
+        f"<span title='{name} (위험도 {rng}): {n}행' style='flex:{n};background:{color};color:#fff;font-size:12px;"
+        f"padding:4px 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>{name} {n}</span>"
+        for (name, rng, n), color in zip(bands, colors, strict=True) if n
+    )
+    legend = " · ".join(
+        f"<span style='color:{color}'>■</span> {name}(위험도 {rng}) {n}행"
+        for (name, rng, n), color in zip(bands, colors, strict=True)
+    )
+    labels = grade_labels(criteria)
+
+    def spread(name: str, what: str) -> str:
+        by_grade = sorted(counts[name].items(), reverse=True)  # 높은 등급부터
+        items = " · ".join(f"{labels[name].get(g) or f'{g}등급'}({g}) {n}" for g, n in by_grade)
+        return f"<div class='hz-info-r'><span style='width:52px'>{name}</span><b style='flex:1;font-weight:400'>{items}행 <small style='color:var(--muted)'>— {what}</small></b></div>"
+
+    note = f" 정보 부족으로 보류한 {held}행은 등급이 없어 빼고 셌습니다." if held else ""
+    return (
+        "<div class='hz-info' style='height:auto;padding:12px 16px'>"
+        f"<p class='hz-info-t'>위험도 판정 한눈에 보기</p><p style='margin:4px 0 10px'>{head}</p>"
+        f"<div style='display:flex;gap:2px;border-radius:6px;overflow:hidden'>{bar}</div>"
+        f"<small style='display:block;color:var(--muted);margin:6px 0 10px'>{legend}.{note}</small>"
+        f"<small style='display:block;color:var(--muted);margin-bottom:2px'>위험도는 아래 두 등급을 {criteria_label(criteria)} 기준표로 조합한 값입니다.</small>"
+        f"{spread('심각도', '사고가 나면 피해가 얼마나 큰가')}{spread('빈도', '얼마나 자주 일어날 수 있나')}"
+        "</div>"
+    )
 
 
 def grade_labels(criteria: Criteria) -> dict[str, dict[int, str]]:
-    """분포 막대 범례 — 등급 → ' (경미)' 같은 이름. 위험도는 판정 구간 이름. 기준에 이름이 없으면 빈 문자열."""
+    """등급 → 이름(예: 4 → '치명적'). 기준표에 이름이 없으면 빈 문자열."""
     def named(items: list[dict[str, Any]]) -> dict[int, str]:
-        return {int(i["grade"]): f"({i['label']})" if i.get("label") else "" for i in items}
+        return {int(i["grade"]): str(i.get("label") or "") for i in items}
 
-    risk: dict[int, str] = {}
-    for band in criteria.data["risk_bands"]:
-        low, _, high = str(band["range"]).partition("~")
-        for g in range(int(low), int(high or low) + 1):
-            risk[g] = f"({band['judgement']})"
-    return {"심각도": named(criteria.data["severity"]), "빈도": named(criteria.data["frequency"]), "위험도": risk}
+    return {"심각도": named(criteria.data["severity"]), "빈도": named(criteria.data["frequency"])}
 
 
 def concentration_warning(result: Result) -> str | None:
@@ -1728,6 +1748,8 @@ FULL_WIDTHS: Final[dict[str, int]] = {
     "신뢰도": 170, "반복 일치": 220, "관련 법령·MSDS": 200, "원인": 260, "결과": 260, "기존 안전장치(Before)": 180, "권고": 260,
     "노드": 160, "시나리오 연계": 120, FLAG_COLUMN: 180, "빈도 근거": 220, FREQ_SHIFT_COLUMN: 72,
 }
+#: 편집 표에서 목록 항목 사이 구분(10/15). 데이터·파일은 줄바꿈(`LIST_JOINER`).
+EDIT_JOINER: Final[str] = " | "
 _LIST_COLUMNS: Final[tuple[str, ...]] = ("원인", "결과", "기존 안전장치(Before)", "권고")
 _HIDE_IF_UNIFORM: Final[tuple[str, ...]] = ("노드", "시나리오 연계", FLAG_COLUMN, EVIDENCE_COLUMN)
 
@@ -1741,7 +1763,9 @@ def _blank(value: object) -> bool:
 
 
 def _split_list(value: object) -> list[str]:
-    return [part.strip() for part in str(value or "").split("·") if part.strip()]
+    """한 칸의 목록 문자열 → 항목. 구분은 줄바꿈(`LIST_JOINER`, 파일·펼쳐 보기)과 `|`(편집 표 — 격자는 줄바꿈을 못 보여 준다).
+    항목 문장 속 "·"는 자르지 않는다(10/15 — 항목의 45%가 "배관·펌프"처럼 "·"를 품는다). 두 구분 문자는 항목 문장에 나오지 않는다."""
+    return [part.strip() for part in re.split(r"[\n|]", str(value or "")) if part.strip()]
 
 
 def review_key(result: Result) -> str:
@@ -1808,9 +1832,9 @@ def full_table_html(rows: list[dict[str, object]], columns: list[str], criteria:
 
 
 def readable_rows(table: list[dict[str, object]]) -> list[dict[str, object]]:
-    """화면용 사본 — 목록 열의 `·` 를 ` · ` 로 띄운다. `apply_review` 는 띄어쓰기 차이를 수정으로 치지 않는다."""
+    """편집 표용 사본 — 목록 열은 ` | ` 로 잇는다(격자는 줄바꿈을 보여 주지 않는다). `apply_review` 는 구분 문자·공백 차이를 수정으로 치지 않는다."""
     return [
-        {k: (" · ".join(_split_list(v)) if k in _LIST_COLUMNS else v) for k, v in row.items()} for row in table
+        {k: (EDIT_JOINER.join(_split_list(v)) if k in _LIST_COLUMNS else v) for k, v in row.items()} for row in table
     ]
 
 

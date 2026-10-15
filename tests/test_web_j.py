@@ -737,12 +737,30 @@ def test_reject_removes_row_everywhere_and_logs_it() -> None:
     assert review[0] == REVIEW_HEADERS and review[1][1] == "기각"
 
 
+def test_list_items_with_middle_dot_stay_whole() -> None:
+    """10/15: 항목 문장 속 '·'(배관·펌프)에서 항목이 쪼개지지 않는다 — 펼쳐 보기·편집 표·검토 반영·Excel 모두."""
+    result = _quick_result()
+    item = "이송 중단으로 공급측 배관·펌프에 데드헤드 과압 형성"
+    rec = result.records[0].model_copy(update={"consequences": [item, "벙커링 작업 지연"]})
+    result = service.Result(meta=result.meta, records=[rec, *result.records[1:]])
+    table = service.worksheet_table(result)
+    html_ = service.full_table_html(table[:1], list(table[0]), service.result_criteria(result))
+    assert f"• {item}" in html_ and "• 펌프에" not in html_
+    grid = service.readable_rows(table)[0]["결과"]
+    assert grid == f"{item} | 벙커링 작업 지연"
+    kept, log = service.apply_review(result, {0: {"결과": grid + " | 추가 항목"}})
+    assert kept[0]["consequences"] == [item, "벙커링 작업 지연", "추가 항목"]
+    cell = next(_sheets(service.export_files(result))["HAZOP워크시트"].iter_rows(min_row=2, max_row=2, values_only=True))
+    assert f"{item}\n벙커링 작업 지연" in cell
+
+
 def test_edit_changes_values_and_risk_formula_inputs() -> None:
     result = _quick_result()
     table = service.worksheet_table(result)
     original_s = table[0]["S(1-5)"]
     new_s = 1 if original_s != 1 else 2
-    edits = {0: {"S(1-5)": new_s, "권고": "인터록 추가 · 절차서 개정", "결과": table[0]["결과"]}}  # 결과는 같은 값
+    shown_consequences = service.readable_rows(table)[0]["결과"]  # 편집 표가 보여 주는 ' | ' 값 그대로 = 수정 아님
+    edits = {0: {"S(1-5)": new_s, "권고": "인터록 추가 | 절차서 개정", "결과": shown_consequences}}
     kept, log = service.apply_review(result, edits)
     assert kept[0]["S"] == new_s and kept[0]["recommendations"] == ["인터록 추가", "절차서 개정"]
     assert log == [(1, "수정", table[0]["가이드워드"], table[0]["이탈"], "권고, S(1-5)")]  # 같은 값은 수정 아님
@@ -1026,15 +1044,15 @@ def test_review_columns_put_decision_columns_first_and_hide_uniform() -> None:
     assert {"이탈", "원인", "결과", "권고", "S(1-5)", "F(1-5)", "위험도"} <= set(order)
     demo = service.readable_rows(service.worksheet_table(service.demo_injected(load_replays()["P1"])))
     assert service.FLAG_COLUMN in service.review_column_order(demo)  # 플래그가 있으면 보인다
-    listed = next(r for r in table if "·" in str(r["원인"]))
-    assert " · " in str(listed["원인"])
+    listed = next(r for r in table if " | " in str(r["원인"]))  # 편집 표는 항목을 " | " 로 잇는다(격자는 줄바꿈을 못 보임)
+    assert "\n" not in str(listed["원인"])
 
 
 def test_spacing_only_is_not_an_edit() -> None:
-    """화면은 ' · ' 로 띄워 보여 준다 — 그 값을 그대로 돌려받아도 '수정' 으로 치지 않는다."""
+    """편집 표는 ' | ' 로 이어 보여 준다 — 그 값을 그대로 돌려받아도 '수정' 으로 치지 않는다."""
     result = _full_result()
     shown = service.readable_rows(service.worksheet_table(result))
-    row = next(i for i, r in enumerate(shown) if " · " in str(r["원인"]))
+    row = next(i for i, r in enumerate(shown) if " | " in str(r["원인"]))
     kept, log = service.apply_review(result, {row: {"원인": shown[row]["원인"], service.REVIEW_COLUMN: "채택"}})
     assert log == [(shown[row]["No"], "채택", shown[row]["가이드워드"], shown[row]["이탈"], "")]
     assert kept[row]["causes"] == service._display_records(result)[row]["causes"]

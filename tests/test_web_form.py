@@ -104,9 +104,9 @@ def test_full_text_table_is_default_and_not_truncated(monkeypatch: pytest.Monkey
 def test_full_table_html_escapes_and_splits_lists() -> None:
     from core.criteria import load_criteria
 
-    out = service.full_table_html([{"원인": "<b>밸브</b> · 펌프 정지", "S(1-5)": 3.0, "F(1-5)": float("nan")}],
+    out = service.full_table_html([{"원인": "<b>밸브</b>\n배관·펌프 정지", "S(1-5)": 3.0, "F(1-5)": float("nan")}],
                                   ["원인", "S(1-5)", "F(1-5)"], load_criteria("kosha_cc37_2026"))
-    assert "&lt;b&gt;밸브&lt;/b&gt;<br>• 펌프 정지" in out and ">3<" in out and "nan" not in out
+    assert "&lt;b&gt;밸브&lt;/b&gt;<br>• 배관·펌프 정지" in out and ">3<" in out and "nan" not in out
 
 
 def test_chips_only_in_sentence_style(monkeypatch: pytest.MonkeyPatch) -> None:

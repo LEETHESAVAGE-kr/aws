@@ -14,6 +14,7 @@ from typing import TYPE_CHECKING, Final
 from core.criteria import load_criteria
 
 from .report import risk_band
+from .rows import LIST_JOINER
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -57,7 +58,7 @@ def _section(k: int, r: WorksheetRow) -> list[str]:
         "",
         "### 시나리오 서술",
         "",
-        f"원인({r.causes or '기재 없음'}) → 이탈({r.deviation}) → 결과({r.consequences or '기재 없음'})",
+        f"원인({'; '.join(r.causes_list) or '기재 없음'}) → 이탈({r.deviation}) → 결과({r.consequences.replace(LIST_JOINER, '; ') or '기재 없음'})",
         "",
         "### IE(개시사건) 후보 — 워크시트 '원인' 칸 원문",
         "",
