@@ -29,7 +29,7 @@ def _nudges(at: AppTest) -> list[str]:
     return out
 
 
-@pytest.mark.parametrize("target", list(nudge.TARGETS))
+@pytest.mark.parametrize("target", sorted(set(nudge.TARGETS) - nudge.ALWAYS))
 def test_script_does_nothing_outside_mobile(target: str) -> None:
     """스크롤·깜빡임은 전부 모바일 판정 안에 있다 — PC 에서는 스타일도 넣지 않는다."""
     s = nudge.script(target, 1)
@@ -39,6 +39,12 @@ def test_script_does_nothing_outside_mobile(target: str) -> None:
     for action in ("scrollIntoView", "classList", "createElement('style')"):
         assert action not in head and action in body
     assert nudge.TARGETS[target] in body
+
+
+def test_rows_target_scrolls_on_pc_too() -> None:
+    """판정 막대를 누르면 표가 화면 아래에 있어 PC 에서도 이동한다(10/15)."""
+    s = nudge.script("rows", 1)
+    assert "matchMedia" not in s and "scrollIntoView" in s and nudge.TARGETS["rows"] in s
 
 
 def test_each_press_is_a_new_script() -> None:

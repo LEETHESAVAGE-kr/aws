@@ -14,19 +14,23 @@ from typing import Final
 TARGETS: Final[dict[str, str]] = {
     "result": "#result",
     "input": ".st-key-quick_text",
+    "rows": "[class*='st-key-rowfilter_']",  # '표에서 볼 행' 선택 — 바로 아래가 걸러 낸 표
 }
+#: PC 에서도 이동하는 곳 — 판정 막대를 누르면 표가 화면 아래라 PC 에서도 찾아가야 한다(10/15 사용자 요청).
+ALWAYS: Final[frozenset[str]] = frozenset({"rows"})
 MOBILE_QUERY: Final[str] = "(max-width: 768px)"
 FLASH_MS: Final[int] = 1600
 
 
 def script(target: str, nonce: int) -> str:
-    """모바일에서만 `target` 으로 스크롤하고 테두리를 깜빡이는 스크립트(iframe 안에서 부모 문서를 만진다)."""
+    """`target` 으로 스크롤하고 테두리를 깜빡이는 스크립트(iframe 안에서 부모 문서를 만진다). `ALWAYS` 밖은 모바일에서만."""
     selector = json.dumps(TARGETS[target])
     query = json.dumps(MOBILE_QUERY)
+    guard = "if (true) {\n" if target in ALWAYS else f"if (window.parent.matchMedia({query}).matches) {{\n"
     return (
         f"<script>/* nudge {nonce} */\n"
         "const doc = window.parent.document;\n"
-        f"if (window.parent.matchMedia({query}).matches) {{\n"
+        f"{guard}"
         "  if (!doc.getElementById('hz-nudge-style')) {\n"
         "    const s = doc.createElement('style'); s.id = 'hz-nudge-style';\n"
         "    s.textContent = '@keyframes hzNudge {0%,100% {box-shadow: 0 0 0 0 rgba(144,70,255,0);} "

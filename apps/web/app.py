@@ -594,9 +594,12 @@ else:
     review_base: dict[str, dict[int, dict[str, Any]]] = state.setdefault("review_base", {})
     review_saved: dict[str, dict[int, dict[str, Any]]] = state.setdefault("review_saved", {})
     # '표에서 볼 행'(10/15): 판정으로 거른 편집 표는 키가 따로다 — 그 표의 행 번호를 전체 표 번호로 되돌려 합친다.
-    filter_key = f"rowfilter_{review_key}"
+    # 선택은 위젯 밖(`rowpref_…`)에 두고, 판정 막대를 누르면 새 키로 다시 만든다 — 위젯 키에 값을 넣으면
+    # 화면 선택 표시가 따라오지 않는다(10/8 view_pref 와 같은 이유).
+    pref_key = f"rowpref_{review_key}"
+    filter_key = f"rowfilter_{review_key}_{state.get('rowfilter_gen', 0)}"
     row_filters = service.row_filters(result, service.worksheet_table(result))
-    row_choice = state.get(filter_key) or service.ROW_FILTER_ALL
+    row_choice = state.get(pref_key) if state.get(pref_key) in row_filters else service.ROW_FILTER_ALL
     row_idx = row_filters.get(row_choice, row_filters[service.ROW_FILTER_ALL])
     editor_key = review_key if row_choice == service.ROW_FILTER_ALL else f"{review_key}__{row_choice}"
     if result.is_gold:
@@ -641,26 +644,52 @@ else:
         if not result.is_gold:
             st.caption(service.VERIFIER_SCOPE)
         st.caption(service.summary_line(shown))
-        bars = service.distribution_html(shown)  # Q-03-4 심각도·빈도·위험도 분포
-        if bars:
-            st.html(bars)
-        crowded = service.concentration_warning(shown)
-        if crowded:
-            st.caption(crowded)
-
         def _switch_rows() -> None:
             # 걸러 낸 편집 표를 바꾸기 전에 지금까지의 편집을 저장본에 넣고, 이전 편집 표 상태는 버린다(이중 적용 방지)
             review_base[review_key] = review_saved.get(review_key, {})
             for k in [k for k in state if str(k) == review_key or str(k).startswith(f"{review_key}__")]:
                 del state[k]
 
+        def _pick_rows(name: str) -> None:
+            """판정 막대의 칸을 누름 — 그 판정만 표에 남기고 표로 이동한다(10/15 사용자 요청)."""
+            _switch_rows()
+            state[pref_key] = name
+            state.rowfilter_gen = state.get("rowfilter_gen", 0) + 1
+            _nudge("rows")
+
+        def _keep_rows() -> None:
+            _switch_rows()
+            state[pref_key] = state[filter_key] or service.ROW_FILTER_ALL
+
+        card = service.risk_card(shown)  # Q-03-4 위험도 판정 — 막대 칸이 곧 버튼
+        if card:
+            with st.container(border=True, key="risk_card"):
+                st.html(card.head)
+                present = [(i, b) for i, b in enumerate(card.bands) if b[2] and b[0] in row_filters]
+                total_rated = sum(b[2] for _, b in present) or 1
+                # 칸 너비 = 행 수 비례, 다만 글자가 들어가게 최소 너비를 둔다
+                weights = [max(b[2], 0.18 * total_rated) for _, b in present]
+                st.html("<style>" + "".join(
+                    f".st-key-band_{i} button{{background:{b[3]};color:#fff;border:0;font-weight:600}}"
+                    f".st-key-band_{i} button:hover{{filter:brightness(1.12);color:#fff}}"
+                    for i, b in present
+                ) + "</style>")
+                for column, (i, (name, rng, n, _color)) in zip(st.columns(weights, gap="small"), present, strict=True):
+                    with column.container(key=f"band_{i}"):
+                        st.button(f"{name} {n}행", key=f"band_btn_{i}", on_click=_pick_rows, args=(name,),
+                                  width="stretch", help=f"위험도 {rng} — 누르면 이 {n}행만 아래 표에 남기고 표로 이동합니다")
+                st.html(card.tail)
+        crowded = service.concentration_warning(shown)
+        if crowded:
+            st.caption(crowded)
+
         st.segmented_control(
             "표에서 볼 행",
             list(row_filters),
             format_func=lambda o: f"{o} {len(row_filters[o])}행",
-            default=service.ROW_FILTER_ALL,
+            default=row_choice,
             key=filter_key,
-            on_change=_switch_rows,
+            on_change=_keep_rows,
         )
         row_set = set(row_idx)
         # X-2 보기 전환 — 표시 순서만 바꾼다. 검토 편집은 워크시트 순서에서만(편집 키가 행 인덱스라서).
