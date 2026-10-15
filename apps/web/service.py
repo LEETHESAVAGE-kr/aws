@@ -1103,7 +1103,33 @@ def risk_band_counts(result: Result) -> list[tuple[str, str, int]]:
              sum(1 for s in scores if s is not None and criteria.band(s) == b["judgement"])) for b in bands]
 
 
+@dataclasses.dataclass(frozen=True)
+class RiskCard:
+    """'위험도 판정 한눈에 보기' 카드 조각 — 화면은 막대를 누를 수 있는 버튼으로 그린다(10/15). `html()` 은 막대까지 HTML."""
+
+    head: str  # 제목 + 한 문장 메시지
+    bands: tuple[tuple[str, str, int, str], ...]  # (판정, 위험도 범위, 행 수, 색) — 높은 판정부터
+    tail: str  # 범례 + 심각도·빈도 분포
+
+    def bar_html(self) -> str:
+        return "<div style='display:flex;gap:2px;border-radius:6px;overflow:hidden'>" + "".join(
+            f"<span title='{name} (위험도 {rng}): {n}행' style='flex:{n};background:{color};color:#fff;font-size:12px;"
+            f"padding:4px 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>{name} {n}</span>"
+            for name, rng, n, color in self.bands if n
+        ) + "</div>"
+
+    def html(self) -> str:
+        return (f"<div class='hz-info' style='height:auto;padding:12px 16px'>{self.head}{self.bar_html()}"
+                f"{self.tail}</div>")
+
+
 def distribution_html(result: Result) -> str | None:
+    """요약 줄 아래 '위험도 판정' 카드 전체 HTML. 등급을 매긴 행이 없으면 None."""
+    card = risk_card(result)
+    return card.html() if card else None
+
+
+def risk_card(result: Result) -> RiskCard | None:
     """요약 줄 아래 '위험도 판정' 카드(Q-03-4, 10/15 개편) — 몇 행이 어느 판정인지 한 막대로 먼저 말하고,
     그 아래에 심각도·빈도 분포를 등급 이름과 함께 적는다. 등급을 매긴 행이 없으면 None."""
     counts = grade_counts(result)
@@ -1117,16 +1143,11 @@ def distribution_html(result: Result) -> str | None:
     top_name, top_range, top_n = bands[0]
     if top_n:
         head = (f"등급을 매긴 {total}행 중 <b>{top_n}행({top_n / total:.0%})이 '{top_name}'</b>"
-                f"(위험도 {top_range})입니다 — 아래 '표에서 볼 행'에서 '{top_name}'을 누르면 그 행만 표에 남습니다.")
+                f"(위험도 {top_range})입니다 — 아래 막대에서 그 칸을 누르면 그 행만 표에 남습니다.")
     else:
         busiest = max(bands, key=lambda b: b[2])
         head = (f"'{top_name}'(위험도 {top_range}) 행은 없습니다. "
-                f"가장 많은 판정은 '{busiest[0]}' {busiest[2]}행입니다.")
-    bar = "".join(
-        f"<span title='{name} (위험도 {rng}): {n}행' style='flex:{n};background:{color};color:#fff;font-size:12px;"
-        f"padding:4px 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>{name} {n}</span>"
-        for (name, rng, n), color in zip(bands, colors, strict=True) if n
-    )
+                f"가장 많은 판정은 '{busiest[0]}' {busiest[2]}행입니다. 막대의 칸을 누르면 그 행만 표에 남습니다.")
     legend = " · ".join(
         f"<span style='color:{color}'>■</span> {name}(위험도 {rng}) {n}행"
         for (name, rng, n), color in zip(bands, colors, strict=True)
@@ -1139,14 +1160,14 @@ def distribution_html(result: Result) -> str | None:
         return f"<div class='hz-info-r'><span style='width:52px'>{name}</span><b style='flex:1;font-weight:400'>{items}행 <small style='color:var(--muted)'>— {what}</small></b></div>"
 
     note = f" 정보 부족으로 보류한 {held}행은 등급이 없어 빼고 셌습니다." if held else ""
-    return (
-        "<div class='hz-info' style='height:auto;padding:12px 16px'>"
-        f"<p class='hz-info-t'>위험도 판정 한눈에 보기</p><p style='margin:4px 0 10px'>{head}</p>"
-        f"<div style='display:flex;gap:2px;border-radius:6px;overflow:hidden'>{bar}</div>"
-        f"<small style='display:block;color:var(--muted);margin:6px 0 10px'>{legend}.{note}</small>"
-        f"<small style='display:block;color:var(--muted);margin-bottom:2px'>위험도는 아래 두 등급을 {criteria_label(criteria)} 기준표로 조합한 값입니다.</small>"
-        f"{spread('심각도', '사고가 나면 피해가 얼마나 큰가')}{spread('빈도', '얼마나 자주 일어날 수 있나')}"
-        "</div>"
+    return RiskCard(
+        head=(f"<p class='hz-info-t'>위험도 판정 한눈에 보기</p><p style='margin:4px 0 10px'>{head}</p>"),
+        bands=tuple((name, rng, n, color) for (name, rng, n), color in zip(bands, colors, strict=True)),
+        tail=(
+            f"<small style='display:block;color:var(--muted);margin:6px 0 10px'>{legend}.{note}</small>"
+            f"<small style='display:block;color:var(--muted);margin-bottom:2px'>위험도는 아래 두 등급을 {criteria_label(criteria)} 기준표로 조합한 값입니다.</small>"
+            f"{spread('심각도', '사고가 나면 피해가 얼마나 큰가')}{spread('빈도', '얼마나 자주 일어날 수 있나')}"
+        ),
     )
 
 
