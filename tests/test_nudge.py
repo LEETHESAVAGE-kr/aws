@@ -13,7 +13,10 @@ APP = str(Path(__file__).resolve().parents[1] / "apps" / "web" / "app.py")
 
 
 def _nudges(at: AppTest) -> list[str]:
-    """화면 트리에서 nudge 스크립트를 담은 요소의 proto 문자열."""
+    """화면 트리에서 nudge 스크립트를 담은 요소의 proto 문자열.
+
+    스크립트 첫 줄의 표지(`/* nudge <번호> */`)로 찾는다 — 'nudge' 낱말만 보면 CSS 규칙·상자 키(`panel_nudge`)도 걸린다.
+    """
     out: list[str] = []
 
     def walk(node: object) -> None:
@@ -22,7 +25,7 @@ def _nudges(at: AppTest) -> list[str]:
             for child in children.values():
                 walk(child)
         proto = getattr(node, "proto", None)
-        if proto is not None and "nudge" in str(proto):
+        if proto is not None and "/* nudge " in str(proto):
             out.append(str(proto))
 
     walk(at._tree)

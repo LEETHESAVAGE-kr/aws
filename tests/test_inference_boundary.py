@@ -176,8 +176,8 @@ def test_export_blanks_risk_and_adds_held_sheet(tmp_path: Path) -> None:
     ws = wb["HAZOP워크시트"]
     rows = list(ws.iter_rows(min_row=2, max_row=len(out) + 1, values_only=True))
     held_rows = [r for r in rows if r[7] is None]
-    assert len(held_rows) == 7 and all(r[8] is None and r[9] is None for r in held_rows)
-    assert all(str(r[9]).startswith("=INDEX") for r in rows if r[7] is not None)
+    assert len(held_rows) == 7 and all(r[8] is None and r[9] is None and r[-1] is None for r in held_rows)
+    assert all(isinstance(r[9], int) and str(r[-1]).startswith("=INDEX") for r in rows if r[7] is not None)
     sheet = wb["확인 필요"]
     assert [c.value for c in sheet[1]] == ["No", "가이드워드", "이탈", "필요한 정보"]
     assert sheet.max_row == 8 and sheet[2][3].value == "액위 경보 설정값 · 방유제 유무"
