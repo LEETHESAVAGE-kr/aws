@@ -38,7 +38,9 @@ from core.export.xlsx import (
     CONFIDENCE_UNASSIGNED,
     EVIDENCE_EMPTY_NOTE,
     EVIDENCE_HEADERS,
+    FORMULA_HEADER,
     FREEZE_PANES,
+    legend_text,
 )
 
 if TYPE_CHECKING:
@@ -119,8 +121,8 @@ def test_dict_and_model_inputs_normalize_identically() -> None:
 # ── R-02 HAZOP워크시트 ────────────────────────────────────────────────────────
 def test_worksheet_structure_matches_original(tmp_path: Path) -> None:
     ws = _wb(tmp_path)[SHEET_ORDER[0]]
-    assert ws.max_row == 37 and ws.max_column == 12  # 1 헤더 + 34 + 빈 행 + 범례
-    assert [c.value for c in ws[1]] == list(HEADERS)
+    assert ws.max_row == 37 and ws.max_column == 13  # 1 헤더 + 34 + 빈 행 + 범례 / 12열 + 위험도 수식
+    assert [c.value for c in ws[1]] == [*HEADERS, FORMULA_HEADER]
     assert ws.freeze_panes == FREEZE_PANES
     widths = {k: v.width for k, v in ws.column_dimensions.items() if v.width}
     assert widths == {k: float(v) for k, v in COLUMN_WIDTHS.items()}
@@ -128,12 +130,35 @@ def test_worksheet_structure_matches_original(tmp_path: Path) -> None:
     assert ws["A36"].value is None and isinstance(ws["A37"].value, str)
 
 
-def test_risk_column_is_formula_not_value(tmp_path: Path) -> None:
+def test_risk_column_is_value_and_formula_column_is_separate(tmp_path: Path) -> None:
+    """J 는 값(값만 읽는 도구에서도 비지 않게), 같은 계산의 수식은 맨 끝 열."""
     ws = _wb(tmp_path)[SHEET_ORDER[0]]
     for r in range(2, 36):
-        assert ws.cell(row=r, column=10).value == f"=H{r}*I{r}"
-    # risk_score 값(정수)이 J 열 어디에도 들어가지 않는다
-    assert not any(isinstance(ws.cell(row=r, column=10).value, int) for r in range(2, 36))
+        s, f = ws.cell(row=r, column=8).value, ws.cell(row=r, column=9).value
+        assert ws.cell(row=r, column=10).value == s * f
+        assert ws.cell(row=r, column=13).value == f"=H{r}*I{r}"
+
+
+def test_risk_values_survive_value_only_read(tmp_path: Path) -> None:
+    """pandas 처럼 수식을 계산하지 않고 값만 읽어도 위험도 칸이 비지 않는다(2-①)."""
+    pd = pytest.importorskip("pandas")
+    rows = _rows()
+    path = export_xlsx(rows, tmp_path / "out.xlsx")
+    df = pd.read_excel(path, sheet_name=SHEET_ORDER[0], nrows=len(rows))
+    assert df["위험도"].notna().all()
+    assert (df["위험도"] == df["S(1-5)"] * df["F(1-5)"]).all()
+
+
+def test_legend_names_actual_risk_method() -> None:
+    """범례가 실제 계산 방식을 적는다 — 대조표 기준인데 'S×F' 라고 적던 결함(2-②)."""
+    from core.criteria import all_criteria
+
+    for criteria in all_criteria():
+        text = legend_text(criteria)
+        if criteria.method == "product":
+            assert "S×F" in text and "대조표" not in text
+        else:
+            assert "S×F" not in text and f"대조표(S·F 조합, {criteria.short})" in text
 
 
 def test_worksheet_row_values(tmp_path: Path) -> None:
@@ -291,7 +316,7 @@ def test_fr03_mock_output_exports_through_same_path(tmp_path: Path) -> None:
     wb = openpyxl.load_workbook(paths["xlsx"])
     ws = wb[SHEET_ORDER[0]]
     assert ws.max_row == len(records) + 3
-    assert ws["J2"].value == "=H2*I2"
+    assert ws["J2"].value == ws["H2"].value * ws["I2"].value and ws["M2"].value == "=H2*I2"
     assert {wb["신뢰도"].cell(row=r, column=2).value for r in range(2, len(records) + 2)} == {"AI 추론"}
     assert wb["법령·MSDS 인용"]["A2"].value == EVIDENCE_EMPTY_NOTE
     rep = json.loads(paths["report"].read_text(encoding="utf-8"))
@@ -322,7 +347,8 @@ def _snapshot(tmp_path: Path) -> dict[str, Any]:
             "max_column": ws.max_column,
             "headers": [c.value for c in ws[1]],
             "widths": {k: v.width for k, v in ws.column_dimensions.items() if v.width},
-            "risk_formulas": [ws.cell(row=r, column=10).value for r in range(2, ws.max_row - 1)],
+            "risk_values": [ws.cell(row=r, column=10).value for r in range(2, ws.max_row - 1)],
+            "risk_formulas": [ws.cell(row=r, column=13).value for r in range(2, ws.max_row - 1)],
             "freeze": ws.freeze_panes,
             "row2": [c.value for c in ws[2]],
             "row35": [c.value for c in ws[35]],

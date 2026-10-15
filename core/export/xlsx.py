@@ -1,7 +1,8 @@
 """xlsx 내보내기 — R-02~R-05 (spec:export-formats, PRD §5 FR-07).
 
 원본 `data/raw/D1_HAZOP_워크시트.xlsx` 의 실측 구조(requirements.md 실측표)를 재현한다.
-위험도(J)는 값이 아니라 수식 `=H{r}*I{r}` 이다 — `risk_score` 값을 셀에 넣지 않는다.
+위험도(J)는 기준(`Criteria.risk`)으로 계산한 정수 값이다 — 값만 읽는 도구(pandas·PHA 툴)에서도 비지 않게.
+같은 계산의 엑셀 수식은 맨 끝 `위험도 수식` 열에 따로 둔다(엑셀에서 S·F 를 고치면 그 열이 다시 계산된다).
 """
 
 from __future__ import annotations
@@ -41,7 +42,12 @@ COLUMN_WIDTHS: Final[dict[str, float]] = {
 }
 HEADER_FILL: Final[str] = "1F4E79"
 FREEZE_PANES: Final[str] = "A2"
-LEGEND_TEXT: Final[str] = "범례: S(심각도)·F(빈도)는 입력 점수, 위험도는 수식(S×F)으로 계산. HAZOP Copilot이 만든 파일입니다."
+LEGEND_TEXT: Final[str] = (
+    "범례: S(심각도)·F(빈도)는 입력 점수, 위험도는 {method}로 계산한 값"
+    "(맨 끝 '위험도 수식' 열은 같은 계산의 엑셀 수식). HAZOP Copilot이 만든 파일입니다."
+)
+#: 위험도 값(J) 옆에 같은 계산을 엑셀 수식으로 두는 열 — 워크시트 맨 끝(빈도 근거가 있으면 그 뒤).
+FORMULA_HEADER: Final[str] = "위험도 수식"
 
 EVIDENCE_HEADERS: Final[tuple[str, ...]] = ("No", "source_id", "doc_title", "locator", "quote")
 EVIDENCE_EMPTY_NOTE: Final[str] = (
@@ -112,10 +118,19 @@ def sheet_headers(criteria: Criteria) -> list[str]:
 BASIS_HEADER: Final[str] = "빈도 근거"
 
 
+def legend_text(criteria: Criteria) -> str:
+    """범례 첫 문장 — 위험도를 실제로 어떻게 계산했는지(곱 / 기준 대조표)를 적는다."""
+    method = "S×F" if criteria.method == "product" else f"대조표(S·F 조합, {criteria.short})"
+    return LEGEND_TEXT.format(method=method)
+
+
 def _write_worksheet(ws: Worksheet, rows: Sequence[WorksheetRow], criteria: Criteria) -> int:
-    """12열 워크시트를 쓰고 마지막 데이터 행 번호를 돌려준다. 빈도 근거가 있으면 13번째 열로 덧붙인다."""
+    """워크시트를 쓰고 마지막 데이터 행 번호를 돌려준다.
+
+    12열 표준 뒤에 빈도 근거(있을 때만)와 `위험도 수식` 열을 덧붙인다.
+    """
     basis = any(row.frequency_basis for row in rows)
-    _write_header(ws, [*sheet_headers(criteria), *([BASIS_HEADER] if basis else [])])
+    _write_header(ws, [*sheet_headers(criteria), *([BASIS_HEADER] if basis else []), FORMULA_HEADER])
     if basis:
         ws.column_dimensions["M"].width = 40
     for letter, width in COLUMN_WIDTHS.items():
@@ -125,19 +140,18 @@ def _write_worksheet(ws: Worksheet, rows: Sequence[WorksheetRow], criteria: Crit
     r = 1
     for r, row in enumerate(rows, start=2):
         values = row.cells()
-        # J 열 — 값 대신 수식(곱 =H*I, 대조표 =INDEX(...)). 보류 행(S·F 빈칸)은 비운다(Z-3)
-        values[9] = None if row.held else criteria.excel_formula(r)
+        # J 열 — 기준으로 계산한 값, 같은 계산의 수식은 맨 끝 열. 보류 행(S·F 빈칸)은 둘 다 비운다(Z-3)
+        values[9] = None if row.held else criteria.risk(int(row.S), int(row.F))
         if basis:
             values.append(row.frequency_basis or "")
+        values.append(None if row.held else criteria.excel_formula(r))
         for col, value in enumerate(values, start=1):
             cell = ws.cell(row=r, column=col, value=value)
             cell.alignment = _BODY_ALIGN
             cell.border = _BORDER
     last = r
     # 원본 레이아웃: 데이터 다음 빈 행 1 + 범례 행 1 (A열 1칸)
-    legend = LEGEND_TEXT if criteria.method == "product" else LEGEND_TEXT.replace(
-        "위험도=수식(S×F)", f"위험도=수식(대조표, {criteria.short})"
-    )
+    legend = legend_text(criteria)
     if any(row.held for row in rows):
         legend += " " + HELD_LEGEND
     ws.cell(row=last + 2, column=1, value=legend)
@@ -294,6 +308,7 @@ __all__ = [
     "HELD_HEADERS",
     "HELD_SHEET",
     "CONFIDENCE_HEADERS",
+    "FORMULA_HEADER",
     "FREEZE_PANES",
     "LEGEND_TEXT",
     "REVIEW_HEADERS",
@@ -301,6 +316,7 @@ __all__ = [
     "SHEET_ORDER",
     "confidence_label",
     "export_xlsx",
+    "legend_text",
     "risk_formula",
     "screening_formula",
 ]
