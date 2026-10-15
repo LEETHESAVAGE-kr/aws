@@ -856,7 +856,7 @@ st.html(
     '<div id="intro" class="hz-section">HAZOP 및 앱 활용 가이드</div>'
     '<p class="hz-sub" style="margin-bottom:18px">HAZOP(위험과 운전 분석)은 화학 공장 및 가스 설비가 '
     "<b>“원래 설계된 목적에서 벗어날 경우 어떤 위험이 발생하는지”</b>를 체계적으로 분석하는 기법입니다. "
-    "아래 카드 3장은 HAZOP과 이 앱의 역할 요약이고, 그 아래 탭에서 기능별 상세 가이드를 볼 수 있습니다.</p>"
+    "아래 카드는 HAZOP과 이 앱의 역할 요약이고, 그 아래 탭에서 기능별 상세 가이드를 볼 수 있습니다.</p>"
 )
 #: [요약] HAZOP과 이 앱의 역할 — (제목, 핵심 한 줄, 설명). 마크다운을 거치지 않는다(`~` 가 취소선이 된다).
 INTRO_CARDS: tuple[tuple[str, str, str | tuple[tuple[str, str], ...]], ...] = (
@@ -885,14 +885,45 @@ INTRO_CARDS: tuple[tuple[str, str, str | tuple[tuple[str, str], ...]], ...] = (
         "사람은 검토와 최종 승인에만 집중하게 해줍니다.",
     ),
 )
-for column, (title, headline, body) in zip(st.columns(3), INTRO_CARDS, strict=True):
-    rows_html = (
-        f"<div class='hz-info-r'><b style='font-weight:400'>{body}</b></div>" if isinstance(body, str)
-        else "".join(f"<div class='hz-info-r'><span style='flex-shrink:0;white-space:nowrap'>{k}</span><b style='font-weight:400'>{v}</b></div>" for k, v in body)
-    )
-    column.html(
-        f'<div class="hz-info"><p class="hz-info-t">{title}</p><p class="hz-info-h">{headline}</p>{rows_html}</div>'
-    )
+#: 2·3열 카드 아래 빈자리(10/15 "너무 붕 뜬다") — 열 번호 → 덧붙이는 카드. 화면에 실제로 있는 기능만 적는다.
+INTRO_EXTRA: dict[int, tuple[str, str, tuple[tuple[str, str], ...]]] = {
+    1: (
+        "AI가 하지 않는 것",
+        "모르는 값은 지어내지 않습니다",
+        (
+            ("보류", "입력에 없는 압력·온도·안전장치가 필요한 칸은 채우지 않고 '⚪ 정보 부족'으로 남깁니다."),
+            ("표시", "근거 없이 나온 규격 번호·수치는 🔴 검토 필요로 표시해 먼저 확인하게 합니다."),
+            ("판단", "채택·기각과 최종 승인은 사람이 합니다. AI 결과는 초안입니다."),
+        ),
+    ),
+    2: (
+        "결과물 내려받기",
+        "검토한 내용이 그대로 문서가 됩니다",
+        (
+            ("Excel", "HAZOP 워크시트 — 12열 표준 양식에 검토 내용을 반영하고 '검토 기록' 시트를 붙입니다."),
+            ("Word", "LOPA 후보 시나리오 — 위험도가 높은 상위 5개 행을 다음 단계 분석용으로 모읍니다."),
+            ("JSON", "신뢰도 리포트 — AI 신뢰도·위험도 분포와 근거 인용 비율을 한 파일로 모읍니다."),
+        ),
+    ),
+}
+
+
+def _card_rows(body: str | tuple[tuple[str, str], ...]) -> str:
+    if isinstance(body, str):
+        return f"<div class='hz-info-r'><b style='font-weight:400'>{body}</b></div>"
+    return "".join(f"<div class='hz-info-r'><span style='flex-shrink:0;white-space:nowrap'>{k}</span>"
+                   f"<b style='font-weight:400'>{v}</b></div>" for k, v in body)
+
+
+for i, (column, (title, headline, body)) in enumerate(zip(st.columns(3), INTRO_CARDS, strict=True)):
+    extra = INTRO_EXTRA.get(i)
+    style = ' style="height:auto"' if extra else ""
+    html_ = (f'<div class="hz-info"{style}><p class="hz-info-t">{title}</p>'
+             f'<p class="hz-info-h">{headline}</p>{_card_rows(body)}</div>')
+    if extra:
+        html_ += (f'<div class="hz-info" style="height:auto;margin-top:16px"><p class="hz-info-t">{extra[0]}</p>'
+                  f'<p class="hz-info-h">{extra[1]}</p>{_card_rows(extra[2])}</div>')
+    column.html(html_)
 st.html('<div style="height:14px"></div>')
 howto_tab, example_tab, gw_tab, risk_tab, read_tab, compare_tab, psm_tab = st.tabs(
     ["⓪ 입력 방식별 사용법", "① 워크시트 한 줄이 만들어지는 과정", guide.GUIDEWORD_TAB, "③ 위험도 산정 기준 (심각도 × 빈도)",
