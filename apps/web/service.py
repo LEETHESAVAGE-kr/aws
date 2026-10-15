@@ -1161,11 +1161,14 @@ def risk_card(result: Result) -> RiskCard | None:
 
     note = f" 정보 부족으로 보류한 {held}행은 등급이 없어 빼고 셌습니다." if held else ""
     return RiskCard(
-        head=(f"<p class='hz-info-t'>위험도 판정 한눈에 보기</p><p style='margin:4px 0 10px'>{head}</p>"),
+        # 위험도 설명은 제목 바로 밑(10/15 사용자 요청) — 막대를 읽기 전에 '위험도'가 무엇인지 먼저 말한다.
+        head=(f"<p class='hz-info-t'>위험도 판정 한눈에 보기</p>"
+              f"<small style='display:block;color:var(--muted);margin-top:2px'>위험도는 심각도와 빈도 등급을 "
+              f"{criteria_label(criteria)} 기준표로 조합한 값입니다(두 등급의 분포는 맨 아래).</small>"
+              f"<p style='margin:6px 0 10px'>{head}</p>"),
         bands=tuple((name, rng, n, color) for (name, rng, n), color in zip(bands, colors, strict=True)),
         tail=(
             f"<small style='display:block;color:var(--muted);margin:6px 0 10px'>{legend}.{note}</small>"
-            f"<small style='display:block;color:var(--muted);margin-bottom:2px'>위험도는 아래 두 등급을 {criteria_label(criteria)} 기준표로 조합한 값입니다.</small>"
             f"{spread('심각도', '사고가 나면 피해가 얼마나 큰가')}{spread('빈도', '얼마나 자주 일어날 수 있나')}"
         ),
     )
@@ -1794,10 +1797,10 @@ READING_ORDER: Final[str] = (
 TABLE_STYLES: Final[tuple[str, ...]] = ("펼쳐 보기 — 글 전체", "편집 표 — 채택·기각·수정")
 #: 펼쳐 보기 열 너비(px). 없는 열은 내용 길이대로.
 FULL_WIDTHS: Final[dict[str, int]] = {
-    "No": 36, "검토": 56, "가이드워드": 120, "이탈": 240, "위험도": 52, "S(1-5)": 56, "F(1-5)": 48,
+    "No": 40, "검토": 64, "가이드워드": 120, "이탈": 240, "위험도": 60, "S(1-5)": 92, "F(1-5)": 80,
     "신뢰도": 170, "반복 일치": 220, "관련 법령·MSDS": 200, "원인": 260, "결과": 260, "기존 안전장치(Before)": 180, "권고": 260,
-    "노드": 160, "시나리오 연계": 120, FLAG_COLUMN: 180, "빈도 근거": 220, FREQ_SHIFT_COLUMN: 72,
-}
+    "노드": 160, "시나리오 연계": 120, FLAG_COLUMN: 180, "빈도 근거": 220, FREQ_SHIFT_COLUMN: 120,
+}  # 10/15 머리글이 옆 열로 넘쳐 '심각도(' 로 잘려 보였다 — 머리글은 줄바꿈 허용, 숫자 열은 머리글 한 줄 너비로.
 #: 편집 표에서 목록 항목 사이 구분(10/15). 데이터·파일은 줄바꿈(`LIST_JOINER`).
 EDIT_JOINER: Final[str] = " | "
 _LIST_COLUMNS: Final[tuple[str, ...]] = ("원인", "결과", "기존 안전장치(Before)", "권고")

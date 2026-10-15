@@ -108,8 +108,8 @@ st.html(
     .stApp, .stApp *:not(pre):not(code) { word-break: keep-all; overflow-wrap: anywhere; }
     .hz-full { max-height: 760px; overflow: auto; border: 1px solid var(--line); border-radius: 12px; }
     .hz-full table { border-collapse: collapse; font-size: 13px; line-height: 1.5; width: max-content; min-width: 100%; }
-    .hz-full th { position: sticky; top: 0; z-index: 1; background: var(--card2); color: var(--muted); font-weight: 600;
-        text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+    .stApp .hz-full th { position: sticky; top: 0; z-index: 1; background: var(--card2); color: var(--muted); font-weight: 600;
+        text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: normal; overflow-wrap: normal; vertical-align: bottom; }
     .hz-full td { vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--line); color: var(--text);
         white-space: normal; word-break: keep-all; overflow-wrap: anywhere; }
     .hz-full tr:hover td { background: rgba(255,255,255,.03); }
@@ -378,7 +378,9 @@ with tool.container(border=True, key="tool"):
             meta = pending["meta"]
             missing = service.missing_inputs(meta)
             labels = dict(service.INPUT_CHECK_FIELDS)
-            with st.container(border=True, key="input_check"):
+            # 누르면 이 카드를 지운다(10/15) — 남겨 두면 흐려진 카드 밑으로 진행 상자가 밀려나 "작업이 들어갔나?"가 안 보인다.
+            check_slot = st.empty()
+            with check_slot.container(border=True, key="input_check"):
                 st.markdown("**입력 확인 — 생성 전에 빠진 정보를 채우세요**")
                 st.markdown(service.parsed_values_line(meta, pending["info"]))  # Q-04-4 해석된 값이 먼저
                 st.caption(
@@ -398,6 +400,7 @@ with tool.container(border=True, key="tool"):
                 go_fill = fill_col.button("채운 값으로 생성", type="primary", key="check_fill", width="stretch")
                 go_skip = skip_col.button("이대로 생성", key="check_skip", width="stretch")
             if go_fill or go_skip:
+                check_slot.empty()
                 filled_meta, filled = service.fill_node_meta(meta, values if go_fill else {})
                 pre_parsed = (filled_meta, {**pending["info"], "filled_after_parse": filled})
                 clicked_quick, clicked_full = pending["quick"], not pending["quick"]
@@ -726,8 +729,8 @@ else:
         column_config["No"] = st.column_config.Column(width=44, pinned=True)
         crit = service.result_criteria(result)
         # 머리글은 우리말(10/9 사용자 요청 — 'S·F' 대신 '심각도·빈도'). 열 키는 Excel 표준 12열 그대로.
-        column_config["S(1-5)"] = st.column_config.NumberColumn(f"심각도(1-{crit.s_max})", width=76)
-        column_config["F(1-5)"] = st.column_config.NumberColumn(f"빈도(1-{crit.f_max})", width=70)
+        column_config["S(1-5)"] = st.column_config.NumberColumn(f"심각도(1-{crit.s_max})", width=96)
+        column_config["F(1-5)"] = st.column_config.NumberColumn(f"빈도(1-{crit.f_max})", width=84)
         column_config[service.REVIEW_COLUMN] = st.column_config.Column(width=72, pinned=True)
         if view_choice == service.VIEWS[0] and editable and not full_text:
             st.caption(
@@ -751,11 +754,11 @@ else:
                     ),
                     # Y-2: 단계 수는 결과의 평가기준대로(C-C-37 은 심각도 1~4 · 빈도 1~3). 열 키는 그대로, 머리글만 바꾼다.
                     "S(1-5)": st.column_config.NumberColumn(
-                        f"심각도(1-{crit.s_max})", min_value=1, max_value=crit.s_max, step=1, width=76
+                        f"심각도(1-{crit.s_max})", min_value=1, max_value=crit.s_max, step=1, width=96
                     ),
                     "F(1-5)": st.column_config.NumberColumn(
                         f"빈도 반영 후(1-{crit.f_max})" if table and service.FREQ_SHIFT_COLUMN in table[0] else f"빈도(1-{crit.f_max})",
-                        min_value=1, max_value=crit.f_max, step=1, width=70,
+                        min_value=1, max_value=crit.f_max, step=1, width=130,
                     ),
                 },
             )
