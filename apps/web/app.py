@@ -593,10 +593,18 @@ else:
     review_key = service.review_key(result)
     review_base: dict[str, dict[int, dict[str, Any]]] = state.setdefault("review_base", {})
     review_saved: dict[str, dict[int, dict[str, Any]]] = state.setdefault("review_saved", {})
+    # '표에서 볼 행'(10/15): 판정으로 거른 편집 표는 키가 따로다 — 그 표의 행 번호를 전체 표 번호로 되돌려 합친다.
+    filter_key = f"rowfilter_{review_key}"
+    row_filters = service.row_filters(result, service.worksheet_table(result))
+    row_choice = state.get(filter_key) or service.ROW_FILTER_ALL
+    row_idx = row_filters.get(row_choice, row_filters[service.ROW_FILTER_ALL])
+    editor_key = review_key if row_choice == service.ROW_FILTER_ALL else f"{review_key}__{row_choice}"
     if result.is_gold:
         edits: dict[int, dict[str, Any]] = {}
-    elif review_key in state:
-        edits = service.merge_edits(review_base.get(review_key, {}), state[review_key].get("edited_rows", {}))
+    elif editor_key in state:
+        edits = service.merge_edits(
+            review_base.get(review_key, {}), service.remap_edits(state[editor_key].get("edited_rows", {}), row_idx)
+        )
     else:
         edits = review_saved.get(review_key, review_base.get(review_key, {}))
     review_saved[review_key] = edits
@@ -639,6 +647,22 @@ else:
         crowded = service.concentration_warning(shown)
         if crowded:
             st.caption(crowded)
+
+        def _switch_rows() -> None:
+            # 걸러 낸 편집 표를 바꾸기 전에 지금까지의 편집을 저장본에 넣고, 이전 편집 표 상태는 버린다(이중 적용 방지)
+            review_base[review_key] = review_saved.get(review_key, {})
+            for k in [k for k in state if str(k) == review_key or str(k).startswith(f"{review_key}__")]:
+                del state[k]
+
+        st.segmented_control(
+            "표에서 볼 행",
+            list(row_filters),
+            format_func=lambda o: f"{o} {len(row_filters[o])}행",
+            default=service.ROW_FILTER_ALL,
+            key=filter_key,
+            on_change=_switch_rows,
+        )
+        row_set = set(row_idx)
         # X-2 보기 전환 — 표시 순서만 바꾼다. 검토 편집은 워크시트 순서에서만(편집 키가 행 인덱스라서).
         # 위젯 키에 상태로 값을 넣어 두면 처음 그릴 때 화면 선택 표시가 그 값을 따르지 않는다(10/8 브라우저 확인,
         # segmented_control·radio 둘 다). 값은 위젯 밖 `view_pref` 에 두고, 칩이 바꾸면 새 키 + index 로 다시 만든다.
@@ -682,9 +706,10 @@ else:
                 "고친 내용은 위 내려받기 파일 3종에 바로 반영됩니다. 기각한 행은 빠지고, Excel에는 '검토 기록' 시트가 붙습니다. "
                 "화면에서는 위험도·심각도·빈도를 이탈 옆에 두었고, Excel은 표준 양식의 12열 순서를 따릅니다."
             )
+            with_base = service.with_edits(table, review_base.get(review_key, {}))
             st.data_editor(
-                service.with_edits(table, review_base.get(review_key, {})),
-                key=review_key,
+                [with_base[i] for i in row_idx],
+                key=editor_key,
                 hide_index=True,
                 column_order=order,
                 row_height=service.REVIEW_ROW_HEIGHT,
@@ -715,7 +740,7 @@ else:
             table = service.with_edits(table, edits)
             order = service.read_only_order(order)  # S-4-1 읽기 보기는 `기본→반영` 한 열
             for name, head, indices in service.view_groups(shown, view_choice):
-                rows = [table[i] for i in indices]
+                rows = [table[i] for i in indices if i in row_set]
                 kwargs = {"hide_index": True, "column_order": order, "column_config": column_config,
                           "row_height": service.REVIEW_ROW_HEIGHT}
                 def draw(rows: list[dict[str, object]], kwargs: dict[str, Any] = kwargs) -> None:
@@ -727,6 +752,8 @@ else:
                 if not head:  # 워크시트 순서(골드·시연 사본·펼쳐 보기) — 묶음 없이 표 하나
                     draw(rows)
                     continue
+                if not rows and row_choice != service.ROW_FILTER_ALL:
+                    continue  # 판정으로 거르면 해당 행이 없는 묶음은 접어 두지 않고 뺀다
                 focus = state.focus_guideword
                 with st.expander(head, expanded=focus is None or name == focus):
                     if rows:

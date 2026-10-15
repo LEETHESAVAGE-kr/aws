@@ -754,6 +754,23 @@ def test_list_items_with_middle_dot_stay_whole() -> None:
     assert f"{item}\n벙커링 작업 지연" in cell
 
 
+def test_row_filters_split_rows_by_verdict_and_edits_map_back() -> None:
+    """10/15 '표에서 볼 행': 판정별로 나눈 행이 전체를 빠짐없이 한 번씩 덮고, 걸러 낸 표의 편집은 전체 표 행으로 돌아간다."""
+    result = load_replays()["N1"]
+    table = service.worksheet_table(result)
+    filters = service.row_filters(result, table)
+    parts = [i for name, idx in filters.items() if name != service.ROW_FILTER_ALL for i in idx]
+    assert sorted(parts) == filters[service.ROW_FILTER_ALL] == list(range(len(table)))
+    crit = service.result_criteria(result)
+    top = next(name for name in filters if name != service.ROW_FILTER_ALL)
+    assert all(crit.band(int(table[i]["위험도"])) == top for i in filters[top])  # type: ignore[arg-type]
+    idx = filters[top]
+    moved = service.remap_edits({"1": {service.REVIEW_COLUMN: "기각"}}, idx)
+    assert moved == {idx[1]: {service.REVIEW_COLUMN: "기각"}}
+    kept, log = service.apply_review(result, moved)
+    assert len(kept) == len(table) - 1 and log[0][0] == table[idx[1]]["No"]
+
+
 def test_edit_changes_values_and_risk_formula_inputs() -> None:
     result = _quick_result()
     table = service.worksheet_table(result)
