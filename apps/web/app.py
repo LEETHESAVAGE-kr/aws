@@ -113,6 +113,11 @@ st.html(
     .hz-full td { vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--line); color: var(--text);
         white-space: normal; word-break: keep-all; overflow-wrap: anywhere; }
     .hz-full tr:hover td { background: rgba(255,255,255,.03); }
+    /* 결과 위 알림 상자(10/15) — 본문보다 한 단계 작게, 이름만 강조색 */
+    .st-key-notices { padding: 10px 14px !important; gap: 6px !important; }
+    .st-key-notices p, .st-key-notices summary { font-size: 14px !important; line-height: 1.6; color: var(--muted); }
+    .st-key-notices strong { color: #f0a648; font-weight: 600; }
+    .st-key-notices [data-testid="stExpander"] details { border: 0; }
     .block-container { padding-top: 0 !important; max-width: 1240px; }
     [data-testid="stVerticalBlockBorderWrapper"] { background: var(--card); border-radius: 16px !important;
         border-color: var(--line) !important; }
@@ -548,19 +553,20 @@ else:
     if result.is_gold:
         st.warning(service.provenance_line(result))
     else:
-        st.caption(service.provenance_line(result))
+        st.caption(service.provenance_short(result))  # 전문은 푸터
     if result.meta.get("node_provenance"):  # X-3 공정 전체 — 노드마다 캡처 시각·프롬프트가 다르다
         with st.expander("노드별 출처", expanded=False):
             st.markdown("\n".join(f"- **{n}** {line}" for n, line in result.meta["node_provenance"]))
     failed = service.failed_guidewords_line(result)
     if failed:
         st.warning(failed)
-    notices = [(label, text) for label, text in (("평가기준", service.criteria_notice(result)),
-                                                 ("안전조치 미반영", service.safeguards_notice(result))) if text]
-    if notices:  # U-7 결과 위 알림을 한 상자에
-        with st.container(border=True):
-            for label, text in notices:
-                st.markdown(f":orange-background[{label}] {text}")
+    notices = service.notice_items(result)
+    if notices:  # U-7 결과 위 알림을 한 상자에 — 한 줄 요약만 보이고 전문은 접는다(10/15 "너무 크고 안 읽힌다")
+        with st.container(border=True, key="notices"):
+            st.markdown("  \n".join(f"**{label}** · {short}" for label, short, _ in notices))
+            with st.expander("기준 출처·자세히", expanded=False):
+                for label, _, text in notices:
+                    st.markdown(f"**{label}** — {text}")
     if not result.is_gold:
         st.caption(service.READING_ORDER)
     view = service.process_view(result)

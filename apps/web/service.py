@@ -1021,6 +1021,25 @@ OFFICIAL_NOTICE = (
     "이 결과의 심각도·빈도·위험도는 {name} 기준으로 매겼습니다({locator}). {how} · {short} ({published}, 확인 {retrieved}) · "
     "[원문 목록]({url}). 공식 문서의 예시 기준이므로, 사업장 자체 기준이 있으면 그 기준을 따르세요."
 )
+#: 결과 위 알림 상자의 한 줄 요약(10/15 "너무 안 읽힌다·너무 크다") — 전문은 접힌 '자세히'로.
+SAFEGUARDS_SHORT: Final[str] = "안전장치 입력이 없어, 빈도에 현재 안전조치가 반영되지 않았습니다"
+CRITERIA_SHORT_NH3: Final[str] = "NH3 벙커링 기준으로 매긴 이전 결과입니다 — 이 공정에는 참고로만 보세요"
+
+
+def notice_items(result: Result) -> list[tuple[str, str, str]]:
+    """결과 위 알림 (이름, 한 줄 요약, 전문). 없으면 빈 목록."""
+    items: list[tuple[str, str, str]] = []
+    full = criteria_notice(result)
+    if full:
+        criteria = result_criteria(result)
+        short = (CRITERIA_SHORT_NH3 if full == CRITERIA_NOTICE
+                 else f"{criteria.short} 기준으로 등급을 매겼습니다 · {RISK_HOW[criteria.method]}")
+        items.append(("평가기준", short, full))
+    if safeguards_notice(result):
+        items.append(("안전조치 미반영", SAFEGUARDS_SHORT, SAFEGUARDS_UNKNOWN_NOTICE))
+    return items
+
+
 #: 위험도 산정 방식 한 줄(Q-03-1) — 같은 앱 안에서 곱과 대조표가 섞여 보이지 않게 결과마다 적는다.
 RISK_HOW: Final[dict[str, str]] = {
     "lookup": "위험도 = <표 2> 대조표(곱이 아님)",
@@ -1487,6 +1506,27 @@ def provenance_line(result: Result) -> str:
     if source == "quick":
         tail += " · " + QUICK_SCOPE.format(guideword=", ".join(m.get("guidewords") or []))
     return tail
+
+
+def provenance_short(result: Result) -> str:
+    """화면 위 출처 줄(10/15 "너무 안 읽힌다") — 시각 · 경유 · 모델 · 프롬프트 판본만, 교열은 짧게.
+
+    평가기준은 바로 아래 알림 상자, 비용은 타일에 있어 뺀다. 전문은 푸터(`provenance_line`)에 그대로.
+    경유(Amazon Bedrock 등)는 줄이지 않는다(사용자 요청).
+    """
+    m = result.meta
+    if m.get("combined") or result.is_gold or m.get("mock"):
+        return provenance_line(result)
+    when = f"{_kst(m.get('captured_at'))} " + ("저장된 생성 결과" if m.get("source") == "live" else "방금 생성")
+    keep = [p for p in origin_parts(result)
+            if not p.startswith(("평가기준 ", "비용 $", "동시 호출 "))]
+    line = " · ".join([when, *keep])
+    n = m.get("notation_applied") or 0
+    if n:
+        line += f" · 문장 교열 {n}곳(뜻은 그대로)"
+    if m.get("source") == "quick":
+        line += " · " + QUICK_SCOPE.format(guideword=", ".join(m.get("guidewords") or []))
+    return line
 
 
 def process_view(result: Result) -> dict[str, Any]:
