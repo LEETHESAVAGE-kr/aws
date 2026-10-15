@@ -766,12 +766,36 @@ else:
         # 머리글은 우리말(10/9 사용자 요청 — 'S·F' 대신 '심각도·빈도'). 열 키는 Excel 표준 12열 그대로.
         column_config["S(1-5)"] = st.column_config.NumberColumn(f"심각도(1-{crit.s_max})", width=96)
         column_config["F(1-5)"] = st.column_config.NumberColumn(f"빈도(1-{crit.f_max})", width=84)
-        column_config[service.REVIEW_COLUMN] = st.column_config.Column(width=72, pinned=True)
+        column_config[service.REVIEW_COLUMN] = st.column_config.Column(width=120, pinned=True)  # "기각(근거 부족)"이 들어가게
         if view_choice == service.VIEWS[0] and editable and not full_text:
             st.caption(
                 "검토: 행마다 채택·기각을 고르고 원인·결과·권고·심각도·빈도를 고칠 수 있습니다(여러 항목은 | 로 구분). "
+                "기각은 사유와 함께 고를 수 있습니다(예: 기각(중복)). "
                 "고친 내용은 위 내려받기 파일 3종에 바로 반영됩니다. 기각한 행은 빠지고, Excel에는 '검토 기록' 시트가 붙습니다. "
                 "화면에서는 위험도·심각도·빈도를 이탈 옆에 두었고, Excel은 표준 양식의 12열 순서를 따릅니다."
+            )
+            pending = sum(
+                service.split_verdict(edits.get(i, {}).get(service.REVIEW_COLUMN))[0] == service.REVIEW_CHOICES[0]
+                for i in row_idx
+            )
+
+            def _accept_visible() -> None:
+                """보이는 행 일괄 채택(10/16) — 미검토 행만. 편집 표 위젯을 지우고 저장본으로 다시 그린다(필터 전환과 같은 길)."""
+                current = (
+                    service.merge_edits(review_base.get(review_key, {}),
+                                        service.remap_edits(state[editor_key].get("edited_rows", {}), row_idx))
+                    if editor_key in state else review_saved.get(review_key, review_base.get(review_key, {}))
+                )
+                accepted, n = service.bulk_accept(current, row_idx)
+                review_base[review_key] = review_saved[review_key] = accepted
+                for k in [k for k in state if str(k) == review_key or str(k).startswith(f"{review_key}__")]:
+                    del state[k]
+                st.toast(f"{n}행 채택 — 바꾸려면 표의 검토 칸에서 다시 고르세요")
+
+            st.button(
+                f"✓ 보이는 미검토 {pending}행 모두 채택", key="accept_visible", on_click=_accept_visible,
+                disabled=pending == 0,
+                help="지금 표에 보이는 행 중 '미검토'만 채택으로 바꿉니다. 이미 기각·채택한 행은 그대로 둡니다. 되돌리기는 없습니다.",
             )
             with_base = service.with_edits(table, review_base.get(review_key, {}))
             st.data_editor(
@@ -785,7 +809,7 @@ else:
                 column_config={
                     **column_config,
                     service.REVIEW_COLUMN: st.column_config.SelectboxColumn(
-                        options=list(service.REVIEW_CHOICES), required=True, width="small", pinned=True
+                        options=list(service.REVIEW_OPTIONS), required=True, width=120, pinned=True
                     ),
                     # Y-2: 단계 수는 결과의 평가기준대로(C-C-37 은 심각도 1~4 · 빈도 1~3). 열 키는 그대로, 머리글만 바꾼다.
                     "S(1-5)": st.column_config.NumberColumn(
@@ -827,6 +851,35 @@ else:
                         draw(rows)
                     else:
                         st.caption("이 묶음에는 결과 행이 없습니다.")
+        if not result.is_gold and row_idx:
+            # 근거 창(10/16, Elicit 준용) — 편집 표(data_editor)는 행 선택을 못 받아 고르기 칸으로 연다. 키에 필터를 넣어
+            # 보이는 행이 바뀌면 이전 선택이 남지 않게 한다.
+            plain_table = service.worksheet_table(shown)
+            pick = st.selectbox(
+                "근거 보기 — 행을 고르면 인용 원문·빈도 근거·검증 표시를 한곳에 보여 줍니다",
+                row_idx,
+                index=None,
+                format_func=lambda i: service.evidence_choice_label(plain_table, i),
+                placeholder="근거를 볼 행을 고르세요",
+                key=f"evpick_{editor_key}",
+            )
+            if pick is not None:
+                ev = service.row_evidence(shown, pick)
+                with st.container(border=True, key="evidence_panel"):
+                    st.markdown(f"**{ev.title}**  \n신뢰도: {ev.confidence}")
+                    if ev.quotes:
+                        # 같은 문서의 구절이 여럿일 수 있다 — 문서 수는 표의 '문서 n건'과 같은 셈
+                        st.markdown(f"**인용 구절 {len(ev.quotes)}개 · 공식 문서 {ev.doc_count}건** (원문 그대로, 인용 검사 통과분만)")
+                        st.dataframe(ev.quotes, hide_index=True, row_height=60)
+                    else:
+                        st.caption("이 행은 인용한 공식 문서가 없습니다 — 모델의 일반 지식으로 쓴 초안입니다.")
+                    if ev.basis:
+                        st.markdown(f"**빈도 근거**  \n{ev.basis}")
+                    if ev.missing:
+                        st.markdown("**보류 — 필요한 정보**  \n" + " · ".join(ev.missing))
+                    if ev.flags:
+                        st.markdown("**🔴 검증 표시**  \n" + "\n".join(f"- {f}" for f in ev.flags))
+                    st.caption("인용은 '공식 문서가 같은 위험을 다룬다'는 뜻이지 내용이 맞다는 보증이 아닙니다.")
         if not result.is_gold:
             st.caption("신뢰도 " + service.confidence_counts(shown)
                        + " — 문서가 인용됐다는 것은 '공식 문서가 같은 위험을 다룬다'는 뜻이지 내용이 맞다는 보증이 아닙니다.")
@@ -853,7 +906,9 @@ else:
                 st.dataframe(held, hide_index=True)
         if review_log:
             counts = {v: sum(e[1] == v for e in review_log) for v in ("채택", "수정", "기각")}
-            st.caption(" · ".join(f"{k} {n}건" for k, n in counts.items()) + " — 다운로드에 반영됨")
+            reasons = service.reject_reason_counts(review_log)
+            st.caption(" · ".join(f"{k} {n}건" for k, n in counts.items())
+                       + (f" (기각 사유: {reasons})" if reasons else "") + " — 다운로드에 반영됨")
     with process_tab:
         st.markdown(service.calls_line(result))  # Q-05-3 저장된 원시 호출 기록에서 — '—' 를 보이지 않는다
         combined = bool(result.meta.get("combined"))

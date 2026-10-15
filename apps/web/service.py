@@ -869,6 +869,49 @@ def evidence_rows(result: Result) -> list[dict[str, object]]:
     ]
 
 
+@dataclasses.dataclass(frozen=True)
+class RowEvidence:
+    """근거 창(10/16, Elicit 의 '셀을 누르면 근거 문장 창' 준용 — 우리는 행 단위). 화면이 그대로 그린다."""
+
+    title: str                          # "No 3 · More · 압력 높음"
+    confidence: str                     # 표의 신뢰도 칸과 같은 문구
+    quotes: list[dict[str, object]]     # 문서·위치·인용 구절(원문 그대로) — verifier 통과분만
+    doc_count: int                      # 서로 다른 문서 수 — 표 근거 칸의 "문서 n건"과 같은 셈(`evidence_label`)
+    basis: str                          # 빈도 근거(IPL 접두어 포함). 없으면 ""
+    flags: list[str]                    # 검증 플래그 "규칙: 걸린 문구"
+    missing: list[str]                  # 보류 행이 기다리는 정보
+
+
+def row_evidence(result: Result, index: int) -> RowEvidence:
+    """표 행 `index`(워크시트 순서, 0부터)의 근거 묶음. 표(`worksheet_table`)·근거 시트(`evidence_rows`)와 같은 레코드에서."""
+    records, summary = verified(result)
+    record = records[index]
+    row = worksheet_table(result)[index]
+    return RowEvidence(
+        title=f"No {row['No']} · {row['가이드워드']} · {row['이탈']}",
+        confidence=str(row.get(CONFIDENCE_COLUMN, "")),
+        quotes=[
+            {"문서": e.get("doc_title", ""), "위치": e.get("locator", ""), "인용 구절(원문 그대로)": e.get("quote", "")}
+            for e in record.evidence
+            if isinstance(e, dict)
+        ],
+        doc_count=len({str(e.get("source_id", "")).split("#")[0] for e in record.evidence if isinstance(e, dict)}),
+        basis=ipl_prefix(record) + (record.frequency_basis or ""),
+        flags=[f"{f.rule}: {f.matched}" for f in summary.flags if f.record_id == record.id],
+        missing=list(record.missing) if record.status == INSUFFICIENT else [],
+    )
+
+
+def evidence_choice_label(table: list[dict[str, object]], index: int) -> str:
+    """근거 창 행 고르기 칸의 표시 — "No 3 · More · 압력 높음 (문서 2건)". 이탈이 길면 줄인다."""
+    row = table[index]
+    deviation = str(row.get("이탈", ""))
+    deviation = deviation if len(deviation) <= 40 else deviation[:39] + "…"
+    cited = str(row.get(EVIDENCE_COLUMN, ""))
+    tail = f" ({cited.split(' · ')[0]})" if cited.startswith("문서") else ""
+    return f"No {row['No']} · {row['가이드워드']} · {deviation}{tail}"
+
+
 def confidence_counts(result: Result) -> str:
     """신뢰도 단계 분포 한 줄(Y-G4 — 한 단계로 몰려도 그대로 적는다). ⚪ 정보 부족은 보류 행이 있을 때만(Z-3)."""
     counts = Counter(r.confidence for r in verified(result)[0])
@@ -1809,6 +1852,38 @@ def evaluation_markdown(results: Mapping[str, Result]) -> str:
 #: 검토 표(export-formats R-10, T-08). 화면 열 이름 → 레코드 필드. 목록 필드는 화면처럼 `·` 로 잇고 가른다.
 REVIEW_COLUMN: Final[str] = "검토"
 REVIEW_CHOICES: Final[tuple[str, ...]] = ("미검토", "채택", "기각")
+#: 기각 사유(10/16, GitHub Copilot 리뷰의 👎 사유 선택 준용). 검토 칸 하나에서 "기각(중복)"처럼 고른다 — 한 번 누르면 끝.
+#: 사유는 `검토 기록` 시트 맨 끝 열에만 남는다(R-10 은 사유 입력을 비목표로 적었다 — spec 개정은 사용자 몫).
+REJECT_REASONS: Final[tuple[str, ...]] = ("해당 없음", "중복", "근거 부족", "등급 과다")
+REVIEW_OPTIONS: Final[tuple[str, ...]] = (*REVIEW_CHOICES, *(f"기각({r})" for r in REJECT_REASONS))
+
+
+def split_verdict(value: object) -> tuple[str, str]:
+    """검토 칸 값 → (판정, 기각 사유). "기각(중복)" → ("기각", "중복"), 빈 값은 미검토."""
+    text = str(value or REVIEW_CHOICES[0])
+    if text.startswith("기각(") and text.endswith(")"):
+        return "기각", text[3:-1]
+    return text, ""
+
+
+def bulk_accept(edits: Mapping[int, Mapping[str, Any]], indices: list[int]) -> tuple[dict[int, dict[str, Any]], int]:
+    """보이는 행 일괄 채택(10/16, Copilot 리뷰의 제안 묶어 반영 준용). 미검토 행만 채택으로 — 이미 고른 판정은 건드리지 않는다.
+
+    되돌리기는 없다(10/16 사용자 결정) — 그래서 덮어쓰지 않는 쪽으로만 바꾼다. 돌려주는 값: (새 편집, 바꾼 행 수).
+    """
+    out = {int(i): dict(e) for i, e in edits.items()}
+    changed = 0
+    for i in indices:
+        if split_verdict(out.get(i, {}).get(REVIEW_COLUMN))[0] == REVIEW_CHOICES[0]:
+            out.setdefault(i, {})[REVIEW_COLUMN] = "채택"
+            changed += 1
+    return out, changed
+
+
+def reject_reason_counts(log: list[tuple[object, ...]]) -> str:
+    """검토 기록의 기각 사유 분포 한 줄 — "중복 2 · 근거 부족 1". 사유 없는 기각은 "사유 없음"."""
+    counts = Counter(str(e[5]) or "사유 없음" for e in log if e[1] == "기각")
+    return " · ".join(f"{k} {n}" for k, n in counts.most_common())
 EDITABLE_COLUMNS: Final[dict[str, str]] = {
     "원인": "causes", "결과": "consequences", "권고": "recommendations", "S(1-5)": "S", "F(1-5)": "F",
 }
@@ -1986,15 +2061,15 @@ def apply_review(
             else:
                 record[field] = _split_list(value)
             changed.append(column)
-        verdict = edit.get(REVIEW_COLUMN) or REVIEW_CHOICES[0]
+        verdict, reason = split_verdict(edit.get(REVIEW_COLUMN))
         if verdict == "기각":
-            log.append((shown["No"], "기각", shown["가이드워드"], shown["이탈"], ""))
+            log.append((shown["No"], "기각", shown["가이드워드"], shown["이탈"], "", reason))
             continue
         kept.append(record)
         if changed:
-            log.append((shown["No"], "수정", shown["가이드워드"], shown["이탈"], ", ".join(changed)))
+            log.append((shown["No"], "수정", shown["가이드워드"], shown["이탈"], ", ".join(changed), ""))
         elif verdict == "채택":
-            log.append((shown["No"], "채택", shown["가이드워드"], shown["이탈"], ""))
+            log.append((shown["No"], "채택", shown["가이드워드"], shown["이탈"], "", ""))
     return kept, log
 
 
