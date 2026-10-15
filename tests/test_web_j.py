@@ -728,7 +728,7 @@ def test_reject_removes_row_everywhere_and_logs_it() -> None:
     top = max(range(len(table)), key=lambda i: table[i]["위험도"])  # LOPA 1순위 후보를 기각
     kept, log = service.apply_review(result, {top: {service.REVIEW_COLUMN: "기각"}})
     assert len(kept) == len(table) - 1 and log == [
-        (table[top]["No"], "기각", table[top]["가이드워드"], table[top]["이탈"], "")
+        (table[top]["No"], "기각", table[top]["가이드워드"], table[top]["이탈"], "", "")
     ]
     wb = _sheets(service.export_files(result, {top: {service.REVIEW_COLUMN: "기각"}}))
     main = [r for r in wb["HAZOP워크시트"].iter_rows(min_row=2, values_only=True) if isinstance(r[0], int)]
@@ -780,7 +780,7 @@ def test_edit_changes_values_and_risk_formula_inputs() -> None:
     edits = {0: {"S(1-5)": new_s, "권고": "인터록 추가 | 절차서 개정", "결과": shown_consequences}}
     kept, log = service.apply_review(result, edits)
     assert kept[0]["S"] == new_s and kept[0]["recommendations"] == ["인터록 추가", "절차서 개정"]
-    assert log == [(1, "수정", table[0]["가이드워드"], table[0]["이탈"], "권고, S(1-5)")]  # 같은 값은 수정 아님
+    assert log == [(1, "수정", table[0]["가이드워드"], table[0]["이탈"], "권고, S(1-5)", "")]  # 같은 값은 수정 아님
     first = next(_sheets(service.export_files(result, edits))["HAZOP워크시트"].iter_rows(min_row=2, max_row=2))
     # AC-10-3 고친 S 로 위험도 값을 다시 계산 — Y-2: 직접 입력은 C-C-37 대조표라 곱이 아니라 표 조회
     s, f = first[7].value, first[8].value
@@ -1073,7 +1073,7 @@ def test_spacing_only_is_not_an_edit() -> None:
     shown = service.readable_rows(service.worksheet_table(result))
     row = next(i for i, r in enumerate(shown) if " | " in str(r["원인"]))
     kept, log = service.apply_review(result, {row: {"원인": shown[row]["원인"], service.REVIEW_COLUMN: "채택"}})
-    assert log == [(shown[row]["No"], "채택", shown[row]["가이드워드"], shown[row]["이탈"], "")]
+    assert log == [(shown[row]["No"], "채택", shown[row]["가이드워드"], shown[row]["이탈"], "", "")]
     assert kept[row]["causes"] == service._display_records(result)[row]["causes"]
 
 # ── 'HAZOP 이 처음이라면' 안내 (10/8 사용자 요청) ─────────────────────────────────
@@ -1301,3 +1301,86 @@ def test_missing_inputs_empty_when_all_given() -> None:
     """다 적힌 입력이면 확인 상자를 띄우지 않고 바로 생성한다."""
     assert service.missing_inputs(NodeMeta(substance="수소", phase="gas", P_kPag=1, T_degC=1, design_P_kPag=1,
                                            capacity="1", safeguards=["안전밸브"])) == []
+
+
+# ── 10/16 벤치마킹: 기각 사유(Copilot 👎 사유) · 보이는 행 일괄 채택(Copilot 묶어 반영) · 근거 창(Elicit) ──────────
+def test_reject_reason_goes_to_last_review_column() -> None:
+    assert service.split_verdict("기각(중복)") == ("기각", "중복")
+    assert service.split_verdict(None) == ("미검토", "")
+    assert service.split_verdict("채택") == ("채택", "")
+    result = _quick_result()
+    table = service.worksheet_table(result)
+    edits = {0: {service.REVIEW_COLUMN: "기각(근거 부족)"}, 1: {service.REVIEW_COLUMN: "기각"}}
+    kept, log = service.apply_review(result, edits)
+    assert len(kept) == len(table) - 2  # 사유가 붙어도 기각은 기각 — 내보내기에서 빠진다
+    assert log[0] == (table[0]["No"], "기각", table[0]["가이드워드"], table[0]["이탈"], "", "근거 부족")
+    assert log[1][1] == "기각" and log[1][5] == ""
+    assert service.reject_reason_counts(log) == "근거 부족 1 · 사유 없음 1"
+    review = list(_sheets(service.export_files(result, edits))[REVIEW_SHEET].iter_rows(values_only=True))
+    assert review[0][:5] == ("원 No", "검토", "가이드워드", "이탈", "수정한 열")  # R-10 앞 5열 그대로
+    assert review[0][5] == "기각 사유" and review[1][5] == "근거 부족"
+    assert all(o in service.REVIEW_OPTIONS for o in ("미검토", "채택", "기각", "기각(중복)"))
+
+
+def test_bulk_accept_only_touches_pending_rows() -> None:
+    edits = {0: {service.REVIEW_COLUMN: "기각(중복)"}, 1: {"S(1-5)": 2}, 3: {service.REVIEW_COLUMN: "채택"}}
+    out, n = service.bulk_accept(edits, [0, 1, 2, 3])
+    assert n == 2
+    assert out[0] == {service.REVIEW_COLUMN: "기각(중복)"}  # 이미 고른 기각은 덮어쓰지 않는다
+    assert out[1] == {"S(1-5)": 2, service.REVIEW_COLUMN: "채택"}  # 수정 값은 남긴다
+    assert out[2] == {service.REVIEW_COLUMN: "채택"}
+    assert out[3] == {service.REVIEW_COLUMN: "채택"}
+    assert edits[1] == {"S(1-5)": 2}  # 입력은 바꾸지 않는다
+    assert service.bulk_accept(out, [0, 1, 2, 3])[1] == 0
+
+
+def test_row_evidence_matches_table_and_evidence_sheet(current_replays: None) -> None:  # 인용은 10/14 재캡처부터
+    result = load_replays()["N2"]
+    table = service.worksheet_table(result)
+    records = service.verified(result)[0]
+    i = next(k for k, r in enumerate(records) if len(r.evidence) >= 1)
+    ev = service.row_evidence(result, i)
+    assert ev.title.startswith(f"No {table[i]['No']} · {table[i]['가이드워드']}")
+    assert ev.confidence == table[i][service.CONFIDENCE_COLUMN]
+    sheet = [{k: v for k, v in row.items() if k != "No"} for row in service.evidence_rows(result) if row["No"] == table[i]["No"]]
+    assert ev.quotes == sheet and ev.quotes  # 근거 시트의 그 행 인용과 같다
+    assert f"문서 {ev.doc_count}건" in str(table[i][service.EVIDENCE_COLUMN])  # 표 근거 칸과 같은 문서 수
+    blank = next(k for k, r in enumerate(records) if not r.evidence)
+    assert service.row_evidence(result, blank).quotes == []
+    assert "문서" in service.evidence_choice_label(table, i) and "문서" not in service.evidence_choice_label(table, blank)
+
+
+def test_app_accept_visible_and_evidence_panel(monkeypatch: pytest.MonkeyPatch) -> None:
+    from streamlit.testing.v1 import AppTest
+
+    for key, value in _MOCK_ENV.items():
+        monkeypatch.setenv(key, value)
+    seen: list[Any] = []
+    real_export = service.export_files
+
+    def spy(result: service.Result, edits: Any = None) -> dict[str, tuple[str, bytes]]:
+        seen.append(edits)
+        return real_export(result, edits)
+
+    monkeypatch.setattr(service, "export_files", spy)
+    at = _grid(AppTest.from_file(str(_APP), default_timeout=30)).run()
+    at.text_area[0].input(_SENTENCE).run()
+    _cta(at).click().run()
+    _skip_check(at)
+    result = at.session_state["quick_result"]
+    n = len(service.worksheet_table(result))
+    key = service.review_key(result)
+    at.session_state[key] = {"edited_rows": {0: {service.REVIEW_COLUMN: "기각(중복)"}}, "added_rows": [], "deleted_rows": []}
+    at.run()
+    assert any("기각 사유: 중복 1" in c.value for c in at.caption)
+    at.button(key="accept_visible").click().run()
+    assert not at.exception
+    assert seen[-1][0] == {service.REVIEW_COLUMN: "기각(중복)"}  # 기각은 그대로
+    assert all(seen[-1][i][service.REVIEW_COLUMN] == "채택" for i in range(1, n))
+    assert any(f"채택 {n - 1}건" in c.value for c in at.caption)
+    assert at.button(key="accept_visible").disabled  # 미검토가 남지 않았다
+    pick = next(s for s in at.selectbox if s.label.startswith("근거 보기"))
+    pick.select_index(0).run()
+    assert not at.exception
+    texts = [m.value for m in at.markdown] + [c.value for c in at.caption]
+    assert any(t.startswith("**No 1 ·") for t in texts)
