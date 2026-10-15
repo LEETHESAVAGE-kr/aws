@@ -18,7 +18,7 @@ from typing import Any  # noqa: E402
 import streamlit as st  # noqa: E402
 import streamlit.components.v1 as components  # noqa: E402
 
-from apps.web import form, guide, service  # noqa: E402
+from apps.web import form, guide, nudge, service  # noqa: E402
 from apps.web.replay import load_replays  # noqa: E402
 from core.agent.generate import PROCEDURAL_GUIDEWORDS, STANDARD_GUIDEWORDS  # noqa: E402
 
@@ -190,6 +190,7 @@ replays = st.cache_resource(load_replays)()
 live_reason = service.live_block_reason()
 state = st.session_state
 state.setdefault("live_runs", 0)
+state.setdefault("nudge_n", 0)  # 모바일 화면 이동 번호(nudge.py) — 같은 버튼을 다시 눌러도 스크립트가 돈다
 state.setdefault("quick_result", None)
 state.setdefault("node", None)
 state.setdefault("quick_text", "")
@@ -235,9 +236,16 @@ def _combined(process_id: str) -> service.Result | None:
     return service.combine_replays(next(p for p in service.CATALOG if p["id"] == process_id), replays)
 
 
+def _nudge(target: str) -> None:
+    """모바일에서 바뀐 곳으로 이동시킨다 — 스크립트는 맨 끝에서 한 번 낸다(PC 는 스크립트가 아무것도 안 한다)."""
+    state.nudge_to = target
+    state.nudge_n += 1
+
+
 def _fill(text: str, guideword: str | None = None) -> None:
     """예시 칩 — 문장 칸을 채운다. 칩은 '문장으로 설명'에서만 보인다."""
     state.quick_text = text
+    _nudge("input")  # 모바일은 칩이 세로로 쌓여 채워진 칸이 아래에 있다
     if guideword:  # 칩이 지정한 가이드워드(V-6 · X-4) — 결과는 가이드워드별 보기에서 그 묶음을 펼친다
         state.guideword = guideword
         state.view_pref = service.VIEWS[1]
@@ -473,7 +481,8 @@ with tool.container(border=True, key="tool"):
             "언제, 어떤 경로와 프롬프트로 만들었는지는 결과 위 출처 안내에 있습니다.</p>"
         )
         names = [p["name"] for p in service.CATALOG]
-        choice = st.selectbox("공정", names, key="process_name", label_visibility="collapsed")
+        choice = st.selectbox("공정", names, key="process_name", label_visibility="collapsed",
+                              on_change=_nudge, args=("result",))
         process = next(p for p in service.CATALOG if p["name"] == choice)
         if process.get("reference"):  # 지시문 W — 외부 공개 HAZOP 대조
             st.markdown(f":blue-background[공개 HAZOP 대조 · 외부 팀 작성] {process['description']}")
@@ -494,6 +503,7 @@ with tool.container(border=True, key="tool"):
             width="stretch",
         ):
             state.node = service.ALL_NODES
+            _nudge("result")
             st.rerun()
         for column, node in zip(st.columns(len(node_ids)), process["nodes"], strict=True):
             captured = node["id"] in replays
@@ -505,6 +515,7 @@ with tool.container(border=True, key="tool"):
                 width="stretch",
             ):
                 state.node = node["id"]
+                _nudge("result")  # 모바일은 노드 버튼이 세로로 쌓여 결과가 화면 밖 아래에 있다
                 st.rerun()  # 선택 강조(primary)를 새 노드로 다시 그린다
 
 if mode == MODE_NL:
@@ -902,6 +913,10 @@ st.caption(
     "새로 생성할 때 입력한 공정 설명은 AI 생성을 위해 외부 AI API로 전송됩니다. · "
     f"{service.system_note(result) if result is not None else ''} · [리포지토리]({REPO})"
 )
+
+_nudge_target = state.pop("nudge_to", None)
+if _nudge_target and not state.get("scroll_result"):
+    components.html(nudge.script(_nudge_target, state.nudge_n), height=0)
 
 if state.pop("scroll_result", False):
     st.toast("HAZOP 초안이 완성됐습니다 — 결과로 이동합니다.")
