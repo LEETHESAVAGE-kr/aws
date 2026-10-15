@@ -63,7 +63,8 @@ HELD_HEADERS: Final[tuple[str, ...]] = ("No", "가이드워드", "이탈", "필�
 HELD_LEGEND: Final[str] = "S·F·위험도 빈칸 = 정보 부족으로 판정 보류(입력·공식 문서에 없는 사업장 정보가 필요 — '확인 필요' 시트)."
 #: R-10 검토 기록 — 검토가 있을 때만 6번째 시트로 붙는다(AC-10-1). "원 No" 는 검토 전 화면 번호.
 REVIEW_SHEET: Final[str] = "검토 기록"
-REVIEW_HEADERS: Final[tuple[str, ...]] = ("원 No", "검토", "가이드워드", "이탈", "수정한 열")
+#: "기각 사유"(10/16)는 맨 끝 — 앞 5열은 R-10 정의 그대로. R-10 이 사유 입력을 비목표로 적어 두었다(spec 개정은 사용자 몫).
+REVIEW_HEADERS: Final[tuple[str, ...]] = ("원 No", "검토", "가이드워드", "이탈", "수정한 열", "기각 사유")
 CONFIDENCE_UNASSIGNED: Final[str] = "미부여"
 # R-05 표. 이 spec 은 판정하지 않고 표시만 한다(판정은 FR-06).
 CONFIDENCE_REASONS: Final[dict[str | None, tuple[str, str]]] = {
