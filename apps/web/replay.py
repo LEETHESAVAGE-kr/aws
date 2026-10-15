@@ -94,7 +94,7 @@ def _to_result(payload: dict[str, Any]) -> Result:
     # 골드 재생은 전문가가 쓴 순서 그대로다(사람 작성 순서를 바꾸지 않는다).
     if meta.get("source") != "gold":
         records = process_order(records, list(meta.get("parameters") or []), renumber=False)
-        # 교열 10/15: 화면·내려받기는 표기 규칙(종결·기호·'~에 의한')을 적용한 문장, 재생 파일은 그대로
+        # 교열 10/15: 화면·내려받기는 교열 대응표를 적용한 문장(뜻은 같음), 재생 파일은 그대로
         records, meta["notation_applied"] = apply_notation(records, _NOTATION)
     return Result(meta=meta, records=records)
 

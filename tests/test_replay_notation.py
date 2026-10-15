@@ -20,11 +20,11 @@ NOTATION = json.loads(NOTATION_PATH.read_text(encoding="utf-8"))
 
 
 def test_table_is_built_from_the_review_tables() -> None:
-    """대응표는 교열표에서 표기 규칙(R1·R2·R3)만 쓴 줄 그대로다 — 손으로 넣은 줄이 없다."""
+    """대응표는 교열표의 줄 그대로다 — 빠진 줄도 손으로 넣은 줄도 없다."""
     rows = [r for path in TABLES for r in parse(path)]
     kept = [{k: r[k] for k in ("ids", "field", "from", "to")} for r in rows if set(r["rules"]) <= NOTATION_RULES]
     assert NOTATION["entries"] == kept
-    assert NOTATION["rows_total"] == len(rows) and NOTATION["rows_excluded_wording"] == len(rows) - len(kept)
+    assert NOTATION["rows_total"] == len(rows) and NOTATION["rows_excluded_wording"] == len(rows) - len(kept) == 0
 
 
 def test_entries_keep_numbers_and_change_something() -> None:
@@ -83,7 +83,7 @@ def test_provenance_says_notation_was_applied() -> None:
     live = next(r for r in replays.values() if r.meta["notation_applied"])
     assert service.NOTATION_NOTE.format(n=live.meta["notation_applied"]) in service.provenance_line(live)
     bare = service.Result(meta={**live.meta, "notation_applied": 0}, records=live.records)
-    assert "표기 규칙" not in service.provenance_line(bare)
+    assert "문장 교열" not in service.provenance_line(bare)
 
 
 def test_missing_table_means_no_change(tmp_path: Path) -> None:
