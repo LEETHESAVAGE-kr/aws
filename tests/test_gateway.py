@@ -76,7 +76,7 @@ def test_bearer_token_alone_enables_live_and_is_sent(
 
 def test_without_base_url_nothing_changes(monkeypatch: pytest.MonkeyPatch) -> None:
     env = _live(monkeypatch)
-    assert service.live_block_reason(env) == "지금은 새로 생성할 수 없습니다(AI 연결 설정 없음). '완성된 사례 보기'에서 저장된 결과를 보세요."
+    assert service.live_block_reason(env) == "지금은 새로 생성할 수 없습니다(AI 연결 설정 없음). '완성된 사례 보기'에서 저장된 결과를 확인해 주세요."
     assert service.endpoint_label({"ANTHROPIC_API_KEY": "sk-ant-x"}) is None
     assert service.endpoint_label({"ANTHROPIC_BASE_URL": "https://api.anthropic.com/"}) is None  # 기본값 명시 = 직결
     assert "sk-ant- 로 시작하지 않음" in service.key_hint({"ANTHROPIC_API_KEY": "abc"})

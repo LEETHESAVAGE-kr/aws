@@ -298,5 +298,5 @@ def test_failure_hint_separates_budget_exhaustion_from_rate_limit() -> None:
     assert "예산" in service.failure_hint(budget) and "분당" not in service.failure_hint(budget)
     assert "분당" in service.failure_hint(rate) and "예산" not in service.failure_hint(rate)
     for exc in (budget, rate):
-        assert "남은 횟수에서 빼지 않았습니다" in service.failure_hint(exc)
+        assert "남은 생성 횟수가 차감되지 않았습니다" in service.failure_hint(exc)
         assert "완성된 사례 보기" in service.failure_hint(exc)

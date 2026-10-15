@@ -24,15 +24,15 @@ DEFAULT_TOP_N: Final[int] = 5
 TBD: Final[str] = "미정(문헌 근거 필요)"
 IPL_UNJUDGED: Final[str] = "3원칙(독립성·유효성·감사가능성): 미판정"
 DISCLAIMER: Final[str] = (
-    "심각도×빈도로 1차 선별한 초안입니다. IEF·PFD·TMEL·RRF 같은 정량값은 계산하지 않았으며, "
+    "심각도×빈도로 1차 선별한 초안입니다. IE 빈도·PFD·목표 완화 빈도·요구 위험 감소율 같은 정량값은 계산하지 않았으며, "
     "문헌 근거를 확보하기 전에는 채우지 않습니다."
 )
 QUANT_ROWS: Final[tuple[str, ...]] = (
-    "IE 빈도(IEF)",
+    "IE 빈도",
     "조건수정자(점화·재실·치명 확률)",
-    "목표 완화 빈도(TMEL)",
+    "목표 완화 빈도",
     "IPL 별 PFD",
-    "요구 위험 감소율(RRF)",
+    "요구 위험 감소율",
     "요구 SIL",
 )
 

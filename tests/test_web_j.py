@@ -173,7 +173,7 @@ def test_parse_sends_sentence_with_schema_and_validates_reply() -> None:
     # 모델이 enum 밖 값을 내면 core/llm 이 응답 스키마로 1회 재시도 후 content=None → 생성 전에 막힌다.
     # (그 뒤의 validate_node_meta 는 _parse_schema 와 산출물 스키마가 어긋날 때를 위한 2차 방어라 여기선 닿지 않는다.)
     bad = _parse_client({**reply, "phase": "기체"})
-    with pytest.raises(ValueError, match="두 번 연속"):
+    with pytest.raises(ValueError, match="응답 형식 오류"):
         service.parse_node_text(_SENTENCE, _MOCK_ENV, bad)
     assert len(bad.calls) == 2
 
@@ -1041,13 +1041,13 @@ def test_spacing_only_is_not_an_edit() -> None:
 
 # ── 'HAZOP 이 처음이라면' 안내 (10/8 사용자 요청) ─────────────────────────────────
 def test_guide_reuses_existing_definitions() -> None:
-    """뜻·등급은 새로 쓰지 않고 생성 프롬프트·골드셋 평가기준에서 읽는다."""
+    """등급은 새로 쓰지 않고 골드셋 평가기준에서 읽는다. 가이드워드 뜻은 화면용 교열본(10/15) — 표준 가이드워드마다 있다."""
     from apps.web import guide
-    from core.agent.generate import GUIDEWORD_DEFINITIONS, STANDARD_GUIDEWORDS
+    from core.agent.generate import STANDARD_GUIDEWORDS
 
     rows = guide.guideword_rows()
     assert [r["가이드워드"] for r in rows] == STANDARD_GUIDEWORDS
-    assert all(r["뜻"] == GUIDEWORD_DEFINITIONS[r["가이드워드"]] for r in rows)
+    assert all(r["뜻"] == guide.GUIDEWORD_MEANINGS[r["가이드워드"]] for r in rows)
     from core.criteria import load_criteria
 
     gold, cc37 = load_criteria("nh3_sts_bunkering"), load_criteria("kosha_cc37_2026")
@@ -1065,7 +1065,7 @@ def test_worked_example_risk_matches_band() -> None:
     from apps.web import guide
     from core.criteria import load_criteria
 
-    value = {s: v for s, _, v in guide.WORKED_EXAMPLE}["심각도 · 빈도 → 위험도"]
+    value = {s: v for s, _, v in guide.WORKED_EXAMPLE}["위험도"]
     s, f, risk, verdict = re.match(r"심각도 (\d)\S* · 빈도 (\d)\S* → 위험도 (\d+) → (.+)", value).groups()  # type: ignore[union-attr]
     cc37 = load_criteria("kosha_cc37_2026")
     assert cc37.risk(int(s), int(f)) == int(risk) and cc37.band(int(risk)) == verdict
@@ -1079,7 +1079,8 @@ def test_app_renders_intro_tabs(monkeypatch: pytest.MonkeyPatch) -> None:
     at = _grid(AppTest.from_file(str(_APP), default_timeout=30)).run()
     assert not at.exception
     labels = [t.label for t in at.tabs]
-    assert {"① 한 줄이 만들어지는 과정", guide.GUIDEWORD_TAB, "③ 위험도 (심각도·빈도)", "④ 결과 화면 읽는 법", "⑤ 회의와 비교", "⑥ 공정안전보고서와 HAZOP"} <= set(labels)
+    assert {"① 워크시트 한 줄이 만들어지는 과정", guide.GUIDEWORD_TAB, "③ 위험도 산정 기준 (심각도 × 빈도)",
+            "④ 화면 읽는 법 (검토 기능 및 AI 신뢰도)", "⑤ 기존 회의 vs 앱 도입 후 비교", "⑥ 공정안전보고서(PSM)와 HAZOP"} <= set(labels)
     assert len(at.table) >= 3 and len(at.dataframe) == 0  # 안내 표는 st.table — 결과 표 시험과 섞이지 않는다
 
 

@@ -121,7 +121,7 @@ def test_chips_only_in_sentence_style(monkeypatch: pytest.MonkeyPatch) -> None:
     assert "수소" in at.session_state["quick_text"] and at.session_state[form.KEYS["substance"]] is None
     at.radio(key="input_style").set_value("항목 선택").run()
     assert not any(b.label in ("수소충전소", "메탄올 저장탱크", "실란 가스 캐비닛") for b in at.button)
-    assert not any("공정 예시" in h.proto.body for h in at.get("html"))
+    assert not any("아래 입력창에 예시 문장이" in h.proto.body for h in at.get("html"))  # 상단 소개의 Tip 줄은 칩 안내가 아니다
 
 
 def test_progress_line_for_selected_items_has_no_json_word() -> None:
@@ -140,5 +140,5 @@ def test_first_screen_title_is_service_name_and_shows_three_paths(monkeypatch: p
     at = AppTest.from_file(str(_APP), default_timeout=60).run()
     hero = next(h.proto.body for h in at.get("html") if "hz-h1" in h.proto.body)
     assert '<div class="hz-h1">HAZOP Copilot</div>' in hero
-    assert all(p in hero for p in ("두 가지 방법", "문장으로 설명", "항목 선택", "모르겠다면", "완성된 사례 보기"))
+    assert all(p in hero for p in ("두 가지 방식", "문장으로 설명", "항목 선택", "막막하다면", "완성된 사례 보기"))
     assert "골드셋" not in hero
