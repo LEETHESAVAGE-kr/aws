@@ -477,7 +477,7 @@ with tool.container(border=True, key="tool"):
             )
     else:
         st.html(
-            '<p class="hz-card-sub">실제로 생성해 저장해 둔 결과를 보여 줍니다(새로 생성하지 않음). 문장 끝맺음·기호 같은 표기만 맞춰 표시하고 내용은 저장본 그대로입니다. '
+            '<p class="hz-card-sub">실제로 생성해 저장해 둔 결과를 보여 줍니다(새로 생성하지 않음). 문장 표현만 다듬어 표시하고 뜻은 저장본 그대로입니다. '
             "언제, 어떤 경로와 프롬프트로 만들었는지는 결과 위 출처 안내에 있습니다.</p>"
         )
         names = [p["name"] for p in service.CATALOG]

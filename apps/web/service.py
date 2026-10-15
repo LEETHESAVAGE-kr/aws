@@ -1351,11 +1351,11 @@ def origin_parts(result: Result) -> list[str]:
 
 
 #: 교열 10/15 — 재생 결과에 표기 대응표(`data/replay_notation.json`)를 적용했을 때 출처 안내에 붙는 말.
-NOTATION_NOTE: Final[str] = "표기 규칙(문장 끝맺음·기호·'~에 의한' 풀기)을 {n}곳 적용해 표시함 — 내용은 저장본 그대로"
+NOTATION_NOTE: Final[str] = "문장 교열(끝맺음·기호·어색한 낱말과 조사)을 {n}곳 적용해 표시함 — 뜻은 저장본 그대로"
 
 
 def notation_part(meta: Mapping[str, Any]) -> str:
-    """표기 대응표를 적용한 문장 수가 있으면 ' · 표기 규칙 …' 한 토막, 없으면 빈 문자열."""
+    """교열 대응표를 적용한 문장 수가 있으면 ' · 문장 교열 …' 한 토막, 없으면 빈 문자열."""
     n = meta.get("notation_applied") or 0
     return " · " + NOTATION_NOTE.format(n=n) if n else ""
 
