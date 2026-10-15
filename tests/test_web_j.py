@@ -782,8 +782,10 @@ def test_edit_changes_values_and_risk_formula_inputs() -> None:
     assert kept[0]["S"] == new_s and kept[0]["recommendations"] == ["인터록 추가", "절차서 개정"]
     assert log == [(1, "수정", table[0]["가이드워드"], table[0]["이탈"], "권고, S(1-5)")]  # 같은 값은 수정 아님
     first = next(_sheets(service.export_files(result, edits))["HAZOP워크시트"].iter_rows(min_row=2, max_row=2))
-    # AC-10-3 위험도는 수식이 다시 계산 — Y-2: 직접 입력은 C-C-37 대조표라 곱이 아니라 INDEX 조회
-    assert first[7].value == new_s and first[9].value == "=INDEX({1,1,2;1,2,3;2,4,4;3,5,5},H2,I2)"
+    # AC-10-3 고친 S 로 위험도 값을 다시 계산 — Y-2: 직접 입력은 C-C-37 대조표라 곱이 아니라 표 조회
+    s, f = first[7].value, first[8].value
+    assert s == new_s and first[9].value == [[1, 1, 2], [1, 2, 3], [2, 4, 4], [3, 5, 5]][s - 1][f - 1]
+    assert first[-1].value == "=INDEX({1,1,2;1,2,3;2,4,4;3,5,5},H2,I2)"
 
 
 @pytest.mark.parametrize("bad", [0, 4, 2.5])
