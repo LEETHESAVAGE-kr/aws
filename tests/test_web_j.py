@@ -1084,6 +1084,23 @@ def test_app_renders_intro_tabs(monkeypatch: pytest.MonkeyPatch) -> None:
     assert len(at.table) >= 3 and len(at.dataframe) == 0  # 안내 표는 st.table — 결과 표 시험과 섞이지 않는다
 
 
+def test_no_strikethrough_tildes_on_first_screen(monkeypatch: pytest.MonkeyPatch) -> None:
+    """마크다운에서 '~' 두 개는 취소선이다(10/15 '75~76쪽 (인쇄 61~62쪽)'에 줄이 그어졌다). 평가기준 3개 모두 본다."""
+    import re
+
+    from streamlit.testing.v1 import AppTest
+
+    for key, value in _MOCK_ENV.items():
+        monkeypatch.setenv(key, value)
+    raw = re.compile(r"(?<!\\)~")
+    at = _grid(AppTest.from_file(str(_APP), default_timeout=30)).run()
+    seen: list[str] = []
+    for criteria in at.radio(key="guide_criteria").options:
+        at.radio(key="guide_criteria").set_value(criteria).run()
+        seen += [str(e.value) for e in (*at.markdown, *at.caption) if len(raw.findall(str(e.value))) >= 2]
+    assert seen == []
+
+
 # ── 지시문 Y-1 No 공정 순서 ───────────────────────────────────────────────────
 def _process_key_ok(records: list[Any], params: list[str]) -> bool:
     from core.agent.generate import PROCEDURAL_GUIDEWORDS, STANDARD_GUIDEWORDS

@@ -126,8 +126,13 @@ IPL_LINES: Final[tuple[str, ...]] = (
 )
 
 
+def md_safe(text: str) -> str:
+    """마크다운(st.caption·markdown)에서 '~' 두 개가 취소선이 되지 않게 이스케이프한다(10/15 '75~76쪽 (인쇄 61~62쪽)')."""
+    return text.replace("~", "\\~")
+
+
 def criteria_caption(criteria: Criteria) -> str:
-    """기준 한 줄 설명 — 단계 수·산정 방식·출처(Y-2). 단계 수는 원문 그대로라 기준마다 다르다."""
+    """기준 한 줄 설명 — 단계 수·산정 방식·출처(Y-2). 단계 수는 원문 그대로라 기준마다 다르다. 마크다운으로 그리면 `md_safe`."""
     how = "곱한 값" if criteria.method == "product" else "대조표에서 찾은 값(곱이 아님)"
     src = criteria.data.get("locator") or ""
     if criteria.id == GOLD_CRITERIA:  # 팀 사업장 기준 — 내부 워크시트 이름은 화면에 쓰지 않는다(Q-02)
