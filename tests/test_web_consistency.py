@@ -52,7 +52,13 @@ def _screens(monkeypatch: pytest.MonkeyPatch) -> list[tuple[str, str]]:
         monkeypatch.setenv(key, value)
     at = AppTest.from_file(str(_APP), default_timeout=60).run()
     assert not at.exception
-    screens = [("첫 화면", rendered_text(at))]
+    first = [rendered_text(at)]
+    for label in guide.GUIDE_TABS:  # 1-B: 안내 탭은 열린 탭만 그린다 — 첫 화면 글자는 탭마다 열어 모은다
+        at.session_state[guide.GUIDE_TAB_KEY] = label
+        at.run()
+        assert not at.exception, label
+        first.append(rendered_text(at))
+    screens = [("첫 화면", "\n".join(first))]
     at.radio(key="mode").set_value(_CASES).run()
     replays = load_replays()
     for process in service.CATALOG:
