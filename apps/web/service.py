@@ -1117,7 +1117,7 @@ def distribution_html(result: Result) -> str | None:
     top_name, top_range, top_n = bands[0]
     if top_n:
         head = (f"등급을 매긴 {total}행 중 <b>{top_n}행({top_n / total:.0%})이 '{top_name}'</b>"
-                f"(위험도 {top_range})입니다 — 이 행부터 대책을 검토하세요.")
+                f"(위험도 {top_range})입니다 — 아래 '표에서 볼 행'에서 '{top_name}'을 누르면 그 행만 표에 남습니다.")
     else:
         busiest = max(bands, key=lambda b: b[2])
         head = (f"'{top_name}'(위험도 {top_range}) 행은 없습니다. "
@@ -1148,6 +1148,35 @@ def distribution_html(result: Result) -> str | None:
         f"{spread('심각도', '사고가 나면 피해가 얼마나 큰가')}{spread('빈도', '얼마나 자주 일어날 수 있나')}"
         "</div>"
     )
+
+
+#: '표에서 볼 행'(10/15) — 판정 카드에서 바로 그 행만 표에 남긴다.
+ROW_FILTER_ALL: Final[str] = "전체"
+ROW_FILTER_HELD: Final[str] = "정보 부족(보류)"
+
+
+def row_filters(result: Result, table: list[dict[str, object]]) -> dict[str, list[int]]:
+    """{선택지 이름: 표 행 인덱스} — 전체 · 판정 구간(높은 판정부터) · 정보 부족. 0행인 구간은 뺀다.
+
+    표(`worksheet_table`) 행의 위험도 값으로 가른다 — 화면에 보이는 위험도와 같은 값이다.
+    """
+    criteria = result_criteria(result)
+    out: dict[str, list[int]] = {ROW_FILTER_ALL: list(range(len(table)))}
+    for name, _rng, _n in risk_band_counts(result):
+        idx = [i for i, row in enumerate(table)
+               if isinstance(row.get("위험도"), int | float) and row["위험도"] == row["위험도"]
+               and criteria.band(int(row["위험도"])) == name]  # type: ignore[arg-type]
+        if idx:
+            out[name] = idx
+    held = [i for i, row in enumerate(table) if row.get("위험도") is None]
+    if held:
+        out[ROW_FILTER_HELD] = held
+    return out
+
+
+def remap_edits(edited_rows: Mapping[Any, Mapping[str, Any]], indices: list[int]) -> dict[int, dict[str, Any]]:
+    """걸러 낸 편집 표의 행 번호(0부터) → 전체 표의 행 번호. 편집 기록은 언제나 전체 표 기준으로 둔다."""
+    return {indices[int(k)]: dict(v) for k, v in edited_rows.items() if int(k) < len(indices)}
 
 
 def grade_labels(criteria: Criteria) -> dict[str, dict[int, str]]:
