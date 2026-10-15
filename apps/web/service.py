@@ -73,11 +73,16 @@ QUICK_NOTE: Final[str] = "약 1분 · API 호출 3회(입력 해석 1 + 파라�
 #: §8 C 생성 방식(10/9 사용자: "지금처럼 한 AI 의 답을 고르는 버튼도 남기기"). 10/10 공통 답(교집합) → 합치기(합집합):
 #: 교집합은 한 번만 나온 타당한 원인을 버린다. 값 = 가이드워드 판정 반복 횟수. 기본은 첫 항목(지금 방식).
 GENERATION_MODES: Final[dict[str, int]] = {
-    "한 번 생성(기본)": 1,
-    "3번 생성해 합치기 — 한 번 생성할 때 빠지는 원인까지 모음 (시간·비용 약 3배)": 3,
+    "한 번 생성 (기본)": 1,
+    "3번 생성해 합치기": 3,
+}
+#: 생성 방식 설명(10/15 사용자 교열본) — 라디오 아래 작은 글씨.
+GENERATION_MODE_HELP: Final[dict[str, str]] = {
+    "한 번 생성 (기본)": "표준 HAZOP 초안을 생성합니다.",
+    "3번 생성해 합치기": "누락되는 원인을 최소화하기 위해 3회 반복 생성 후 병합합니다. (시간 및 비용 약 3배 소요)",
 }
 GENERATION_MODE_LABEL: Final[str] = "생성 방식"
-QUICK_EXPANDER: Final[str] = "가이드워드 하나만 빠르게 보기 — 특정 이탈 방향만 먼저 확인할 때 (약 1분)"
+QUICK_EXPANDER: Final[str] = "특정 가이드워드만 빠르게 보기 — 하나의 이탈 방향만 집중적으로 먼저 확인할 때 사용합니다. (약 1분 소요)"
 QUICK_QUESTION: Final[str] = "어떤 가이드워드만 볼까요?"
 QUICK_BUTTON: Final[str] = "이 가이드워드만 생성 (약 1분 · 약 $0.15)"
 QUICK_SCOPE: Final[str] = "가이드워드 1종({guideword})만 생성 — 전체 표가 아님"
@@ -202,22 +207,22 @@ def failure_hint(exc: BaseException) -> str:
     if code == 429 and "budget" in str(cause).lower():
         return (
             "원인: 대회에서 받은 API 사용 예산을 모두 썼습니다(오류 429, 기다려도 풀리지 않음). "
-            "'완성된 사례 보기'에서 실제로 생성해 저장한 결과를 보세요. 이번 실패는 남은 횟수에서 빼지 않았습니다."
+            "'완성된 사례 보기'에서 실제로 생성해 저장한 결과를 확인해 주세요. (이번 오류로 남은 생성 횟수가 차감되지 않았습니다.)"
         )
     if code == 429:
         return (
             "원인: 짧은 시간에 요청이 몰려 분당 사용 한도를 넘었습니다(오류 429). "
-            "1분쯤 뒤 다시 누르거나, 기다리는 동안 '완성된 사례 보기'를 보세요. 이번 실패는 남은 횟수에서 빼지 않았습니다."
+            "1분쯤 뒤 다시 시도하거나, 기다리는 동안 '완성된 사례 보기'를 확인해 주세요. (이번 오류로 남은 생성 횟수가 차감되지 않았습니다.)"
         )
     if code == 529 or (isinstance(code, int) and code >= 500):
         return (
-            f"원인: AI 서버에 요청이 일시적으로 몰렸습니다(오류 {code}). 잠시 뒤 다시 누르세요. "
-            "이번 실패는 남은 횟수에서 빼지 않았습니다."
+            f"원인: AI 서버에 일시적으로 요청이 몰렸습니다(오류 {code}). 잠시 후 다시 시도해 주세요. "
+            "(이번 오류로 남은 생성 횟수가 차감되지 않았습니다.)"
         )
     return (
         f"원인: {type(cause).__name__}"
         + (f" (HTTP {code})" if code else "")
-        + " — 이번 실패는 남은 횟수에서 빼지 않았습니다."
+        + " (이번 오류로 남은 생성 횟수가 차감되지 않았습니다.)"
     )
 
 
@@ -286,11 +291,11 @@ def live_block_reason(environ: Mapping[str, str] = os.environ) -> str | None:
     **모두** 있어야 한다. mock 모드(`HAZOP_USE_MOCK=true`)는 네트워크를 쓰지 않으므로 키 없이 허용한다(오프라인 시험용).
     """
     if not _is_true(environ.get("HAZOP_ALLOW_LIVE", "false")):
-        return "지금은 새로 생성할 수 없습니다. '완성된 사례 보기'에서 저장된 결과를 보세요."
+        return "지금은 새로 생성할 수 없습니다. '완성된 사례 보기'에서 저장된 결과를 확인해 주세요."
     if not is_mock(environ) and (problem := provider_problem(environ)):
         return problem
     if _provider(environ) != "gateway" and not environ.get(_key_name(environ), "").strip() and not is_mock(environ):
-        return "지금은 새로 생성할 수 없습니다(AI 연결 설정 없음). '완성된 사례 보기'에서 저장된 결과를 보세요."
+        return "지금은 새로 생성할 수 없습니다(AI 연결 설정 없음). '완성된 사례 보기'에서 저장된 결과를 확인해 주세요."
     return None
 
 
@@ -518,7 +523,7 @@ def parse_node_text(
     )
     if response.content is None:
         raise ValueError(
-            "공정 설명을 해석하지 못했습니다(AI 응답 형식이 두 번 연속 맞지 않음). 물질과 설비를 넣어 다시 적어 주세요."
+            "공정 설명을 분석할 수 없습니다(AI 응답 형식 오류). 대상 물질과 설비 정보를 명확히 적어 다시 시도해 주세요."
         )
     reply, fixes = _guard_pressure(json.loads(response.content), stripped)
     written = {name: reply.get(name) for name in _PRESSURE_FIELDS.values() if reply.get(name)}
@@ -876,7 +881,7 @@ def confidence_counts(result: Result) -> str:
 HELD_BADGE: Final[str] = "⚪"
 #: Q-Z2 (a)(PRD 추천안 — 사용자 미결정): 안전장치를 모르면 F 는 매기되 '안전조치 미반영'을 알린다.
 SAFEGUARDS_UNKNOWN_NOTICE: Final[str] = (
-    "기존 안전장치가 입력에 없어 '없음'이 아니라 '모름'으로 다뤘습니다 — 빈도는 현재 안전조치를 반영하지 못한 값입니다. 안전장치가 있으면 입력에 적고 다시 생성하세요."
+    "기존 안전장치가 입력에 없어 '없음'이 아니라 '모름'으로 다뤘습니다 — 빈도는 현재 안전조치를 반영하지 못한 값입니다. 안전장치가 있으면 입력에 적고 다시 생성해 주세요."
 )
 
 
@@ -1054,7 +1059,7 @@ def criteria_notice(result: Result) -> str | None:
 CONCENTRATION_LIMIT: Final[float] = 0.70
 CONCENTRATION_WARNING: Final[str] = (
     "⚠ 빈도가 한 값에 몰려 있습니다. 안전장치 정보가 없으면 빈도를 보수적으로 높게 매기도록 만들었기 때문입니다. "
-    "편집 표에서 사업장 기준에 맞게 고치세요."
+    "편집 표에서 사업장 기준에 맞게 고쳐 주세요."
 )
 
 
@@ -1351,7 +1356,7 @@ def origin_parts(result: Result) -> list[str]:
 
 
 #: 교열 10/15 — 재생 결과에 표기 대응표(`data/replay_notation.json`)를 적용했을 때 출처 안내에 붙는 말.
-NOTATION_NOTE: Final[str] = "문장 교열(끝맺음·기호·어색한 낱말과 조사)을 {n}곳 적용해 표시함 — 뜻은 저장본 그대로"
+NOTATION_NOTE: Final[str] = "문장 교열(끝맺음·기호·번역투·영어 괄호·어색한 낱말과 조사)을 {n}곳 적용해 표시함 — 뜻은 저장본 그대로"
 
 
 def notation_part(meta: Mapping[str, Any]) -> str:
@@ -1682,6 +1687,8 @@ REVIEW_FRONT: Final[tuple[str, ...]] = (
 REVIEW_WIDTHS: Final[dict[str, int]] = {
     "가이드워드": 130, "이탈": 300, "원인": 300, "결과": 300, "기존 안전장치(Before)": 220, "권고": 300,
 }
+#: 화면 열 머리글(교열 10/15 — 한국어 뒤 영어 괄호를 뺀다). 데이터 열 이름과 Excel 머리글은 원본 양식 그대로(R-02).
+COLUMN_LABELS: Final[dict[str, str]] = {"기존 안전장치(Before)": "기존 안전장치"}
 REVIEW_ROW_HEIGHT: Final[int] = 84
 #: 결과 읽는 순서(PRD 첫화면 U-7).
 READING_ORDER: Final[str] = (
@@ -1752,7 +1759,7 @@ def read_only_order(order: list[str]) -> list[str]:
 
 def full_table_html(rows: list[dict[str, object]], columns: list[str], criteria: Criteria) -> str:
     """펼쳐 보기 표 — 글을 자르지 않고 줄바꿈. 목록 열(원인·결과·안전장치·권고)은 항목마다 한 줄. 값은 전부 이스케이프."""
-    labels = {"S(1-5)": f"심각도(1-{criteria.s_max})", "F(1-5)": f"빈도(1-{criteria.f_max})"}
+    labels = {"S(1-5)": f"심각도(1-{criteria.s_max})", "F(1-5)": f"빈도(1-{criteria.f_max})", **COLUMN_LABELS}
 
     def cell(column: str, value: object) -> str:
         if value is None or (isinstance(value, float) and value != value):

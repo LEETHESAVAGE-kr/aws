@@ -10,7 +10,7 @@ import pytest
 
 from apps.web import replay, service
 from apps.web.replay import NOTATION_PATH, REPLAY_DIR, apply_notation, load_notation, load_replays
-from tools.build_replay_notation import NOTATION_RULES, TABLES, parse
+from tools.build_replay_notation import build
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -20,11 +20,21 @@ NOTATION = json.loads(NOTATION_PATH.read_text(encoding="utf-8"))
 
 
 def test_table_is_built_from_the_review_tables() -> None:
-    """대응표는 교열표의 줄 그대로다 — 빠진 줄도 손으로 넣은 줄도 없다."""
-    rows = [r for path in TABLES for r in parse(path)]
-    kept = [{k: r[k] for k in ("ids", "field", "from", "to")} for r in rows if set(r["rules"]) <= NOTATION_RULES]
+    """대응표는 1차·2차 교열표를 단계대로 합친 것 그대로다 — 빠진 줄도 손으로 넣은 줄도 없다."""
+    rows, kept = build()
     assert NOTATION["entries"] == kept
-    assert NOTATION["rows_total"] == len(rows) and NOTATION["rows_excluded_wording"] == len(rows) - len(kept) == 0
+    assert NOTATION["rows_total"] == len(rows) and NOTATION["rows_excluded_wording"] == 0
+
+
+@pytest.mark.usefixtures("current_replays")
+def test_no_english_gloss_after_korean() -> None:
+    """2차 교열(10/15): 결과 표 문장에 '한국어(영어)' 괄호가 남지 않는다 — 화학식(NCl3)만 예외."""
+    gloss = re.compile(r"(?<=[가-힣·])\s?\(([A-Za-z][^()가-힣]*)\)")
+    left = [m.group(0) for res in load_replays().values() for r in res.records
+            for s in (r.deviation, r.scenario or "", *r.causes, *r.consequences, *r.safeguards_before,
+                      *r.recommendations, *r.missing)
+            for m in gloss.finditer(s) if m.group(1) != "NCl3"]
+    assert left == []
 
 
 def test_entries_keep_numbers_and_change_something() -> None:
