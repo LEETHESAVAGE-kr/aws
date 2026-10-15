@@ -1093,23 +1093,49 @@ def distribution_html(result: Result) -> str | None:
     total = sum(counts["빈도"].values())
     if not total:
         return None
+    labels = grade_labels(result_criteria(result))
     rows = []
     for name, by_grade in counts.items():
         cells = "".join(
             f"<span style='flex:{max(n, 0.0001)};background:var(--accent);opacity:{0.35 + 0.65 * n / total:.2f};"
             f"color:var(--text);font-size:12px;padding:2px 6px;white-space:nowrap;overflow:hidden' "
-            f"title='{name} {g}: {n}행'>{g}·{n}</span>"
+            f"title='{name} {g}{labels[name].get(g, '')}: {n}행'>{g}·{n}</span>"
             for g, n in by_grade.items() if n
         )
         empty = [str(g) for g, n in by_grade.items() if not n]
-        tail = (f"<small style='color:var(--muted);margin-left:8px'>0행: {', '.join(empty)}</small>"
+        tail = (f"<small style='color:var(--muted);margin-left:8px'>해당 행 없는 등급: {', '.join(empty)}</small>"
                 if empty and len(empty) <= 5 else "")
         rows.append(
             f"<div class='hz-info-r'><span style='width:52px'>{name}</span>"
             f"<b style='flex:1;display:flex;gap:2px'>{cells}</b>{tail}</div>"
         )
-    head = f"<p class='hz-info-t'>등급 분포 — 등급을 매긴 {total}행 (등급·행 수)</p>"
-    return f"<div class='hz-info' style='height:auto;padding:12px 16px'>{head}{''.join(rows)}</div>"
+    head = f"<p class='hz-info-t'>등급 분포 — 등급을 매긴 {total}행이 어느 등급에 몰렸는지</p>"
+    how = (
+        "<p style='color:var(--muted);font-size:13px;margin:4px 0 8px'>막대 한 줄이 심각도·빈도·위험도 하나입니다. "
+        "칸 안의 <b>3·23</b>은 '등급 3인 행이 23개'라는 뜻이고, 칸 너비는 행 수에 비례합니다(진할수록 많음). "
+        "정보 부족으로 보류한 행은 등급이 없어 셈에서 뺐습니다.</p>"
+    )
+    criteria = result_criteria(result)
+    lines = [f"{name}: " + " · ".join(f"{g}{lab}" for g, lab in labels[name].items())
+             for name in ("심각도", "빈도") if any(labels[name].values())]
+    bands = sorted(criteria.data["risk_bands"], key=lambda b: int(str(b["range"]).split("~")[0]))
+    lines.append("위험도: " + " · ".join(f"{b['range']}({b['judgement']})" for b in bands))
+    legend = "".join(f"<small style='display:block;color:var(--muted)'>{line}</small>" for line in lines)
+    return (f"<div class='hz-info' style='height:auto;padding:12px 16px'>{head}{how}{''.join(rows)}"
+            f"<div style='margin-top:8px'>{legend}</div></div>")
+
+
+def grade_labels(criteria: Criteria) -> dict[str, dict[int, str]]:
+    """분포 막대 범례 — 등급 → ' (경미)' 같은 이름. 위험도는 판정 구간 이름. 기준에 이름이 없으면 빈 문자열."""
+    def named(items: list[dict[str, Any]]) -> dict[int, str]:
+        return {int(i["grade"]): f"({i['label']})" if i.get("label") else "" for i in items}
+
+    risk: dict[int, str] = {}
+    for band in criteria.data["risk_bands"]:
+        low, _, high = str(band["range"]).partition("~")
+        for g in range(int(low), int(high or low) + 1):
+            risk[g] = f"({band['judgement']})"
+    return {"심각도": named(criteria.data["severity"]), "빈도": named(criteria.data["frequency"]), "위험도": risk}
 
 
 def concentration_warning(result: Result) -> str | None:

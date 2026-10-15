@@ -867,12 +867,12 @@ with risk_tab:
     )
     crit_by_name = {service.criteria_label(c): c for c in service.all_criteria()}
     shown = crit_by_name[st.radio("평가기준", list(crit_by_name), horizontal=True, key="guide_criteria")]
-    st.caption(guide.criteria_caption(shown))
+    st.caption(guide.md_safe(guide.criteria_caption(shown)))
     st.table(guide.criteria_rating_rows(shown), hide_index=True, border="horizontal")
     st.table(guide.criteria_matrix_rows(shown), hide_index=True, border="horizontal")
     st.table(guide.criteria_band_rows(shown), hide_index=True, border="horizontal")
     for note in shown.data.get("notes") or []:
-        st.caption("· " + note)
+        st.caption(guide.md_safe("· " + note))
     st.markdown("**빈도와 독립방호계층(IPL)**")
     for line in guide.IPL_LINES:
         st.caption("· " + line)
@@ -889,12 +889,12 @@ with read_tab:
     st.table(guide.information_level_rows(), hide_index=True, border="horizontal")
 with compare_tab:
     st.markdown(guide.process_table(service.param_range(replays)))
-    st.caption(
+    st.caption(guide.md_safe(
         "도입 효과: 기존에는 회의 중 서기가 기록하고 문서화에 수일이 걸렸으나, 이 앱은 노드 1개당 약 1.5~2분"
         "(측정: 2026-10-08, 3회 79~126초, 약 $0.75) 만에 초안을 자동 완성합니다. 신뢰도 지표가 포함된 Excel, Word 파일을 "
         "즉시 다운로드하여 전문가(회의 참석자) 검토 단계로 바로 넘어갈 수 있습니다. "
         "회의 시간이 얼마나 줄어드는지는 재지 않았습니다."
-    )
+    ))
 
 with psm_tab:
     st.caption("HAZOP은 산업안전보건법에 따라 설비 가동 전 정부 심사를 받아야 하는 공정안전보고서의 핵심 기법입니다.")
