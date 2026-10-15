@@ -29,7 +29,11 @@ HEADERS: Final[tuple[str, ...]] = (
     "시나리오 연계",
 )
 
-LIST_JOINER: Final[str] = "·"
+#: 원인·결과·안전장치·권고 목록을 한 칸에 담을 때 항목 사이 구분 — 줄바꿈(Excel 칸에서 항목마다 한 줄).
+#: 10/15 전에는 "·" 였는데 항목 문장의 45%가 "배관·펌프"처럼 "·"를 품고 있어 다시 나눌 때 항목이 쪼개졌다.
+LIST_JOINER: Final[str] = "\n"
+#: 노드 열의 설비 이름 연결(설비 이름에는 "·"가 없다).
+EQUIPMENT_JOINER: Final[str] = "·"
 
 
 @dataclass(frozen=True)
@@ -193,7 +197,7 @@ def node_label(node: str, equipment: Iterable[str]) -> str:
     items = [e for e in equipment if e]
     if not items:
         return node
-    return f"{node} {LIST_JOINER.join(items)}"
+    return f"{node} {EQUIPMENT_JOINER.join(items)}"
 
 
 def guideword_label(guideword: str, parameter: str) -> str:

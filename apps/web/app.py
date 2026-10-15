@@ -678,7 +678,7 @@ else:
         column_config[service.REVIEW_COLUMN] = st.column_config.Column(width=72, pinned=True)
         if view_choice == service.VIEWS[0] and editable and not full_text:
             st.caption(
-                "검토: 행마다 채택·기각을 고르고 원인·결과·권고·심각도·빈도를 고칠 수 있습니다(여러 항목은 · 로 구분). "
+                "검토: 행마다 채택·기각을 고르고 원인·결과·권고·심각도·빈도를 고칠 수 있습니다(여러 항목은 | 로 구분). "
                 "고친 내용은 위 내려받기 파일 3종에 바로 반영됩니다. 기각한 행은 빠지고, Excel에는 '검토 기록' 시트가 붙습니다. "
                 "화면에서는 위험도·심각도·빈도를 이탈 옆에 두었고, Excel은 표준 양식의 12열 순서를 따릅니다."
             )
@@ -794,11 +794,18 @@ st.html(
     "아래 카드 3장은 HAZOP과 이 앱의 역할 요약이고, 그 아래 탭에서 기능별 상세 가이드를 볼 수 있습니다.</p>"
 )
 #: [요약] HAZOP과 이 앱의 역할 — (제목, 핵심 한 줄, 설명). 마크다운을 거치지 않는다(`~` 가 취소선이 된다).
-INTRO_CARDS: tuple[tuple[str, str, str], ...] = (
+INTRO_CARDS: tuple[tuple[str, str, str | tuple[tuple[str, str], ...]], ...] = (
     (
         "HAZOP이란",
         "설계 의도에서 벗어나는 경우를 빠짐없이 찾는 위험성평가",
-        "KOSHA C-C-37-2026 기준.",
+        (
+            ("방법", "설비를 구간(노드)으로 나누고, 구간마다 유량·압력·온도 같은 변수에 No(없음), More(많음), Less(적음), "
+                    "Reverse(역류) 같은 가이드워드를 하나씩 대입해 '설계에서 벗어난 상태(이탈)'를 모두 만들어 봅니다."),
+            ("예", "압력 + More → 배관 압력이 설계 압력을 넘음 → 원인: 압축기 토출 제어 고장 → 결과: 배관 파열·가스 누출 "
+                  "→ 권고: 고압 연동 정지 인터록 추가"),
+            ("결과물", "이탈마다 원인·결과·기존 안전장치·위험도(심각도×빈도)·권고를 적은 표(HAZOP 워크시트)"),
+            ("근거", "공정안전보고서(PSM)의 대표 위험성평가 기법 · 절차는 KOSHA C-C-37-2026(연속공정 HAZOP 기술지원규정) 기준"),
+        ),
     ),
     (
         "기존 방식의 고충",
@@ -814,9 +821,12 @@ INTRO_CARDS: tuple[tuple[str, str, str], ...] = (
     ),
 )
 for column, (title, headline, body) in zip(st.columns(3), INTRO_CARDS, strict=True):
+    rows_html = (
+        f"<div class='hz-info-r'><b style='font-weight:400'>{body}</b></div>" if isinstance(body, str)
+        else "".join(f"<div class='hz-info-r'><span style='flex-shrink:0;white-space:nowrap'>{k}</span><b style='font-weight:400'>{v}</b></div>" for k, v in body)
+    )
     column.html(
-        f'<div class="hz-info"><p class="hz-info-t">{title}</p><p class="hz-info-h">{headline}</p>'
-        f"<div class='hz-info-r'><b style='font-weight:400'>{body}</b></div></div>"
+        f'<div class="hz-info"><p class="hz-info-t">{title}</p><p class="hz-info-h">{headline}</p>{rows_html}</div>'
     )
 st.html('<div style="height:14px"></div>')
 howto_tab, example_tab, gw_tab, risk_tab, read_tab, compare_tab, psm_tab = st.tabs(

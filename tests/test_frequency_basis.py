@@ -130,7 +130,10 @@ def test_concentration_warning_above_limit_only() -> None:
     assert service.concentration_warning(crowded) == service.CONCENTRATION_WARNING_IPL
     assert service.concentration_warning(spread) is None
     html = service.distribution_html(crowded)
-    assert html and "빈도" in html and "2·8" in html and "심각도" in html and "위험도" in html
+    assert html and "빈도" in html and "중(2) 8" in html and "심각도" in html and "위험도" in html
+    # 10/15 개편: 판정 구간 행 수의 합 = 등급을 매긴 행 수, 머리말은 가장 높은 판정부터 말한다
+    bands = service.risk_band_counts(crowded)
+    assert sum(n for _, _, n in bands) == 10 and bands[0][0] == "위험작업 불허"
 
 
 def test_evidence_line_counts_cited_rows() -> None:
