@@ -1118,7 +1118,34 @@ def test_app_renders_intro_tabs(monkeypatch: pytest.MonkeyPatch) -> None:
     labels = [t.label for t in at.tabs]
     assert {"① 워크시트 한 줄이 만들어지는 과정", guide.GUIDEWORD_TAB, "③ 위험도 산정 기준 (심각도 × 빈도)",
             "④ 화면 읽는 법 (검토 기능 및 AI 신뢰도)", "⑤ 기존 회의 vs 앱 도입 후 비교", "⑥ 공정안전보고서(PSM)와 HAZOP"} <= set(labels)
+    assert set(guide.GUIDE_TABS) <= set(labels)
+    at.session_state[guide.GUIDE_TAB_KEY] = "③ 위험도 산정 기준 (심각도 × 빈도)"
+    at.run()
+    assert not at.exception
     assert len(at.table) >= 3 and len(at.dataframe) == 0  # 안내 표는 st.table — 결과 표 시험과 섞이지 않는다
+
+
+def test_intro_tabs_render_only_the_open_tab(monkeypatch: pytest.MonkeyPatch) -> None:
+    """1-B: 숨은 안내 탭은 그리지 않는다 — 탭마다 그 탭의 내용만 나오고 다른 탭의 표·문구는 없다."""
+    from streamlit.testing.v1 import AppTest
+
+    for key, value in _MOCK_ENV.items():
+        monkeypatch.setenv(key, value)
+    at = _grid(AppTest.from_file(str(_APP), default_timeout=30)).run()
+    assert not at.exception and len(at.table) == 0  # 기본 탭 ⓪ 은 표가 없다
+    counts = {}
+    for label in guide.GUIDE_TABS:
+        at.session_state[guide.GUIDE_TAB_KEY] = label
+        at.run()
+        assert not at.exception, label
+        counts[label] = len(at.table)
+        has_criteria = any(r.key == "guide_criteria" for r in at.radio)  # 평가기준 고르기는 ③ 탭 안에만
+        assert has_criteria == (label == "③ 위험도 산정 기준 (심각도 × 빈도)"), label
+    assert counts == {
+        "⓪ 입력 방식별 사용법": 0, "① 워크시트 한 줄이 만들어지는 과정": 0, guide.GUIDEWORD_TAB: 1,
+        "③ 위험도 산정 기준 (심각도 × 빈도)": 3, "④ 화면 읽는 법 (검토 기능 및 AI 신뢰도)": 1,
+        "⑤ 기존 회의 vs 앱 도입 후 비교": 0, "⑥ 공정안전보고서(PSM)와 HAZOP": 1,
+    }
 
 
 def test_no_strikethrough_tildes_on_first_screen(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -1132,9 +1159,24 @@ def test_no_strikethrough_tildes_on_first_screen(monkeypatch: pytest.MonkeyPatch
     raw = re.compile(r"(?<!\\)~")
     at = _grid(AppTest.from_file(str(_APP), default_timeout=30)).run()
     seen: list[str] = []
-    for criteria in at.radio(key="guide_criteria").options:
-        at.radio(key="guide_criteria").set_value(criteria).run()
+
+    def scan() -> None:
+        nonlocal seen
         seen += [str(e.value) for e in (*at.markdown, *at.caption) if len(raw.findall(str(e.value))) >= 2]
+
+    scan()
+    for label in guide.GUIDE_TABS:  # 1-B: 열린 탭만 그리므로 탭마다 연다
+        at.session_state[guide.GUIDE_TAB_KEY] = label
+        at.run()
+        scan()
+    risk_tab = "③ 위험도 산정 기준 (심각도 × 빈도)"
+    at.session_state[guide.GUIDE_TAB_KEY] = risk_tab
+    at.run()
+    for criteria in at.radio(key="guide_criteria").options:
+        # AppTest 는 탭 선택을 위젯 값으로 들고 다니지 않는다 — 실행마다 ③ 탭을 다시 연다
+        at.session_state[guide.GUIDE_TAB_KEY] = risk_tab
+        at.radio(key="guide_criteria").set_value(criteria).run()
+        scan()
     assert seen == []
 
 

@@ -188,6 +188,9 @@ st.html(
     .st-key-cta button { min-height: 54px; font-size: 16px; font-weight: 700; border-radius: 12px; }
     .st-key-process_name [data-baseweb="select"] > div { background-color: var(--accent-soft);
         border: 1px solid var(--accent); font-weight: 600; min-height: 46px; }
+    /* 입력 조각 안의 화면 이동 스크립트(높이 0 iframe) — 흐름에서 빼서 카드 높이·간격을 바꾸지 않는다.
+       키 상자를 감싼 Streamlit 상자가 카드의 flex 항목이라 그 상자째 뺀다 */
+    div:has(> .st-key-panel_nudge) { position: absolute; width: 0; height: 0; overflow: hidden; }
     </style>"""
 )
 
@@ -261,6 +264,21 @@ def _fill(text: str, guideword: str | None = None) -> None:
         state.focus_guideword = guideword
 
 
+def _emit_nudge(*, in_panel: bool = False) -> None:
+    """`_nudge` 로 예약한 화면 이동을 낸다 — 앱 끝, 그리고 입력 조각만 다시 돌 때는 조각 끝에서.
+
+    조각 안에서는 흐름 밖 상자(`panel_nudge`, CSS)에 넣는다 — 높이 0 iframe 도 간격 한 칸을 먹어 카드가 16px 커졌다.
+    """
+    target = state.pop("nudge_to", None)
+    if target and not state.get("scroll_result"):
+        script = nudge.script(target, state.nudge_n)
+        if in_panel:
+            with st.container(key="panel_nudge"):
+                components.html(script, height=0)
+        else:
+            components.html(script, height=0)
+
+
 def _to_cases() -> None:
     state.mode = MODE_CASES
 
@@ -299,198 +317,209 @@ intro.html(
     </div>"""
 )
 
+# ── 입력 패널 — 조각(fragment) ────────────────────────────────────────────────
+# 칩·입력 방식·폼처럼 패널 안에서만 바뀌는 조작은 이 조각만 다시 실행한다(10/15 1-C, 예전엔 앱 전체를 다시 보냈다).
+# 결과를 바꾸는 일(생성 완료)은 안에서 st.rerun() 으로 앱 전체를 다시 그린다.
+@st.fragment
+def _nl_panel() -> None:
+    if state.mode != MODE_NL:  # 패널 안 버튼(사례 보기)이 모드를 바꿨다 — 모드 선택은 조각 밖이라 앱 전체를 다시 그린다
+        st.rerun()
+    done = 3 if state.quick_result is not None else (2 if state.quick_text.strip() or state[form.KEYS["substance"]] else 1)
+    st.html(
+        f'<div class="hz-progress"><div style="width:{done * 33.4:.0f}%"></div></div>'
+        '<p class="hz-q">어떤 공정을 분석할까요?</p>'
+        '<p class="hz-q-help">물질, 설비, 압력, 온도, 설계압력, 용량, 기존 안전장치 등을 구체적으로 입력할수록 결과가 정교해집니다.</p>'
+    )
+    input_style = st.radio("입력 방식", [INPUT_TEXT, INPUT_FORM], key="input_style", horizontal=True)
+    if input_style == INPUT_TEXT:
+        st.html(f'<p class="hz-q-help">{CHIP_HINT}</p>')
+        for i, (column, (label, text, *chip_guideword)) in enumerate(
+            zip(st.columns(len(EXAMPLES)), BOOTH_EXAMPLES if BOOTH else EXAMPLES, strict=True)
+        ):
+            column.button(label, key=f"chip_{i}", on_click=_fill, args=(text, *chip_guideword), width="stretch")
+        st.text_area(
+            "공정 설명",
+            key="quick_text",
+            height=130,
+            max_chars=service.NODE_TEXT_LIMIT,
+            placeholder=DIRECT_PLACEHOLDER,
+            label_visibility="collapsed",
+        )
+        run_text = state.quick_text
+        form_missing: list[str] = []
+    else:
+        _node_form()
+        values = {k: state[form.KEYS[k]] for k in form.EMPTY}
+        form_missing = form.missing_fields(values)
+        run_text = "" if form_missing else form.to_node_json(values)
+        if form_missing:
+            st.caption(f"{' · '.join(form_missing)}을(를) 고르면 생성할 수 있습니다.")
+    # V-3 부스 PC 한 대 = 세션 하나 — 세션 상한은 빼고 일 상한(비용 상한)만 건다.
+    session_runs = 0 if BOOTH else state.live_runs
+    quota = service.quota_block_reason(session_runs)
+    blocked = live_reason is not None or quota is not None or not run_text.strip()
+    # §8 C: 한 번 생성(지금 방식)과 3번 생성해 합치기 중 고른다 — 사용자 요청(10/9·10/10).
+    gen_mode = st.radio(service.GENERATION_MODE_LABEL, list(service.GENERATION_MODES), key="gen_mode", horizontal=True,
+                        captions=[service.GENERATION_MODE_HELP[m] for m in service.GENERATION_MODES])
+    runs = service.GENERATION_MODES[gen_mode]
+    # 지시문 X-1: 기본 실행 = 가이드워드 전체. HAZOP 은 원래 전 가이드워드를 도는 방법이다.
+    with st.container(key="cta"):
+        clicked_full = st.button(
+            service.LIVE_BUTTON,
+            type="primary",
+            disabled=blocked,
+            width="stretch",
+        )
+    # X-1b 보조 실행 — 특정 가이드워드만 먼저 확인하고 싶을 때(실무 기능).
+    with st.expander(service.QUICK_EXPANDER, expanded=False):
+        guideword = st.selectbox(
+            service.QUICK_QUESTION,
+            GUIDEWORDS,
+            key="guideword",  # 기본 More(state.setdefault) — 칩이 바꿀 수 있게 상태로 둔다(V-6)
+            format_func=lambda g: f"{g} — {GUIDEWORD_MEANING[g]}" if g in GUIDEWORD_MEANING else g,
+        )
+        clicked_quick = st.button(service.QUICK_BUTTON, key="run_quick", disabled=blocked, width="stretch")
+    # 생성 전 '입력 확인'(10/10 사용자 요청): 문장 입력은 먼저 해석만 하고, 비어 있는 정보를 사람이 채운 뒤 생성한다.
+    # 질문 누락은 매트릭스가 막지만 입력 누락은 사람만 메울 수 있다 — 그 빈칸을 생성 전에 보여 준다.
+    pre_parsed = None
+    if (clicked_quick or clicked_full) and input_style == INPUT_TEXT:
+        state.parse_pending = None
+        try:
+            parsed_meta, parse_info = service.parse_node_text(run_text)
+        except Exception:  # noqa: BLE001 — 해석 실패는 아래 생성 경로가 같은 사유로 다시 보여 준다
+            parsed_meta = None
+        if parsed_meta is not None:
+            if service.missing_inputs(parsed_meta):
+                state.parse_pending = {"meta": parsed_meta, "info": parse_info, "text": run_text,
+                                       "quick": bool(clicked_quick)}
+                clicked_quick = clicked_full = False
+            else:
+                pre_parsed = (parsed_meta, parse_info)
+    pending = state.get("parse_pending")
+    if pending is not None and (input_style != INPUT_TEXT or pending["text"] != run_text):
+        state.parse_pending = pending = None  # 입력을 바꾸면 확인 단계를 버린다
+    if pending is not None:
+        meta = pending["meta"]
+        missing = service.missing_inputs(meta)
+        labels = dict(service.INPUT_CHECK_FIELDS)
+        # 누르면 이 카드를 지운다(10/15) — 남겨 두면 흐려진 카드 밑으로 진행 상자가 밀려나 "작업이 들어갔나?"가 안 보인다.
+        check_slot = st.empty()
+        with check_slot.container(border=True, key="input_check"):
+            st.markdown("**입력 확인 — 생성 전에 빠진 정보를 채우세요**")
+            st.markdown(service.parsed_values_line(meta, pending["info"]))  # Q-04-4 해석된 값이 먼저
+            st.caption(
+                f"해석 결과: 물질 {meta.substance} · 상태 {meta.phase} · "
+                f"설비 {', '.join(meta.equipment) or '—'}"
+                + (f" · 안전장치 {', '.join(meta.safeguards)}" if meta.safeguards else "")
+            )
+            st.markdown("입력에 없는 정보: " + " · ".join(labels[f].split(" (")[0] for f in missing))
+            values: dict[str, Any] = {}
+            for column, field in zip(st.columns(len(missing)), missing, strict=True):
+                if field in ("P_kPag", "T_degC", "design_P_kPag"):
+                    values[field] = column.number_input(labels[field], value=None, key=f"check_{field}")
+                else:
+                    values[field] = column.text_input(labels[field], key=f"check_{field}")
+            st.caption("비워 두면 그 정보가 필요한 칸은 지어내지 않고 '⚪ 정보 부족'으로 남겨 둡니다.")
+            fill_col, skip_col = st.columns(2)
+            go_fill = fill_col.button("채운 값으로 생성", type="primary", key="check_fill", width="stretch")
+            go_skip = skip_col.button("이대로 생성", key="check_skip", width="stretch")
+        if go_fill or go_skip:
+            check_slot.empty()
+            filled_meta, filled = service.fill_node_meta(meta, values if go_fill else {})
+            pre_parsed = (filled_meta, {**pending["info"], "filled_after_parse": filled})
+            clicked_quick, clicked_full = pending["quick"], not pending["quick"]
+            state.parse_pending = None
+    if clicked_quick or clicked_full:
+        reason = service.reserve_live_run(session_runs)
+        if reason:
+            st.error(reason)
+        else:
+            state.live_runs += 1
+            mock_source = replays.get("N1") or next(iter(replays.values()))
+            # 진행 표시는 버튼 바로 아래 — 결과 영역은 첫 화면 밖이라 거기 두면 "아무 일도 없다"로 보인다(9/29 23:05).
+            expected = "약 1분" if clicked_quick else ("약 4분 · 3번 생성" if runs > 1 else "약 1.5~2분")
+            with st.status(
+                f"HAZOP 초안 생성 중 · {expected} — 이 화면에서 기다려 주세요", expanded=True
+            ) as status:
+                # R-11: 단계가 끝나는 즉시 그 산출물을 쓴다(예전엔 끝난 뒤 2/3·3/3 을 한꺼번에 찍었다).
+                lines = [st.empty() for _ in range(3)]
+                lines[0].write(service.STAGE_PENDING[0])
+                st.caption("분석 결과를 생성하는 동안 다른 버튼을 누르면 작업이 취소될 수 있습니다.")
+                partial = st.empty()  # X-1c: 가이드워드 판정이 끝날 때마다 행이 늘어나는 부분 표
+
+                def on_progress(event: str, payload: dict[str, Any]) -> None:
+                    step, text, pending = service.progress_text(event, payload, guideword if clicked_quick else None)
+                    lines[step].write(text)
+                    if pending is not None and step + 1 < len(lines):
+                        lines[step + 1].write(pending)
+                    if event == "guideword" and not clicked_quick:
+                        partial.dataframe(service.partial_rows(payload["records"]), hide_index=True, height=240)
+                    # expanded 를 다시 주지 않으면 라벨 갱신이 상자를 접는다(10/8 브라우저 확인).
+                    status.update(label=f"HAZOP 초안 생성 중 · {text.split(' — ')[0]}", expanded=True)
+
+                try:
+                    if clicked_quick:
+                        state.quick_result = service.run_quick(
+                            run_text, guideword, mock_source, on_progress=on_progress, pre_parsed=pre_parsed
+                        )
+                    else:
+                        state.quick_result = service.run_live(
+                            run_text, mock_source, on_progress=on_progress, consensus_runs=runs,
+                            consensus_union=True, pre_parsed=pre_parsed,
+                        )
+                except Exception as exc:  # noqa: BLE001 — 사유를 보이고 앱은 계속 산다
+                    state.live_runs -= 1  # 실패한 실행은 세션 횟수에서 빼지 않는다
+                    status.update(label="생성 실패", state="error", expanded=True)
+                    st.error(f"생성 실패: {type(exc).__name__}: {exc}")
+                    st.caption(service.failure_hint(exc))
+                    st.button(
+                        "완성된 사례 보기 — 저장된 결과를 바로 확인",
+                        key="fail_to_cases",
+                        on_click=_to_cases,
+                        width="stretch",
+                    )
+                    if service.is_auth_error(exc):
+                        st.caption(service.key_hint())
+                else:
+                    status.update(label="완료", state="complete")
+                    state.scroll_result = True  # 다음 실행에서 결과로 스크롤
+                    st.rerun()  # 버튼을 상한 사유와 함께 즉시 비활성으로 다시 그린다
+    left_runs = max(service.SESSION_LIMIT - state.live_runs, 0)
+    if live_reason:
+        st.caption(live_reason)
+    elif quota:
+        scope = "이 창에서" if "이 창" in quota else "오늘"
+        st.caption(
+            f"이 창에서 남은 생성 횟수 {left_runs}/{service.SESSION_LIMIT} · {scope} 생성할 수 있는 횟수를 모두 썼습니다. "
+            "'완성된 사례 보기'에서 같은 화면을 볼 수 있습니다."
+        )
+        st.button("완성된 사례 보기", on_click=_to_cases, width="stretch")
+    elif BOOTH:
+        st.caption(
+            f"현장 시연 모드 · 오늘 남은 {service.daily_left()}회 · 생성 약 1.5~2분 — "
+            "가이드워드 판정이 끝날 때마다 표가 채워집니다."
+        )
+    else:
+        st.caption(
+            f"남은 생성 횟수: {left_runs}/{service.SESSION_LIMIT}  \n"
+            f"진행 과정: 문장 해석 → 파라미터 도출 → 가이드워드 {guide.GUIDEWORD_COUNT} 동시 판정  \n"
+            f"예상 소요 시간/비용: {service.LIVE_NOTE.split(' · ', 1)[1].replace(' · ', ' / ')}"
+            + (
+                " · mock 모드 — 네트워크 없이 재생 레코드로 생성 경로를 돕니다."
+                if service.is_mock()
+                else ""
+            )
+        )
+    _emit_nudge(in_panel=True)  # 조각만 다시 돌 때는 스크립트 끝(아래)이 실행되지 않는다 — 칩의 모바일 이동을 여기서 낸다
+
+
 result = None
 with tool.container(border=True, key="tool"):
     mode = st.radio(
         "모드", [MODE_NL, MODE_CASES], horizontal=True, label_visibility="collapsed", key="mode"
     )
     if mode == MODE_NL:
-        done = 3 if state.quick_result is not None else (2 if state.quick_text.strip() or state[form.KEYS["substance"]] else 1)
-        st.html(
-            f'<div class="hz-progress"><div style="width:{done * 33.4:.0f}%"></div></div>'
-            '<p class="hz-q">어떤 공정을 분석할까요?</p>'
-            '<p class="hz-q-help">물질, 설비, 압력, 온도, 설계압력, 용량, 기존 안전장치 등을 구체적으로 입력할수록 결과가 정교해집니다.</p>'
-        )
-        input_style = st.radio("입력 방식", [INPUT_TEXT, INPUT_FORM], key="input_style", horizontal=True)
-        if input_style == INPUT_TEXT:
-            st.html(f'<p class="hz-q-help">{CHIP_HINT}</p>')
-            for i, (column, (label, text, *chip_guideword)) in enumerate(
-                zip(st.columns(len(EXAMPLES)), BOOTH_EXAMPLES if BOOTH else EXAMPLES, strict=True)
-            ):
-                column.button(label, key=f"chip_{i}", on_click=_fill, args=(text, *chip_guideword), width="stretch")
-            st.text_area(
-                "공정 설명",
-                key="quick_text",
-                height=130,
-                max_chars=service.NODE_TEXT_LIMIT,
-                placeholder=DIRECT_PLACEHOLDER,
-                label_visibility="collapsed",
-            )
-            run_text = state.quick_text
-            form_missing: list[str] = []
-        else:
-            _node_form()
-            values = {k: state[form.KEYS[k]] for k in form.EMPTY}
-            form_missing = form.missing_fields(values)
-            run_text = "" if form_missing else form.to_node_json(values)
-            if form_missing:
-                st.caption(f"{' · '.join(form_missing)}을(를) 고르면 생성할 수 있습니다.")
-        # V-3 부스 PC 한 대 = 세션 하나 — 세션 상한은 빼고 일 상한(비용 상한)만 건다.
-        session_runs = 0 if BOOTH else state.live_runs
-        quota = service.quota_block_reason(session_runs)
-        blocked = live_reason is not None or quota is not None or not run_text.strip()
-        # §8 C: 한 번 생성(지금 방식)과 3번 생성해 합치기 중 고른다 — 사용자 요청(10/9·10/10).
-        gen_mode = st.radio(service.GENERATION_MODE_LABEL, list(service.GENERATION_MODES), key="gen_mode", horizontal=True,
-                            captions=[service.GENERATION_MODE_HELP[m] for m in service.GENERATION_MODES])
-        runs = service.GENERATION_MODES[gen_mode]
-        # 지시문 X-1: 기본 실행 = 가이드워드 전체. HAZOP 은 원래 전 가이드워드를 도는 방법이다.
-        with st.container(key="cta"):
-            clicked_full = st.button(
-                service.LIVE_BUTTON,
-                type="primary",
-                disabled=blocked,
-                width="stretch",
-            )
-        # X-1b 보조 실행 — 특정 가이드워드만 먼저 확인하고 싶을 때(실무 기능).
-        with st.expander(service.QUICK_EXPANDER, expanded=False):
-            guideword = st.selectbox(
-                service.QUICK_QUESTION,
-                GUIDEWORDS,
-                key="guideword",  # 기본 More(state.setdefault) — 칩이 바꿀 수 있게 상태로 둔다(V-6)
-                format_func=lambda g: f"{g} — {GUIDEWORD_MEANING[g]}" if g in GUIDEWORD_MEANING else g,
-            )
-            clicked_quick = st.button(service.QUICK_BUTTON, key="run_quick", disabled=blocked, width="stretch")
-        # 생성 전 '입력 확인'(10/10 사용자 요청): 문장 입력은 먼저 해석만 하고, 비어 있는 정보를 사람이 채운 뒤 생성한다.
-        # 질문 누락은 매트릭스가 막지만 입력 누락은 사람만 메울 수 있다 — 그 빈칸을 생성 전에 보여 준다.
-        pre_parsed = None
-        if (clicked_quick or clicked_full) and input_style == INPUT_TEXT:
-            state.parse_pending = None
-            try:
-                parsed_meta, parse_info = service.parse_node_text(run_text)
-            except Exception:  # noqa: BLE001 — 해석 실패는 아래 생성 경로가 같은 사유로 다시 보여 준다
-                parsed_meta = None
-            if parsed_meta is not None:
-                if service.missing_inputs(parsed_meta):
-                    state.parse_pending = {"meta": parsed_meta, "info": parse_info, "text": run_text,
-                                           "quick": bool(clicked_quick)}
-                    clicked_quick = clicked_full = False
-                else:
-                    pre_parsed = (parsed_meta, parse_info)
-        pending = state.get("parse_pending")
-        if pending is not None and (input_style != INPUT_TEXT or pending["text"] != run_text):
-            state.parse_pending = pending = None  # 입력을 바꾸면 확인 단계를 버린다
-        if pending is not None:
-            meta = pending["meta"]
-            missing = service.missing_inputs(meta)
-            labels = dict(service.INPUT_CHECK_FIELDS)
-            # 누르면 이 카드를 지운다(10/15) — 남겨 두면 흐려진 카드 밑으로 진행 상자가 밀려나 "작업이 들어갔나?"가 안 보인다.
-            check_slot = st.empty()
-            with check_slot.container(border=True, key="input_check"):
-                st.markdown("**입력 확인 — 생성 전에 빠진 정보를 채우세요**")
-                st.markdown(service.parsed_values_line(meta, pending["info"]))  # Q-04-4 해석된 값이 먼저
-                st.caption(
-                    f"해석 결과: 물질 {meta.substance} · 상태 {meta.phase} · "
-                    f"설비 {', '.join(meta.equipment) or '—'}"
-                    + (f" · 안전장치 {', '.join(meta.safeguards)}" if meta.safeguards else "")
-                )
-                st.markdown("입력에 없는 정보: " + " · ".join(labels[f].split(" (")[0] for f in missing))
-                values: dict[str, Any] = {}
-                for column, field in zip(st.columns(len(missing)), missing, strict=True):
-                    if field in ("P_kPag", "T_degC", "design_P_kPag"):
-                        values[field] = column.number_input(labels[field], value=None, key=f"check_{field}")
-                    else:
-                        values[field] = column.text_input(labels[field], key=f"check_{field}")
-                st.caption("비워 두면 그 정보가 필요한 칸은 지어내지 않고 '⚪ 정보 부족'으로 남겨 둡니다.")
-                fill_col, skip_col = st.columns(2)
-                go_fill = fill_col.button("채운 값으로 생성", type="primary", key="check_fill", width="stretch")
-                go_skip = skip_col.button("이대로 생성", key="check_skip", width="stretch")
-            if go_fill or go_skip:
-                check_slot.empty()
-                filled_meta, filled = service.fill_node_meta(meta, values if go_fill else {})
-                pre_parsed = (filled_meta, {**pending["info"], "filled_after_parse": filled})
-                clicked_quick, clicked_full = pending["quick"], not pending["quick"]
-                state.parse_pending = None
-        if clicked_quick or clicked_full:
-            reason = service.reserve_live_run(session_runs)
-            if reason:
-                st.error(reason)
-            else:
-                state.live_runs += 1
-                mock_source = replays.get("N1") or next(iter(replays.values()))
-                # 진행 표시는 버튼 바로 아래 — 결과 영역은 첫 화면 밖이라 거기 두면 "아무 일도 없다"로 보인다(9/29 23:05).
-                expected = "약 1분" if clicked_quick else ("약 4분 · 3번 생성" if runs > 1 else "약 1.5~2분")
-                with st.status(
-                    f"HAZOP 초안 생성 중 · {expected} — 이 화면에서 기다려 주세요", expanded=True
-                ) as status:
-                    # R-11: 단계가 끝나는 즉시 그 산출물을 쓴다(예전엔 끝난 뒤 2/3·3/3 을 한꺼번에 찍었다).
-                    lines = [st.empty() for _ in range(3)]
-                    lines[0].write(service.STAGE_PENDING[0])
-                    st.caption("분석 결과를 생성하는 동안 다른 버튼을 누르면 작업이 취소될 수 있습니다.")
-                    partial = st.empty()  # X-1c: 가이드워드 판정이 끝날 때마다 행이 늘어나는 부분 표
-
-                    def on_progress(event: str, payload: dict[str, Any]) -> None:
-                        step, text, pending = service.progress_text(event, payload, guideword if clicked_quick else None)
-                        lines[step].write(text)
-                        if pending is not None and step + 1 < len(lines):
-                            lines[step + 1].write(pending)
-                        if event == "guideword" and not clicked_quick:
-                            partial.dataframe(service.partial_rows(payload["records"]), hide_index=True, height=240)
-                        # expanded 를 다시 주지 않으면 라벨 갱신이 상자를 접는다(10/8 브라우저 확인).
-                        status.update(label=f"HAZOP 초안 생성 중 · {text.split(' — ')[0]}", expanded=True)
-
-                    try:
-                        if clicked_quick:
-                            state.quick_result = service.run_quick(
-                                run_text, guideword, mock_source, on_progress=on_progress, pre_parsed=pre_parsed
-                            )
-                        else:
-                            state.quick_result = service.run_live(
-                                run_text, mock_source, on_progress=on_progress, consensus_runs=runs,
-                                consensus_union=True, pre_parsed=pre_parsed,
-                            )
-                    except Exception as exc:  # noqa: BLE001 — 사유를 보이고 앱은 계속 산다
-                        state.live_runs -= 1  # 실패한 실행은 세션 횟수에서 빼지 않는다
-                        status.update(label="생성 실패", state="error", expanded=True)
-                        st.error(f"생성 실패: {type(exc).__name__}: {exc}")
-                        st.caption(service.failure_hint(exc))
-                        st.button(
-                            "완성된 사례 보기 — 저장된 결과를 바로 확인",
-                            key="fail_to_cases",
-                            on_click=_to_cases,
-                            width="stretch",
-                        )
-                        if service.is_auth_error(exc):
-                            st.caption(service.key_hint())
-                    else:
-                        status.update(label="완료", state="complete")
-                        state.scroll_result = True  # 다음 실행에서 결과로 스크롤
-                        st.rerun()  # 버튼을 상한 사유와 함께 즉시 비활성으로 다시 그린다
-        left_runs = max(service.SESSION_LIMIT - state.live_runs, 0)
-        if live_reason:
-            st.caption(live_reason)
-        elif quota:
-            scope = "이 창에서" if "이 창" in quota else "오늘"
-            st.caption(
-                f"이 창에서 남은 생성 횟수 {left_runs}/{service.SESSION_LIMIT} · {scope} 생성할 수 있는 횟수를 모두 썼습니다. "
-                "'완성된 사례 보기'에서 같은 화면을 볼 수 있습니다."
-            )
-            st.button("완성된 사례 보기", on_click=_to_cases, width="stretch")
-        elif BOOTH:
-            st.caption(
-                f"현장 시연 모드 · 오늘 남은 {service.daily_left()}회 · 생성 약 1.5~2분 — "
-                "가이드워드 판정이 끝날 때마다 표가 채워집니다."
-            )
-        else:
-            st.caption(
-                f"남은 생성 횟수: {left_runs}/{service.SESSION_LIMIT}  \n"
-                f"진행 과정: 문장 해석 → 파라미터 도출 → 가이드워드 {guide.GUIDEWORD_COUNT} 동시 판정  \n"
-                f"예상 소요 시간/비용: {service.LIVE_NOTE.split(' · ', 1)[1].replace(' · ', ' / ')}"
-                + (
-                    " · mock 모드 — 네트워크 없이 재생 레코드로 생성 경로를 돕니다."
-                    if service.is_mock()
-                    else ""
-                )
-            )
+        _nl_panel()
     else:
         st.html(
             '<p class="hz-card-sub">실제로 생성해 저장해 둔 결과를 보여 줍니다(새로 생성하지 않음). 문장 표현만 다듬어 표시하고 뜻은 저장본 그대로입니다. '
@@ -925,100 +954,116 @@ for i, (column, (title, headline, body)) in enumerate(zip(st.columns(3), INTRO_C
                   f'<p class="hz-info-h">{extra[1]}</p>{_card_rows(extra[2])}</div>')
     column.html(html_)
 st.html('<div style="height:14px"></div>')
-howto_tab, example_tab, gw_tab, risk_tab, read_tab, compare_tab, psm_tab = st.tabs(
-    ["⓪ 입력 방식별 사용법", "① 워크시트 한 줄이 만들어지는 과정", guide.GUIDEWORD_TAB, "③ 위험도 산정 기준 (심각도 × 빈도)",
-     "④ 화면 읽는 법 (검토 기능 및 AI 신뢰도)", "⑤ 기존 회의 vs 앱 도입 후 비교", "⑥ 공정안전보고서(PSM)와 HAZOP"]
-)
-with howto_tab:
-    howto_tab.html(
-        '<div class="hz-info">'
-        + "".join(
-            f"<div class='hz-info-r'><span style='width:120px'>[{name}]</span><b style='flex:1;font-weight:400'>{text}</b></div>"
-            for name, text in guide.HOW_TO
-        )
-        + "</div>"
-    )
-with example_tab:
-    st.caption(
-        "AI는 2단계를 스스로 도출하며, 4~9단계를 모두 자동 판정합니다. 의미가 성립하지 않는 칸은 '해당 없음'과 사유를 남깁니다. "
-        "값은 이해를 돕는 설명용 예시입니다(실제 생성 결과 아님)."
-    )
-    example_tab.html(
-        '<div class="hz-info">'
-        + "".join(
-            f"<div class='hz-info-r'><span style='width:110px'>{i}. {step}</span>"
-            f"<b style='flex:1'>{value}<br><small style='color:var(--muted);font-weight:400'>{question}</small></b></div>"
-            for i, (step, question, value) in enumerate(guide.WORKED_EXAMPLE, start=1)
-        )
-        + "</div>"
-    )
-    st.caption(
-        "칸마다 해당하는지, 해당하면 원인·결과가 무엇인지 정하는 이 일을 '판정'이라고 부릅니다. "
-        "예: 온도 + Reverse — 온도에는 '거꾸로'가 없어 '해당 없음'."
-    )
-with gw_tab:
-    st.caption("가이드워드(Guide Word)를 조합하면 공정 내에서 발생할 수 있는 비정상적인 상태(이탈)를 쉽게 도출할 수 있습니다. "
-               "파라미터와 붙여 읽습니다(More + 압력 = 압력 과다).")
-    st.table(guide.guideword_rows(), hide_index=True, border="horizontal")
-    st.caption(f"절차(기동/정지/운전) 노드에는 {', '.join(PROCEDURAL_GUIDEWORDS)} "
-               f"{len(PROCEDURAL_GUIDEWORDS)}종이 추가됩니다.")
-with risk_tab:
-    st.caption(
-        "기본적으로 'KOSHA C-C-37-2026'을 따르며, 위험도는 단순 곱셈이 아닌 대조표로 산출합니다. "
-        "(단, 사업장 자체 기준이 있다면 그것이 최우선입니다.) 심각도는 안전조치를 고려하지 않은 기준, "
-        "빈도는 안전조치를 고려한 기준입니다. 기준마다 단계 수와 계산법이 달라 섞거나 평균 내지 않습니다."
-    )
-    st.caption(
-        "과거 데이터 기준: 2026년 10월 14일 이전 저장 사례 중 일부는 NH3 벙커링 사업장 기준이 적용되어 있으며, 결과 상단 출처에 명시됩니다."
-    )
-    crit_by_name = {service.criteria_label(c): c for c in service.all_criteria()}
-    shown = crit_by_name[st.radio("평가기준", list(crit_by_name), horizontal=True, key="guide_criteria")]
-    st.caption(guide.md_safe(guide.criteria_caption(shown)))
-    st.table(guide.criteria_rating_rows(shown), hide_index=True, border="horizontal")
-    st.table(guide.criteria_matrix_rows(shown), hide_index=True, border="horizontal")
-    st.table(guide.criteria_band_rows(shown), hide_index=True, border="horizontal")
-    for note in shown.data.get("notes") or []:
-        st.caption(guide.md_safe("· " + note))
-    st.markdown("**빈도와 독립방호계층(IPL)**")
-    for line in guide.IPL_LINES:
-        st.caption("· " + line)
-with read_tab:
-    read_tab.html(
-        '<div class="hz-info">'
-        + "".join(
-            f"<div class='hz-info-r'><span style='width:170px'>{k}</span><b style='flex:1'>{v}</b></div>"
-            for k, v in guide.READING_GUIDE
-        )
-        + "</div>"
-    )
-    st.markdown("**근거 표시(G/S/I/U)의 상세 — AI가 쓰는 정보의 4단계** · AI에게 주는 프롬프트에 들어가는 문구와 같습니다")
-    st.table(guide.information_level_rows(), hide_index=True, border="horizontal")
-with compare_tab:
-    st.markdown(guide.process_table(service.param_range(replays)))
-    st.caption(guide.md_safe(
-        "도입 효과: 기존에는 회의 중 서기가 기록하고 문서화에 수일이 걸렸으나, 이 앱은 노드 1개당 약 1.5~2분"
-        "(측정: 2026-10-08, 3회 79~126초, 약 $0.75) 만에 초안을 자동 완성합니다. 신뢰도 지표가 포함된 Excel, Word 파일을 "
-        "즉시 다운로드하여 전문가(회의 참석자) 검토 단계로 바로 넘어갈 수 있습니다. "
-        "회의 시간이 얼마나 줄어드는지는 재지 않았습니다."
-    ))
 
-with psm_tab:
-    st.caption("HAZOP은 산업안전보건법에 따라 설비 가동 전 정부 심사를 받아야 하는 공정안전보고서의 핵심 기법입니다.")
-    psm_tab.html(
-        '<div class="hz-info">'
-        + "".join(f"<div class='hz-info-r'><span style='width:110px'>{k}</span><b style='flex:1'>{v}</b></div>" for k, v in guide.PSM_WHY)
-        + "</div>"
+
+@st.fragment
+def _guide_tabs() -> None:
+    """안내 탭 — 탭을 바꾸면 이 조각만 다시 실행하고, 열린 탭 하나만 그린다(모양은 예전 st.tabs 그대로)."""
+    howto_tab, example_tab, gw_tab, risk_tab, read_tab, compare_tab, psm_tab = st.tabs(
+        list(guide.GUIDE_TABS),
+        key=guide.GUIDE_TAB_KEY,
+        on_change="rerun",  # 선택한 탭만 그린다 — 숨은 탭의 표를 매번 보내지 않는다(10/15 1-B)
     )
-    st.caption(guide.SCOPE_NOTE)  # Q-06-4 선박·항만 규칙은 범위 밖
-    st.markdown("**보고서가 쓰이는 흐름**")
-    st.table(guide.psm_flow_rows(), hide_index=True, border="horizontal")
-    st.caption(
-        "실무 흐름: 공정 변경 시 지체 없이 보고서를 보완해야 하므로 HAZOP은 반복 작업입니다. 여기서 도출된 권고 사항은 "
-        "'안전운전계획' 및 '비상조치계획'으로 이어지는 것이 실무의 기본 흐름입니다(조문 문구는 아님). 본 앱은 이 반복적인 실무 과정을 지원합니다. "
-        "출처: [산업안전보건법 제44~46조](https://www.law.go.kr/법령/산업안전보건법) · "
-        "[시행령 제43조](https://www.law.go.kr/법령/산업안전보건법시행령) · "
-        "[시행규칙 제50조](https://www.law.go.kr/법령/산업안전보건법시행규칙) (2026-10-10 확인)"
-    )
+    if howto_tab.open:
+        with howto_tab:
+            howto_tab.html(
+                '<div class="hz-info">'
+                + "".join(
+                    f"<div class='hz-info-r'><span style='width:120px'>[{name}]</span><b style='flex:1;font-weight:400'>{text}</b></div>"
+                    for name, text in guide.HOW_TO
+                )
+                + "</div>"
+            )
+    if example_tab.open:
+        with example_tab:
+            st.caption(
+                "AI는 2단계를 스스로 도출하며, 4~9단계를 모두 자동 판정합니다. 의미가 성립하지 않는 칸은 '해당 없음'과 사유를 남깁니다. "
+                "값은 이해를 돕는 설명용 예시입니다(실제 생성 결과 아님)."
+            )
+            example_tab.html(
+                '<div class="hz-info">'
+                + "".join(
+                    f"<div class='hz-info-r'><span style='width:110px'>{i}. {step}</span>"
+                    f"<b style='flex:1'>{value}<br><small style='color:var(--muted);font-weight:400'>{question}</small></b></div>"
+                    for i, (step, question, value) in enumerate(guide.WORKED_EXAMPLE, start=1)
+                )
+                + "</div>"
+            )
+            st.caption(
+                "칸마다 해당하는지, 해당하면 원인·결과가 무엇인지 정하는 이 일을 '판정'이라고 부릅니다. "
+                "예: 온도 + Reverse — 온도에는 '거꾸로'가 없어 '해당 없음'."
+            )
+    if gw_tab.open:
+        with gw_tab:
+            st.caption("가이드워드(Guide Word)를 조합하면 공정 내에서 발생할 수 있는 비정상적인 상태(이탈)를 쉽게 도출할 수 있습니다. "
+                       "파라미터와 붙여 읽습니다(More + 압력 = 압력 과다).")
+            st.table(guide.guideword_rows(), hide_index=True, border="horizontal")
+            st.caption(f"절차(기동/정지/운전) 노드에는 {', '.join(PROCEDURAL_GUIDEWORDS)} "
+                       f"{len(PROCEDURAL_GUIDEWORDS)}종이 추가됩니다.")
+    if risk_tab.open:
+        with risk_tab:
+            st.caption(
+                "기본적으로 'KOSHA C-C-37-2026'을 따르며, 위험도는 단순 곱셈이 아닌 대조표로 산출합니다. "
+                "(단, 사업장 자체 기준이 있다면 그것이 최우선입니다.) 심각도는 안전조치를 고려하지 않은 기준, "
+                "빈도는 안전조치를 고려한 기준입니다. 기준마다 단계 수와 계산법이 달라 섞거나 평균 내지 않습니다."
+            )
+            st.caption(
+                "과거 데이터 기준: 2026년 10월 14일 이전 저장 사례 중 일부는 NH3 벙커링 사업장 기준이 적용되어 있으며, 결과 상단 출처에 명시됩니다."
+            )
+            crit_by_name = {service.criteria_label(c): c for c in service.all_criteria()}
+            shown = crit_by_name[st.radio("평가기준", list(crit_by_name), horizontal=True, key="guide_criteria")]
+            st.caption(guide.md_safe(guide.criteria_caption(shown)))
+            st.table(guide.criteria_rating_rows(shown), hide_index=True, border="horizontal")
+            st.table(guide.criteria_matrix_rows(shown), hide_index=True, border="horizontal")
+            st.table(guide.criteria_band_rows(shown), hide_index=True, border="horizontal")
+            for note in shown.data.get("notes") or []:
+                st.caption(guide.md_safe("· " + note))
+            st.markdown("**빈도와 독립방호계층(IPL)**")
+            for line in guide.IPL_LINES:
+                st.caption("· " + line)
+    if read_tab.open:
+        with read_tab:
+            read_tab.html(
+                '<div class="hz-info">'
+                + "".join(
+                    f"<div class='hz-info-r'><span style='width:170px'>{k}</span><b style='flex:1'>{v}</b></div>"
+                    for k, v in guide.READING_GUIDE
+                )
+                + "</div>"
+            )
+            st.markdown("**근거 표시(G/S/I/U)의 상세 — AI가 쓰는 정보의 4단계** · AI에게 주는 프롬프트에 들어가는 문구와 같습니다")
+            st.table(guide.information_level_rows(), hide_index=True, border="horizontal")
+    if compare_tab.open:
+        with compare_tab:
+            st.markdown(guide.process_table(service.param_range(replays)))
+            st.caption(guide.md_safe(
+                "도입 효과: 기존에는 회의 중 서기가 기록하고 문서화에 수일이 걸렸으나, 이 앱은 노드 1개당 약 1.5~2분"
+                "(측정: 2026-10-08, 3회 79~126초, 약 $0.75) 만에 초안을 자동 완성합니다. 신뢰도 지표가 포함된 Excel, Word 파일을 "
+                "즉시 다운로드하여 전문가(회의 참석자) 검토 단계로 바로 넘어갈 수 있습니다. "
+                "회의 시간이 얼마나 줄어드는지는 재지 않았습니다."
+            ))
+
+    if psm_tab.open:
+        with psm_tab:
+            st.caption("HAZOP은 산업안전보건법에 따라 설비 가동 전 정부 심사를 받아야 하는 공정안전보고서의 핵심 기법입니다.")
+            psm_tab.html(
+                '<div class="hz-info">'
+                + "".join(f"<div class='hz-info-r'><span style='width:110px'>{k}</span><b style='flex:1'>{v}</b></div>" for k, v in guide.PSM_WHY)
+                + "</div>"
+            )
+            st.caption(guide.SCOPE_NOTE)  # Q-06-4 선박·항만 규칙은 범위 밖
+            st.markdown("**보고서가 쓰이는 흐름**")
+            st.table(guide.psm_flow_rows(), hide_index=True, border="horizontal")
+            st.caption(
+                "실무 흐름: 공정 변경 시 지체 없이 보고서를 보완해야 하므로 HAZOP은 반복 작업입니다. 여기서 도출된 권고 사항은 "
+                "'안전운전계획' 및 '비상조치계획'으로 이어지는 것이 실무의 기본 흐름입니다(조문 문구는 아님). 본 앱은 이 반복적인 실무 과정을 지원합니다. "
+                "출처: [산업안전보건법 제44~46조](https://www.law.go.kr/법령/산업안전보건법) · "
+                "[시행령 제43조](https://www.law.go.kr/법령/산업안전보건법시행령) · "
+                "[시행규칙 제50조](https://www.law.go.kr/법령/산업안전보건법시행규칙) (2026-10-10 확인)"
+            )
+
+
+_guide_tabs()
 
 # ── 푸터 ─────────────────────────────────────────────────────────────────────
 st.divider()
@@ -1028,9 +1073,7 @@ st.caption(
     f"{service.system_note(result) if result is not None else ''} · [리포지토리 확인]({REPO})"
 )
 
-_nudge_target = state.pop("nudge_to", None)
-if _nudge_target and not state.get("scroll_result"):
-    components.html(nudge.script(_nudge_target, state.nudge_n), height=0)
+_emit_nudge()
 
 if state.pop("scroll_result", False):
     st.toast("HAZOP 초안이 완성됐습니다 — 결과로 이동합니다.")

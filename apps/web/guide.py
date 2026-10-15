@@ -98,6 +98,13 @@ def psm_flow_rows() -> list[dict[str, str]]:
 #: 가이드워드 수 — 화면 어디서나 이 상수에서(Q-05-1). 7 인지 10 인지는 코드가 답한다.
 GUIDEWORD_COUNT: Final[str] = f"표준 {len(STANDARD_GUIDEWORDS)}종(절차 노드는 {len(PROCEDURAL_GUIDEWORDS)}종 추가)"
 GUIDEWORD_TAB: Final[str] = f"② 가이드워드 ({len(STANDARD_GUIDEWORDS)}+{len(PROCEDURAL_GUIDEWORDS)}종)"
+#: 첫 화면 아래 안내 탭 — 순서대로. 열린 탭만 그리므로(1-B) 시험은 이 이름으로 탭을 하나씩 연다.
+GUIDE_TABS: Final[tuple[str, ...]] = (
+    "⓪ 입력 방식별 사용법", "① 워크시트 한 줄이 만들어지는 과정", GUIDEWORD_TAB, "③ 위험도 산정 기준 (심각도 × 빈도)",
+    "④ 화면 읽는 법 (검토 기능 및 AI 신뢰도)", "⑤ 기존 회의 vs 앱 도입 후 비교", "⑥ 공정안전보고서(PSM)와 HAZOP",
+)
+#: 안내 탭의 위젯 키 — 열린 탭 이름이 이 키의 상태에 있다.
+GUIDE_TAB_KEY: Final[str] = "guide_tab"
 
 
 def process_table(param_range: tuple[int, int] | None) -> str:

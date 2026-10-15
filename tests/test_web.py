@@ -11,7 +11,7 @@ import openpyxl
 import pytest
 from jsonschema import Draft7Validator
 
-from apps.web import service
+from apps.web import guide, service
 from apps.web.replay import REPLAY_DIR, load_replay, load_replays
 from core.agent.generate import STANDARD_GUIDEWORDS
 
@@ -230,7 +230,14 @@ def test_app_switches_between_processes_and_nodes(monkeypatch: pytest.MonkeyPatc
     replays = load_replays()
     at = _grid(AppTest.from_file(str(_APP), default_timeout=30)).run()
     assert not at.exception
-    assert len(at.table) == 6  # 안내 탭 6(정보 4단계 — Z-1 · 가이드워드·S·F·위험도 대조표·위험도 구간 — Y-2 · 공정안전보고서 흐름 — 10/10). 정확도 표는 10/9 에 뺐다
+    assert len(at.table) == 0  # 1-B: 안내 탭은 열린 탭만 그린다 — 첫 탭(⓪ 사용법)에는 표가 없다
+    tables = 0
+    for label in guide.GUIDE_TABS:  # 탭을 하나씩 열면 표가 그 탭에서만 나온다
+        at.session_state[guide.GUIDE_TAB_KEY] = label
+        at.run()
+        assert not at.exception, label
+        tables += len(at.table)
+    assert tables == 6  # 안내 탭 6(정보 4단계 — Z-1 · 가이드워드·S·F·위험도 대조표·위험도 구간 — Y-2 · 공정안전보고서 흐름 — 10/10). 정확도 표는 10/9 에 뺐다
     assert not any(e.label.startswith("정확도") for e in at.expander)  # 10/9 사용자 결정으로 뺐다
     at.radio(key="mode").set_value("완성된 사례 보기").run()
     assert at.selectbox(key="process_name").options == [p["name"] for p in service.CATALOG]
