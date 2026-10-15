@@ -179,7 +179,7 @@ def test_export_blanks_risk_and_adds_held_sheet(tmp_path: Path) -> None:
     assert len(held_rows) == 7 and all(r[8] is None and r[9] is None for r in held_rows)
     assert all(str(r[9]).startswith("=INDEX") for r in rows if r[7] is not None)
     sheet = wb["확인 필요"]
-    assert [c.value for c in sheet[1]] == ["No", "가이드워드", "이탈 초안", "필요한 정보"]
+    assert [c.value for c in sheet[1]] == ["No", "가이드워드", "이탈", "필요한 정보"]
     assert sheet.max_row == 8 and sheet[2][3].value == "액위 경보 설정값 · 방유제 유무"
     assert "정보 부족" in str(ws.cell(row=len(out) + 3, column=1).value)
     report = build_report(normalize_rows([r.model_dump() for r in out]))
@@ -212,10 +212,10 @@ def test_screen_labels_held_rows_and_counts() -> None:
     assert len(held) == 7 and held[0][service.CONFIDENCE_COLUMN] == "⚪ 정보 부족 — 액위 경보 설정값 · 방유제 유무 미상"
     assert held[0]["위험도"] is None
     assert service.held_rows(result)[0]["필요한 정보"] == "액위 경보 설정값 · 방유제 유무"
-    assert service.cell_breakdown(result) == "판정 42셀 = 해당 35 · 해당 없음 0 · 정보 부족 7(보류)"
+    assert service.cell_breakdown(result) == "판정 42칸 = 해당 35 · 해당 없음 0 · 정보 부족 7(보류)"
     assert "정보 부족 7(보류)" in service.summary_line(result)
     assert service.confidence_counts(result).endswith("⚪ 정보 부족 7")
-    assert service.f_distribution(result) == "빈도=2 비율 100%"
+    assert service.f_distribution(result) == "빈도 2인 행 100%"
 
 
 def test_safeguards_notice_only_when_unknown() -> None:

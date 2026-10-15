@@ -638,7 +638,7 @@ def test_provenance_line_marks_parallel_capture() -> None:
     meta = {"source": "live", "captured_at": "2026-09-29T08:00:00+00:00", "model_id": "m", "cost_usd": 1.0}
     assert "병렬" not in service.provenance_line(service.Result(meta=meta))
     assert "병렬" not in service.provenance_line(service.Result(meta={**meta, "parallel_calls": 1}))
-    assert " · 병렬 4" in service.provenance_line(service.Result(meta={**meta, "parallel_calls": 4}))
+    assert " · 동시 호출 4개" in service.provenance_line(service.Result(meta={**meta, "parallel_calls": 4}))
 
 
 def test_generate_batch_does_not_mutate_self() -> None:

@@ -123,11 +123,11 @@ def test_xlsx_headers_rating_sheet_and_screening_size(tmp_path: Path) -> None:
     head = [c.value for c in wb["HAZOP워크시트"][1]]
     assert head[7:9] == ["S(1-4)", "F(1-3)"]
     rating = [tuple(r)[:3] for r in wb["평가기준"].iter_rows(values_only=True)]
-    assert ("S 강도", 4, "치명적: 사망, 부상 2명 이상, 재산손실 10억원 이상, 설비 운전정지 기간 10일 이상") in rating
+    assert ("S 심각도", 4, "치명적: 사망, 부상 2명 이상, 재산손실 10억원 이상, 설비 운전정지 기간 10일 이상") in rating
     assert any(r[0] == "출처" and "C-C-37-2026" in str(r[2]) for r in rating)
     assert any(r[0] == "이용 조건" for r in rating)
     screening = list(wb["스크리닝"].iter_rows(values_only=True))
-    assert screening[0][0].startswith("4×3") and screening[1] == ("S＼F", "F1", "F2", "F3")
+    assert screening[0][0].startswith("심각도 4단계 × 빈도 3단계") and screening[1] == ("S＼F", "F1", "F2", "F3")
     assert "대조표" in paths["lopa"].read_text(encoding="utf-8")
 
 

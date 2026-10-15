@@ -95,14 +95,15 @@ def test_external_panel_numbers_come_from_summary_file(screens: list[tuple[str, 
     assert {r["출처"] for r in panel["rows"]} == {service.EXTERNAL_SHORT[k] for k in summary["by_source"]}
     for source, got in summary["by_source"].items():
         row = next(r for r in panel["rows"] if r["출처"] == service.EXTERNAL_SHORT[source])
-        assert row["다시 만든 쌍"] == f"{got['matched']}/{got['total']}" and row["coverage"] == f"{got['coverage']:.2f}"
-    assert f"출처 평균 {summary['macro_mean']:.2f}" in panel["total"] and f"전체 합산 {summary['pooled']:.2f}" in panel["total"]
+        assert row["다시 찾아낸 쌍"] == f"{got['matched']}/{got['total']}" and row["coverage"] == f"{got['coverage']:.2f}"
+    assert f"출처별 평균 {summary['macro_mean']:.2f}" in panel["total"] and f"전체 합산 {summary['pooled']:.2f}" in panel["total"]
     assert f"{summary['nodes']}노드" in panel["head"] and "212개" in panel["head"]
     text = next(t for name, t in screens if name.endswith(" N1"))
-    note = service.eval_only_note(dataset["_comment"])
-    assert note.startswith("외부 공개 HAZOP 평가셋.") and "few-shot" in note  # 원문에서 괄호 하나만 뺀다
-    for needle in (service.EXTERNAL_PANEL_TITLE, dataset["contamination_note"], note, "IJERPH 2017"):
+    # 교열 10/15 — 화면에는 평가셋의 화면용 필드가 나오고, 작업 메모(실험 번호·설정 이름) 원문은 나오지 않는다
+    for needle in (service.EXTERNAL_PANEL_TITLE, dataset["display_eval_only"], dataset["display_contamination"], "IJERPH 2017"):
         assert needle in text, needle
+    for memo in (dataset["contamination_note"], "few-shot", "F-06", "enumerate_examples"):
+        assert memo not in text, memo
 
 
 def test_summary_file_is_the_local_run_copy() -> None:
@@ -134,7 +135,7 @@ def test_counts_come_from_one_source(screens: list[tuple[str, str]]) -> None:
         if name != "첫 화면":  # 저장된 결과는 노드 하나든 공정 전체든 호출 수를 보인다(Q-05-3)
             assert re.search(r"API 호출 \d+회", text), name
         assert not re.search(r'body: "\{\}"', text), name  # st.json({}) — 빈 노드 입력
-        for m in re.finditer(r"노드당 (\d+)–(\d+)개", text):
+        for m in re.finditer(r"노드당 (\d+)~(\d+)개", text):
             assert (int(m.group(1)), int(m.group(2))) == (low, high), (name, m.group(0))
     first = screens[0][1]
-    assert guide.GUIDEWORD_TAB in first and f"노드당 {low}–{high}개" in first
+    assert guide.GUIDEWORD_TAB in first and f"노드당 {low}~{high}개" in first

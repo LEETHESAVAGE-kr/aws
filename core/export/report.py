@@ -31,8 +31,8 @@ CONFIDENCE_KEYS: Final[tuple[str, ...]] = ("grounded", "single_source", "inferre
 #: Z-3 보류 행의 confidence. 보류가 있는 산출물에서만 분포에 키가 생긴다(없는 실행의 리포트는 예전과 같다).
 INSUFFICIENT_KEY: Final[str] = "insufficient"
 PENDING_REASONS: Final[dict[str, str]] = {
-    "evidence_attachment_rate": "근거 인용 0건 — evidence[] 가 전부 비어 있음(근거 인용을 끈 실행·골드셋 포함)",
-    "matrix_coverage": "FR-03 HazopGenerator 관측값(expected_cells, judged_cells) 필요 — 골드셋에는 없음",
+    "evidence_attachment_rate": "근거 인용 0건 — 모든 행에 인용이 없음(인용을 끈 생성 또는 전문가 작성 워크시트)",
+    "matrix_coverage": "판정한 칸 수 기록이 필요함 — 전문가 작성 워크시트에는 없음",
 }
 
 

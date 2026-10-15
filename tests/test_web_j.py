@@ -173,7 +173,7 @@ def test_parse_sends_sentence_with_schema_and_validates_reply() -> None:
     # 모델이 enum 밖 값을 내면 core/llm 이 응답 스키마로 1회 재시도 후 content=None → 생성 전에 막힌다.
     # (그 뒤의 validate_node_meta 는 _parse_schema 와 산출물 스키마가 어긋날 때를 위한 2차 방어라 여기선 닿지 않는다.)
     bad = _parse_client({**reply, "phase": "기체"})
-    with pytest.raises(ValueError, match="2회 위반"):
+    with pytest.raises(ValueError, match="두 번 연속"):
         service.parse_node_text(_SENTENCE, _MOCK_ENV, bad)
     assert len(bad.calls) == 2
 
@@ -245,7 +245,7 @@ def test_app_default_run_covers_all_guidewords(monkeypatch: pytest.MonkeyPatch, 
     assert not any("1종" in m.value for m in at.metric)
     # 상한은 공용 — 1회 뒤엔 보조 실행 버튼도 막히고, 사례 모드로 안내한다.
     assert _cta(at).disabled and at.button(key="run_quick").disabled
-    assert any("세션" in c.value for c in at.caption)
+    assert any("이 창" in c.value for c in at.caption)
     next(b for b in at.button if b.label == "완성된 사례 보기").click().run()
     assert not at.exception and at.radio(key="mode").value == _CASES
 
@@ -289,7 +289,7 @@ def test_app_direct_input_disabled_without_allow(monkeypatch: pytest.MonkeyPatch
     assert not at.exception
     assert [b.disabled for b in at.button if b.label.startswith(_GENERATE)] == [True]
     assert all(not b.disabled for b in at.button if (b.key or "").startswith("chip_"))
-    assert any("HAZOP_ALLOW_LIVE" in c.value for c in at.caption)
+    assert any("지금은 새로 생성할 수 없습니다" in c.value for c in at.caption)
 
 
 # ── 시크릿 공백 정리 · 401 키 진단 (9/29 배포 401) ──────────────────────────────
@@ -371,7 +371,7 @@ def test_criteria_notice_only_for_non_gold_processes() -> None:
 
 @pytest.mark.parametrize(
     ("node", "expected"),
-    [("N1", "빈도=3 비율 93%"), ("N4", "빈도=3 비율 95%"), ("P1", "빈도=3 비율 85%"), ("P2", "빈도=3 비율 64%")],
+    [("N1", "빈도 3인 행 93%"), ("N4", "빈도 3인 행 95%"), ("P1", "빈도 3인 행 85%"), ("P2", "빈도 3인 행 64%")],
 )
 def test_f_distribution_from_replays(node: str, expected: str) -> None:
     """재생 파일의 F 분포가 그대로 나온다 — 불리한 숫자도 그대로. N4 는 실무자평가 P-2 값(92/97),
@@ -384,7 +384,7 @@ def test_f_distribution_from_replays(node: str, expected: str) -> None:
 def test_f_distribution_tie_and_empty() -> None:
     base = load_replays()["N1"]
     two = [base.records[0].model_copy(update={"F": 4}), base.records[0].model_copy(update={"F": 2})]
-    assert service.f_distribution(service.Result(meta={}, records=two)) == "빈도=2 비율 50%"
+    assert service.f_distribution(service.Result(meta={}, records=two)) == "빈도 2인 행 50%"
     assert service.f_distribution(service.Result(meta={}, records=[])) == "빈도 분포 해당 없음"
 
 
@@ -417,10 +417,10 @@ def test_provenance_marks_replays_captured_before_m01() -> None:
     병렬 수가 붙는다."""
     replays = load_replays()
     for node in ("N2", "N3", "N4"):
-        assert "M-01 이전 프롬프트" in service.provenance_line(replays[node]), node
+        assert "초기 프롬프트" in service.provenance_line(replays[node]), node
     for node in ("P1", "P2"):
         line = service.provenance_line(replays[node])
-        assert "M-01 이전" not in line and " · 병렬 4" in line, (node, line)
+        assert "M-01 이전" not in line and " · 동시 호출 4개" in line, (node, line)
     later = service.Result(meta={**replays["P1"].meta, "captured_at": "2026-09-29T05:00:00+00:00"})
     assert "M-01 이전" not in service.provenance_line(later)
 
@@ -478,7 +478,7 @@ def test_system_note_reads_model_and_cost_from_result() -> None:
     cost = f"${replays['N1'].meta['cost_usd']:.3f}"  # O-2 재캡처로 $0.787 → $0.812 — 하드코딩하지 않는다
     assert replays["N1"].meta["model_id"] in note and cost in note and "에스코어 드림" in note
     gold = service.Result(meta={"source": "gold", "model_id": None})
-    assert service.system_note(gold) == "화면에는 S-Core에서 제공한 에스코어 드림 폰트가 적용되어 있습니다."
+    assert service.system_note(gold) == "화면 글꼴: 에스코어 드림(S-Core 제공)."
 
 
 # ── verifier 시연 토글 (지시문 O-3) ───────────────────────────────────────────
@@ -502,13 +502,13 @@ def test_demo_injection_flags_one_row_and_leaves_original_untouched() -> None:
     red = [row for row in table if row[service.CONFIDENCE_COLUMN].startswith("🔴")]
     assert len(red) == 1 and red[0] is table[0]
     assert "unverified_standard: KOSHA GUIDE P-999" in red[0][service.FLAG_COLUMN]
-    assert "review 1건 (규격 1·수치 0)" in service.summary_line(demo)
+    assert "검토 필요 1건 (근거 없는 규격 1·수치 0)" in service.summary_line(demo)
 
     # 원본은 그대로: 같은 리스트·같은 레코드 객체·같은 권고, 표에 🔴 0
     assert original.records is records_before and id(original.records[0]) == first_id
     assert original.records[0].recommendations == rec0_before
     assert not any(r[service.CONFIDENCE_COLUMN].startswith("🔴") for r in service.worksheet_table(original))
-    assert "review 0건" in service.summary_line(original)
+    assert "검토 필요 0건" in service.summary_line(original)
     # 다운로드(원본으로 만든다)의 신뢰도 시트엔 review 0
     assert _review_count_in_xlsx(service.export_files(original)["xlsx"][1]) == 0
 
@@ -550,7 +550,7 @@ def test_app_verifier_demo_toggle(monkeypatch: pytest.MonkeyPatch) -> None:
     boxes[0].check().run()
     assert not at.exception
     assert red_rows() == 1 and banner()
-    assert any("review 1건 (규격 1·수치 0)" in c.value for c in at.caption)
+    assert any("검토 필요 1건 (근거 없는 규격 1·수치 0)" in c.value for c in at.caption)
     assert exported and "P-999" not in exported[-1]  # 토글 on 인 실행에서도 다운로드는 원본
     boxes = [c for c in at.checkbox if c.label == service.DEMO_TOGGLE_LABEL]
     boxes[0].uncheck().run()
@@ -676,7 +676,7 @@ def test_booth_swaps_chips_and_fills_input(monkeypatch: pytest.MonkeyPatch) -> N
     assert _chips(at) == ["학교 실험실 수소", "아파트 LPG 공급", "수영장 염소 소독"]  # V-2
     next(b for b in at.button if b.label == "수영장 염소 소독").click().run()
     assert "차아염소산나트륨" in at.text_area[0].value
-    assert any(c.value.startswith("부스 모드 · 오늘 남은") for c in at.caption)  # V-5
+    assert any(c.value.startswith("현장 시연 모드 · 오늘 남은") for c in at.caption)  # V-5
 
 
 def test_booth_ignores_session_limit_but_keeps_daily_limit(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -894,7 +894,7 @@ def test_failed_guideword_line() -> None:
     assert service.failed_guidewords_line(result) is None
     broken = service.Result(meta={**result.meta, "review_guidewords": ["Reverse"]}, records=result.records)
     line = service.failed_guidewords_line(broken)
-    assert line is not None and line.startswith("가이드워드 Reverse 판정 실패(review) — 나머지 6종은 정상")
+    assert line is not None and line.startswith("가이드워드 Reverse 판정 실패 — 나머지 6종은 정상")
     quick = service.Result(meta={**broken.meta, "source": "quick"}, records=result.records)
     assert service.failed_guidewords_line(quick) is None
 
@@ -913,7 +913,7 @@ def test_views_only_reorder_rows(view: str) -> None:
         n_params = len(result.meta["parameters"])
         for name, head, idx in groups:
             skipped = n_params - len({records[i].parameter for i in idx})
-            assert head == f"{name} — {len(idx)}건" + (f" (해당 없음 {skipped}셀)" if skipped else "")
+            assert head == f"{name} — {len(idx)}건" + (f" (해당 없음 {skipped}칸)" if skipped else "")
     if view == service.VIEWS[2]:
         params = [p for p in result.meta["parameters"] if any(r.parameter == p for r in records)]
         assert [g[0] for g in groups] == params

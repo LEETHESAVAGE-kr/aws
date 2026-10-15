@@ -92,7 +92,7 @@ def test_quota_rejects_second_session_run_and_sixth_daily_run() -> None:
     day = date(2026, 9, 29)
     assert service.reserve_live_run(0, day) is None
     reason = service.reserve_live_run(1, day)
-    assert reason and "세션" in reason
+    assert reason and "이 창" in reason
     for _ in range(service.DAILY_LIMIT - 1):
         assert service.reserve_live_run(0, day) is None
     reason = service.reserve_live_run(0, day)
@@ -112,7 +112,7 @@ def test_live_path_runs_end_to_end_on_mock() -> None:
     assert {(r.guideword, r.parameter) for r in result.records} == {
         (r.guideword, r.parameter) for r in replay.records if r.guideword in STANDARD_GUIDEWORDS
     }
-    assert "판정 셀" in service.summary_line(result)
+    assert "판정한 칸" in service.summary_line(result)
     assert set(service.export_files(result)) == {"xlsx", "lopa", "report"}
 
 
@@ -266,7 +266,7 @@ def test_verifier_flag_reaches_table_and_xlsx() -> None:
     assert reviewed == [2]
     assert table[2][service.FLAG_COLUMN] == "unverified_standard: API 520"
     assert all(row[service.FLAG_COLUMN] == "" for i, row in enumerate(table) if i != 2)
-    assert "review 1건 (규격 1·수치 0)" in service.summary_line(result)
+    assert "검토 필요 1건 (근거 없는 규격 1·수치 0)" in service.summary_line(result)
 
     ws = openpyxl.load_workbook(io.BytesIO(service.export_files(result)["xlsx"][1]))["신뢰도"]
     labels = [r[1] for r in ws.iter_rows(min_row=2, values_only=True)]
@@ -298,5 +298,5 @@ def test_failure_hint_separates_budget_exhaustion_from_rate_limit() -> None:
     assert "예산" in service.failure_hint(budget) and "분당" not in service.failure_hint(budget)
     assert "분당" in service.failure_hint(rate) and "예산" not in service.failure_hint(rate)
     for exc in (budget, rate):
-        assert "횟수에 넣지 않았습니다" in service.failure_hint(exc)
+        assert "남은 횟수에서 빼지 않았습니다" in service.failure_hint(exc)
         assert "완성된 사례 보기" in service.failure_hint(exc)

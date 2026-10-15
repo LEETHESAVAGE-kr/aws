@@ -184,8 +184,8 @@
     "criteria_name": "NH3 선박 간(STS) 벙커링 평가기준 (골드셋 평가기준 시트)",
     "insufficient_count": null,
     "pending": {
-      "evidence_attachment_rate": "근거 인용 0건 — evidence[] 가 전부 비어 있음(근거 인용을 끈 실행·골드셋 포함)",
-      "matrix_coverage": "FR-03 HazopGenerator 관측값(expected_cells, judged_cells) 필요 — 골드셋에는 없음"
+      "evidence_attachment_rate": "근거 인용 0건 — 모든 행에 인용이 없음(인용을 끈 생성 또는 전문가 작성 워크시트)",
+      "matrix_coverage": "판정한 칸 수 기록이 필요함 — 전문가 작성 워크시트에는 없음"
     }
   },
   "lopa_headings": [

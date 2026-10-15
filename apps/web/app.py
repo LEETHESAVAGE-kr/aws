@@ -36,8 +36,8 @@ README_EVAL = f"{REPO}/blob/main/README.md#-6-평가-결과"
 #: 입력 칸 placeholder — 예시 문장은 칩이 맡고, 여기엔 쓰는 요령만.
 DIRECT_PLACEHOLDER = (
     "예시를 누르거나 공정을 직접 적어 보세요.\n"
-    "물질 · 설비(흐름 순서) · 운전압력 · 온도 · 설계압력 · 용량 · 안전장치(설정값 포함)를 적을수록 구체적입니다. 모르는 값은 빼도 됩니다.\n"
-    '(NodeMeta JSON 도 받습니다: {"node": "X1", "substance": "프로판", "P_kPag": 800, ...})'
+    "물질·설비(흐름 순서)·운전압력·온도·설계압력·용량·안전장치(설정값 포함)를 많이 적을수록 결과가 구체적입니다. 모르는 값은 빼도 됩니다.\n"
+    '(JSON 형식으로도 넣을 수 있습니다: {"node": "X1", "substance": "프로판", "P_kPag": 800, ...})'
 )
 #: 예시 칩 (라벨, 문장) — PRD §4-4.
 EXAMPLES: tuple[tuple[str, str], ...] = (
@@ -82,7 +82,7 @@ BOOTH_EXAMPLES: tuple[tuple[str, str, str | None], ...] = (
 )
 GUIDEWORD_HELP = (
     "No: 흐름 없음 · More: 과다(압력·온도·유량↑) · Less: 과소 · Reverse: 역류 · Part of: 조성 일부 · "
-    "As well as: 이물 혼입 · Other than: 다른 물질/상태"
+    "As well as: 이물 혼입 · Other than: 다른 물질·상태"
 )
 
 #: 가이드워드 → 뜻 (선택 칸에 함께 보여 준다). "No: 흐름 없음" → {"No": "흐름 없음"}
@@ -207,12 +207,12 @@ state.setdefault("focus_guideword", None)
 
 def _node_form() -> None:
     """항목 선택 — 목록에서 고르고, 없으면 직접 적는다(accept_new_options). 값은 `form.KEYS` 상태에 있다."""
-    st.caption("필수는 물질·설비 둘뿐입니다. 나머지는 모르면 비워 두세요 — 비운 정보는 ‘정보 부족’으로 다룹니다.")
+    st.caption("필수는 물질·설비 둘뿐입니다. 나머지는 모르면 비워 두세요 — 비운 정보는 '정보 부족'으로 다룹니다.")
     left, right = st.columns([3, 2])
     left.selectbox("물질 (필수)", form.SUBSTANCES, key=form.KEYS["substance"],
                    placeholder="고르거나 직접 입력", accept_new_options=True)
     right.selectbox("상태", list(form.PHASES), key=form.KEYS["phase"])
-    st.multiselect("설비 (필수) — 흐름 순서대로: 받는 곳 → 내보내는 곳", form.EQUIPMENT, key=form.KEYS["equipment"],
+    st.multiselect("설비 (필수) — 유체가 흐르는 순서대로", form.EQUIPMENT, key=form.KEYS["equipment"],
                    placeholder="예: 압축기 → 저장용기 → 디스펜서", accept_new_options=True)
     # 10/9 화면 캡처: 한 줄 6칸이면 단위 칸이 좁아 'MPa' 가 'M' 으로 잘린다 → 두 줄, 단위 칸 넓게
     p, pu, t_ = st.columns([3, 2, 3])
@@ -223,9 +223,9 @@ def _node_form() -> None:
     d.number_input("설계압력", key=form.KEYS["design_pressure"], min_value=0.0, placeholder="모름")
     du.selectbox("설계압력 단위", form.UNITS, key=form.KEYS["design_unit"])
     c.text_input("용량", key=form.KEYS["capacity"], placeholder="예: 200 kg")
-    no_safeguards = st.checkbox("안전장치가 정말 없음", key=form.KEYS["no_safeguards"],
+    no_safeguards = st.checkbox("안전장치 없음(확인함)", key=form.KEYS["no_safeguards"],
                                 help="모르면 체크하지 말고 아래를 비워 두세요 — '없음'과 '모름'은 다르게 다룹니다.")
-    st.multiselect("기존 안전장치 — 설정값은 직접 입력(예: 고압 경보(설정 95 MPa))", form.SAFEGUARDS,
+    st.multiselect("기존 안전장치 — 설정값은 직접 입력(예: 고압 경보 설정 95 MPa)", form.SAFEGUARDS,
                    key=form.KEYS["safeguards"], disabled=no_safeguards, accept_new_options=True,
                    placeholder="비워 두면 '모름'으로 다룹니다")
 
@@ -252,7 +252,7 @@ def _to_cases() -> None:
 # ── 상단바 ───────────────────────────────────────────────────────────────────
 st.html(
     """<div class="hz-bar"><span class="hz-logo"><i></i>HAZOP Copilot</span>
-    <span class="hz-nav"><a href="#result">결과</a><a href="#intro">HAZOP 이란</a>
+    <span class="hz-nav"><a href="#result">결과</a><a href="#intro">HAZOP이란</a>
     <a href="https://github.com/LEETHESAVAGE-kr/aws" target="_blank">GitHub</a></span></div>"""
 )
 
@@ -261,21 +261,21 @@ intro, tool = st.columns([5, 7], gap="large")
 intro.html(
     """<div class="hz-eyebrow">AI 위험성평가 초안 도우미</div>
     <div class="hz-h1">HAZOP Copilot</div>
-    <p class="hz-sub">화학공장·가스설비의 공정 정보를 넣으면, AI 가 <b>“설비가 원래 하려던 일에서 벗어나면 무슨 일이
+    <p class="hz-sub">화학공장·가스설비의 공정 정보를 넣으면, AI가 <b>“설비가 원래 하려던 일에서 벗어나면 무슨 일이
     생기나”</b>를 빠짐없이 따져 HAZOP(위험과 운전 분석) 표 초안을 만듭니다. 공식 문서가 다루는 위험에는 법령·MSDS 원문을
-    붙이고, 모르는 정보는 지어내지 않고 ‘정보 부족’으로 남깁니다. 최종 판단은 전문가가 합니다.</p>
+    붙이고, 모르는 정보는 지어내지 않고 '정보 부족'으로 남깁니다. 최종 판단은 전문가가 합니다.</p>
     <div class="hz-steps">
       <div class="hz-step"><b>1</b><div><strong>공정 정보 넣기 — 두 가지 방법</strong>
         <ul>
           <li><em>문장으로 설명</em> 공정을 한 문단으로 적습니다</li>
           <li><em>항목 선택</em> 물질·설비·압력·안전장치를 목록에서 고릅니다(없으면 직접 입력)</li>
         </ul>
-        <span>무엇을 넣을지 모르겠다면 예시부터 — 문장으로 설명의 <em>예시 공정</em> 버튼을 누르거나,
+        <span>무엇을 넣을지 모르겠다면 '문장으로 설명'의 <em>예시 공정</em> 버튼을 누르거나,
         <em>완성된 사례 보기</em>에서 실제 결과를 먼저 보세요</span></div></div>
-      <div class="hz-step"><b>2</b><div><strong>AI 가 HAZOP 표 만들기 · 약 1.5–2분</strong>
+      <div class="hz-step"><b>2</b><div><strong>AI가 HAZOP 표 만들기 · 약 1.5~2분</strong>
         <span>점검할 항목을 스스로 정하고, 벗어나는 경우마다 원인·결과·심각도·빈도·권고를 씁니다</span></div></div>
       <div class="hz-step"><b>3</b><div><strong>검토하고 내려받기</strong>
-        <span>표를 읽고 채택·기각·수정 → Excel 워크시트 · LOPA 후보 시나리오 Word · 신뢰도 리포트</span></div></div>
+        <span>표를 읽고 행마다 채택·기각·수정한 뒤 Excel 워크시트, LOPA 후보 시나리오(Word), 신뢰도 리포트로 내려받습니다</span></div></div>
     </div>"""
 )
 
@@ -289,7 +289,7 @@ with tool.container(border=True, key="tool"):
         st.html(
             f'<div class="hz-progress"><div style="width:{done * 33.4:.0f}%"></div></div>'
             '<p class="hz-q">어떤 공정을 분석할까요?</p>'
-            '<p class="hz-q-help">물질·설비·압력·온도·설계압력·용량·안전장치를 넣을수록 정확해집니다. 먼저 입력 방식을 고르세요.</p>'
+            '<p class="hz-q-help">물질·설비·압력·온도·설계압력·용량·안전장치를 많이 넣을수록 결과가 구체적입니다. 먼저 입력 방식을 고르세요.</p>'
         )
         input_style = st.radio("입력 방식", [INPUT_TEXT, INPUT_FORM], key="input_style", horizontal=True)
         if input_style == INPUT_TEXT:
@@ -377,7 +377,7 @@ with tool.container(border=True, key="tool"):
                         values[field] = column.number_input(labels[field], value=None, key=f"check_{field}")
                     else:
                         values[field] = column.text_input(labels[field], key=f"check_{field}")
-                st.caption("비워 두면 그 정보가 필요한 칸은 지어내지 않고 '⚪ 정보 부족'으로 보류됩니다.")
+                st.caption("비워 두면 그 정보가 필요한 칸은 지어내지 않고 '⚪ 정보 부족'으로 남겨 둡니다.")
                 fill_col, skip_col = st.columns(2)
                 go_fill = fill_col.button("채운 값으로 생성", type="primary", key="check_fill", width="stretch")
                 go_skip = skip_col.button("이대로 생성", key="check_skip", width="stretch")
@@ -445,21 +445,21 @@ with tool.container(border=True, key="tool"):
         if live_reason:
             st.caption(live_reason)
         elif quota:
-            scope = "이 세션에" if "세션" in quota else "오늘"
+            scope = "이 창에서" if "이 창" in quota else "오늘"
             st.caption(
-                f"이 세션 남은 횟수 {left_runs}/{service.SESSION_LIMIT} · {scope} 준비된 실행 횟수를 모두 썼습니다. "
+                f"이 창에서 남은 생성 횟수 {left_runs}/{service.SESSION_LIMIT} · {scope} 생성할 수 있는 횟수를 모두 썼습니다. "
                 "'완성된 사례 보기'에서 같은 화면을 볼 수 있습니다."
             )
             st.button("완성된 사례 보기", on_click=_to_cases, width="stretch")
         elif BOOTH:
             st.caption(
-                f"부스 모드 · 오늘 남은 {service.daily_left()}회 · 생성 약 1.5~2분 — "
+                f"현장 시연 모드 · 오늘 남은 {service.daily_left()}회 · 생성 약 1.5~2분 — "
                 "가이드워드 판정이 끝날 때마다 표가 채워집니다."
             )
         else:
             st.caption(
-                f"이 세션 남은 횟수 {left_runs}/{service.SESSION_LIMIT} · "
-                f"문장 해석 → 파라미터 열거 → 가이드워드 {guide.GUIDEWORD_COUNT} 판정(병렬) · "
+                f"이 창에서 남은 생성 횟수 {left_runs}/{service.SESSION_LIMIT} · "
+                f"진행: 문장 해석 → 파라미터 도출 → 가이드워드 {guide.GUIDEWORD_COUNT} 동시 판정 · "
                 f"{service.LIVE_NOTE.split(' · ', 1)[1]}"
                 + (
                     " · mock 모드 — 네트워크 없이 재생 레코드로 생성 경로를 돕니다."
@@ -469,8 +469,8 @@ with tool.container(border=True, key="tool"):
             )
     else:
         st.html(
-            '<p class="hz-card-sub">실제로 생성해 저장해 둔 결과를 그대로 다시 보여줍니다(재생성 아님). '
-            "언제·어디서·어떤 프롬프트로 만들었는지는 결과 위 출처 줄에 있습니다.</p>"
+            '<p class="hz-card-sub">실제로 생성해 저장해 둔 결과를 그대로 보여 줍니다(새로 생성하지 않음). '
+            "언제, 어떤 경로와 프롬프트로 만들었는지는 결과 위 출처 안내에 있습니다.</p>"
         )
         names = [p["name"] for p in service.CATALOG]
         choice = st.selectbox("공정", names, key="process_name", label_visibility="collapsed")
@@ -478,7 +478,7 @@ with tool.container(border=True, key="tool"):
         if process.get("reference"):  # 지시문 W — 외부 공개 HAZOP 대조
             st.markdown(f":blue-background[공개 HAZOP 대조 · 외부 팀 작성] {process['description']}")
         elif process["gold"]:  # Q-02: 내부 워크시트는 화면에서 가리키지 않는다 — `gold` 플래그는 코드만 쓴다
-            st.markdown(f":violet-background[실호출 결과 저장] {process['description']}")
+            st.markdown(f":violet-background[실제 생성 결과 저장본] {process['description']}")
         else:
             st.markdown(f":orange-background[예시 공정 · 정성 검토용] {process['description']}")
         node_ids = [n["id"] for n in process["nodes"]]
@@ -487,7 +487,7 @@ with tool.container(border=True, key="tool"):
         # X-3: 공정 전체를 노드 순서로 이어 본다(재생만 — 공정 전체 실호출은 비목표). 노드 버튼 줄에 넣으면
         # 노드 이름이 "① 공급…" 으로 잘려 따로 한 줄(10/8 캡처).
         if st.button(
-            f"공정 전체 보기 — 노드 순서대로 {' → '.join(node_ids)}",
+            f"공정 전체 보기 — 노드 {len(node_ids)}개를 순서대로",
             key="preset_all",
             disabled=not any(n in replays for n in node_ids),
             type="primary" if state.node == service.ALL_NODES else "secondary",
@@ -498,7 +498,7 @@ with tool.container(border=True, key="tool"):
         for column, node in zip(st.columns(len(node_ids)), process["nodes"], strict=True):
             captured = node["id"] in replays
             if column.button(
-                node["label"] + ("" if captured else " (미캡처)"),
+                node["label"] + ("" if captured else " (저장된 결과 없음)"),
                 key=f"preset_{node['id']}",
                 disabled=not captured,
                 type="primary" if state.node == node["id"] else "secondary",
@@ -520,7 +520,7 @@ if result is None:
     st.html(
         '<div class="hz-empty"><strong>아직 결과가 없습니다</strong>'
         '위에서 입력 방식과 예시를 고르고 "HAZOP 초안 생성"을 누르면, 판정이 끝나는 대로 여기에 표가 채워집니다(전체 약 1.5~2분).<br>'
-        '기다리기 싫다면 "완성된 사례 보기"에서 저장된 결과를 바로 볼 수 있습니다.</div>'
+        "기다리지 않고 보려면 '완성된 사례 보기'에서 저장된 결과를 바로 볼 수 있습니다.</div>"
     )
 else:
     if result.is_gold:
@@ -603,7 +603,7 @@ else:
             f"⬇ {labels[key]} · {name}", data, file_name=name, mime=mimes[key], width="stretch"
         )
 
-    sheet_tab, process_tab = st.tabs(["HAZOP 워크시트", "AI 가 한 일"])
+    sheet_tab, process_tab = st.tabs(["HAZOP 워크시트", "AI가 한 일"])
     with sheet_tab:
         # verifier 시연(O-3): 표·요약 줄만 삽입 사본으로. 다운로드는 위에서 원본 `result` 로 만들었다.
         shown = result
@@ -659,9 +659,9 @@ else:
         column_config[service.REVIEW_COLUMN] = st.column_config.Column(width=72, pinned=True)
         if view_choice == service.VIEWS[0] and editable and not full_text:
             st.caption(
-                "검토: 행마다 채택·기각을 고르고 원인·결과·권고·심각도·빈도를 고칠 수 있습니다(목록은 · 로 구분). "
-                "위 다운로드 3종에 바로 반영됩니다 — 기각 행은 빠지고, Excel 에 '검토 기록' 시트가 붙습니다. "
-                "화면은 위험도·심각도·빈도를 이탈 옆에 두었고, Excel 은 표준 12열 순서입니다."
+                "검토: 행마다 채택·기각을 고르고 원인·결과·권고·심각도·빈도를 고칠 수 있습니다(여러 항목은 · 로 구분). "
+                "고친 내용은 위 내려받기 파일 3종에 바로 반영됩니다. 기각한 행은 빠지고, Excel에는 '검토 기록' 시트가 붙습니다. "
+                "화면에서는 위험도·심각도·빈도를 이탈 옆에 두었고, Excel은 표준 양식의 12열 순서를 따릅니다."
             )
             st.data_editor(
                 service.with_edits(table, review_base.get(review_key, {})),
@@ -713,7 +713,7 @@ else:
                     if rows:
                         draw(rows)
                     else:
-                        st.caption("이 묶음은 결과 행이 없습니다.")
+                        st.caption("이 묶음에는 결과 행이 없습니다.")
         if not result.is_gold:
             st.caption("신뢰도 " + service.confidence_counts(shown)
                        + " — 문서가 인용됐다는 것은 '공식 문서가 같은 위험을 다룬다'는 뜻이지 내용이 맞다는 보증이 아닙니다.")
@@ -723,9 +723,9 @@ else:
                 st.dataframe(cited, hide_index=True, row_height=60)
         repeat = service.repeat_counts(shown)
         if repeat:
-            st.caption("반복 일치 — " + repeat + ". 3번의 결과를 합쳐 한 번만 나온 판단(●○○)도 남겼습니다. "
-                       "●●● 는 3번 다 나온 판단이고, 심각도·빈도는 3번 중 가장 높은 값입니다. "
-                       "여러 번 나왔다는 뜻이지 내용이 맞다는 보증은 아닙니다.")
+            st.caption("반복 일치 — " + repeat + ". 3번 생성한 결과를 합쳤고, 한 번만 나온 판단(●○○)도 남겼습니다. "
+                       "●●●는 세 번 모두 나온 판단입니다. 심각도·빈도는 세 번 중 가장 높은 값을 썼습니다. "
+                       "여러 번 나왔다고 해서 내용이 맞다는 보증은 아닙니다.")
         reference = service.reference_rows(shown)
         if reference:
             with st.expander(f"참고 — 3번 중 한 번만 나온 문장 {len(reference)}개 (워크시트 칸에서 뺌)", expanded=False):
@@ -734,8 +734,8 @@ else:
                 st.dataframe(reference, hide_index=True)
         held = service.held_rows(shown)
         if held:
-            with st.expander(f"확인 필요 — 정보 부족으로 보류한 {len(held)}셀 (심각도·빈도·위험도를 매기지 않음)", expanded=False):
-                st.caption("입력에도 공식 문서에도 없는 사업장 정보가 있어야 판단할 수 있는 셀입니다. "
+            with st.expander(f"확인 필요 — 정보 부족으로 보류한 {len(held)}칸 (심각도·빈도·위험도를 매기지 않음)", expanded=False):
+                st.caption("입력에도 공식 문서에도 없는 사업장 정보가 있어야 판단할 수 있는 칸입니다. "
                            "정보를 확인해 심각도·빈도를 채우거나 기각하세요. Excel '확인 필요' 시트와 같은 내용입니다.")
                 st.dataframe(held, hide_index=True)
         if review_log:
@@ -747,7 +747,7 @@ else:
         left, right = st.columns(2)
         with left, st.container(border=True):
             kind = "문장" if result.meta.get("node_text") else ("노드별 입력" if combined else "항목 선택")
-            st.markdown(f"**사용자가 준 것 ({kind})**\n" + "\n".join(f"- {line}" for line in service.given_lines(result)))
+            st.markdown(f"**사용자가 넣은 정보 ({kind})**\n" + "\n".join(f"- {line}" for line in service.given_lines(result)))
             if result.meta.get("node_text"):
                 st.code(result.meta["node_text"], language=None, wrap_lines=True)
                 st.caption(
@@ -757,32 +757,32 @@ else:
                 st.json(result.meta["node_meta"], expanded=False)
         with right, st.container(border=True):
             params = view["parameters"]
-            param_text = (f"**파라미터 {len(params)}개**(노드 {len(result.meta['nodes'])}개 합집합)" if combined
+            param_text = (f"**파라미터 {len(params)}개**(노드 {len(result.meta['nodes'])}개의 파라미터를 모두 합침)" if combined
                           else f"**파라미터 {len(params)}개**")
             st.markdown(
-                "**AI 가 만든 것**\n"
+                "**AI가 만든 것**\n"
                 f"1. {param_text}: {' · '.join(params)}\n"
-                f"2. **{service.guideword_count(view['guidewords'])}**({' · '.join(view['guidewords'])})을 교차 적용해 "
-                f"매트릭스 셀 **{cells}** 을 빠짐없이 판정\n"
-                "3. 셀마다 원인·결과·기존 안전장치·심각도·빈도·위험도·권고 초안, 근거 없는 규격 번호·수치는 🔴 표시"
+                f"2. 파라미터마다 **{service.guideword_count(view['guidewords'])}**({' · '.join(view['guidewords'])})을 하나씩 대입해 "
+                f"**{cells}칸**을 빠짐없이 판정\n"
+                "3. 칸마다 원인·결과·기존 안전장치·심각도·빈도·위험도·권고 초안을 쓰고, 근거 없는 규격 번호·수치는 🔴로 표시"
             )
 
 # ── HAZOP 이 처음이라면 ──────────────────────────────────────────────────────
 st.html(
-    '<div id="intro" class="hz-section">HAZOP 이 처음이라면</div>'
+    '<div id="intro" class="hz-section">HAZOP이 처음이라면</div>'
     '<p class="hz-sub" style="margin-bottom:18px">HAZOP(위험과 운전 분석)은 화학공장·가스설비에서 '
     "<b>“이 설비가 원래 하려던 일에서 벗어나면 무슨 일이 생기나?”</b>를 빠짐없이 묻는 방법입니다. "
-    "설비를 구간으로 나누고, 구간마다 유량·압력·온도 같은 값에 ‘없음·많음·적음·거꾸로…’를 하나씩 대입해 "
-    "생길 수 있는 사고를 표(워크시트)로 정리합니다. 아래 3장은 요약, 그 아래 탭은 한 줄이 만들어지는 과정과 용어 설명입니다.</p>"
+    "설비를 구간으로 나누고, 구간마다 유량·압력·온도 같은 값에 '없음·많음·적음·거꾸로…'를 하나씩 대입해 "
+    "생길 수 있는 사고를 표(워크시트)로 정리합니다. 아래 카드 3장은 요약이고, 그 아래 탭에서 표 한 줄이 만들어지는 과정과 용어를 설명합니다.</p>"
 )
 #: (제목, 핵심 한 줄, [(항목, 내용)...]) — 줄글 대신 한눈에 읽히는 행. 마크다운을 거치지 않는다(`~` 가 취소선이 된다).
 INTRO_CARDS: tuple[tuple[str, str, tuple[tuple[str, str], ...]], ...] = (
     (
-        "HAZOP 이란",
+        "HAZOP이란",
         "설계 의도에서 벗어나는 경우를 빠짐없이 찾는 위험성평가",
         (
             ("대상", "공정 구간(노드) — 배관·설비를 나눈 한 토막"),
-            ("방법", "유량·압력·온도 × No·More·Less·Reverse… 를 칸마다 대입"),
+            ("방법", "유량·압력·온도 같은 값마다 No·More·Less·Reverse…를 하나씩 대입"),
             ("근거", "공정안전관리(PSM) 표준 기법 · KOSHA C-C-37-2026(구 P-82)"),
         ),
     ),
@@ -790,18 +790,18 @@ INTRO_CARDS: tuple[tuple[str, str, tuple[tuple[str, str], ...]], ...] = (
         "왜 힘든가",
         "노드 1개에 회의 수 시간",
         (
-            ("참석", "공정·계장·운전·안전 담당 6–8명"),
-            ("규모", "공장 하나에 노드 수십–수백 개"),
-            ("위험", "셀 하나만 빠져도 시나리오 누락"),
+            ("참석", "공정·계장·운전·안전 담당 6~8명"),
+            ("규모", "공장 하나에 노드 수십~수백 개"),
+            ("위험", "칸 하나만 빠져도 사고 시나리오가 빠짐"),
         ),
     ),
     (
         "이 앱의 역할",
         "초안은 AI, 판단은 사람",
         (
-            ("AI", "전 셀 판정 · 원인·결과·심각도·빈도·권고 초안"),
+            ("AI", "모든 칸 판정 · 원인·결과·심각도·빈도·권고 초안"),
             ("사람", "검토 · 수정 · 최종 승인"),
-            ("효과", "회의를 없애지 않고 시작점을 올림"),
+            ("효과", "회의는 그대로 두고, 빈 표가 아닌 초안에서 시작"),
         ),
     ),
 )
@@ -832,8 +832,9 @@ with example_tab:
         + "</div>"
     )
     st.caption(
-        "AI 는 2단계(파라미터)를 스스로 세우고, 파라미터 × 가이드워드의 모든 칸에 대해 4~9단계를 채웁니다. "
-        "뜻이 성립하지 않는 칸(예: 온도 + Reverse — 온도에는 '거꾸로'가 없다)은 '해당 없음'과 그 이유를 남깁니다."
+        "AI는 2단계(파라미터)를 스스로 정하고, 파라미터와 가이드워드를 짝지은 모든 칸에서 4~9단계를 채웁니다. "
+        "칸마다 해당하는지, 해당하면 원인·결과가 무엇인지 정하는 이 일을 '판정'이라고 부릅니다. "
+        "뜻이 성립하지 않는 칸(예: 온도 + Reverse — 온도에는 '거꾸로'가 없음)은 '해당 없음'과 그 이유를 남깁니다."
     )
 with gw_tab:
     st.caption("가이드워드는 '어느 방향으로 벗어나는가'를 가리키는 정해진 단어입니다. 파라미터와 붙여 읽습니다(More + 압력 = 압력 과다).")
@@ -843,9 +844,9 @@ with gw_tab:
 with risk_tab:
     st.caption(
         "심각도와 빈도를 등급으로 매기고, 둘을 조합한 값이 위험도입니다. 위험도가 높은 줄부터 대책을 세웁니다. "
-        "기준은 결과마다 하나입니다 — 새로 만드는 결과는 KOSHA C-C-37(공식 HAZOP 기술지원규정). 10/14 이전에 저장한 일부 사례는 "
-        "NH3 벙커링 사업장 기준으로 매겼고, 결과 위 출처 줄에 어느 기준인지 적혀 있습니다. "
-        "기준마다 단계 수와 계산법이 달라 섞거나 평균내지 않습니다."
+        "결과 하나에는 기준 하나만 씁니다. 새로 만드는 결과는 KOSHA C-C-37(한국산업안전보건공단의 HAZOP 기술지원규정)을 따릅니다. "
+        "2026년 10월 14일 이전에 저장한 일부 사례는 NH3 벙커링 사업장 기준으로 매겼으며, 어느 기준인지는 결과 위 출처 안내에 적혀 있습니다. "
+        "기준마다 단계 수와 계산법이 달라 섞거나 평균 내지 않습니다."
     )
     crit_by_name = {service.criteria_label(c): c for c in service.all_criteria()}
     shown = crit_by_name[st.radio("평가기준", list(crit_by_name), horizontal=True, key="guide_criteria")]
@@ -859,7 +860,7 @@ with risk_tab:
     for line in guide.IPL_LINES:
         st.caption("· " + line)
 with read_tab:
-    st.markdown("**AI 가 쓰는 정보의 4단계** — 생성 프롬프트에 들어가는 문구와 같습니다")
+    st.markdown("**AI가 쓰는 정보의 4단계** — AI에게 주는 프롬프트에 들어가는 문구와 같습니다")
     st.table(guide.information_level_rows(), hide_index=True, border="horizontal")
     read_tab.html(
         '<div class="hz-info">'
@@ -872,12 +873,12 @@ with read_tab:
 with compare_tab:
     st.markdown(guide.process_table(service.param_range(replays)))
     st.caption(
-        "실측: 노드 1건 약 1.5–2분 · 약 $0.75 (2026-10-08, 표준 가이드워드 동시 판정, 3회 79–126초). "
-        "회의 시간 단축을 잰 것은 아닙니다 — 이 앱이 만드는 것은 회의에서 검토할 초안입니다."
+        "측정: 노드 1개당 약 1.5~2분, 약 $0.75 (2026-10-08, 표준 가이드워드 동시 판정, 3회 79~126초). "
+        "회의 시간이 얼마나 줄어드는지는 재지 않았습니다. 이 앱이 만드는 것은 회의에서 검토할 초안입니다."
     )
 
 with psm_tab:
-    st.caption("공정안전보고서는 위험물질 설비를 돌리기 위한 허가 서류이고, HAZOP 은 그 안의 위험성평가에 쓰는 대표 기법입니다.")
+    st.caption("공정안전보고서는 위험물질 설비를 가동하기 전에 제출해 심사를 받는 서류이고, HAZOP은 그 안의 위험성평가에 쓰는 대표 기법입니다.")
     psm_tab.html(
         '<div class="hz-info">'
         + "".join(f"<div class='hz-info-r'><span style='width:110px'>{k}</span><b style='flex:1'>{v}</b></div>" for k, v in guide.PSM_WHY)
@@ -887,7 +888,7 @@ with psm_tab:
     st.markdown("**보고서가 쓰이는 흐름**")
     st.table(guide.psm_flow_rows(), hide_index=True, border="horizontal")
     st.caption(
-        "공정이 바뀔 때마다 보고서를 보완해야 하므로 HAZOP 도 한 번 쓰고 끝나지 않습니다. "
+        "공정이 바뀔 때마다 보고서를 보완해야 하므로 HAZOP도 한 번 쓰고 끝나지 않습니다. "
         "HAZOP 권고가 안전운전계획·비상조치계획으로 이어지는 것은 일반적인 실무 흐름이며 조문 문구는 아닙니다. "
         "출처: [산업안전보건법 제44~46조](https://www.law.go.kr/법령/산업안전보건법) · "
         "[시행령 제43조](https://www.law.go.kr/법령/산업안전보건법시행령) · "
@@ -897,7 +898,8 @@ with psm_tab:
 # ── 푸터 ─────────────────────────────────────────────────────────────────────
 st.divider()
 st.caption(
-    "데이터 보안: 고객사의 실제 데이터는 일체 사용하지 않으며, 팀이 자체 보유한 데이터로만 작동합니다. · "
+    "데이터: 실제 고객사·사업장 자료는 쓰지 않습니다. 공개된 법령·MSDS·HAZOP 워크시트와 팀이 직접 만든 자료만 쓰며, "
+    "새로 생성할 때 입력한 공정 설명은 AI 생성을 위해 외부 AI API로 전송됩니다. · "
     f"{service.system_note(result) if result is not None else ''} · [리포지토리]({REPO})"
 )
 

@@ -21,11 +21,11 @@ if TYPE_CHECKING:
     from .rows import WorksheetRow
 
 DEFAULT_TOP_N: Final[int] = 5
-TBD: Final[str] = "TBD (문헌 근거 필요 — FR-04/FR-05)"
+TBD: Final[str] = "미정(문헌 근거 필요)"
 IPL_UNJUDGED: Final[str] = "3원칙(독립성·유효성·감사가능성): 미판정"
 DISCLAIMER: Final[str] = (
-    "정성 스크리닝(S×F) 기반 초안. IEF·PFD·TMEL·RRF 등 정량값은 미산정이며 "
-    "문헌 근거(FR-04/FR-05) 확보 전에는 채우지 않는다."
+    "심각도×빈도로 1차 선별한 초안입니다. IEF·PFD·TMEL·RRF 같은 정량값은 계산하지 않았으며, "
+    "문헌 근거를 확보하기 전에는 채우지 않습니다."
 )
 QUANT_ROWS: Final[tuple[str, ...]] = (
     "IE 빈도(IEF)",
@@ -59,14 +59,14 @@ def _section(k: int, r: WorksheetRow) -> list[str]:
         "",
         f"원인({r.causes or '기재 없음'}) → 이탈({r.deviation}) → 결과({r.consequences or '기재 없음'})",
         "",
-        "### IE(개시사건) 후보 — 레코드 `원인` 원문",
+        "### IE(개시사건) 후보 — 워크시트 '원인' 칸 원문",
         "",
     ]
     if r.causes_list:
         lines += [f"- {c} — IEF: {TBD}" for c in r.causes_list]
     else:
         lines.append("- (원인 기재 없음)")
-    lines += ["", "### IPL(독립방호계층) 후보 — 레코드 `기존 안전장치`·`권고` 원문", ""]
+    lines += ["", "### IPL(독립방호계층) 후보 — 워크시트 '기존 안전장치'·'권고' 칸 원문", ""]
     ipl = [f"- [기존] {s} — PFD: {TBD} · {IPL_UNJUDGED}" for s in r.safeguards_list]
     ipl += [f"- [권고] {s} — PFD: {TBD} · {IPL_UNJUDGED}" for s in r.recommendations_list]
     lines += ipl or ["- (기재 없음)"]
@@ -89,7 +89,7 @@ def render_lopa(
         f"> {DISCLAIMER}",
         "",
         f"생성 시각: {generated_at or '미기록'} · 대상 이탈 {len(rows)}건 중 상위 {len(top)}건 · "
-        "형식: NH3 QRA `LOPA_S1_C1.md` 준용(정량 절은 자리표시자)",
+        "정량 항목은 빈칸으로 둠",
         "",
     ]
     for k, r in enumerate(top, start=1):

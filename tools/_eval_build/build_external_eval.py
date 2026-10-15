@@ -133,6 +133,9 @@ def build() -> dict:
         "_comment": "외부 공개 HAZOP 평가셋(골드셋 아님, 평가 전용). 다른 팀이 쓴 워크시트의 (가이드워드, 파라미터) 쌍과 노드 입력 사실만 — 원인·결과 문장 없음. 검색 풀·few-shot·열거 예시·합성 시드·미세조정 금지.",
         "metric": "점검 항목 포괄률 = 출처 팀이 점검한 (가이드워드, 파라미터) 쌍 중 생성 결과에 있는 비율. 출처별로 따로 내고, 합칠 때는 출처마다 같은 무게(평균)로.",
         "contamination_note": "ORNL·IJERPH 의 파라미터 이름은 2026-10-08 F-06 실험의 열거 예시(data/kb/hazop_param_examples.json)에 들어 있었다 — enumerate_examples 는 계속 false 여야 한다.",
+        # 화면 표시용(교열 10/15) — 위 두 메모는 실험 번호·설정 이름이 든 작업 메모라 화면에는 이 문장을 낸다. 사실은 같다.
+        "display_eval_only": "다른 팀 워크시트에서 (가이드워드, 파라미터) 쌍과 노드 정보만 옮겼고, 원인·결과 문장은 없습니다. AI에게 예시로 주거나 학습에 쓰지 않도록 정해 둔 자료입니다.",
+        "display_contamination": "ORNL·IJERPH 워크시트의 파라미터 이름은 2026-10-08 실험에서 AI에게 준 파라미터 예시에 들어간 적이 있습니다. 지금 화면의 생성에는 이 예시를 쓰지 않습니다.",
         "sources": SOURCES, "nodes": nodes, "records": records, "excluded": excluded,
     }
 
