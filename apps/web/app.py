@@ -103,6 +103,9 @@ st.html(
         --muted: #9b9ba8; --accent: #9046ff; --accent-text: #b996ff; --accent-soft: rgba(144,70,255,.16); }
     header[data-testid="stHeader"], #MainMenu, footer { display: none !important; }
     .stApp { background: var(--bg); }
+    /* 10/15 사용자 요청 — 한글을 글자가 아니라 어절 단위로 줄바꿈. 한 줄보다 긴 덩어리(URL 등)만 중간에서 끊는다(넘침 방지).
+       Streamlit 요소가 자체 값을 갖기도 해 하위 요소에도 명시한다. 코드 블록은 원래대로. */
+    .stApp, .stApp *:not(pre):not(code) { word-break: keep-all; overflow-wrap: anywhere; }
     .hz-full { max-height: 760px; overflow: auto; border: 1px solid var(--line); border-radius: 12px; }
     .hz-full table { border-collapse: collapse; font-size: 13px; line-height: 1.5; width: max-content; min-width: 100%; }
     .hz-full th { position: sticky; top: 0; z-index: 1; background: var(--card2); color: var(--muted); font-weight: 600;
