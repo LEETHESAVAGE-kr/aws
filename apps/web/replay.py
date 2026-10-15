@@ -20,6 +20,10 @@ REPLAY_DIR: Final[Path] = Path(__file__).resolve().parents[2] / "data" / "replay
 #: Streamlit Secrets 한 줄로 9/29 재생으로 돌아간다. 시험은 이 값으로 옛 재생에 묶여 있다(tests/conftest.py).
 REPLAY_BEFORE_ENV: Final[str] = "HAZOP_REPLAY_BEFORE"
 _SOURCE_PRIORITY: Final[dict[str, int]] = {"live": 0, "gold": 1}
+#: 표기 대응표(교열 10/15, `tools/build_replay_notation.py`). 재생 파일은 그대로 두고 불러올 때만 적용한다.
+NOTATION_PATH: Final[Path] = REPLAY_DIR.parent / "replay_notation.json"
+_TEXT_FIELDS: Final[tuple[str, ...]] = ("deviation", "scenario")
+_LIST_FIELDS: Final[tuple[str, ...]] = ("causes", "consequences", "safeguards_before", "recommendations", "missing")
 
 
 @dataclass
@@ -36,6 +40,47 @@ class Result:
         return self.meta.get("source") == "gold"
 
 
+def load_notation(path: Path = NOTATION_PATH) -> dict[tuple[str, str, str], str]:
+    """(행 id, 칸, 원문) → 표기 교열문. 파일이 없으면 빈 표(적용 0)."""
+    if not path.exists():
+        return {}
+    table: dict[tuple[str, str, str], str] = {}
+    for entry in json.loads(path.read_text(encoding="utf-8"))["entries"]:
+        for rid in entry["ids"]:
+            table[(rid, entry["field"], entry["from"])] = entry["to"]
+    return table
+
+
+def apply_notation(
+    records: list[DeviationRecord], table: dict[tuple[str, str, str], str]
+) -> tuple[list[DeviationRecord], int]:
+    """표기 대응표를 (행 id, 칸, 원문 그대로)가 맞는 문장에만 적용한 사본과 바꾼 문장 수.
+
+    원본 레코드는 건드리지 않는다(`model_copy`). 합의 생성 행은 반복 일치가 문장을 글자로 맞추므로 건너뛴다.
+    """
+    out: list[DeviationRecord] = []
+    changed = 0
+    for record in records:
+        if not table or record.consensus is not None:
+            out.append(record)
+            continue
+        update: dict[str, Any] = {}
+        for name in _TEXT_FIELDS:
+            new = table.get((record.id, name, getattr(record, name)))
+            if new is not None:
+                update[name] = new
+                changed += 1
+        for name in _LIST_FIELDS:
+            items = getattr(record, name)
+            fixed = [table.get((record.id, name, s), s) for s in items]
+            n = sum(a != b for a, b in zip(items, fixed, strict=True))
+            if n:
+                update[name] = fixed
+                changed += n
+        out.append(record.model_copy(update=update) if update else record)
+    return out, changed
+
+
 def _to_result(payload: dict[str, Any]) -> Result:
     records = [DeviationRecord.model_validate(r) for r in payload.get("records", [])]
     meta = {k: v for k, v in payload.items() if k != "records"}
@@ -49,7 +94,12 @@ def _to_result(payload: dict[str, Any]) -> Result:
     # 골드 재생은 전문가가 쓴 순서 그대로다(사람 작성 순서를 바꾸지 않는다).
     if meta.get("source") != "gold":
         records = process_order(records, list(meta.get("parameters") or []), renumber=False)
+        # 교열 10/15: 화면·내려받기는 표기 규칙(종결·기호·'~에 의한')을 적용한 문장, 재생 파일은 그대로
+        records, meta["notation_applied"] = apply_notation(records, _NOTATION)
     return Result(meta=meta, records=records)
+
+
+_NOTATION: Final[dict[tuple[str, str, str], str]] = load_notation()
 
 
 def load_replays(directory: Path = REPLAY_DIR) -> dict[str, Result]:

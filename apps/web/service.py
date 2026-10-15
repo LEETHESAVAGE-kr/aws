@@ -1350,6 +1350,16 @@ def origin_parts(result: Result) -> list[str]:
     return parts
 
 
+#: 교열 10/15 — 재생 결과에 표기 대응표(`data/replay_notation.json`)를 적용했을 때 출처 안내에 붙는 말.
+NOTATION_NOTE: Final[str] = "표기 규칙(문장 끝맺음·기호·'~에 의한' 풀기)을 {n}곳 적용해 표시함 — 내용은 저장본 그대로"
+
+
+def notation_part(meta: Mapping[str, Any]) -> str:
+    """표기 대응표를 적용한 문장 수가 있으면 ' · 표기 규칙 …' 한 토막, 없으면 빈 문자열."""
+    n = meta.get("notation_applied") or 0
+    return " · " + NOTATION_NOTE.format(n=n) if n else ""
+
+
 def provenance_line(result: Result) -> str:
     """이 결과가 어디서 왔는지 한 줄(J-04 ③ · Q-01-3). 재생이어도 실호출 캡처 일시·경유·모델·프롬프트·기준·비용을 적는다."""
     m = result.meta
@@ -1361,7 +1371,7 @@ def provenance_line(result: Result) -> str:
         via_part = f" · {' / '.join(vias)}" if vias else ""
         return (
             f"{m['process']} — 노드 {len(m['nodes'])}개를 하나씩 실제로 생성해 저장한 결과를 노드 순서대로 이어 붙여 보여 줌"
-            f"{via_part}{cost_part} · 노드별 저장 시각과 프롬프트는 아래 '노드별 출처'에 있음"
+            f"{via_part}{cost_part}{notation_part(m)} · 노드별 저장 시각과 프롬프트는 아래 '노드별 출처'에 있음"
         )
     if result.is_gold:
         return f"사람이 직접 작성한 HAZOP 워크시트 — AI 생성 결과 아님 ({_kst(m.get('captured_at'))} 저장)"
@@ -1369,7 +1379,7 @@ def provenance_line(result: Result) -> str:
         scope = " · " + QUICK_SCOPE.format(guideword=", ".join(m.get("guidewords") or [])) if source == "quick" else ""
         return f"mock 실행 — 네트워크 없이 재생 레코드로 생성 경로를 돈 결과 ({_kst(m.get('captured_at'))}){scope}"
     when = f"{_kst(m.get('captured_at'))} " + ("저장된 생성 결과" if source == "live" else "방금 생성")
-    tail = " · ".join([when, *origin_parts(result)])
+    tail = " · ".join([when, *origin_parts(result)]) + notation_part(m)
     if source == "quick":
         tail += " · " + QUICK_SCOPE.format(guideword=", ".join(m.get("guidewords") or []))
     return tail
@@ -1558,6 +1568,7 @@ def combine_replays(process: Mapping[str, Any], replays: Mapping[str, Result]) -
         "review_guidewords": sorted({g for m in metas for g in m.get("review_guidewords") or []}),
         "recall": None,
         "recall_parts": recall_parts,
+        "notation_applied": sum(m.get("notation_applied") or 0 for m in metas),
         "node_provenance": [(n, provenance_line(p)) for n, p in zip(nodes, parts, strict=True)],
     }
     return Result(meta=meta, records=[r for p in parts for r in p.records])
