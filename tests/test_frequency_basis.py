@@ -103,7 +103,9 @@ def test_xlsx_gets_basis_column_only_when_present(tmp_path: Path) -> None:
         out = tmp_path / str(expect)
         wb = load_workbook(io.BytesIO(export_all(records, out)["xlsx"].read_bytes()))
         head = [c.value for c in wb["HAZOP워크시트"][1]]
-        assert (head[-1] == "빈도 근거") is expect and len(head) == (13 if expect else 12)
+        # 빈도 근거는 12열 뒤, 위험도 수식 열은 언제나 맨 끝
+        assert head[-1] == "위험도 수식"
+        assert (head[-2] == "빈도 근거") is expect and len(head) == (14 if expect else 13)
         if expect:
             assert wb["HAZOP워크시트"]["M2"].value == "안전밸브"
 
