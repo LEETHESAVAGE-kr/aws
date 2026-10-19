@@ -18,3 +18,24 @@ CLAUDE.md
 
 # Y-3 임베딩 모델 (118MB, GitHub 100MB 한도 초과 — 실행 시 내려받는다)
 models/
+
+# 작업 기록·계획 문서는 로컬에만 둔다 (2026-10-19 저장소 정리)
+/PRD.md
+docs/PRD_*.md
+docs/지시문_*.md
+docs/인계_*.md
+docs/진행로그.md
+docs/진행보고서_*.md
+docs/아침브리핑_*.md
+docs/수상가능성_*.md
+docs/최종평가_*.md
+docs/본선_*.md
+docs/배포확인_*.md
+docs/리서치_*.md
+docs/역공학_*.md
+docs/W0_*.md
+docs/G0_*.md
+docs/교열_20261015/2차교열_공통규칙.md
+docs/교열_20261015/결과표_교열규칙.md
+docs/교열_20261015/용어집_*.md
+docs/교열_20261015/화면문구_*.md
