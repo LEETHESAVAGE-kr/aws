@@ -125,9 +125,14 @@ st.html(
         padding: 14px 18px; }
     [data-testid="stMetricLabel"] p { font-size: 13px; color: var(--muted); }
     [data-testid="stMetricValue"] { font-size: 30px; font-weight: 700; color: var(--text); }
+    /* 10/19 모바일(QR) 가로 밀림 수정: 예전 `margin: 0 -9999px; padding: 0 9999px` 는 바 폭을 2만 px 로 늘려 본문이
+       옆으로 밀렸다. 배경·밑줄을 화면 끝까지 까는 일은 그림자로 한다 — 그림자는 레이아웃 폭(스크롤 폭)에 들어가지 않는다. */
     .hz-bar { position: sticky; top: 0; z-index: 100; background: var(--bg); height: 60px; display: flex;
-        align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line);
-        margin: 0 -9999px 24px; padding: 0 9999px; }
+        align-items: center; justify-content: space-between; margin: 0 0 24px;
+        box-shadow: 0 0 0 100vmax var(--bg), 0 1px 0 100vmax var(--line); clip-path: inset(0 -100vmax -1px); }
+    /* 본문은 세로로만 스크롤한다. 넓은 표는 각자 상자 안에서 가로 스크롤(.hz-full·데이터 표). */
+    /* stMain 이 실제 스크롤 상자다(측정: 문서 폭 390 인데 stMain 내용 폭 10,373). 다른 조상에 overflow 를 주면 스크롤 상자가 하나 더 생긴다. */
+    [data-testid="stMain"] { overflow-x: hidden; }
     .hz-logo { font-size: 18px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 10px; }
     .hz-logo i { width: 24px; height: 24px; border-radius: 7px; background: var(--accent); display: inline-block; }
     .hz-nav a { margin-left: 22px; color: var(--muted); text-decoration: none; font-size: 14px; }
