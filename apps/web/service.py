@@ -1358,21 +1358,21 @@ EXTERNAL_SHORT: Final[dict[str, str]] = {
     "ornl2023": "ORNL 2023", "ioclv2016": "IOCL 2016", "assam2010": "Assam 2010",
     "kais2019": "KAIS 2019", "ijerph2017": "IJERPH 2017",
 }
-#: 최저 출처가 낮은 이유 — docs/결과_외부평가_20261010.md '범위 밖 출처' 절과 같은 사실(README §6 같은 문장).
+#: 평가 범위 — 이 앱은 공정 HAZOP 용이다. 작업 절차 HAZOP(IJERPH 2017, 평가셋 파일 process "절차형 노드")은 같은 기준으로
+#: 잴 수 없어 대조에서 뺐다(10/19 사용자 결정: 그 출처를 섞은 평균은 잘못된 기준이라 화면에 내지 않는다).
+EXTERNAL_OUT_OF_SCOPE: Final[frozenset[str]] = frozenset({"ijerph2017"})
 EXTERNAL_LOW_REASON: Final[str] = (
-    "IJERPH가 낮은 이유 — 항만 터미널 작업 절차(하역·적재 순서)를 다룬 HAZOP이라 정전기·부식·속도·계류 같은 작업 고유의 "
-    "파라미터를 씁니다. 이 앱은 이런 설비·절차형 파라미터를 적게 도출합니다(부식·속도는 아예 나오지 않음). "
-    "알려진 약점이며, 편집 표에서 사람이 보완해야 하는 부분입니다."
+    "이 앱은 공정 HAZOP용이라 공정 HAZOP 워크시트만 대조합니다. 작업 절차를 다룬 공개 HAZOP은 같은 기준으로 잴 수 없어 대조에서 뺐습니다."
 )
 
 
 def external_eval() -> dict[str, Any]:
-    """패널 값 — 요약 파일과 평가셋 파일에서만 읽는다(하드코딩 금지). 출처 순서는 평가셋 파일 순서, 낮은 출처도 그대로."""
+    """패널 값 — 요약 파일과 평가셋 파일에서만 읽는다(하드코딩 금지). 범위 밖 출처(`EXTERNAL_OUT_OF_SCOPE`)는 행·합계 모두에서 뺀다."""
     summary = json.loads(EXTERNAL_SUMMARY_PATH.read_text(encoding="utf-8"))
     dataset = json.loads(EXTERNAL_SET_PATH.read_text(encoding="utf-8"))
-    by_source = summary["by_source"]
+    by_source = {k: v for k, v in summary["by_source"].items() if k not in EXTERNAL_OUT_OF_SCOPE}
     rows = []
-    for src in sorted(dataset["sources"], key=lambda x: -by_source[x["id"]]["coverage"]):
+    for src in sorted((s for s in dataset["sources"] if s["id"] in by_source), key=lambda x: -by_source[x["id"]]["coverage"]):
         got = by_source[src["id"]]
         rows.append({
             "출처": EXTERNAL_SHORT.get(src["id"], src["id"]),
@@ -1380,20 +1380,16 @@ def external_eval() -> dict[str, Any]:
             "다시 찾아낸 쌍": f"{got['matched']}/{got['total']}",
             "coverage": f"{got['coverage']:.2f}",
         })
-    kept = [v["coverage"] for k, v in by_source.items() if k != summary["min_source"]]
+    kept = [v["coverage"] for v in by_source.values()]
     total = sum(v["total"] for v in by_source.values())
     return {
         "head": (
-            f"외부 공개 HAZOP 워크시트 {len(by_source)}건 · {summary['nodes']}노드 · (가이드워드, 파라미터) 쌍 {total}개 · "
-            f"{summary['measured_at']} 측정 · 비용 ${summary['cost_usd']:.1f}"
+            f"외부 공개 공정 HAZOP 워크시트 {len(by_source)}건 · (가이드워드, 파라미터) 쌍 {total}개 · "
+            f"{summary['measured_at']} 측정"
         ),
         "question": "다른 팀이 쓴 표의 (가이드워드, 파라미터) 쌍을 이 앱이 얼마나 다시 찾아내는지 잰 값입니다. 원인·결과 문장이 맞는지는 재지 않습니다.",
         "rows": rows,
-        "total": (
-            f"출처별 평균 {summary['macro_mean']:.2f} · 전체 합산 {summary['pooled']:.2f} · "
-            f"{EXTERNAL_SHORT.get(summary['min_source'], summary['min_source'])} 제외 출처 {len(kept)}곳 평균 "
-            f"{sum(kept) / len(kept):.2f}"
-        ),
+        "total": f"공정 HAZOP {len(kept)}건 평균 {sum(kept) / len(kept):.2f}",
         "low_reason": EXTERNAL_LOW_REASON,
         "fine_print": (
             "평가에만 쓰는 자료 — " + dataset["display_eval_only"],

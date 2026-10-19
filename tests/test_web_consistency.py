@@ -94,20 +94,29 @@ def test_no_internal_worksheet_wording_on_any_screen(screens: list[tuple[str, st
 
 
 def test_external_panel_numbers_come_from_summary_file(screens: list[tuple[str, str]]) -> None:
-    """Q-02-9: 패널 숫자 = external_eval_summary.json. 낮은 출처(IJERPH)도 빠지지 않는다. 오염 고지·평가 전용 문구 포함."""
+    """Q-02-9: 패널 숫자 = external_eval_summary.json. 범위 밖 출처(작업 절차 HAZOP)는 행·합계에서 빠지고(10/19 사용자 결정),
+    그 출처를 섞은 평균·합산은 화면에 나오지 않는다. 오염 고지·평가 전용 문구 포함."""
     summary = json.loads(service.EXTERNAL_SUMMARY_PATH.read_text(encoding="utf-8"))
     dataset = json.loads(service.EXTERNAL_SET_PATH.read_text(encoding="utf-8"))
     panel = service.external_eval()
-    assert {r["출처"] for r in panel["rows"]} == {service.EXTERNAL_SHORT[k] for k in summary["by_source"]}
-    for source, got in summary["by_source"].items():
+    in_scope = {k: v for k, v in summary["by_source"].items() if k not in service.EXTERNAL_OUT_OF_SCOPE}
+    assert set(summary["by_source"]) >= service.EXTERNAL_OUT_OF_SCOPE  # 빼는 출처가 실제로 요약 파일에 있다
+    assert {r["출처"] for r in panel["rows"]} == {service.EXTERNAL_SHORT[k] for k in in_scope}
+    for source, got in in_scope.items():
         row = next(r for r in panel["rows"] if r["출처"] == service.EXTERNAL_SHORT[source])
         assert row["다시 찾아낸 쌍"] == f"{got['matched']}/{got['total']}" and row["coverage"] == f"{got['coverage']:.2f}"
-    assert f"출처별 평균 {summary['macro_mean']:.2f}" in panel["total"] and f"전체 합산 {summary['pooled']:.2f}" in panel["total"]
-    assert f"{summary['nodes']}노드" in panel["head"] and "212개" in panel["head"]
+    mean = sum(v["coverage"] for v in in_scope.values()) / len(in_scope)
+    assert panel["total"] == f"공정 HAZOP {len(in_scope)}건 평균 {mean:.2f}"
+    assert f"쌍 {sum(v['total'] for v in in_scope.values())}개" in panel["head"]
+    shown = " ".join([panel["head"], panel["total"], panel["low_reason"], *(str(r) for r in panel["rows"])])
+    for gone in (f"{summary['macro_mean']:.2f}", f"{summary['pooled']:.2f}", "IJERPH 2017", "출처별 평균", "전체 합산"):
+        assert gone not in shown, gone
     text = next(t for name, t in screens if name.endswith(" N1"))
     # 교열 10/15 — 화면에는 평가셋의 화면용 필드가 나오고, 작업 메모(실험 번호·설정 이름) 원문은 나오지 않는다
-    for needle in (service.EXTERNAL_PANEL_TITLE, dataset["display_eval_only"], dataset["display_contamination"], "IJERPH 2017"):
+    for needle in (service.EXTERNAL_PANEL_TITLE, dataset["display_eval_only"], dataset["display_contamination"], panel["total"]):
         assert needle in text, needle
+    for gone in (f"출처별 평균 {summary['macro_mean']:.2f}", f"전체 합산 {summary['pooled']:.2f}", "IJERPH 2017"):
+        assert gone not in text, gone
     for memo in (dataset["contamination_note"], "few-shot", "F-06", "enumerate_examples"):
         assert memo not in text, memo
 
