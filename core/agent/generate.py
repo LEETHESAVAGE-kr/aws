@@ -437,6 +437,18 @@ class HazopGenerator:
                 for future in as_completed(futures):
                     collect(futures[future], future.result())
 
+        # 10/19: 결과가 하나도 없는 가이드워드는 끝에 한 번 더 부른다(순차). 배포 로그에서 형식 검사 2연속 실패로
+        # 가이드워드 하나(No, 11칸)가 통째로 빠졌다 — 같은 입력을 다시 부르면 대개 통과한다. 합의 생성은 실행 중
+        # 하나라도 살아 있으면 합치기가 받쳐 주므로 다시 부르지 않는다.
+        for gi, guideword in enumerate(guidewords):
+            slots = [run * len(guidewords) + gi for run in range(runs)]
+            if not parameters or any(outcomes[i] is not None and outcomes[i][0] is not None for i in slots):  # type: ignore[index]
+                continue
+            logger.warning("node=%s gw=%s 판정 실패 — 한 번 더 호출한다", node_meta.node, guideword)
+            retry_batch, retry_cost = self._generate_batch(node_meta, parameters, guideword)
+            spent = outcomes[slots[0]][1] if outcomes[slots[0]] is not None else 0.0  # type: ignore[index]
+            collect(slots[0], (retry_batch, spent + retry_cost))
+
         similarity = consensus.e5_similarity() if runs > 1 else None
         batches: list[dict[str, Any]] = []
         for gi, guideword in enumerate(guidewords):
@@ -480,6 +492,10 @@ class HazopGenerator:
         if not parameters:
             return []
         batch, cost = self._generate_batch(node_meta, parameters, guideword)
+        if batch is None:  # 10/19: 전체 생성과 같이 한 번 더 부른다
+            logger.warning("node=%s gw=%s 판정 실패 — 한 번 더 호출한다", node_meta.node, guideword)
+            batch, retry_cost = self._generate_batch(node_meta, parameters, guideword)
+            cost += retry_cost
         self.total_cost_usd += cost  # O-1 이후 _generate_batch 는 합산을 호출자에게 맡긴다
         if batch is None:
             self.review_guidewords.append(guideword)

@@ -158,3 +158,34 @@ def test_number_quoted_in_evidence_is_not_flagged() -> None:
     assert verify([rec])[0][0].confidence == "review"
     cited = rec.model_copy(update={"evidence": [msds.evidence(quote)]})
     assert verify([cited])[0][0].confidence == "single_source"
+
+
+def test_concurrent_model_download_does_not_race(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """10/19 배포 로그: 병렬 판정 7개가 같은 `.part` 를 받다 6개가 이름 바꾸기에서 죽고 BM25 로 떨어졌다."""
+    import hashlib
+    import threading
+    import time
+
+    from core import retrieval
+
+    body = b"fake-model-bytes"
+    sha = hashlib.sha256(body).hexdigest()
+    monkeypatch.setattr(retrieval, "MODEL_FILES", {"m.onnx": ("https://example.invalid/m", sha)})
+    monkeypatch.setenv("HAZOP_EMBED_DOWNLOAD", "true")
+    calls = {"n": 0}
+
+    def fake_retrieve(url: str, dst: Path) -> None:
+        calls["n"] += 1
+        time.sleep(0.05)  # 받는 동안 다른 스레드가 끼어들 틈
+        Path(dst).write_bytes(body)
+
+    monkeypatch.setattr(retrieval.urllib.request, "urlretrieve", fake_retrieve)
+    results: list[bool] = []
+    threads = [threading.Thread(target=lambda: results.append(retrieval.ensure_model(tmp_path))) for _ in range(7)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    assert results == [True] * 7
+    assert calls["n"] == 1  # 한 번만 받는다
+    assert (tmp_path / "m.onnx").read_bytes() == body and not list(tmp_path.glob("*.part"))
