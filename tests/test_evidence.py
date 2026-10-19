@@ -189,3 +189,28 @@ def test_concurrent_model_download_does_not_race(tmp_path: Path, monkeypatch: py
     assert results == [True] * 7
     assert calls["n"] == 1  # 한 번만 받는다
     assert (tmp_path / "m.onnx").read_bytes() == body and not list(tmp_path.glob("*.part"))
+
+
+def test_default_retriever_is_built_once_under_concurrency(monkeypatch: pytest.MonkeyPatch) -> None:
+    """10/19 배포 앱 메모리 초과: `@cache` 는 첫 호출이 겹치면 7개 스레드가 각자 검색기(=e5 모델)를 만들었다."""
+    import threading
+    import time
+
+    from core import retrieval
+
+    built: list[object] = []
+
+    class Slow:
+        def __init__(self) -> None:
+            time.sleep(0.05)  # 모델 적재 동안 다른 스레드가 끼어들 틈
+            built.append(self)
+
+    monkeypatch.setattr(retrieval, "Retriever", Slow)
+    monkeypatch.setattr(retrieval, "_RETRIEVER", None)
+    got: list[object] = []
+    threads = [threading.Thread(target=lambda: got.append(retrieval.default_retriever())) for _ in range(7)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    assert len(built) == 1 and all(g is built[0] for g in got)

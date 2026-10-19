@@ -217,10 +217,22 @@ class Retriever:
         return [self.passages[i] for i in best]
 
 
-@cache
+_RETRIEVER_LOCK = threading.Lock()
+_RETRIEVER: Retriever | None = None
+
+
 def default_retriever() -> Retriever:
-    """프로세스당 1개(모델 적재 약 2초) — Streamlit 세션·병렬 판정이 같이 쓴다(onnxruntime run 은 스레드 안전)."""
-    return Retriever()
+    """프로세스당 1개(모델 적재 약 2초) — Streamlit 세션·병렬 판정이 같이 쓴다(onnxruntime run 은 스레드 안전).
+
+    10/19: `@cache` 는 첫 호출이 겹치면 각자 만든다 — 병렬 판정 7개가 e5 모델을 7벌 올려 배포 앱이 메모리 초과로
+    죽었다(내려받기 경쟁을 고친 뒤 7개가 모두 모델 적재에 성공하면서 드러남). 잠금으로 정말 1개만 만든다.
+    """
+    global _RETRIEVER
+    if _RETRIEVER is None:
+        with _RETRIEVER_LOCK:
+            if _RETRIEVER is None:
+                _RETRIEVER = Retriever()
+    return _RETRIEVER
 
 
 def corpus_digest(passages: tuple[Passage, ...]) -> str:

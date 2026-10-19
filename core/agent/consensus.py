@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import logging
 import re
+import threading
 from collections import Counter
 from collections.abc import Callable, Sequence
 from typing import Any, Final
@@ -207,24 +208,32 @@ def _applicable_cell(
 
 # ── 문장 유사도(e5) ─────────────────────────────────────────────────────────────
 _embedder: Any = None
+_EMBEDDER_LOCK = threading.Lock()
 
 
 def e5_similarity() -> Similarity | None:
     """검색기와 같은 e5 모델로 코사인 행렬. 모델을 못 쓰면 None — 정규화 문자열 일치로만 짝짓는다(경고)."""
-    global _embedder
-    if _embedder is None:
-        try:
-            from core.retrieval import MODEL_DIR, _Embedder, ensure_model
-
-            if not ensure_model():
-                raise RuntimeError("e5 모델 없음")
-            _embedder = _Embedder(MODEL_DIR)
-        except Exception:  # noqa: BLE001 — 합의는 문자열 일치로 계속한다
-            logger.warning("e5 임베딩을 못 써 문장 합의를 정규화 문자열 일치로만 한다", exc_info=True)
-            _embedder = False
+    with _EMBEDDER_LOCK:  # 10/19: 첫 호출이 겹쳐도 모델은 1벌만(검색기와 같은 이유)
+        _load_embedder()
     if _embedder is False:
         return None
     return _cached_similarity()
+
+
+def _load_embedder() -> None:
+    global _embedder
+    if _embedder is None:
+        try:
+            from core.retrieval import default_retriever
+
+            # 10/19: 검색기가 이미 올린 모델을 같이 쓴다 — 따로 올리면 메모리에 e5 가 두 벌(배포 앱 메모리 초과)
+            shared = default_retriever().embedder
+            if shared is None:
+                raise RuntimeError("e5 모델 없음")
+            _embedder = shared
+        except Exception:  # noqa: BLE001 — 합의는 문자열 일치로 계속한다
+            logger.warning("e5 임베딩을 못 써 문장 합의를 정규화 문자열 일치로만 한다", exc_info=True)
+            _embedder = False
 
 
 def _cached_similarity() -> Similarity:
