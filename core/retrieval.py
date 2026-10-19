@@ -13,6 +13,7 @@ import logging
 import math
 import os
 import re
+import threading
 import urllib.request
 from collections import Counter
 from dataclasses import dataclass
@@ -21,6 +22,8 @@ from pathlib import Path
 from typing import Any, Final
 
 logger = logging.getLogger(__name__)
+#: 10/19: 병렬 판정 7개가 같은 `.part` 파일을 동시에 받다 6개가 이름 바꾸기에서 죽었다(배포 로그). 한 번에 하나만.
+_DOWNLOAD_LOCK = threading.Lock()
 
 _ROOT: Final[Path] = Path(__file__).resolve().parent.parent
 CORPUS_DIRS: Final[tuple[Path, ...]] = (_ROOT / "data" / "kb" / "law", _ROOT / "data" / "kb" / "msds")
@@ -149,22 +152,23 @@ def ensure_model(model_dir: Path = MODEL_DIR) -> bool:
         return True
     if os.environ.get("HAZOP_EMBED_DOWNLOAD", "true").strip().lower() != "true":
         return False
-    try:
-        model_dir.mkdir(parents=True, exist_ok=True)
-        for name, (url, sha) in MODEL_FILES.items():
-            dst = model_dir / name
-            if dst.exists():
-                continue
-            tmp = dst.with_suffix(".part")
-            urllib.request.urlretrieve(url, tmp)  # noqa: S310 — 고정 URL(huggingface.co)
-            if hashlib.sha256(tmp.read_bytes()).hexdigest() != sha:
-                tmp.unlink()
-                raise ValueError(f"{name} sha256 불일치")
-            tmp.replace(dst)
-        return True
-    except Exception:  # noqa: BLE001 — 내려받기 실패는 BM25 로 계속
-        logger.warning("임베딩 모델 준비 실패 — BM25 만으로 검색한다", exc_info=True)
-        return False
+    with _DOWNLOAD_LOCK:  # 앞 스레드가 받는 동안 기다렸다가, 다 받았으면 아래 exists 검사로 바로 끝난다
+        try:
+            model_dir.mkdir(parents=True, exist_ok=True)
+            for name, (url, sha) in MODEL_FILES.items():
+                dst = model_dir / name
+                if dst.exists():
+                    continue
+                tmp = dst.with_name(f"{dst.name}.{os.getpid()}.part")  # 다른 프로세스와도 겹치지 않게
+                urllib.request.urlretrieve(url, tmp)  # noqa: S310 — 고정 URL(huggingface.co)
+                if hashlib.sha256(tmp.read_bytes()).hexdigest() != sha:
+                    tmp.unlink()
+                    raise ValueError(f"{name} sha256 불일치")
+                tmp.replace(dst)
+            return True
+        except Exception:  # noqa: BLE001 — 내려받기 실패는 BM25 로 계속
+            logger.warning("임베딩 모델 준비 실패 — BM25 만으로 검색한다", exc_info=True)
+            return False
 
 
 class Retriever:

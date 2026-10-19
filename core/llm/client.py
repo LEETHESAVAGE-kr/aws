@@ -201,14 +201,24 @@ def build_structured_output_tool(schema: dict[str, Any]) -> ToolDefinition:
 
 class SchemaValidator:
     @staticmethod
-    def passes(content: str | None, schema: dict[str, Any]) -> bool:
+    def reason(content: str | None, schema: dict[str, Any]) -> str | None:
+        """형식 검사 실패 이유 한 줄(통과면 None). 10/19 배포 로그가 '실패했다'만 남겨 원인을 못 가렸다."""
         if content is None:
-            return False
+            return "응답 본문 없음"
         try:
             instance = json.loads(content)
-        except (TypeError, ValueError):
-            return False
-        return not list(Draft7Validator(schema).iter_errors(instance))
+        except (TypeError, ValueError) as exc:
+            return f"JSON 아님(길이 {len(content)}자, 잘렸을 수 있음): {exc}"
+        errors = list(Draft7Validator(schema).iter_errors(instance))
+        if not errors:
+            return None
+        first = errors[0]
+        where = "/".join(str(p) for p in first.absolute_path) or "(최상위)"
+        return f"스키마 위반 {len(errors)}건 — 첫째: {where}: {first.message[:200]}"
+
+    @classmethod
+    def passes(cls, content: str | None, schema: dict[str, Any]) -> bool:
+        return cls.reason(content, schema) is None
 
     @classmethod
     def validate_and_retry(
@@ -217,12 +227,15 @@ class SchemaValidator:
         schema: dict[str, Any],
         retry_fn: Callable[[], ConverseResponse],
     ) -> ConverseResponse:
-        if cls.passes(response.content, schema):
+        why = cls.reason(response.content, schema)
+        if why is None:
             return response
-        logger.warning("schema validation failed, retry 1/1")
+        logger.warning("schema validation failed, retry 1/1 — stop=%s · %s", response.stop_reason, why)
         retried = retry_fn()
-        if cls.passes(retried.content, schema):
+        why = cls.reason(retried.content, schema)
+        if why is None:
             return retried
+        logger.warning("schema validation failed again — stop=%s · %s", retried.stop_reason, why)
         retried.content = None
         retried.confidence_override = "review"
         return retried

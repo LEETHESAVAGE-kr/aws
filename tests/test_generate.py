@@ -583,13 +583,14 @@ def test_parallel_and_sequential_results_are_byte_identical() -> None:
 
 
 def test_parallel_broken_row_is_isolated_to_review() -> None:
-    """스키마 위반 2회(재시도 포함) → 그 가이드워드만 review, 나머지 6종 정상, 호출 = 열거 1 + 7 + 재시도 1."""
+    """계속 깨지면 → 그 가이드워드만 review, 나머지 6종 정상.
+    호출 = 열거 1 + 7 + 형식 재시도 1 + 끝 재호출 2(10/19 — 그 재호출도 형식 재시도 1회 포함)."""
     generator, client, records, _ = _run_parallel(4, broken_guideword="Reverse")
     assert generator.review_guidewords == ["Reverse"]
     assert list(dict.fromkeys(r.guideword for r in records)) == [
         g for g in STANDARD_GUIDEWORDS if g != "Reverse"
     ]
-    assert len(client.calls) == 1 + len(STANDARD_GUIDEWORDS) + 1
+    assert len(client.calls) == 1 + len(STANDARD_GUIDEWORDS) + 1 + 2
 
 
 def test_parallel_cost_equals_sum_of_calls() -> None:
@@ -782,3 +783,69 @@ def test_examples_carry_source_and_license_without_prose() -> None:
     for ex in data["examples"]:
         assert ex["source"].count("http") == 1 and ex["license"]  # AC-12-3
         assert all(len(n.split()) <= 4 for n in ex["parameters"])  # 이름만 — 프롬프트 제약과 같은 4어절
+
+
+# ── 10/19 배포 로그: 가이드워드 No 가 형식 검사 2연속 실패로 통째로 빠짐 → 끝에 한 번 더 ──────────────
+def _flaky_factory(guideword: str, bad_calls: int, *, raise_exc: bool = False):
+    """`guideword` 판정 호출의 처음 `bad_calls` 번만 망가뜨리고 그 뒤로는 정상."""
+    good = _factory()
+    seen = {"n": 0}
+    lock = threading.Lock()
+
+    def make(system: str, messages: list[Message], **kwargs: Any) -> ConverseResponse:
+        user = messages[0].content
+        if not _is_enumeration(system) and isinstance(user, str) and _guideword_of(user) == guideword:
+            with lock:
+                seen["n"] += 1
+                bad = seen["n"] <= bad_calls
+            if bad:
+                if raise_exc:
+                    raise TimeoutError("네트워크")
+                return ConverseResponse(content='{"guideword": 123}')  # 스키마 위반
+        return good(system=system, messages=messages, **kwargs)
+
+    return make, seen
+
+
+@pytest.mark.parametrize("parallel_calls", [1, 4])
+def test_failed_guideword_is_retried_once_at_the_end(parallel_calls: int) -> None:
+    make, seen = _flaky_factory("No", bad_calls=2)  # 첫 판정 + 형식 재시도 = 2회 실패, 끝 재호출에서 통과
+    generator = HazopGenerator(MockBedrockClient(response_factory=make), GeneratorConfig(parallel_calls=parallel_calls))
+    records = generator.generate(N1_META)
+    assert generator.review_guidewords == []
+    assert list(dict.fromkeys(r.guideword for r in records)) == STANDARD_GUIDEWORDS  # 순서도 그대로
+    assert seen["n"] == 3
+    assert [r.id for r in records] == [f"n1-{i:03d}" for i in range(1, len(records) + 1)]
+
+
+def test_retry_after_exception_in_parallel() -> None:
+    make, seen = _flaky_factory("Less", bad_calls=1, raise_exc=True)
+    generator = HazopGenerator(MockBedrockClient(response_factory=make), GeneratorConfig(parallel_calls=4))
+    records = generator.generate(N1_META)
+    assert generator.review_guidewords == [] and "Less" in {r.guideword for r in records}
+    assert seen["n"] == 2
+
+
+def test_quick_run_also_retries_once() -> None:
+    make, seen = _flaky_factory("More", bad_calls=2)
+    generator = HazopGenerator(MockBedrockClient(response_factory=make))
+    records = generator.generate_quick(N1_META, "More")
+    assert records and generator.review_guidewords == [] and seen["n"] == 3
+    make, seen = _flaky_factory("More", bad_calls=99)  # 계속 깨지면 두 번(형식 재시도 포함 4회)만 부르고 review
+    generator = HazopGenerator(MockBedrockClient(response_factory=make))
+    assert generator.generate_quick(N1_META, "More") == [] and generator.review_guidewords == ["More"]
+    assert seen["n"] == 4
+
+
+def test_schema_failure_reason_is_logged(caplog: pytest.LogCaptureFixture) -> None:
+    from core.llm.client import SchemaValidator
+
+    schema = {"type": "object", "properties": {"S": {"type": "integer", "maximum": 4}}, "required": ["S"]}
+    assert SchemaValidator.reason('{"S": 3}', schema) is None
+    assert "JSON 아님" in (SchemaValidator.reason('{"S": 3', schema) or "")  # 잘린 응답
+    assert "S" in (SchemaValidator.reason('{"S": 5}', schema) or "")  # 등급 범위 밖 — 어느 칸인지 남는다
+    assert SchemaValidator.reason(None, schema) == "응답 본문 없음"
+    generator, _ = _generator(broken_guideword="More")
+    with caplog.at_level(logging.WARNING):
+        generator.generate(N1_META)
+    assert any("schema validation failed again" in r.getMessage() and "cells" in r.getMessage() for r in caplog.records)

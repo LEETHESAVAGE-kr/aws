@@ -195,7 +195,8 @@ def test_generate_three_runs_merges_and_records_consensus(monkeypatch: pytest.Mo
     gen = HazopGenerator(client, GeneratorConfig(consensus_runs=3))
     records = gen.generate(META)
     # 열거 1회 공유 + 판정 21회 + 실패한 Reverse 3회의 클라이언트 재시도 3회
-    assert len(client.calls) == 1 + 3 * 7 + 3
+    # + 세 실행 모두 실패한 Reverse 의 끝 재호출 1회와 그 클라이언트 재시도 1회(10/19)
+    assert len(client.calls) == 1 + 3 * 7 + 3 + 2
     assert gen.total_cost_usd >= 0.01 + 0.1 * 21 - 1e-9  # 실행 3벌의 비용이 모두 합산된다
     assert gen.review_guidewords == ["Reverse"]  # 세 번 다 실패한 가이드워드만
     assert len(gen.consensus_raw["More"]) == 3
