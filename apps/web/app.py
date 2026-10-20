@@ -331,6 +331,10 @@ intro.html(
 def _nl_panel() -> None:
     if state.mode != MODE_NL:  # 패널 안 버튼(사례 보기)이 모드를 바꿨다 — 모드 선택은 조각 밖이라 앱 전체를 다시 그린다
         st.rerun()
+    # 서버가 재시작·휴면 복귀하면 브라우저가 새 세션에 조각만 다시 돌려 달라고 한다 — 위젯 값(mode)은 브라우저가
+    # 되돌려 주지만 setdefault 로 넣는 값(quick_result 등)은 비어 있어 KeyError 가 났다(10/20). 앱 전체를 돌려 채운다.
+    if "quick_result" not in state:
+        st.rerun()
     done = 3 if state.quick_result is not None else (2 if state.quick_text.strip() or state[form.KEYS["substance"]] else 1)
     st.html(
         f'<div class="hz-progress"><div style="width:{done * 33.4:.0f}%"></div></div>'
